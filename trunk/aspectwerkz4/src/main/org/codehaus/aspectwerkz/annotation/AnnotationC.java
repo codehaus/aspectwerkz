@@ -128,8 +128,9 @@ public class AnnotationC {
         if (srcDirList == null && srcFileList == null && srcFileIncludes == null) {
             throw new IllegalArgumentException("one of src or srcfiles or srcincludes must be not null");
         }
-        if ((srcDirList != null && srcFileList != null) || (srcDirList != null && srcFileIncludes != null)
-            || (srcFileList != null && srcFileIncludes != null)) { // FIXME: refactor
+        if ((srcDirList != null && srcFileList != null) ||
+            (srcDirList != null && srcFileIncludes != null) ||
+            (srcFileList != null && srcFileIncludes != null)) { // FIXME: refactor
             throw new IllegalArgumentException("maximum one of src, srcfiles or srcincludes must be not null");
         }
         if (classPath == null) {
@@ -235,7 +236,7 @@ public class AnnotationC {
                 AttributeEnhancer enhancer = new AsmAttributeEnhancer();
                 if (enhancer.initialize(clazz.getFullyQualifiedName(), classPath)) {
                     handleClassAnnotations(manager, enhancer, clazz);
-                    handleInnerClassAnnotations(manager, enhancer, clazz, classPath, destDir);
+                    handleInnerClassAnnotations(manager, enhancer, clazz);
                     JavaMethod[] methods = clazz.getMethods();
                     for (int j = 0; j < methods.length; j++) {
                         JavaMethod method = methods[j];
@@ -275,20 +276,21 @@ public class AnnotationC {
     private static void handleClassAnnotations(final AnnotationManager manager,
                                                final AttributeEnhancer enhancer,
                                                final JavaClass clazz) {
+        parseCustomClassAnnotations(clazz, manager, enhancer);
+        parseAspectAnnotations(clazz, manager, enhancer);
+        parseMixinAnnotations(clazz, manager, enhancer);
+    }
 
-        Annotation[] annotations = manager.getAnnotations(ANNOTATION_ASPECT, clazz);
-        for (int i = 0; i < annotations.length; i++) {
-            Annotation annotation = annotations[i];
-            if (annotation != null) {
-                AspectAnnotationProxy aspectProxy = (AspectAnnotationProxy) annotation;
-                if (aspectProxy.aspectName() == null) {
-                    aspectProxy.setAspectName(clazz.getFullyQualifiedName());
-                }
-                enhancer.insertClassAttribute(new AnnotationInfo(ANNOTATION_ASPECT, aspectProxy));
-                logInfo("aspect [" + clazz.getFullyQualifiedName() + ']');
-                logInfo("    deployment model [" + aspectProxy.deploymentModel() + ']');
-            }
-        }
+    /**
+     * Parses the custom annotations.
+     *
+     * @param clazz
+     * @param manager
+     * @param enhancer
+     */
+    private static void parseCustomClassAnnotations(final JavaClass clazz,
+                                                    final AnnotationManager manager,
+                                                    final AttributeEnhancer enhancer) {
         for (Iterator it = s_customAnnotations.keySet().iterator(); it.hasNext();) {
             String annotationName = (String) it.next();
             Annotation[] customAnnotations = manager.getAnnotations(annotationName, clazz);
@@ -305,6 +307,78 @@ public class AnnotationC {
                             "    custom class annotation [" + annotationName + " @ "
                             + clazz.getFullyQualifiedName() + ']'
                     );
+                }
+            }
+        }
+    }
+
+    /**
+     * Parses the aspect annotations.
+     *
+     * @param clazz
+     * @param manager
+     * @param enhancer
+     */
+    private static void parseAspectAnnotations(final JavaClass clazz,
+                                               final AnnotationManager manager,
+                                               final AttributeEnhancer enhancer) {
+        final Annotation[] annotations = manager.getAnnotations(ANNOTATION_ASPECT, clazz);
+        for (int i = 0; i < annotations.length; i++) {
+            Annotation annotation = annotations[i];
+            if (annotation != null) {
+                AspectAnnotationProxy aspectProxy = (AspectAnnotationProxy) annotation;
+                if (aspectProxy.aspectName() == null) {
+                    aspectProxy.setAspectName(clazz.getFullyQualifiedName());
+                }
+                enhancer.insertClassAttribute(new AnnotationInfo(ANNOTATION_ASPECT, aspectProxy));
+                logInfo("aspect [" + clazz.getFullyQualifiedName() + ']');
+                logInfo("    deployment model [" + aspectProxy.deploymentModel() + ']');
+            }
+        }
+    }
+
+    /**
+     * Parses mixin annotations.
+     *
+     * @param clazz
+     * @param manager
+     * @param enhancer
+     */
+    private static void parseMixinAnnotations(final JavaClass clazz,
+                                              final AnnotationManager manager,
+                                              final AttributeEnhancer enhancer) {
+        final Annotation[] introduceAnnotations = manager.getAnnotations(ANNOTATION_INTRODUCE, clazz);
+        final String className = clazz.getFullyQualifiedName();
+        for (int k = 0; k < introduceAnnotations.length; k++) {
+            Annotation introduceAnnotation = introduceAnnotations[k];
+            if (introduceAnnotation != null) {
+                IntroduceAnnotationProxy introduceProxy = (IntroduceAnnotationProxy) introduceAnnotation;
+                if (introduceProxy != null) {
+                    //directly implemented interfaces
+                    JavaClass[] introducedInterfaceClasses = clazz.getImplementedInterfaces();
+                    String[] introducedInterfaceNames = new String[introducedInterfaceClasses.length];
+                    for (int j = 0; j < introducedInterfaceClasses.length; j++) {
+                        introducedInterfaceNames[j] = introducedInterfaceClasses[j].getFullyQualifiedName();
+                        logInfo("    interface introduction [" + introducedInterfaceNames[j] + ']');
+                    }
+                    if (introducedInterfaceNames.length == 0) {
+                        introducedInterfaceNames = enhancer.getNearestInterfacesInHierarchy(className);
+                        if (introducedInterfaceNames.length == 0) {
+                            throw new RuntimeException("no implicit interfaces found for " + className);
+                        }
+                        for (int j = 0; j < introducedInterfaceNames.length; j++) {
+                            logInfo("    interface introduction [" + introducedInterfaceNames[j] + ']');
+                        }
+                    }
+                    introduceProxy.setIntroducedInterfaces(introducedInterfaceNames);
+                    introduceProxy.setInnerClassName(className);
+                    logInfo(
+                            "    mixin introduction [" + clazz.getFullyQualifiedName()
+                            + " :: " + introduceProxy.expression() +
+                            "] deployment model ["
+                            + introduceProxy.deploymentModel() + ']'
+                    );
+                    enhancer.insertClassAttribute(new AnnotationInfo(ANNOTATION_INTRODUCE, introduceProxy));
                 }
             }
         }
@@ -328,10 +402,7 @@ public class AnnotationC {
                 ExpressionAnnotationProxy expressionProxy = (ExpressionAnnotationProxy) expressionAnnotation;
                 AnnotationC.registerCallParameters(expressionProxy, method);
                 enhancer.insertMethodAttribute(
-                        method, new AnnotationInfo(
-                                ANNOTATION_EXPRESSION,
-                                expressionProxy
-                        )
+                        method, new AnnotationInfo(ANNOTATION_EXPRESSION, expressionProxy)
                 );
                 logInfo(
                         "    pointcut [" + AnnotationC.getShortCallSignature(method) + " :: "
@@ -346,10 +417,7 @@ public class AnnotationC {
                 AroundAnnotationProxy aroundProxy = (AroundAnnotationProxy) aroundAnnotation;
                 AnnotationC.registerCallParameters(aroundProxy, method);
                 enhancer.insertMethodAttribute(
-                        method, new AnnotationInfo(
-                                ANNOTATION_AROUND,
-                                aroundProxy
-                        )
+                        method, new AnnotationInfo(ANNOTATION_AROUND, aroundProxy)
                 );
                 logInfo(
                         "    around advice [" + AnnotationC.getShortCallSignature(method) + " :: "
@@ -364,10 +432,7 @@ public class AnnotationC {
                 BeforeAnnotationProxy beforeProxy = (BeforeAnnotationProxy) beforeAnnotation;
                 AnnotationC.registerCallParameters(beforeProxy, method);
                 enhancer.insertMethodAttribute(
-                        method, new AnnotationInfo(
-                                ANNOTATION_BEFORE,
-                                beforeProxy
-                        )
+                        method, new AnnotationInfo(ANNOTATION_BEFORE, beforeProxy)
                 );
                 logInfo(
                         "    before [" + AnnotationC.getShortCallSignature(method) + " :: "
@@ -382,10 +447,7 @@ public class AnnotationC {
                 AfterAnnotationProxy afterProxy = (AfterAnnotationProxy) afterAnnotation;
                 AnnotationC.registerCallParameters(afterProxy, method);
                 enhancer.insertMethodAttribute(
-                        method, new AnnotationInfo(
-                                ANNOTATION_AFTER,
-                                afterProxy
-                        )
+                        method, new AnnotationInfo(ANNOTATION_AFTER, afterProxy)
                 );
                 logInfo(
                         "    after advice [" + AnnotationC.getShortCallSignature(method) + " :: "
@@ -400,10 +462,7 @@ public class AnnotationC {
                 Annotation customAnnotation = customAnnotations[i];
                 if (customAnnotation != null) {
                     enhancer.insertMethodAttribute(
-                            method, new AnnotationInfo(
-                                    annotationName,
-                                    customAnnotation
-                            )
+                            method, new AnnotationInfo(annotationName, customAnnotation)
                     );
                     logInfo(
                             "    custom method annotation [" + annotationName + " @ "
@@ -554,96 +613,13 @@ public class AnnotationC {
      * @param manager
      * @param enhancer
      * @param clazz
-     * @param classPath
-     * @param destDir
      */
     private static void handleInnerClassAnnotations(final AnnotationManager manager,
                                                     final AttributeEnhancer enhancer,
-                                                    final JavaClass clazz,
-                                                    final URL[] classPath,
-                                                    final String destDir) {
-
+                                                    final JavaClass clazz) {
         JavaClass[] innerClasses = clazz.getInnerClasses();
         for (int i = 0; i < innerClasses.length; i++) {
-            JavaClass innerClass = innerClasses[i];
-            String innerClassName = innerClass.getFullyQualifiedName();
-            Annotation[] introduceAnnotations = manager.getAnnotations(
-                    ANNOTATION_INTRODUCE,
-                    innerClass
-            );
-            for (int k = 0; k < introduceAnnotations.length; k++) {
-                Annotation introduceAnnotation = introduceAnnotations[k];
-                if (introduceAnnotation != null) {
-                    IntroduceAnnotationProxy introduceProxy = (IntroduceAnnotationProxy) introduceAnnotation;
-                    if (introduceProxy != null) {
-                        //directly implemented interfaces
-                        JavaClass[] introducedInterfaceClasses = innerClass
-                                .getImplementedInterfaces();
-                        String[] introducedInterfaceNames = new String[introducedInterfaceClasses.length];
-                        for (int j = 0; j < introducedInterfaceClasses.length; j++) {
-                            introducedInterfaceNames[j] = introducedInterfaceClasses[j]
-                                    .getFullyQualifiedName();
-                            logInfo(
-                                    "    interface introduction [" + introducedInterfaceNames[j]
-                                    + ']'
-                            );
-                        }
-                        if (introducedInterfaceNames.length == 0) {
-                            introducedInterfaceNames = enhancer
-                                    .getNearestInterfacesInHierarchy(innerClassName);
-                            if (introducedInterfaceNames.length == 0) {
-                                throw new RuntimeException(
-                                        "no implicit interfaces found for "
-                                        + innerClassName
-                                );
-                            }
-                            for (int j = 0; j < introducedInterfaceNames.length; j++) {
-                                logInfo(
-                                        "    interface introduction ["
-                                        + introducedInterfaceNames[j] + ']'
-                                );
-                            }
-                        }
-                        introduceProxy.setIntroducedInterfaces(introducedInterfaceNames);
-                        introduceProxy.setInnerClassName(innerClassName);
-                        logInfo(
-                                "    mixin introduction [" + innerClass.getFullyQualifiedName()
-                                + " :: " + introduceProxy.expression() +
-                                "] deployment model ["
-                                + introduceProxy.deploymentModel() + ']'
-                        );
-                        enhancer.insertClassAttribute(
-                                new AnnotationInfo(
-                                        ANNOTATION_INTRODUCE,
-                                        introduceProxy
-                                )
-                        );
-                    }
-                }
-            }
-            //            try {
-            //                // TODO: we do not support parsing inner classes of inner classes
-            //                AttributeEnhancer innerClassEnhancer = new AsmAttributeEnhancer();
-            //                if (innerClassEnhancer.initialize(innerClass.getFullyQualifiedName(), classPath)) {
-            //                    handleClassAnnotations(manager, innerClassEnhancer, innerClass);
-            //                    JavaMethod[] methods = innerClass.getMethods();
-            //                    for (int k = 0; k < methods.length; k++) {
-            //                        handleMethodAnnotations(manager, innerClassEnhancer, methods[k]);
-            //                    }
-            //                    JavaField[] fields = innerClass.getFields();
-            //                    for (int k = 0; k < fields.length; k++) {
-            //                        handleFieldAnnotations(manager, innerClassEnhancer, fields[k]);
-            //                    }
-            //
-            //                    // write enhanced class to disk
-            //                    innerClassEnhancer.write(destDir);
-            //                }
-            //            } catch (Throwable e) {
-            //                logWarning("could not compile annotations for class ["
-            //                    + innerClassName
-            //                    + "] due to: "
-            //                    + e.toString());
-            //            }
+            parseMixinAnnotations(innerClasses[i], manager, enhancer);
         }
     }
 
@@ -682,9 +658,13 @@ public class AnnotationC {
             logWarning(message);
             throw new DefinitionException(message);
         } finally {
-            try { in.close(); } catch(Exception e) {;}
+            try {
+                in.close();
+            } catch (Exception e) {
+                ;
+            }
         }
-        
+
         for (Iterator it = ANNOTATION_DEFINITION.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry) it.next();
             String name = ((String) entry.getKey()).trim();

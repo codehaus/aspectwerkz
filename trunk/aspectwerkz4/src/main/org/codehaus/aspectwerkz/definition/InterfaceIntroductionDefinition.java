@@ -27,7 +27,7 @@ public class InterfaceIntroductionDefinition {
     /**
      * The introduction expressions.
      */
-    protected ExpressionInfo[] m_expressionInfos;
+    protected ExpressionInfo[] m_expressionInfos = new ExpressionInfo[]{};
 
     /**
      * The attribute for the introduction.
@@ -43,25 +43,17 @@ public class InterfaceIntroductionDefinition {
      * Creates a new introduction meta-data instance.
      *
      * @param name               the name of the expressionInfo
-     * @param expressionInfo     the expressionInfo
      * @param interfaceClassName the class name of the interface
      */
-    public InterfaceIntroductionDefinition(final String name,
-                                           final ExpressionInfo expressionInfo,
-                                           final String interfaceClassName) {
+    public InterfaceIntroductionDefinition(final String name, final String interfaceClassName) {
         if (name == null) {
             throw new IllegalArgumentException("name can not be null");
-        }
-        if (expressionInfo == null) {
-            throw new IllegalArgumentException("expressionInfo can not be null");
         }
         if (interfaceClassName == null) {
             throw new IllegalArgumentException("interface class name can not be null");
         }
         m_name = name;
         m_interfaceClassNames.add(interfaceClassName);
-        m_expressionInfos = new ExpressionInfo[1];
-        m_expressionInfos[0] = expressionInfo;
     }
 
     /**

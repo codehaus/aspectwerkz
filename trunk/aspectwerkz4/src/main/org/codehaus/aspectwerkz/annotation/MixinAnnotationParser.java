@@ -8,8 +8,12 @@
 package org.codehaus.aspectwerkz.annotation;
 
 import org.codehaus.aspectwerkz.definition.MixinDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotations;
+import org.codehaus.aspectwerkz.expression.ExpressionInfo;
+import org.codehaus.aspectwerkz.expression.ExpressionNamespace;
 
 import java.util.Iterator;
 import java.util.List;
@@ -55,13 +59,18 @@ public class MixinAnnotationParser {
         if (classInfo == null) {
             throw new IllegalArgumentException("class can not be null");
         }
-        List annotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_INTRODUCE, classInfo);
+        final SystemDefinition systemDef = mixinDef.getSystemDefinition();
+        final List annotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_INTRODUCE, classInfo);
         for (Iterator iterator = annotations.iterator(); iterator.hasNext();) {
             IntroduceAnnotationProxy annotation = (IntroduceAnnotationProxy) iterator.next();
             if (annotation != null) {
-                
-                // FIXME MIXIN handle annotations
-
+                String expression = annotation.expression();
+                final ExpressionInfo expressionInfo = new ExpressionInfo(expression, systemDef.getUuid());
+                ExpressionNamespace.getNamespace(systemDef.getUuid()).addExpressionInfo(
+                        DefinitionParserHelper.EXPRESSION_PREFIX + expression.hashCode(),
+                        expressionInfo
+                );
+                mixinDef.addExpressionInfo(expressionInfo);
             }
         }
     }
