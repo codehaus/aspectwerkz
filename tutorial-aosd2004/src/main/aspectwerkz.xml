@@ -1,0 +1,9 @@
+<aspectwerkz>
+    <system id="aosd-tutorial">
+        <package name="aspectwerkz.aosd.aspect">
+            <aspect class="RoleBasedAccessProtocol"/>
+            <aspect class="UnitOfWorkProtocol"/>
+            <aspect class="AsynchProtocol"/>
+        </package>
+    </system>
+</aspectwerkz>
