@@ -126,24 +126,24 @@ public class AddImplementationTransformer implements Transformer {
             ClassInfo returnType = methodInfo.getReturnType();
             ClassInfo[] exceptionTypes = methodInfo.getExceptionTypes();
             final String[] parameterNames = new String[parameters.length];
-            final CtClass[] bcelParameterTypes = new CtClass[parameters.length];
-            final CtClass[] bcelExceptionTypes = new CtClass[exceptionTypes.length];
+            final CtClass[] classParameterTypes = new CtClass[parameters.length];
+            final CtClass[] classExceptionTypes = new CtClass[exceptionTypes.length];
             final CtClass javassistReturnType = ctClass.getClassPool().get(returnType.getName());
             if (javassistReturnType == null) {
                 return; // we have a constructor => skip
             }
             for (int i = 0; i < parameters.length; i++) {
-                bcelParameterTypes[i] = ctClass.getClassPool().get(parameters[i].getName());
+                classParameterTypes[i] = ctClass.getClassPool().get(parameters[i].getName());
                 parameterNames[i] = "arg" + i;
             }
             for (int i = 0; i < exceptionTypes.length; i++) {
-                bcelExceptionTypes[i] = ctClass.getClassPool().get(exceptionTypes[i].getName());
+                classExceptionTypes[i] = ctClass.getClassPool().get(exceptionTypes[i].getName());
             }
             if (ClassInfoHelper.isMethodStatic(methodInfo)) {
                 return; // introductions can't be static (not for the moment at
                 // least)
             }
-            if (JavassistHelper.hasMethod(ctClass, methodName, bcelParameterTypes)) {
+            if (JavassistHelper.hasMethod(ctClass, methodName, classParameterTypes)) {
                 return;
             }
 
@@ -167,8 +167,8 @@ public class AddImplementationTransformer implements Transformer {
             CtMethod method = CtNewMethod.make(
                 javassistReturnType,
                 methodName,
-                bcelParameterTypes,
-                bcelExceptionTypes,
+                classParameterTypes,
+                classExceptionTypes,
                 body.toString(),
                 ctClass);
             method.setModifiers(Modifier.PUBLIC);

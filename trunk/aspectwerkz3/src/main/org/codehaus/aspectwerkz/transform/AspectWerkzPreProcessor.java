@@ -253,7 +253,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             || klass.startsWith("org.objectweb.asm.")
             || klass.startsWith("com.karneim.")
             || klass.startsWith("com.bluecast.")
-            || klass.startsWith("org.apache.bcel.")
             || klass.startsWith("gnu.trove.")
             || klass.startsWith("org.dom4j.")
             || klass.startsWith("org.xml.sax.")

@@ -50,7 +50,7 @@ import java.util.StringTokenizer;
  * <p/>
  * <p>
  * <h2>Options</h2>
- * [classpath] must contain %JAVA_HOME%/tools.jar and the jar you want for bytecode modification (bcel, javassist...)
+ * [classpath] must contain %JAVA_HOME%/tools.jar and the jar you want for bytecode modification (bcel, javassist, asm...)
  * <br/>The java.lang.ClassLoader is patched using the <code>-Daspectwerkz.classloader.clpreprocessor=...</code> in
  * [jvm option]. Specify the FQN of your implementation of hook.ClassLoaderPreProcessor. See {@link
  * org.codehaus.aspectwerkz.hook.ClassLoaderPreProcessor} If not given, the default AspectWerkz layer 1 Javassist
