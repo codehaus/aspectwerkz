@@ -203,32 +203,31 @@ public class DocumentParser {
             String aspectName = null;
             String className = null;
             String deploymentModel = null;
-            Element aspect = (Element)it1.next();
+            String containerClassName = null;
 
+            Element aspect = (Element)it1.next();
             for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
                 Attribute attribute = (Attribute)it2.next();
-
                 final String name = attribute.getName().trim();
                 final String value = attribute.getValue().trim();
-
                 if (name.equalsIgnoreCase("class")) {
                     className = value;
                 } else if (name.equalsIgnoreCase("deployment-model")) {
                     deploymentModel = value;
                 } else if (name.equalsIgnoreCase("name")) {
                     aspectName = value;
+                } else if (name.equalsIgnoreCase("container")) {
+                    containerClassName = value;
                 }
             }
 
             String aspectClassName = packageName + className;
-
             if (aspectName == null) {
                 aspectName = aspectClassName;
             }
 
             // create the aspect definition
             AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectClassName);
-
             Class aspectClass = null;
             try {
                 aspectClass = loadAspectClass(loader, aspectClassName);
@@ -243,6 +242,7 @@ public class DocumentParser {
             // XML definition settings always overrides attribute definition settings
             aspectDef.setDeploymentModel(deploymentModel);
             aspectDef.setName(aspectName);
+            aspectDef.setContainerClassName(containerClassName);
 
             // parse the aspect info
             parseParameterElements(aspect, definition, aspectDef);
@@ -254,15 +254,12 @@ public class DocumentParser {
             for (Iterator mixins = aspectDef.getInterfaceIntroductions().iterator(); mixins.hasNext();) {
                 definition.addInterfaceIntroductionDefinition((InterfaceIntroductionDefinition)mixins.next());
             }
-
             for (Iterator mixins = aspectDef.getIntroductions().iterator(); mixins.hasNext();) {
                 definition.addIntroductionDefinition((IntroductionDefinition)mixins.next());
             }
-
             definition.addAspect(aspectDef);
             hasDef = true;
         }
-
         return hasDef;
     }
 
@@ -275,13 +272,11 @@ public class DocumentParser {
      */
     private static Class loadAspectClass(final ClassLoader loader, final String aspectClassName) {
         Class aspectClass;
-
         try {
             aspectClass = loader.loadClass(aspectClassName);
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-
         return aspectClass;
     }
 
@@ -498,13 +493,10 @@ public class DocumentParser {
      */
     private static String getPackage(final Element packageElement) {
         String packageName = "";
-
         for (Iterator it2 = packageElement.attributeIterator(); it2.hasNext();) {
             Attribute attribute = (Attribute)it2.next();
-
             if (attribute.getName().trim().equalsIgnoreCase("name")) {
                 packageName = attribute.getValue().trim();
-
                 if (packageName.endsWith(".*")) {
                     packageName = packageName.substring(0, packageName.length() - 1);
                 } else if (packageName.endsWith(".")) {
@@ -512,13 +504,11 @@ public class DocumentParser {
                 } else {
                     packageName += ".";
                 }
-
                 break;
             } else {
                 continue;
             }
         }
-
         return packageName;
     }
 
@@ -593,19 +583,16 @@ public class DocumentParser {
 
                     // handle exclude package
                     excludePackage = packageName + attribute.getValue().trim();
-
                     if (excludePackage.endsWith(".*")) {
                         excludePackage = excludePackage.substring(0, excludePackage.length() - 2);
                     } else if (excludePackage.endsWith(".")) {
                         excludePackage = excludePackage.substring(0, excludePackage.length() - 1);
                     }
-
                     break;
                 } else {
                     continue;
                 }
             }
-
             if (excludePackage.length() != 0) {
                 definition.addExcludePackage(excludePackage);
             }
@@ -686,13 +673,10 @@ public class DocumentParser {
      */
     private static String getBasePackage(final Element system) {
         String basePackage = "";
-
         for (Iterator it2 = system.attributeIterator(); it2.hasNext();) {
             Attribute attribute = (Attribute)it2.next();
-
             if (attribute.getName().trim().equalsIgnoreCase("base-package")) {
                 basePackage = attribute.getValue().trim();
-
                 if (basePackage.endsWith(".*")) {
                     basePackage = basePackage.substring(0, basePackage.length() - 1);
                 } else if (basePackage.endsWith(".")) {
@@ -700,13 +684,11 @@ public class DocumentParser {
                 } else {
                     basePackage += ".";
                 }
-
                 break;
             } else {
                 continue;
             }
         }
-
         return basePackage;
     }
 }
