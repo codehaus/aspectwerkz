@@ -9,12 +9,14 @@ package org.codehaus.aspectwerkz.aspect.management;
 
 import org.codehaus.aspectwerkz.aspect.DefaultMixinFactory;
 import org.codehaus.aspectwerkz.aspect.MixinFactory;
-import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.util.ContextClassLoader;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.util.ContextClassLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.definition.MixinDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.DeploymentModel;
 
 import java.util.*;
 import java.lang.reflect.Constructor;

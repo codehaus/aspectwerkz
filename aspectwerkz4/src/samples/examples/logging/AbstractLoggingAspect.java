@@ -7,8 +7,8 @@
  **************************************************************************************/
 package examples.logging;
 
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
+import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -20,7 +20,7 @@ public abstract class AbstractLoggingAspect {
     /**
      * @Around methodsToLog
      */
-    public Object logMethod(JoinPoint joinPoint) throws Throwable {
+    public Object logMethod(StaticJoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         indent();
         System.out.println(
@@ -45,7 +45,7 @@ public abstract class AbstractLoggingAspect {
     /**
      * @Before methodsToLog
      */
-    public void logBefore(final JoinPoint joinPoint) throws Throwable {
+    public void logBefore(final StaticJoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
                 "BEFORE: "
@@ -58,7 +58,7 @@ public abstract class AbstractLoggingAspect {
     /**
      * @AfterReturning(type="java.lang.String", pointcut="methodsToLog")
      */
-    public void logAfterReturning(final JoinPoint joinPoint) throws Throwable {
+    public void logAfterReturning(final StaticJoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
                 "AFTER RETURNING: "
@@ -71,7 +71,7 @@ public abstract class AbstractLoggingAspect {
     /**
      * @AfterThrowing(type="java.lang.RuntimeException", pointcut="methodsToLog")
      */
-    public void logAfterThrowingRE(final JoinPoint joinPoint) throws Throwable {
+    public void logAfterThrowingRE(final StaticJoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
                 "AFTER THROWING RE: "
@@ -84,7 +84,7 @@ public abstract class AbstractLoggingAspect {
     /**
      * @AfterThrowing(type="java.lang.IllegalArgumentException", pointcut="methodsToLog")
      */
-    public void logAfterThrowingIAE(final JoinPoint joinPoint) throws Throwable {
+    public void logAfterThrowingIAE(final StaticJoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
                 "AFTER THROWING IAE: "
@@ -97,7 +97,7 @@ public abstract class AbstractLoggingAspect {
     /**
      * @AfterFinally methodsToLog
      */
-    public void logAfterFinally(final JoinPoint joinPoint) throws Throwable {
+    public void logAfterFinally(final StaticJoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
                 "AFTER FINALLY: "

@@ -11,7 +11,8 @@ import org.objectweb.asm.attrs.Annotation;
 import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
 import org.objectweb.asm.Attribute;
 import org.codehaus.aspectwerkz.util.Base64;
-import org.codehaus.aspectwerkz.UnbrokenObjectInputStream;
+import org.codehaus.aspectwerkz.util.UnbrokenObjectInputStream;
+import org.codehaus.aspectwerkz.util.UnbrokenObjectInputStream;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 

@@ -12,7 +12,7 @@ import java.io.FileInputStream;
 import java.lang.reflect.Method;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.util.ContextClassLoader;
 
 /**
  * Manages the remote proxy server.

@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.DeploymentModel;
 
 /**
  * Holds the meta-data for the aspect.

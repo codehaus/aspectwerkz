@@ -15,6 +15,7 @@ import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotations;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.DeploymentModel;
 
 import java.util.Iterator;
 import java.util.List;

@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
-import org.codehaus.aspectwerkz.MethodComparator;
 
 /**
  * Utility method for manipulating and managing ClassInfo hierarchies.

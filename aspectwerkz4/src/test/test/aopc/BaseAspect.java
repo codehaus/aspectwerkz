@@ -9,6 +9,7 @@ package test.aopc;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.AspectContext;
+import org.codehaus.aspectwerkz.AspectContext;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>

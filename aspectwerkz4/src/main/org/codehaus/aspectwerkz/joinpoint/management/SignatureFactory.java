@@ -7,14 +7,16 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.MethodTuple;
+import org.codehaus.aspectwerkz.joinpoint.impl.MethodTuple;
 import org.codehaus.aspectwerkz.util.Strings;
-import org.codehaus.aspectwerkz.transform.ReflectHelper;
+import org.codehaus.aspectwerkz.reflect.ReflectHelper;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.MethodTuple;
+import org.codehaus.aspectwerkz.reflect.ReflectHelper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Constructor;

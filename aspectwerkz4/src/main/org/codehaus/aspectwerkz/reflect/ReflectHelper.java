@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.transform;
+package org.codehaus.aspectwerkz.reflect;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -16,9 +16,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Iterator;
 
-import org.codehaus.aspectwerkz.MethodComparator;
-import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.transform.TransformationConstants;
 
 /**
  * Helper class with utility methods for working with the java.lang.reflect.* package.

@@ -10,7 +10,9 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.codehaus.aspectwerkz.AdviceInfo;
+import org.codehaus.aspectwerkz.aspect.AdviceInfo;
+import org.codehaus.aspectwerkz.aspect.AdviceInfo;
+import org.codehaus.aspectwerkz.aspect.AdviceInfo;
 
 /**
  * Container for the advice infos that belongs to a specific join point.

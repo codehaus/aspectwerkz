@@ -15,9 +15,12 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.ClassVisitor;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.AdviceInfo;
+import org.codehaus.aspectwerkz.aspect.AdviceInfo;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
+import org.codehaus.aspectwerkz.aspect.AdviceInfo;
+import org.codehaus.aspectwerkz.aspect.AdviceInfo;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.transform.Compiler;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
@@ -31,6 +34,7 @@ import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.RuntimeCheckVisitor;
 import org.codehaus.aspectwerkz.joinpoint.management.JoinPointType;
 import org.codehaus.aspectwerkz.joinpoint.management.AdviceInfoContainer;
+import org.codehaus.aspectwerkz.DeploymentModel;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;

@@ -479,11 +479,7 @@ public class Deployer {
 
         AspectModelManager.defineAspect(classInfo, newAspectDef, aspectLoader);
 
-        AspectAnnotationParser.parse(
-                classInfo,
-                newAspectDef,
-                aspectLoader
-        );
+        AspectAnnotationParser.parse(classInfo, newAspectDef, aspectLoader);
 
         AspectDefinition aspectDef = systemDef.getAspectDefinition(aspectName);
         if (aspectDef != null) {

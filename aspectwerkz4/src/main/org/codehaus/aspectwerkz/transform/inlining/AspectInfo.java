@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.transform.inlining;
 
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.DeploymentModel;
 
 /**
  * TODO docuemnt

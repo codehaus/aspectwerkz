@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
+
 import org.codehaus.aspectwerkz.AspectContext;
 
 /**
