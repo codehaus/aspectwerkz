@@ -27,7 +27,7 @@ public class XmlDefinitionParserTest extends TestCase {
 
     public void testIntroductionTag() {
         try {
-            AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parse(m_input);
+            AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parseNoCache(m_input);
             Iterator it = aspectwerkz.getIntroductionDefinitions().iterator();
             IntroductionDefinition introduction2 = (IntroductionDefinition)it.next();
             assertEquals("mixin", introduction2.getName());
@@ -44,7 +44,7 @@ public class XmlDefinitionParserTest extends TestCase {
 
     public void testAdviceTag() {
         try {
-            AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parse(m_input);
+            AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parseNoCache(m_input);
             Iterator it = aspectwerkz.getAdviceDefinitions().iterator();
             AdviceDefinition advice1 = (AdviceDefinition)it.next();
             assertEquals("logging", advice1.getName());
@@ -59,7 +59,7 @@ public class XmlDefinitionParserTest extends TestCase {
 
     public void testAspectTag() {
         try {
-            AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parse(m_input);
+            AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parseNoCache(m_input);
             Iterator it1 = aspectwerkz.getAspectDefinitions().iterator();
             AspectDefinition aspect = (AspectDefinition)it1.next();
             assertEquals("Logger", aspect.getName());
@@ -81,7 +81,7 @@ public class XmlDefinitionParserTest extends TestCase {
 
     public void testPointcutTag() {
         try {
-            final AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parse(m_input);
+            final AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parseNoCache(m_input);
             Iterator it = ((AspectDefinition)aspectwerkz.getAspectDefinitions().iterator().
                     next()).getPointcutDefs().iterator();
             PointcutDefinition pointcut2 = (PointcutDefinition)it.next();

@@ -70,12 +70,9 @@ public class AttributeC {
      *
      * @param sourcePath the path to the sources to compile attributes for
      * @param fileName the full name of the file name to compile the attributes to
-     * @param append a flag that says if the file specified exists and should be appended to
      */
-    public static void compile(final String sourcePath,
-                               final String fileName,
-                               final String append) {
-        compile(sourcePath, fileName, append, null);
+    public static void compile(final String sourcePath, final String fileName) {
+        compile(sourcePath, fileName, null, null);
     }
 
     /**
@@ -83,18 +80,18 @@ public class AttributeC {
      * and creates an XML definition based on these attributes.
      *
      * @param sourcePath the path to the sources to compile attributes for
-     * @param fileName the full name of the file name to compile the attributes to
-     * @param append a flag that says if the file specified exists and should be appended to
+     * @param fileName the full name of the file to compile the attributes to
+     * @param definitionFileToMerge the full name of the file to merge the compiled definition with
      * @param uuid the UUID for the definition
      */
     public static void compile(final String sourcePath,
                                final String fileName,
-                               final String append,
+                               final String definitionFileToMerge,
                                String uuid) {
         if (sourcePath == null) throw new IllegalArgumentException("source path can not be null");
         if (fileName == null) throw new IllegalArgumentException("file name can not be null");
 
-        AspectWerkzDefinition definition = getDefinition(fileName, append);
+        AspectWerkzDefinition definition = getDefinition(definitionFileToMerge);
 
         parseRuntimeAttributes(definition, sourcePath);
 
@@ -196,17 +193,15 @@ public class AttributeC {
      * @param append the append flag
      * @return the aspectwerkz definition
      */
-    private static AspectWerkzDefinition getDefinition(final String fileName,
-                                                       final String append) {
+    private static AspectWerkzDefinition getDefinition(final String fileName) {
         AspectWerkzDefinition definition;
-        if (append != null && append.equalsIgnoreCase("true")) {
+        if (fileName != null) {
             File definitionFile = new File(fileName);
             if (definitionFile.exists()) {
-                definition = AspectWerkzDefinition.getDefinition(fileName);
+                definition = AspectWerkzDefinition.loadDefinition(fileName);
             }
             else {
                 definition = new AspectWerkzDefinition();
-                  System.out.println("file does not exist");
             }
         }
         else {
@@ -251,14 +246,14 @@ public class AttributeC {
             introDefElement.addAttribute("implementation", implementation);
         }
         String deploymentModel = introDef.getDeploymentModel();
-        if (deploymentModel != null || deploymentModel.length() != 0) {
+        if (deploymentModel != null && deploymentModel.length() != 0) {
             introDefElement.addAttribute("deployment-model", deploymentModel);
         }
         else {
             introDefElement.addAttribute("deployment-model", "perJVM");
         }
         String attribute = introDef.getAttribute();
-        if (attribute != null || attribute.length() != 0) {
+        if (attribute != null && attribute.length() != 0) {
             introDefElement.addAttribute("attribute", attribute);
         }
         return introDefElement;
@@ -278,14 +273,14 @@ public class AttributeC {
         adviceDefElement.addAttribute("name", adviceDef.getName());
         adviceDefElement.addAttribute("class", adviceDef.getAdviceClassName());
         String deploymentModel = adviceDef.getDeploymentModel();
-        if (deploymentModel != null || deploymentModel.length() != 0) {
+        if (deploymentModel != null && deploymentModel.length() != 0) {
             adviceDefElement.addAttribute("deployment-model", deploymentModel);
         }
         else {
             adviceDefElement.addAttribute("deployment-model", "perJVM");
         }
         String attribute = adviceDef.getAttribute();
-        if (attribute != null || attribute.length() != 0) {
+        if (attribute != null && attribute.length() != 0) {
             adviceDefElement.addAttribute("attribute", attribute);
         }
 
@@ -1210,6 +1205,8 @@ public class AttributeC {
             List errors = validator.getErrorMessages();
             for (Iterator i = errors.iterator(); i.hasNext();) {
                 String errorMsg = (String)i.next();
+
+                // TODO: use logger instead of System.out
                 System.out.println(errorMsg);
             }
         }
@@ -1221,18 +1218,33 @@ public class AttributeC {
      * @param args
      */
     public static void main(String[] args) {
-        if (args.length < 3) {
-            System.out.println("usage: java [options...] org.codehaus.aspectwerkz.metadata.AttributeC <path to src dir> <file name> <append flag> <uuid for definition>");
-            System.out.println("       <append flag> tells the compiler if it should append the compiled attributes to the file specified or create a new one");
-            System.out.println("       <uuid for definition> is optional (if not specified one will be generated)");
+        if (args.length < 2) {
+            System.out.println("usage: java [options...] org.codehaus.aspectwerkz.metadata.AttributeC <path to src dir> <file name> -m <file name to merge with> -u <uuid for definition>");
+            System.out.println("       -m <file name to merge with> tells the compiler which file it should append the compiled attributes to");
+            System.out.println("       -u <uuid for definition> is optional (if not specified one will be generated)");
             System.exit(0);
         }
+        String mergeFile = null;
+        String uuid = null;
+        if (args[2].equals("-m") && args[3] != null) {
+            mergeFile = args[3];
+        }
+        else if (args[2].equals("-u") && args[3] != null) {
+            uuid = args[3];
+        }
+        if (args[4].equals("-m") && args[5] != null) {
+            mergeFile = args[5];
+        }
+        else if (args[4].equals("-u") && args[5] != null) {
+            uuid = args[5];
+        }
+
         System.out.println("compiling XML definition...");
-        if (args.length == 4) {
-            AttributeC.compile(args[0], args[1], args[2], args[3]);
+        if (args.length == 2) {
+            AttributeC.compile(args[0], args[1]);
         }
         else {
-            AttributeC.compile(args[0], args[1], args[2]);
+            AttributeC.compile(args[0], args[1], mergeFile, uuid);
         }
         System.out.println("XML definition for classes in " + args[0] + " have been compiled to " + args[1]);
     }

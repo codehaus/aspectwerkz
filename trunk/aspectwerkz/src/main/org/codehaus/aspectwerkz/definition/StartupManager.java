@@ -22,7 +22,6 @@ import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
 import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
 import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
 import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
-import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.advice.PreAdvice;
 import org.codehaus.aspectwerkz.advice.PostAdvice;
 import org.codehaus.aspectwerkz.advice.AbstractAdvice;
@@ -117,7 +116,7 @@ public class StartupManager {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (s_initialized) return;
         s_initialized = true;
-        final AspectWerkzDefinition definition = WeaveModel.getDefinition(uuid);
+        final AspectWerkzDefinition definition = AspectWerkzDefinition.getDefinition(uuid);
         createAspects(uuid, definition);
         registerIntroductions(uuid, definition);
         registerAdvices(uuid, definition);

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 
-<aspectwerkz id="test">
+<aspectwerkz id="tests">
 
-    <transformation-scope package="test"/>
+<!--    <transformation-scope package="test"/>-->
 
     <!-- ============================================= -->
     <!--  Define the introductions                     -->

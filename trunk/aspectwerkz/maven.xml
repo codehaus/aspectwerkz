@@ -11,6 +11,7 @@
     <property name="lib.dir" value="${basedir}/lib"/>
     <property name="bin.dir" value="${basedir}/bin"/>
     <property name="dist.dir" value="${basedir}/dist"/>
+    <property name="src.dir" value="${basedir}/src"/>
 
     <property name="main.classes" value="${target.dir}/classes"/>
     <property name="test.classes" value="${target.dir}/test-classes"/>
@@ -21,7 +22,6 @@
     <!--  initializes parameters  -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:init">
-        <mkdir dir="${basedir}/_metaData"/>
         <mkdir dir="${dist.dir}"/>
         <j:choose>
             <j:when test="${systemScope['os.name'].startsWith('Windows')}">
@@ -52,7 +52,7 @@
         <attainGoal name="java:compile"/>
         <jar jarfile="${target.dir}/aspectwerkz-${pom.currentVersion}.jar">
             <fileset dir="${main.classes}">
-                <exclude name="**/aspectwerkz/hook/**/*" />
+                <exclude name="**/aspectwerkz/hook/**/*"/>
             </fileset>
         </jar>
         <copy tofile="${lib.dir}/aspectwerkz-${pom.currentVersion}.jar" file="${target.dir}/aspectwerkz-${pom.currentVersion}.jar" overwrite="true"/>
@@ -60,7 +60,7 @@
         <!-- split dist for layer 1 separation -->
         <jar jarfile="${target.dir}/aspectwerkz-core-${pom.currentVersion}.jar">
             <fileset dir="${main.classes}">
-                <include name="**/aspectwerkz/hook/**/*" />
+                <include name="**/aspectwerkz/hook/**/*"/>
             </fileset>
         </jar>
         <copy tofile="${lib.dir}/aspectwerkz-core-${pom.currentVersion}.jar" file="${target.dir}/aspectwerkz-core-${pom.currentVersion}.jar" overwrite="true"/>
@@ -92,66 +92,17 @@
     </goal>
 
     <!-- =================================================== -->
-    <!--  transforms and runs tests -->
-    <!-- =================================================== -->
-    <goal name="aspectwerkz:test">
-        <attainGoal name="aspectwerkz:init"/>
-        <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:metadata:test"/>
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData test.AllTests"/>
-        </exec>
-        <delete dir="${basedir}/_metaData"/>
-    </goal>
-
-    <!-- =================================================== -->
-    <!--  multithreaded custom classloader tests -->
-    <!--  thread number and loops can be passed as argument -->
-    <!--  refer to test.clapp javadoc -->
-    <!-- =================================================== -->
-    <goal name="aspectwerkz:test:clapp">
-        <attainGoal name="aspectwerkz:init"/>
-        <attainGoal name="aspectwerkz:compile"/>
-        <!-- run the application in regular mode -->
-        <java classname="test.clapp.CrazyClassLoaderApp" fork="true">
-            <classpath>
-                <pathelement path="${test.classes}"/>
-            </classpath>
-            <jvmarg value="-DDummyClass=${test.classes}"/>
-        </java>
-        <!-- run the application thru AspectWerkz -->
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}" fork="true" >
-            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -DDummyClass=${test.classes} test.clapp.CrazyClassLoaderApp"/>
-        </exec>
-    </goal>
-
-    <!-- =================================================== -->
-    <!--  transforms the samples -->
+    <!--  offline transformation of the samples -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:transform">
         <attainGoal name="clean"/>
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:metadata:samples"/>
+        <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-offline ${samples.classes} ${basedir}/src/samples/samples.xml ${basedir}/_metaData"/>
+            <arg line="-offline ${samples.classes} ${src.dir}/samples/aspectwerkz.xml "/>
         </exec>
     </goal>
-
-    <goal name="aspectwerkz:transform:logging">
-        <attainGoal name="aspectwerkz:transform"/>
-        <java classname="examples.logging.Target" fork="true">
-            <jvmarg value="-Daspectwerkz.metadata.dir=${basedir}/_metaData"/>
-            <classpath>
-                <pathelement path="${samples.classes}"/>
-                <pathelement path="${main.classes}"/>
-                <fileset dir="${lib.dir}">
-                    <include name="*.jar"></include>
-                </fileset>
-            </classpath>
-        </java>
-    </goal>
-
 
     <!-- =================================================== -->
     <!--  compiles the samples -->
@@ -159,7 +110,6 @@
     <goal name="aspectwerkz:samples:compile">
         <attainGoal name="aspectwerkz:init"/>
         <mkdir dir="${samples.classes}"/>
-
         <javac destdir="${samples.classes}" deprecation="true"
             debug="true" optimize="false" excludes="**/samples.xml">
             <src>
@@ -185,7 +135,6 @@
     <goal name="aspectwerkz:extensions:compile">
         <attainGoal name="aspectwerkz:init"/>
         <mkdir dir="${extensions.classes}"/>
-
         <javac destdir="${extensions.classes}" deprecation="true"
             debug="true" optimize="false" excludes="**/*.xml">
             <src>
@@ -206,30 +155,48 @@
     </goal>
 
     <!-- =================================================== -->
-    <!--  runs the transparent persistence test -->
+    <!--  transforms and runs tests -->
     <!-- =================================================== -->
-    <goal name="aspectwerkz:samples:transparentpersistence">
+    <goal name="aspectwerkz:test">
         <attainGoal name="aspectwerkz:init"/>
-        <delete dir="${basedir}/_txLogs"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:metadata:samples:extensions"/>
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}" fork="false">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/jisp-2.0.1.jar -Daspectwerkz.extension.persistence.definition.file=${basedir}/src/samples/persistence_definition.xml -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.transparentpersistence.Client"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.AllTests"/>
         </exec>
-        <delete dir="${basedir}/_metaData"/>
     </goal>
 
     <!-- =================================================== -->
-    <!--  runs the introduction test -->
+    <!--  multithreaded custom classloader tests -->
+    <!--  thread number and loops can be passed as argument -->
+    <!--  refer to test.clapp javadoc -->
     <!-- =================================================== -->
-    <goal name="aspectwerkz:samples:introduction">
+    <goal name="aspectwerkz:test:clapp">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:metadata:samples"/>
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${lib.dir}/picocontainer-1.0-SNAPSHOT.jar${pathseparator}${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.introduction.Target"/>
+        <!-- run the application in regular mode -->
+        <java classname="test.clapp.CrazyClassLoaderApp" fork="true">
+            <classpath>
+                <pathelement path="${test.classes}"/>
+            </classpath>
+            <jvmarg value="-DDummyClass=${test.classes}"/>
+        </java>
+        <!-- run the application thru AspectWerkz -->
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}" fork="true">
+            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -DDummyClass=${test.classes} test.clapp.CrazyClassLoaderApp"/>
         </exec>
-        <delete dir="${basedir}/_metaData"/>
+    </goal>
+
+    <!-- =================================================== -->
+    <!--  runs the logging test, tests to have the def on the classpath -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:samples:logging">
+        <attainGoal name="aspectwerkz:init"/>
+        <attainGoal name="aspectwerkz:compile"/>
+        <attainGoal name="aspectwerkz:attributes:samples"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${src.dir}/samples${pathseparator}${dist.dir}/samples.jar examples.logging.Target"/>
+        </exec>
+        <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.AllTests"/>
     </goal>
 
     <!-- =================================================== -->
@@ -237,27 +204,11 @@
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:caching">
         <attainGoal name="aspectwerkz:init"/>
-        <delete dir="${basedir}/_txLogs"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:metadata:samples"/>
+        <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.caching.CacheTest"/>
+            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.caching.CacheTest"/>
         </exec>
-        <delete dir="${basedir}/_metaData"/>
-    </goal>
-
-    <!-- =================================================== -->
-    <!--  runs the logging test -->
-    <!-- =================================================== -->
-    <goal name="aspectwerkz:samples:logging">
-        <attainGoal name="aspectwerkz:init"/>
-        <delete dir="${basedir}/_txLogs"/>
-        <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:metadata:samples"/>
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.logging.Target"/>
-        </exec>
-        <delete dir="${basedir}/_metaData"/>
     </goal>
 
     <!-- =================================================== -->
@@ -265,13 +216,11 @@
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:asynchronous">
         <attainGoal name="aspectwerkz:init"/>
-        <delete dir="${basedir}/_txLogs"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:metadata:samples"/>
+        <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.asynchronous.Target"/>
+            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.asynchronous.Target"/>
         </exec>
-        <delete dir="${basedir}/_metaData"/>
     </goal>
 
     <!-- =================================================== -->
@@ -279,13 +228,11 @@
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:synchronization">
         <attainGoal name="aspectwerkz:init"/>
-        <delete dir="${basedir}/_txLogs"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:metadata:samples"/>
+        <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.synchronization.Target"/>
+            <arg line="-cp ${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.synchronization.Target"/>
         </exec>
-        <delete dir="${basedir}/_metaData"/>
     </goal>
 
     <!-- =================================================== -->
@@ -293,13 +240,56 @@
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:cflow">
         <attainGoal name="aspectwerkz:init"/>
-        <delete dir="${basedir}/_txLogs"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:metadata:samples"/>
+        <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.cflow.Target"/>
+            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.cflow.Target"/>
         </exec>
-        <delete dir="${basedir}/_metaData"/>
+    </goal>
+
+    <!-- =================================================== -->
+    <!--  runs the transparent persistence test -->
+    <!-- =================================================== -->
+    <!--    <goal name="aspectwerkz:samples:transparentpersistence">-->
+    <!--        <attainGoal name="aspectwerkz:init"/>-->
+    <!--        <delete dir="${basedir}/_txLogs"/>-->
+    <!--        <attainGoal name="aspectwerkz:compile"/>-->
+    <!--        <attainGoal name="aspectwerkz:attributes:extensions"/>-->
+    <!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}" fork="false">-->
+    <!--            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/jisp-2.0.1.jar -Daspectwerkz.extension.persistence.definition.file=${basedir}/src/samples/persistence_definition.xml examples.transparentpersistence.Client"/>-->
+    <!--        </exec>-->
+    <!--    </goal>-->
+
+    <!-- =================================================== -->
+    <!--  runs the introduction test -->
+    <!-- =================================================== -->
+    <!--    <goal name="aspectwerkz:samples:introduction">-->
+    <!--        <attainGoal name="aspectwerkz:init"/>-->
+    <!--        <attainGoal name="aspectwerkz:compile"/>-->
+    <!--        <attainGoal name="aspectwerkz:attributes:samples"/>-->
+    <!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
+    <!--            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.introduction.Target"/>-->
+    <!--        </exec>-->
+    <!--    </goal>-->
+
+    <!-- =================================================== -->
+    <!--  compiles attributes for the samples, merges w/ the samples.xml -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:attributes:samples">
+        <attainGoal name="aspectwerkz:init"/>
+        <exec executable="java">
+            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.AttributeC ${basedir}/src/samples ${basedir}/src/samples/aspectwerkz.xml -m ${basedir}/src/samples/samples.xml -u samples"/>
+        </exec>
+    </goal>
+
+    <!-- =================================================== -->
+    <!--  compiles attributes for the samples, merges w/ the extension_samples.xml -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:attributes:extensions">
+        <attainGoal name="aspectwerkz:init"/>
+        <exec executable="java">
+            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.AttributeC ${basedir}/src/samples ${basedir}/src/samples/aspectwerkz.xml -m ${basedir}/src/samples/extensions_samples.xml -u extensions"/>
+        </exec>
     </goal>
 
     <!-- =================================================== -->
@@ -315,36 +305,6 @@
                 </j:forEach>
             </fileset>
         </copy>
-    </goal>
-
-    <!-- =================================================== -->
-    <!--  compiles meta-data for the tests -->
-    <!-- =================================================== -->
-    <goal name="aspectwerkz:metadata:test">
-        <attainGoal name="aspectwerkz:init"/>
-        <exec executable="java">
-            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler ${basedir}/src/test/aspectwerkz-test.xml ${basedir}/src/test ${basedir}/_metaData tests"/>
-        </exec>
-    </goal>
-
-    <!-- =================================================== -->
-    <!--  compiles meta-data for the samples -->
-    <!-- =================================================== -->
-    <goal name="aspectwerkz:metadata:samples">
-        <attainGoal name="aspectwerkz:init"/>
-        <exec executable="java">
-            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler ${basedir}/src/samples/samples.xml ${basedir}/src/samples ${basedir}/_metaData"/>
-        </exec>
-    </goal>
-
-    <!-- =================================================== -->
-    <!--  compiles meta-data for the extension samples -->
-    <!-- =================================================== -->
-    <goal name="aspectwerkz:metadata:samples:extensions">
-        <attainGoal name="aspectwerkz:init"/>
-        <exec executable="java">
-            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler ${basedir}/src/samples/extensions_samples.xml ${basedir}/src/samples ${basedir}/_metaData extensions"/>
-        </exec>
     </goal>
 
     <!-- =================================================== -->
@@ -364,9 +324,6 @@
             of the committers.
         </echo>
     </goal>
-
-
-
 
 
     <!--    <goal name="test-offline">-->
@@ -396,25 +353,25 @@
     <!--        </exec>-->
     <!--    </goal>-->
     <!---->
-<!--        <goal name="test-online">-->
-<!--            <attainGoal name="aspectwerkz:init"/>-->
-<!--            <mkdir dir="${basedir}/target/bug"/>-->
-<!---->
-<!--            <javac destdir="${basedir}/target/bug" deprecation="true" debug="true" optimize="false">-->
-<!--                <src>-->
-<!--                    <pathelement location="src/bug"></pathelement>-->
-<!--                </src>-->
-<!--                <classpath>-->
-<!--                    <pathelement path="${main.classes}"/>-->
-<!--                    <fileset dir="${lib.dir}">-->
-<!--                        <include name="*.jar"></include>-->
-<!--                    </fileset>-->
-<!--                </classpath>-->
-<!--            </javac>-->
-<!--            <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
-<!--                <arg line="-cp ${basedir}/target/bug${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.definition.file=${basedir}/src/bug/bank.xml project.Transfer1"/>-->
-<!--            </exec>-->
-<!--        </goal>-->
+    <!--        <goal name="test-online">-->
+    <!--            <attainGoal name="aspectwerkz:init"/>-->
+    <!--            <mkdir dir="${basedir}/target/bug"/>-->
+    <!---->
+    <!--            <javac destdir="${basedir}/target/bug" deprecation="true" debug="true" optimize="false">-->
+    <!--                <src>-->
+    <!--                    <pathelement location="src/bug"></pathelement>-->
+    <!--                </src>-->
+    <!--                <classpath>-->
+    <!--                    <pathelement path="${main.classes}"/>-->
+    <!--                    <fileset dir="${lib.dir}">-->
+    <!--                        <include name="*.jar"></include>-->
+    <!--                    </fileset>-->
+    <!--                </classpath>-->
+    <!--            </javac>-->
+    <!--            <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
+    <!--                <arg line="-cp ${basedir}/target/bug${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.definition.file=${basedir}/src/bug/bank.xml project.Transfer1"/>-->
+    <!--            </exec>-->
+    <!--        </goal>-->
 
 </project>
 

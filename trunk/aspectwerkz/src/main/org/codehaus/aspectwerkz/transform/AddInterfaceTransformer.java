@@ -17,8 +17,8 @@ import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantUtf8;
 
-import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
  * Adds an interfaces to classes.
@@ -33,25 +33,16 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
     private final Set m_transformed = new HashSet();
 
     /**
-     * The weave model.
+     * The definition.
      */
-    private final WeaveModel m_weaveModel;
+    private final AspectWerkzDefinition m_definition;
 
     /**
      * Retrieves the weave model.
      */
     public AddInterfaceTransformer() {
         super();
-        List weaveModels = WeaveModel.loadModels();
-        if (weaveModels.isEmpty()) {
-            throw new RuntimeException("no weave model (online) or no classes to transform (offline) is specified");
-        }
-        if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
-        }
-        else {
-            m_weaveModel = (WeaveModel)weaveModels.get(0);
-        }
+        m_definition = AspectWerkzDefinition.loadModelForTransformation();
     }
 
     /**
@@ -73,11 +64,11 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
         ConstantPoolGen cpg = cg.getConstantPool();
         int[] interfaces = cg.getInterfaces();
 
-        for (Iterator it2 = m_weaveModel.getIntroductionNames(
+        for (Iterator it2 = m_definition.getIntroductionNames(
                 cg.getClassName()).iterator(); it2.hasNext();) {
 
             String introductionName = (String)it2.next();
-            String interfaceName = m_weaveModel.getIntroductionInterfaceName(introductionName);
+            String interfaceName = m_definition.getIntroductionInterfaceName(introductionName);
 
             boolean addInterface = true;
 
@@ -119,8 +110,8 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
         if (cg.isInterface()) {
             return true;
         }
-        if (m_weaveModel.inTransformationScope(cg.getClassName()) &&
-                m_weaveModel.hasIntroductions(cg.getClassName())) {
+        if (m_definition.inTransformationScope(cg.getClassName()) &&
+                m_definition.hasIntroductions(cg.getClassName())) {
             return false;
         }
         return true;

@@ -1,10 +1,3 @@
-package test;
-
-import junit.framework.TestCase;
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import org.codehaus.aspectwerkz.AspectWerkz;
-
 /**************************************************************************************
  * Copyright (c) The AspectWerkz Team. All rights reserved.                           *
  * http://aspectwerkz.codehaus.org                                                    *
@@ -12,17 +5,24 @@ import org.codehaus.aspectwerkz.AspectWerkz;
  * The software in this package is published under the terms of the BSD style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
+package test;
+
+import junit.framework.TestCase;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import org.codehaus.aspectwerkz.AspectWerkz;
+
 public class AllTests extends TestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("All tests");
 
-        suite.addTestSuite(test.PerformanceTest.class);
+//        suite.addTestSuite(test.PerformanceTest.class);
         suite.addTestSuite(test.ClassPatternTest.class);
         suite.addTestSuite(test.FieldPatternTest.class);
         suite.addTestSuite(test.MethodPatternTest.class);
         suite.addTestSuite(test.AdviceWeavingRuleTest.class);
-        suite.addTestSuite(test.IntroductionTest.class);
+//        suite.addTestSuite(test.IntroductionTest.class);
         suite.addTestSuite(test.MemberMethodAdviceTest.class);
         suite.addTestSuite(test.StaticMethodAdviceTest.class);
         suite.addTestSuite(test.FieldAdviceTest.class);

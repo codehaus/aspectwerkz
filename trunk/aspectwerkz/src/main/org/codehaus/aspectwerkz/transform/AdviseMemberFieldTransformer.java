@@ -34,10 +34,10 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 
-import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
  * Transforms member fields to become "aspect-aware".
@@ -48,25 +48,16 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
     ///CLOVER:OFF
 
     /**
-     * Holds the weave model.
+     * The definition.
      */
-    private final WeaveModel m_weaveModel;
+    private final AspectWerkzDefinition m_definition;
 
     /**
      * Retrieves the weave model.
      */
     public AdviseMemberFieldTransformer() {
         super();
-        List weaveModels = WeaveModel.loadModels();
-        if (weaveModels.isEmpty()) {
-            throw new RuntimeException("no weave model (online) or no classes to transform (offline) is specified");
-        }
-        if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
-        }
-        else {
-            m_weaveModel = (WeaveModel)weaveModels.get(0);
-        }
+        m_definition = AspectWerkzDefinition.loadModelForTransformation();
     }
 
     /**
@@ -547,7 +538,7 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
         if (cg.isInterface()) {
             return true;
         }
-        if (m_weaveModel.inTransformationScope(cg.getClassName())) {
+        if (m_definition.inTransformationScope(cg.getClassName())) {
             return false;
         }
         return true;
@@ -572,8 +563,8 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
      */
     private String setFieldFilter(final ClassMetaData classMetaData,
                                   final FieldMetaData fieldMetaData) {
-        if (m_weaveModel.hasSetFieldPointcut(classMetaData, fieldMetaData)) {
-            return m_weaveModel.getUuid();
+        if (m_definition.hasSetFieldPointcut(classMetaData, fieldMetaData)) {
+            return m_definition.getUuid();
         }
         return null;
     }
@@ -587,8 +578,8 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
      */
     private String getFieldFilter(final ClassMetaData classMetaData,
                                   final FieldMetaData fieldMetaData) {
-        if (m_weaveModel.hasGetFieldPointcut(classMetaData, fieldMetaData)) {
-            return m_weaveModel.getUuid();
+        if (m_definition.hasGetFieldPointcut(classMetaData, fieldMetaData)) {
+            return m_definition.getUuid();
         }
         return null;
     }
