@@ -9,8 +9,6 @@ package test.annotation;
 
 import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParser;
 import org.codehaus.aspectwerkz.annotation.expression.AnnotationVisitor;
-import org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy;
-import org.codehaus.aspectwerkz.annotation.UntypedAnnotationProxy;
 import junit.framework.TestCase;
 
 import java.util.Map;
@@ -154,25 +152,9 @@ public class AnnotationParserTest extends TestCase {
 
     }
 
-    public static class StringArray extends TypedAnnotationProxy {
-        int i;
-        String[] ss;
-
-        public int i() {
-            return i;
-        }
-
-        public void setI(int i) {
-            this.i = i;
-        }
-
-        public String[] ss() {
-            return ss;
-        }
-
-        public void setSs(String[] ss) {
-            this.ss = ss;
-        }
+    public static interface StringArray {
+        public int i();
+        public String[] ss();
     }
 
     public static interface Untyped {

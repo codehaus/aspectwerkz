@@ -7,8 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation.expression;
 
-import org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy;
-import org.codehaus.aspectwerkz.annotation.Annotation;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ASTAnnotation;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ASTArray;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ASTBoolean;
@@ -25,7 +23,6 @@ import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParserVisito
 import org.codehaus.aspectwerkz.annotation.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParser;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ParseException;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

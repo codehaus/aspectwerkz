@@ -223,6 +223,7 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
         </section>
 
         <section name="After advice semantics">
+            <p>
                 In previous releases of <code>AspectWerkz</code> we only supported one single type of
                 <i>after advice</i>. The sematics of this type was that it was always executed, regardless
                 of wheter an exception had been throw or if the method returned successfully.

@@ -717,8 +717,8 @@ public class AnnotationC {
             String className = ((String) entry.getValue()).trim();
             Class klass;
             if (className.equals("")) {
-                // use default untyped annotation proxy
-                klass = UntypedAnnotationProxy.class;
+                // use default untyped annotation
+                klass = UntypedAnnotation.class;
                 className = klass.getName();
             } else {
                 try {
