@@ -57,7 +57,7 @@
                         </td>
                         <td>
                             <span class="nobr">
-                                <a href="http://lists.codehaus.org/pipermail/aspectwerkz-dev/">Old Archive</a>
+                                <a href="http://lists.codehaus.org/pipermail/aspectwerkz-devel/">Old Archive</a>
                             </span>
                         </td>
                     </tr>
@@ -73,6 +73,8 @@
                                 <a href="mailto:scm-unsubscribe@aspectwerkz.codehaus.org">Unsubscribe</a>
                             </span>
                         </td>
+                        <!--
+                        NO NEED FOR ARCHIVE ON THAT
                         <td>
                             <span class="nobr">
                                 <a href="http://archive.aspectwerkz.codehaus.org/scm/">Archive</a>
@@ -83,6 +85,7 @@
                                 <a href="http://lists.codehaus.org/pipermail/aspectwerkz-commits/">Old Archive</a>
                             </span>
                         </td>
+                        -->
                     </tr>
                     <tr>
                         <td>AspectWerkz Announce</td>
