@@ -7,6 +7,11 @@
  **************************************************************************************/
 package examples.logging;
 
+import java.net.URLClassLoader;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.io.File;
+
 import org.codehaus.aspectwerkz.transform.inlining.Deployer;
 
 /**
@@ -67,19 +72,21 @@ public class Target {
     }
 
     public static void main(String[] args) {
-        run();
-//        for (int i = 0; i < 5; i++) {
-//            Deployer.undeploy(LoggingAspect.class);
-//            run();
-//            Deployer.deploy(LoggingAspect.class);
-//            run();
-//        }
 
-        for (int i = 0; i < 5; i++) {
-            Deployer.deploy(LoggingAspect.class);
-            run();
-            Deployer.undeploy(LoggingAspect.class);
-            run();
+        run();
+        try {
+            // load the class in a brand new loader and try to deploy it
+            URLClassLoader loader = new URLClassLoader(new URL[]{new File("./build/").toURL()}, null);
+            Class clazz = loader.loadClass("examples.logging.LoggingAspect");
+
+            for (int i = 0; i < 5; i++) {
+                Deployer.deploy(clazz);
+                run();
+                Deployer.undeploy(LoggingAspect.class);
+                run();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

@@ -72,8 +72,7 @@ public class AdviceInfo implements Serializable {
     /**
      * The advice method arg index mapped to the advisED target arg index.
      * If the value is greater or equal to 0, it is an args binding. Else, it is a magic index
-     * (see constants JOINPOINT_ARG, STATIC_JOINPOINT_ARG, THIS_ARG, TARGET_ARG) 
-     *
+     * (see constants JOINPOINT_ARG, STATIC_JOINPOINT_ARG, THIS_ARG, TARGET_ARG)
      */
     private int[] m_methodToArgIndexes;
 
@@ -87,10 +86,19 @@ public class AdviceInfo implements Serializable {
      */
     private AdviceType m_type;
 
+    /**
+     * Runtime check flag.
+     */
     private boolean m_targetWithRuntimeCheck;
 
+    /**
+     * The expression info.
+     */
     private ExpressionInfo m_expressionInfo;
 
+    /**
+     * The expression context.
+     */
     private ExpressionContext m_expressionContext;
 
     /**
@@ -102,9 +110,9 @@ public class AdviceInfo implements Serializable {
      * @param methodName
      * @param methodSignature
      * @param methodParameterTypes
-     * @param type                  the advice type
-     * @param specialArgumentType   the special arg type
-     * @param adviceName            full qualified advice method name (aspectFQN/advice(call sig))
+     * @param type                   the advice type
+     * @param specialArgumentType    the special arg type
+     * @param adviceName             full qualified advice method name (aspectFQN/advice(call sig))
      * @param targetWithRuntimeCheck true if a runtime check is needed based on target instance
      * @param expressionInfo
      * @param expressionContext
@@ -234,14 +242,29 @@ public class AdviceInfo implements Serializable {
         return m_type;
     }
 
+    /**
+     * Checks if the target has a runtime check.
+     *
+     * @return
+     */
     public boolean hasTargetWithRuntimeCheck() {
         return m_targetWithRuntimeCheck;
     }
 
+    /**
+     * Returns the expression info.
+     *
+     * @return
+     */
     public ExpressionInfo getExpressionInfo() {
         return m_expressionInfo;
     }
 
+    /**
+     * Returns the expression context.
+     *
+     * @return
+     */
     public ExpressionContext getExpressionContext() {
         return m_expressionContext;
     }
@@ -254,7 +277,10 @@ public class AdviceInfo implements Serializable {
         sb.append(m_methodName).append(',');
         sb.append(m_methodSignature).append(',');
         sb.append(m_methodParameterTypes).append(',');
-        sb.append(m_specialArgumentType).append(']');
+        sb.append(m_specialArgumentType).append(',');
+        sb.append(m_expressionInfo).append(',');
+        sb.append(m_expressionContext).append(',');
+        sb.append(m_targetWithRuntimeCheck).append(']');
         sb.append(hashCode());
         return sb.toString();
     }
