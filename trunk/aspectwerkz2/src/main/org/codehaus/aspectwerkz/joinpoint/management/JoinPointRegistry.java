@@ -154,8 +154,6 @@ class JoinPointRegistry {
             final int joinPointHash,
             final Map pointcutTypeToAdvicesMap) {
 
-        System.out.println("JoinPointRegistry.registerMethodExecutionJoinPoint");
-
         List executionAdvices = new ArrayList();
         List executionPointcuts = new ArrayList(); // cache ?
         for (int i = 0; i < system.getAspectManagers().length; i++) {
@@ -166,11 +164,6 @@ class JoinPointRegistry {
                     )
             ));
         }
-        System.out.println("executionPointcuts.size = " + executionPointcuts.size());
-//        system.getAspectManager().getExecutionPointcuts(
-//                definedClassMetaData,
-//                ReflectionMetaDataMaker.createMethodMetaData(wrapperMethod)
-//        );
         for (Iterator it = executionPointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
             AdviceContainer advices = new AdviceContainer(
@@ -180,7 +173,6 @@ class JoinPointRegistry {
             );
             executionAdvices.add(advices);
         }
-        System.out.println("executionAdvices.size = " + executionAdvices.size());
         AdviceContainer[] adviceContainers = new AdviceContainer[executionAdvices.size()];
         int i = 0;
         for (Iterator iterator = executionAdvices.iterator(); iterator.hasNext(); i++) {

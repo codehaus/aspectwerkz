@@ -39,10 +39,9 @@ public final class AddInterfaceTransformer implements Transformer {
      * @param klass   the class
      */
     public void transform(final Context context, final Klass klass) {
-        // loop over all the definitions
         List definitions = SystemDefinitionContainer.getDefinitionsContext();
-        //before AOPC was DefinitionLoader.getDefinitions().iterator()
 
+        // loop over all the definitions
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
 

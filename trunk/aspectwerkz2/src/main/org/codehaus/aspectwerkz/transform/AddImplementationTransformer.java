@@ -47,7 +47,6 @@ public class AddImplementationTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException {
         List definitions = SystemDefinitionContainer.getDefinitionsContext();
-        //before AOPC was m_definitions DefinitionLoader.getDefinitions().iterator()
 
         // loop over all the definitions
         for (Iterator it = definitions.iterator(); it.hasNext();) {

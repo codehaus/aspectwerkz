@@ -70,16 +70,6 @@ public class SystemLoader {
         return getSystem(klass.getClassLoader());
     }
 
-
-//    public synchronized static ISystem getSystem(String uuid) {
-//        // called by introduced METHODS + JIT
-//        // AVAOPC // should be kicked out TODO
-//        System.err.println("\n** WARN SystemLoader.getSystem" + uuid+"\n");
-//        (new Exception()).printStackTrace();
-//        ClassLoader loader = ContextClassLoader.getLoader();
-//        return getSystem(loader);//??
-//    }
-
     private SystemLoader() {
     }
 }

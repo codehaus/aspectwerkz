@@ -20,6 +20,7 @@ import javassist.expr.Handler;
 
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
@@ -32,11 +33,6 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 public class HandlerTransformer implements Transformer {
 
     /**
-     * List with the definitions.
-     */
-    private List m_definitions;
-
-    /**
      * The join point index.
      */
     private int m_joinPointIndex;
@@ -45,7 +41,6 @@ public class HandlerTransformer implements Transformer {
      * Creates a new instance of the transformer.
      */
     public HandlerTransformer() {
-        m_definitions = DefinitionLoader.getDefinitions();
     }
 
     /**
@@ -55,9 +50,10 @@ public class HandlerTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
-        //TODO AVAOSD: m_joinpointIndex is not thread safe.
-        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass());
-        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
+        List definitions = SystemDefinitionContainer.getDefinitionsContext();
+        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass());//TODO thread safe reentrant
+        
+        for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();

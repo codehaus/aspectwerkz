@@ -40,7 +40,7 @@ import java.util.ArrayList;
  * the target join point statically.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @AVH AVAOPC
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class JitCompiler {
 
@@ -194,9 +194,6 @@ public class JitCompiler {
             if (aroundAdvice.length == 0 && beforeAdvice.length == 0 && afterAdvice.length == 0) {
                 return null; // no advice => bail out
             }
-
-            //ISystem system = SystemLoader.getSystem(targetClass.getClassLoader());//AVAOPC
-            //ISystem system = null;//SystemLoader.getSystem(uuid);//AVAOPC
 
             RttiInfo rttiInfo = setRttiInfo(
                     joinPointType, joinPointHash, declaringClass, system, targetInstance, targetInstance
@@ -506,11 +503,9 @@ public class JitCompiler {
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitFieldInsn(Constants.GETFIELD, className, SYSTEM_FIELD_NAME, SYSTEM_CLASS_SIGNATURE);
-        //ALEX AVAOPC
         cv.visitIntInsn(Constants.BIPUSH, adviceTuple.getAspectManagerIndex());
-        //ALEX AVAOPC
         cv.visitMethodInsn(
-                Constants.INVOKEINTERFACE, SYSTEM_CLASS_NAME, GET_ASPECT_MANAGER_METHOD_NAME,//AVAOPC ISystem
+                Constants.INVOKEINTERFACE, SYSTEM_CLASS_NAME, GET_ASPECT_MANAGER_METHOD_NAME,
                 GET_ASPECT_MANAGER_METHOD_NAME_SIGNATURE
         );
         cv.visitIntInsn(Constants.BIPUSH, adviceTuple.getAspectIndex());
@@ -544,8 +539,6 @@ public class JitCompiler {
 
         cv.visitTypeInsn(Constants.CHECKCAST, aspectClassName);
         cv.visitFieldInsn(Constants.PUTFIELD, className, aspectFieldName, aspectClassSignature);
-
-        System.out.println("aspectClassName = " + aspectClassName + " " + adviceTuple.getAspectManagerIndex() + " " + adviceTuple.getAspectIndex());
 
         return false;
     }
@@ -1764,8 +1757,7 @@ public class JitCompiler {
                 tuple.rtti = new MethodRttiImpl(methodSignature, thisInstance, targetInstance);
                 tuple.cflowExpressions = new ArrayList();
                 for (int i = 0; i < system.getAspectManagers().length; i++) {
-                    AspectManager aspectManager = system.getAspectManagers()[i];
-                    tuple.cflowExpressions.addAll(aspectManager.getCFlowExpressions(
+                    tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
                         ReflectionMetaDataMaker.createClassMetaData(declaringClass),
                         ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod()),
                         null, PointcutType.EXECUTION //TODO CAN BE @CALL - see proceedWithCallJoinPoint
@@ -1780,8 +1772,7 @@ public class JitCompiler {
                 tuple.rtti = new MethodRttiImpl(methodSignature, thisInstance, targetInstance);
                 tuple.cflowExpressions = new ArrayList();
                 for (int i = 0; i < system.getAspectManagers().length; i++) {
-                    AspectManager aspectManager = system.getAspectManagers()[i];
-                    tuple.cflowExpressions.addAll(aspectManager.getCFlowExpressions(
+                    tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
                         ReflectionMetaDataMaker.createClassMetaData(declaringClass),
                         ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod()),
                         null, PointcutType.CALL //TODO CAN BE @CALL - see proceedWithCallJoinPoint
@@ -1798,14 +1789,14 @@ public class JitCompiler {
                 );
                 tuple.signature = constructorSignature;
                 tuple.rtti = new ConstructorRttiImpl(constructorSignature, thisInstance, targetInstance);
-
-                // TODO: enable cflow for constructors
-//AVAOPC
-//                tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
-//                        ReflectionMetaDataMaker.createClassMetaData(declaringClass),
-//                        ReflectionMetaDataMaker.createConstructorMetaData(constructorTuple.getWrapperConstructor()),
-//                        null, PointcutType.CALL
-//                );
+                tuple.cflowExpressions = new ArrayList();
+                for (int i = 0; i < system.getAspectManagers().length; i++) {
+                    tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
+                            ReflectionMetaDataMaker.createClassMetaData(declaringClass),
+                            ReflectionMetaDataMaker.createConstructorMetaData(constructorTuple.getWrapperConstructor()),
+                            null, PointcutType.CALL
+                    ));
+                }
                 break;
 
             case JoinPointType.CONSTRUCTOR_EXECUTION:
@@ -1817,8 +1808,7 @@ public class JitCompiler {
                 tuple.rtti = new ConstructorRttiImpl(constructorSignature, thisInstance, targetInstance);
                 tuple.cflowExpressions = new ArrayList();
                 for (int i = 0; i < system.getAspectManagers().length; i++) {
-                    AspectManager aspectManager = system.getAspectManagers()[i];
-                    tuple.cflowExpressions.addAll(aspectManager.getCFlowExpressions(
+                    tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
                         ReflectionMetaDataMaker.createClassMetaData(declaringClass),
                         ReflectionMetaDataMaker.createConstructorMetaData(constructorTuple.getWrapperConstructor()),
                         null, PointcutType.EXECUTION
@@ -1831,14 +1821,14 @@ public class JitCompiler {
                 FieldSignatureImpl fieldSignature = new FieldSignatureImpl(field.getDeclaringClass(), field);
                 tuple.signature = fieldSignature;
                 tuple.rtti = new FieldRttiImpl(fieldSignature, thisInstance, targetInstance);
-
-                // TODO: enable cflow
-                //AVAOPC
-//                tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
-//                        ReflectionMetaDataMaker.createClassMetaData(declaringClass),
-//                        ReflectionMetaDataMaker.createFieldMetaData(field),
-//                        null, PointcutType.SET
-//                );
+                tuple.cflowExpressions = new ArrayList();
+                for (int i = 0; i < system.getAspectManagers().length; i++) {
+                    tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
+                            ReflectionMetaDataMaker.createClassMetaData(declaringClass),
+                            ReflectionMetaDataMaker.createFieldMetaData(field),
+                            null, PointcutType.SET
+                    ));
+                }
                 break;
 
             case JoinPointType.FIELD_GET:
@@ -1846,14 +1836,14 @@ public class JitCompiler {
                 fieldSignature = new FieldSignatureImpl(field.getDeclaringClass(), field);
                 tuple.signature = fieldSignature;
                 tuple.rtti = new FieldRttiImpl(fieldSignature, thisInstance, targetInstance);
-
-                // TODO: enable cflow
-                //AVAOPC
-//                tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
-//                        ReflectionMetaDataMaker.createClassMetaData(declaringClass),
-//                        ReflectionMetaDataMaker.createFieldMetaData(field),
-//                        null, PointcutType.GET
-//                );
+                tuple.cflowExpressions = new ArrayList();
+                for (int i = 0; i < system.getAspectManagers().length; i++) {
+                    tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
+                            ReflectionMetaDataMaker.createClassMetaData(declaringClass),
+                            ReflectionMetaDataMaker.createFieldMetaData(field),
+                            null, PointcutType.GET
+                    ));
+                }
                 break;
 
             case JoinPointType.HANDLER:

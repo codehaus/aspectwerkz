@@ -43,7 +43,7 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
  * class' instance holds one instance of this class.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author AVAOPC
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class JoinPointManager {
 
@@ -86,7 +86,6 @@ public class JoinPointManager {
     private static final JoinPointRegistry s_registry = new JoinPointRegistry();
 
     private final ISystem m_system;
-    //AVAOPC//private final String m_uuid;
 
     private final Class m_targetClass;
     private final int m_classHash;
@@ -645,7 +644,6 @@ public class JoinPointManager {
             Map advices = s_registry.getAdvicesForJoinPoint(m_classHash, joinPointHash);
             if (advices.containsKey(pointcutType)) {
                 AdviceContainer[] adviceIndexes = (AdviceContainer[])advices.get(pointcutType);
-                System.out.println("**JoinPointManager.handleJitCompilation");
                 joinPointInfo.joinPoint = JitCompiler.compileJoinPoint(
                         joinPointHash, joinPointType, pointcutType, adviceIndexes,
                         declaringClass, targetClass, m_system, thisInstance, targetInstance
@@ -928,14 +926,13 @@ public class JoinPointManager {
 
     /**
      * Creates a new join point manager for a specific class.
+     * TODO uuid not used anymore. do we need it for debugging purpose ? else simplify TFs
      *
      * @param targetClass
      * @param uuid
      */
     private JoinPointManager(final Class targetClass, final String uuid) {
-        //AVAOPC//m_uuid = uuid;
-        m_system = SystemLoader.getSystem(targetClass.getClassLoader());//AVAOPC
-        //m_system = SystemLoader.getSystem(uuid);//AVAOPC
+        m_system = SystemLoader.getSystem(targetClass.getClassLoader());
         m_targetClass = targetClass;
         m_classHash = m_targetClass.hashCode();
         m_targetClassMetaData = ReflectionMetaDataMaker.createClassMetaData(m_targetClass);

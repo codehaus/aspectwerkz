@@ -21,6 +21,7 @@ import javassist.Modifier;
 import javassist.NotFoundException;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 
@@ -34,15 +35,9 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 public class PrepareTransformer implements Transformer {
     
     /**
-     * List with the definitions.
-     */
-    private List m_definitions;
-
-    /**
      * Creates a new instance of the transformer.
      */
     public PrepareTransformer() {
-        m_definitions = DefinitionLoader.getDefinitions();
     }
 
     /**
@@ -52,9 +47,10 @@ public class PrepareTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
+        List definitions = SystemDefinitionContainer.getDefinitionsContext();
 
         // loop over all the definitions
-        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
+        for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();

@@ -33,15 +33,9 @@ import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 public class PrepareAdvisedClassTransformer implements Transformer {
 
     /**
-     * List with the definitions.
-     */
-    private List m_definitions;
-
-    /**
      * Creates a new instance of the transformer.
      */
     public PrepareAdvisedClassTransformer() {
-        //m_definitions = DefinitionLoader.getDefinitions();
     }
 
     /**
@@ -51,15 +45,16 @@ public class PrepareAdvisedClassTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws Exception {
-        m_definitions = SystemDefinitionContainer.getDefinitionsContext();
-        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
+        List definitions = SystemDefinitionContainer.getDefinitionsContext();
+
+        for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
 
             if (classFilter(definition, classMetaData, ctClass)) {
-                continue;//AAVAOPC - next system TF
+                continue;
             }
 
             if ( ! JavassistHelper.hasField(ctClass, TransformationUtil.STATIC_CLASS_FIELD)) {
@@ -80,7 +75,6 @@ public class PrepareAdvisedClassTransformer implements Transformer {
      */
     private void addStaticClassField(final CtClass ctClass) throws NotFoundException, CannotCompileException {
         if ( ! JavassistHelper.hasField(ctClass, TransformationUtil.STATIC_CLASS_FIELD)) {
-            System.out.println("PrepareAdvisedClassTransformer.addStaticClassField " + ctClass.getName());
             CtField field = new CtField(
                     ctClass.getClassPool().get("java.lang.Class"),
                     TransformationUtil.STATIC_CLASS_FIELD,
