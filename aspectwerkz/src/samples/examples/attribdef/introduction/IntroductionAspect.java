@@ -7,8 +7,6 @@
  **************************************************************************************/
 package examples.attribdef.introduction;
 
-import org.codehaus.aspectwerkz.attribdef.Pointcut;
-
 /**
  * @Aspect perInstance
  *
@@ -19,9 +17,12 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Introduce mixinInterface
+     * @Introduce examples.attribdef.introduction.Target
      */
-    public String sayHello2() {
-        return "Hello World! Hello World!";
+    public class MyConcreteImpl extends MyImpl implements Mixin {
+        public String sayHello2() {
+            System.out.println("target instance: " + ___AW_getTargetInstance());
+            return "Hello World! Hello World!";
+        }
     }
 }

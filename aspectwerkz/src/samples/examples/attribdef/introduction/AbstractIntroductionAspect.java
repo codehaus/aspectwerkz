@@ -16,16 +16,22 @@ import org.codehaus.aspectwerkz.attribdef.aspect.Aspect;
  */
 public abstract class AbstractIntroductionAspect extends Aspect {
 
-    /**
-     * @Implements examples.attribdef.introduction.Target
-     */
-     Mixin mixinInterface;
+//    /**
+//     * @Implements examples.attribdef.introduction.Target
+//     */
+//     Mixin mixinInterface;
 
     /**
-     * @Introduce mixinInterface
+     * TODO: is this a good abstraction ?
+     * Shall we allow for defining pointcuts thru @Implements ?
+     * What if the abstract aspect provide all the mixin impl ?
+     *
+     * @Introduce TO_BE_DEFINED
      */
-    public String sayHello1() {
-        System.out.println("target instance: " + ___AW_getTargetInstance());
-        return "Hello World!";
+    public abstract class MyImpl implements Mixin {
+        public String sayHello1() {
+            System.out.println("target instance: " + ___AW_getTargetInstance());
+            return "Hello World!";
+        }
     }
 }
