@@ -1154,7 +1154,7 @@ public class MyAspect {
 <aspectwerkz>
     <system id="tests">
         <advisable pointcut-type="execution" expression="within(test.intercept.execution.InterceptTest)"/>
-        <advisable pointcut-type="call" expression="within(test.intercept.call.Caller)"/>
+        <advisable pointcut-type="call" expression="within(test.intercept.call.Caller) && target(test.intercept.call.Callee)"/>
         <advisable pointcut-type="set" expression="within(test.intercept.set.InterceptTest)"/>
         <advisable pointcut-type="get" expression="within(test.intercept.get.InterceptTest)"/>
         <advisable pointcut-type="call|execution|set|get" expression="within(test.aspect.MemberMethodTestAspect)"/>
@@ -1164,34 +1164,31 @@ public class MyAspect {
     </system>
 </aspectwerkz>
                 ]]></source>
-                It is also possible to narrow the expression using all regular pointcut designators (except cflow)
+                It is also possible to narrow the expression using all regular pointcut designators (except cflow).
                 <br/>
                 Example for the runtime API:
                 <source><![CDATA[
 
-                TODO update all the sample because:
-        // Callee was declared as advisable for "call" pointcuts
-        // hence any caller of Callee is able to handle interceptor addition / removal
-                IS WRONG and not achievable
+// Caller has been defined as Advisable in the aop.xml
+public class Caller {
 
+  public void demo() {
 
+    Callee callee = new Callee();
+    // Callee was declared as a possible target for "call" pointcuts in Caller
+    // hence any call of Callee by a Caller instance is able to handle interceptor addition / removal
 
+    // this call will occur with regular aspects bounded - if any
+    callee.adviseWithAround();
+    callee.adviseWithAround(1);
 
-Callee callee = new Callee();
-// Callee was declared as advisable for "call" pointcuts
-// hence any caller of Callee is able to handle interceptor addition / removal
-
-// this call will occur with regular aspects bounded - if any
-callee.adviseWithAround();
-callee.adviseWithAround(1);
-
-// lets add an around interceptor to this specific callee instance
-// and for the given method
-// Note that the change will depend on the advisable definition
-// Here it was <advisable pointcut-type="call|execution" ...> and thus
-// any aw_addAdvice(..) on f.e. get / set pointcut will be useless
-((Advisable) callee).aw_addAdvice(
-        "execution(* test.intercept.call.Callee.adviseWithAround(..))",
+    // lets add an around interceptor to the "this" Caller instance
+    // and for the the call to Callee as expressed in the given pointcut
+    // Note that the change will depend on the advisable definition
+    // Here it was <advisable pointcut-type="call|execution" ...> and thus
+    // any aw_addAdvice(..) on f.e. get / set pointcut will be useless
+    ((Advisable) this).aw_addAdvice(
+        "call(* test.intercept.call.Callee.adviseWithAround(..))",
         // we use an anonymous inner class here
         new AroundAdvice() {
             // notice the generic invoke() method defined in the
@@ -1203,29 +1200,29 @@ callee.adviseWithAround(1);
                 return result;
             }
         }
-);
+    );
 
-// this call will occur with regular aspects bounded - if any
-// and with the new around advice (with lower precedence)
-callee.adviseWithAround();
-callee.adviseWithAround(1);
+    // this call will occur with regular aspects bounded - if any
+    // and with the new around advice (with lower precedence)
+    callee.adviseWithAround();
+    callee.adviseWithAround(1);
 
-// this call on another instance will not be affected by the new around advice
-Callee callee2 = new Callee();
-callee2.adviseWithAround();
+    // this call on another instance of Caller will not be affected by the new around advice
+    Caller caller = new Caller();
+    caller.callAdviseWithAroundOnTheGivenCalleeInstance(callee);
 
-// we can now remove the advice
-// it will remove the first advice found of the given class type
-// thus cannot really be used when an anonymous class has been used,
-// but using the interface enables us to remove ALL around advice.
-// Again we narrow the pointcut
-((Advisable) callee).aw_removeAdvice("execution(* test.intercept.call.Callee.adviseWithAround(int))", AroundAdvice.class);
+    // we can now remove the advice
+    // it will remove the first advice found of the given class type
+    // thus cannot really be used when an anonymous class has been used,
+    // but using the interface enables us to remove ALL around advice.
+    // Again we narrow the pointcut
+    ((Advisable) this).aw_removeAdvice("call(* test.intercept.call.Callee.adviseWithAround(int))", AroundAdvice.class);
 
-// will still have the interceptor
-callee.adviseWithAround();
+    // will still have the interceptor since it is another instance of Caller
+    caller.callAdviseWithAroundOnTheGivenCalleeInstance(callee);
 
-// will not have the interceptor any more : adviseWithAround(int) signature
-callee.adviseWithAround(2);
+    // will not have the interceptor any more : adviseWithAround(int) signature
+    callee.adviseWithAround(2);
                 ]]></source>
             </p>
             <p>
