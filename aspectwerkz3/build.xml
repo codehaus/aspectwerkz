@@ -162,6 +162,7 @@
                 <path refid="project.class.path"/>
             </classpath>
         </javac>
+        <mkdir dir="${samples.classes}" />
         <javac destdir="${samples.classes}" deprecation="true" debug="true" optimize="false">
             <src>
                 <pathelement location="src/jdk15/samples">
@@ -327,7 +328,7 @@
 	<!-- =================================================== -->
 	<!--  compiles aspects for the samples -->
 	<!-- =================================================== -->
-	<target name="samples:annotationc">
+    <target name="samples:annotationc">
         <java fork="true" classname="org.codehaus.aspectwerkz.annotation.AnnotationC">
             <classpath>
                 <path refid="project.class.path"/>
@@ -335,7 +336,7 @@
             </classpath>
             <arg line="-verbose -src ${basedir}/src/samples -classes ${basedir}/target/samples-classes -custom ${basedir}/src/samples/annotation.properties"/>
         </java>
-	</target>
+    </target>
 
 	<!-- =================================================== -->
 	<!--  offline transformation of the samples -->
