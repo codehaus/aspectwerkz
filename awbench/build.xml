@@ -137,6 +137,18 @@
         </javac>
     </target>
 
+    <target name="compile:spring" depends="init">
+        <javac destdir="${d}/target" debug="${javac.debug}" classpathref="project.classpath">
+            <src path="${d}/src/spring"/>
+        </javac>
+    </target>
+
+    <target name="compile:extensions:aopalliance" depends="init">
+        <javac destdir="${d}/target" debug="${javac.debug}" classpathref="project.classpath">
+            <src path="${d}/src/compiler-extensions/aopalliance"/>
+        </javac>
+    </target>
+
     <!-- ============================================================== -->
     <!-- pre Run (annotationc, weave etc) -->
     <!-- ============================================================== -->
@@ -160,6 +172,12 @@
             <classpath path="${d}/target"/>
             <src path="${d}/target"/><!-- for sucky reason, we need both else JBoss fails with a NPE -->
         </aopc>
+    </target>
+
+    <target name="pre:extensions:aopalliance">
+        <awweave classpathref="project.classpath" targetdir="${d}/target"
+            verbose="true"
+            definition="${d}/src/compiler-extensions/aopalliance/META-INF/aop.xml"/>
     </target>
 
     <!-- ============================================================== -->
@@ -200,6 +218,21 @@
 
     <target name="run:jboss" depends="init, compile, compile:jboss, pre:jboss">
         <antcall target="run"/>
+    </target>
+
+    <target name="run:spring" depends="init, compile, compile:spring">
+        <java classpathref="project.classpath" classname="awbench.spring.MethodExecutionRun" fork="true">
+        </java>
+    </target>
+
+    <target name="run:extensions:aopalliance" depends="init, compile, compile:extensions:aopalliance">
+        <java classpathref="project.classpath" classname="awbench.MethodExecutionRun" fork="true">
+            <classpath>
+                <pathelement path="${d}/src/compiler-extensions/aopalliance/"/>
+            </classpath>
+            <jvmarg line="-Xrunaspectwerkz -Xdebug -Xbootclasspath/a:lib/aspectwerkz-core-2.0beta1.jar:lib/asm-1.5.1.jar:lib/asm-attrs-1.5.1.jar -Daspectwerkz.extension.aspectmodels=org.codehaus.aspectwerkz.transform.aopalliance.AopAllianceAspectModel -Daspectwerkz.transform.verbose=true ${java.jvmarg}"/>
+            <arg line="${args}"/>
+        </java>
     </target>
 
 </project>

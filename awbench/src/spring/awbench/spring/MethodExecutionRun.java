@@ -5,9 +5,15 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package awbench;
+package awbench.spring;
 
-import awbench.method.Execution;
+import awbench.method.IExecution;
+import awbench.Run;
+import awbench.Constants;
+import awbench.Measurement;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -23,8 +29,8 @@ public class MethodExecutionRun {
             }
         }
 
-        Execution test = new Execution();
-        test.warmup();
+        ApplicationContext ctx = new FileSystemXmlApplicationContext("src/spring/springconfig.xml");
+        IExecution test = (IExecution) ctx.getBean("execution");
 
         Run run = null;
 

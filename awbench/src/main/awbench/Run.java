@@ -16,15 +16,13 @@ import java.util.Iterator;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-class Run {
+public class Run {
 
-    static int ITERATION = 2000000;
+    public static int ITERATIONS = 2000000;
 
     public static List suite = new ArrayList();
 
-    final String name;
-
-    int iteration = ITERATION;
+    public final String name;
 
     long startupTime;
 
@@ -41,7 +39,7 @@ class Run {
     }
 
     public long nanoPerIteration() {
-        float nano = (endTime - startupTime) * 1000 * 1000 / iteration;
+        float nano = (endTime - startupTime) * 1000 * 1000 / ITERATIONS;
         return (long) (nano);
     }
 
@@ -56,7 +54,7 @@ class Run {
         for (Iterator iterator = suite.iterator(); iterator.hasNext();) {
             Run run = (Run) iterator.next();
             System.out.print("|  " + run.nanoPerIteration() + "      " + run.name);
-            System.out.println(" (measured in " + run.iteration + " iterations)");
+            System.out.println(" (measured in " + ITERATIONS + " iterations)");
             System.out.println("|--------------------------------------------------------------------------------");
         }
     }

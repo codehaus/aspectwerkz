@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC  "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <bean id="execution"
+        class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="proxyInterfaces">
+            <value>awbench.method.IExecution</value>
+        </property>
+        <property name="target">
+            <ref local="executionImpl"/>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>theMethodExecutionAroundAdvisor</value>
+                <value>theMethodExecutionBeforeAdvisor</value>
+                <value>theMethodExecutionAfterAdvisor</value>
+                <value>theMethodExecutionGetTargetAndArgsAroundAdvisor1</value>
+                <value>theMethodExecutionGetTargetAndArgsAroundAdvisor2</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="executionImpl" class="awbench.method.Execution"/>
+
+    <bean id="theMethodExecutionAroundAdvisor"
+        class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice">
+            <ref local="theMethodExecutionAroundAdvice"/>
+        </property>
+        <property name="patterns">
+            <list>
+                <value>.*aroundJP.*</value>
+                <value>.*aroundSJP.*</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="theMethodExecutionBeforeAdvisor"
+        class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice">
+            <ref local="theMethodExecutionBeforeAdvice"/>
+        </property>
+        <property name="patterns">
+            <list>
+                <value>.*before.*</value>
+                <value>.*with.*</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="theMethodExecutionAfterAdvisor"
+        class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice">
+            <ref local="theMethodExecutionAfterAdvice"/>
+        </property>
+        <property name="pattern">
+            <value>.*After.*</value>
+        </property>
+    </bean>
+
+    <bean id="theMethodExecutionGetTargetAndArgsAroundAdvisor1"
+        class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice">
+            <ref local="theMethodExecutionGetTargetAndArgsAroundAdvice"/>
+        </property>
+        <property name="pattern">
+            <value>.*aroundStackedWithArgAndTarget.*</value>
+        </property>
+    </bean>
+
+    <bean id="theMethodExecutionGetTargetAndArgsAroundAdvisor2"
+        class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice">
+            <ref local="theMethodExecutionGetTargetAndArgsAroundAdvice"/>
+        </property>
+        <property name="pattern">
+            <value>.*aroundStackedWithArgAndTarget.*</value>
+        </property>
+    </bean>
+
+    <bean id="theMethodExecutionAroundAdvice" class="awbench.spring.MethodExecutionAroundAdvice"/>
+    <bean id="theMethodExecutionBeforeAdvice" class="awbench.spring.MethodExecutionBeforeAdvice"/>
+    <bean id="theMethodExecutionAfterAdvice" class="awbench.spring.MethodExecutionAfterAdvice"/>
+    <bean id="theMethodExecutionGetTargetAndArgsAroundAdvice" class="awbench.spring.MethodExecutionGetTargetAndArgsAroundAdvice"/>
+</beans>
