@@ -70,7 +70,7 @@ public class ThrowsAdviceTest extends TestCase {
                     error.getClass() +
                     error.getClass().getName() +
                     error.getLocalizedMessage() +
-                    "public void test.ThrowsAdviceTest.___AW_originalMethod$getJoinPointMetaData$1() throws java.lang.Throwable" +
+                    "private void test.ThrowsAdviceTest.___AW_originalMethod$getJoinPointMetaData$1() throws java.lang.Throwable" +
                     "getJoinPointMetaData" +
                     "void" +
                     this +
