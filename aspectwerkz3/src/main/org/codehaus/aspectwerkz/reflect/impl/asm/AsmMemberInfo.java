@@ -8,15 +8,20 @@
 package org.codehaus.aspectwerkz.reflect.impl.asm;
 
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttribute;
+import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.objectweb.asm.Attribute;
+import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
+import org.objectweb.asm.attrs.Annotation;
+import org.objectweb.asm.attrs.RuntimeVisibleAnnotations;
 
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * ASM implementation of the MemberInfo interface.
@@ -124,6 +129,8 @@ public abstract class AsmMemberInfo implements MemberInfo {
      */
     private void addAnnotations(final Attribute attrs) {
         Attribute attributes = attrs;
+        System.out.println("m_declaringTypeName = " + m_declaringTypeName);
+        System.out.println("this.getName() = " + this.getName());
         while (attributes != null) {
             if (attributes instanceof CustomAttribute) {
                 CustomAttribute customAttribute = (CustomAttribute) attributes;
@@ -132,6 +139,24 @@ public abstract class AsmMemberInfo implements MemberInfo {
                     m_annotations.add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
                 } catch (Exception e) {
                     System.err.println("WARNING: could not deserialize annotation due to: " + e.toString());
+                }
+            }
+            if (attributes instanceof RuntimeInvisibleAnnotations) {
+                for (Iterator it = ((RuntimeInvisibleAnnotations)attributes).annotations.iterator(); it.hasNext();) {
+                    Annotation annotation = (Annotation)it.next();
+                    System.out.println("==============> RuntimeInvisibleAnnotations = " + annotation.type);
+                    System.out.println("annotation.toString() = " + annotation.toString());
+                    // FIXME annotation is null
+                    m_annotations.add(new AnnotationInfo(annotation.type, null));
+                }
+            }
+            if (attributes instanceof RuntimeVisibleAnnotations) {
+                for (Iterator it = ((RuntimeVisibleAnnotations)attributes).annotations.iterator(); it.hasNext();) {
+                    Annotation annotation = (Annotation)it.next();
+                    System.out.println("==============> RuntimeVisibleAnnotations = " + annotation.type);
+                    System.out.println("annotation.toString() = " + annotation.toString());
+                    // FIXME annotation is null
+                    m_annotations.add(new AnnotationInfo(annotation.type, null));
                 }
             }
             attributes = attributes.next;

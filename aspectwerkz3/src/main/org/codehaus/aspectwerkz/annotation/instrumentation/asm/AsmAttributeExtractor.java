@@ -17,6 +17,7 @@ import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.attrs.RuntimeVisibleAnnotations;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * Extracts attributes from the class bytecode using the ASM library.
@@ -92,12 +94,21 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                         // since Unkonw attr not wrapped in Attr
                         // SKIP throw new WrappedRuntimeException(e);
                     }
+                } else if (attribute instanceof RuntimeVisibleAnnotations) {
+                    for (Iterator it = ((RuntimeVisibleAnnotations)attribute).annotations.iterator(); it.hasNext();) {
+                        Object a = it.next();
+                        System.out.println(a);
+//                            Annotation annotation = (Annotation)it.next();
+//                            // FIXME annotation is null
+//                            m_annotations.add(new AnnotationInfo(annotation.type, null));
+                    }
+                    RuntimeVisibleAnnotations runtimeVisibleAnnotation = (RuntimeVisibleAnnotations) attribute;
                 }
                 //    current = current.next;
                 //}
             }
         }, new Attribute[] {
-            new CustomAttribute(null)
+            new CustomAttribute(null), new RuntimeVisibleAnnotations()
         }, false);
         return classAttributes.toArray();
     }
@@ -134,6 +145,16 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                                 throw new WrappedRuntimeException(e);
                             }
                         }
+                     else if (attribute instanceof RuntimeVisibleAnnotations) {
+                        for (Iterator it = ((RuntimeVisibleAnnotations)attribute).annotations.iterator(); it.hasNext();) {
+                            Object a = it.next();
+                            System.out.println(a);
+//                            Annotation annotation = (Annotation)it.next();
+//                            // FIXME annotation is null
+//                            m_annotations.add(new AnnotationInfo(annotation.type, null));
+                        }
+                        RuntimeVisibleAnnotations runtimeVisibleAnnotation = (RuntimeVisibleAnnotations) attribute;
+                    }
                         current = current.next;
                     }
                 }
@@ -141,7 +162,7 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                 return null;
             }
         }, new Attribute[] {
-            new CustomAttribute(null)
+            new CustomAttribute(null), new RuntimeVisibleAnnotations()
         }, false);
         return methodAttributes.toArray();
     }

@@ -437,7 +437,7 @@ public class JitCompiler {
      * @param className
      */
     private static void createMemberFields(final int joinPointType, final ClassWriter cw, final String className) {
-        cw.visit(Constants.ACC_PUBLIC + Constants.ACC_SUPER, className, JOIN_POINT_BASE_CLASS_NAME, null, null);
+        cw.visit(AsmHelper.JAVA_VERSION, Constants.ACC_PUBLIC + Constants.ACC_SUPER, className, JOIN_POINT_BASE_CLASS_NAME, null, null);
         cw.visitField(Constants.ACC_PRIVATE, STACKFRAME_FIELD_NAME, I, null, null);
         cw.visitField(Constants.ACC_PRIVATE, SYSTEM_FIELD_NAME, SYSTEM_CLASS_SIGNATURE, null, null);
         switch (joinPointType) {
