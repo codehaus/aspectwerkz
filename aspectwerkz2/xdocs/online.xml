@@ -331,7 +331,7 @@
             <subsection name="Released jar organization">
                 <p>
                     <ul>
-                        <li><code>aspectwerkz-core-*.jar</code> and <code>javassist.*.jar</code> must always be in the bootclasspath of the JVM. Use
+                        <li><code>aspectwerkz-core-*.jar</code> and <code>javassist-2.6.jar</code> must always be in the bootclasspath of the JVM. Use
                             <code>-Xbootclasspath/p:</code> JVM option.
                         </li>
                         <li>when HotSwap (excepted native HotSwap) is used, <code>JAVA_HOME/jre/bin</code> must be in the PATH, and
@@ -455,8 +455,8 @@ set PATH=$JAVA_HOME/jre/bin:$PATH
 set VERSION=0.10
 set DEPS=...
 
-set CLASSPATH_1=bcel.jar:aspectwerkz-core-$VERSION.jar:$CLASSPATH
-set BOOT_PATH=bcel.jar:aspectwerkz-core-$VERSION.jar:$JAVA_HOME/lib/tools.jar
+set CLASSPATH_1=javassist-*.jar:aspectwerkz-core-$VERSION.jar:$CLASSPATH
+set BOOT_PATH=javassist-*.jar:aspectwerkz-core-$VERSION.jar:$JAVA_HOME/lib/tools.jar
 
 # set CLASSPATH as needed for your application
 set CLASSPATH=...:$CLASSPATH
@@ -594,7 +594,7 @@ java -Daspectwerkz.classloader.clbootclasspath=/temp/_boot ... org.codehaus.aspe
                         <li>turn on the <code>AspectWerkz</code> native HotSwap module through
                             <code>-Xrunaspectwerkz</code>
                         </li>
-                        <li>add aspectwerkz-core.jar, bcel.jar and JAVA_HOME/lib/tools.jar in
+                        <li>add aspectwerkz-core.jar, javassist-*.jar and JAVA_HOME/lib/tools.jar in
                             <code>-Xbootclasspath/a</code>
                         </li>
                         <li>add aspectwerkz.jar and dependancies in the regular classpath</li>
@@ -607,7 +607,7 @@ set DEPS=...
 # add directory where native HotSwap libaspectwerkz.so (or aspectwerkz.dll) resides
 set PATH=$ASPECTWERKZ_HOME/lib
 
-set BOOT_PATH=bcel.jar:aspectwerkz-core-$VERSION.jar:$JAVA_HOME/lib/tools.jar
+set BOOT_PATH=javassist-*.jar:aspectwerkz-core-$VERSION.jar:$JAVA_HOME/lib/tools.jar
 
 # standard usage with -Xrunaspectwerkz module
 java -Xdebug -Xrunaspectwerkz -Xbootclasspath/a:$BOOT_PATH ..
@@ -662,7 +662,7 @@ java -Xdebug -Xrunaspectwerkz -Xbootclasspath/a:$BOOT_PATH ..
                             <code>suspend=y</code> as a JDWP option
                         </li>
                         <li>add JAVA_HOME/jre/bin to your PATH to allow jdwp</li>
-                        <li>add aspectwerkz-core.jar, bcel.jar and JAVA_HOME/lib/tools.jar to the
+                        <li>add aspectwerkz-core.jar, javassist-*.jar and JAVA_HOME/lib/tools.jar to the
                             <code>-Xbootclasspath/a:</code>
                         </li>
                         <li>add aspectwerkz.jar and dependancies in regular classpath</li>
@@ -677,7 +677,7 @@ set DEPS=...
 # enable JDWP
 set PATH=$JAVA_HOME/jre/bin:$PATH
 
-set BOOT_PATH=bcel.jar:aspectwerkz-core-$VERSION.jar:$JAVA_HOME/lib/tools.jar
+set BOOT_PATH=javassist-*.jar:aspectwerkz-core-$VERSION.jar:$JAVA_HOME/lib/tools.jar
 
 # standard usage with -Xrunjdwp
 # Note: VM will start and immediately hang until step 2 is completed due to suspend=y
@@ -706,7 +706,7 @@ java -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y -Xboo
                 the application JVM to ensure correct construction of the enhanced class loader.
 
                     <source>
-set CLASSPATH=aspectwerkz-core.jar:bcel.jar:JAVA_HOME/lib/tools.jar
+set CLASSPATH=aspectwerkz-core.jar:javassist-*.jar:JAVA_HOME/lib/tools.jar
 java -cp $CLASSPATH org.codehaus.aspectwerkz.hook.Plug -hotswap transport=dt_socket,address=8000
 
 # A Maven / Ant target is provided in the source distribution
@@ -753,7 +753,7 @@ java -cp $CLASSPATH org.codehaus.aspectwerkz.hook.Plug -hotswap transport=dt_soc
                     <br/>
                 This step can be scripted, or done once for your Java environment.
                     <source>
-set CLASSPATH=aspectwerkz-core.jar:bcel.jar:JAVA_HOME/lib/tools.jar
+set CLASSPATH=aspectwerkz-core.jar:javassist-*.jar:JAVA_HOME/lib/tools.jar
 java -cp $CLASSPATH org.codehaus.aspectwerkz.hook.Plug -target /path/to/enhanced.jar
 
 # the file path/to/enhanced.jar will be created (eventually overriden)
@@ -779,7 +779,7 @@ java -cp $CLASSPATH org.codehaus.aspectwerkz.hook.Plug -target /path/to/enhanced
 set VERSION=0.9
 set DEPS=...
 
-set BOOT_PATH=bcel.jar:aspectwerkz-core-$VERSION.jar
+set BOOT_PATH=javassist-*.jar:aspectwerkz-core-$VERSION.jar
 
 # standard usage with -Xbootclasspath/p: pointing to step 1 generated jar
 java -Xbootclasspath/p:/path/to/enhanced.jar -Xbootclasspath/a:$BOOT_PATH ..
@@ -847,7 +847,7 @@ set VERSION=0.10
 set DEPS=...
 
 # all AspectWerzk jar, extensions.jar and dependancies
-set BOOT_PATH=bcel.jar:extensions.jar:aspectwerkz-core-$VERSION.jar:aspectwwerkz-$VERSION.jar:$DEPS
+set BOOT_PATH=javassist-*.jar:extensions.jar:aspectwerkz-core-$VERSION.jar:aspectwwerkz-$VERSION.jar:$DEPS
 
 # -Xmanagement option and -Xbootclasspath/a:
 java -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor -Xbootclasspath/a:$BOOT_PATH ..
