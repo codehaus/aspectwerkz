@@ -15,8 +15,8 @@
 
                 <!-- TODO: how to support args() binding when using unamed pointcut - like args(String s), and String in sign of advice ? -->
                 <!-- <advice bind-to="execution(* examples.logging.Target*.toLogWithArgs(..)) && args(String s)" type="before" name="logEntryWithArgs"/>-->
-                <pointcut name="pcWithArgs(String s)" expression="execution(* examples.logging.Target*.toLogWithArgs(..)) AND args(s, int)"/>
-                <advice bind-to="pcWithArgs(s)" type="before" name="logEntryWithArgs(String s)"/>
+                <pointcut name="pcWithArgs(java.lang.String s)" expression="execution(* examples.logging.Target*.toLogWithArgs(..)) AND args(s, int)"/>
+                <advice bind-to="pcWithArgs(s)" type="before" name="logEntryWithArgs(java.lang.String s)"/>
 
 
             </aspect>
@@ -24,6 +24,8 @@
             <aspect class="introduction.IntroductionAspect" deployment-model="perClass"/>
             <aspect class="cflow.CFlowAspect"/>
             <aspect class="exception.ExceptionHandlingAspect"/>
+
+            <aspect class="logging.ArgAspect"/>
         </package>
     </system>
 </aspectwerkz>

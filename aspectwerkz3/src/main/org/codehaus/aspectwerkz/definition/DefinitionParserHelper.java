@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.definition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionNamespace;
+import org.codehaus.aspectwerkz.util.Strings;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -17,7 +18,7 @@ import java.util.Iterator;
 /**
  * Helper class for the attribute and the XML definition parsers.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class DefinitionParserHelper {
@@ -35,18 +36,35 @@ public class DefinitionParserHelper {
         PointcutDefinition pointcutDef = new PointcutDefinition(expression);
         aspectDef.addPointcut(pointcutDef);
 
+        // name can be the "pcName(paramType paramName)"
+        // extract the parameter name to type map
+        // and register the pointcut using its name
+        //TODO: support for same pc name and different signature
+        String pointcutName = name;
+        String pointcutCallSignature = null;
+        if (name.indexOf("(") > 0) {
+            pointcutName = name.substring(0, name.indexOf("("));
+            pointcutCallSignature = name.substring(name.indexOf("(") + 1, name.lastIndexOf(")"));
+        }
+
         // do a lookup first to avoid infinite recursion when:
         // <pointcut name="pc" ...> [will be registered as pc]
-        // <advice bind-to="pc" ...> [will be registered as pc and should not override previous one
-        // !]
-        ExpressionNamespace namespace = ExpressionNamespace.getNamespace(aspectDef
-                .getFullQualifiedName());
-        ExpressionInfo info = namespace.getExpressionInfo(name);
+        // <advice bind-to="pc" ...> [will be registered as pc and should not override previous one !]
+        ExpressionNamespace namespace = ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName());
+        ExpressionInfo info = namespace.getExpressionInfo(pointcutName);
         if (info == null) {
             info = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
+            // extract the pointcut signature map
+            if (pointcutCallSignature != null) {
+                String[] parameters = Strings.splitString(pointcutCallSignature, ",");
+                for (int i = 0; i < parameters.length; i++) {
+                    String[] parameterInfo = Strings.splitString(parameters[i], " ");
+                    info.addArgument(parameterInfo[0], parameterInfo[1]);
+                }
+            }
         }
         ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(
-            name,
+            pointcutName,
             info);
 
         //                                                                                             new ExpressionInfo(expression,
@@ -275,8 +293,19 @@ public class DefinitionParserHelper {
         final Method method,
         final int methodIndex,
         final AspectDefinition aspectDef) {
-        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef
-                .getFullQualifiedName());
+        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
+
+        // support for pointcut signature
+        String adviceCallSignature = null;
+        if (adviceName.indexOf("(") > 0) {
+            adviceCallSignature = adviceName.substring(adviceName.indexOf("(") + 1, adviceName.lastIndexOf(")"));
+            String[] parameters = Strings.splitString(adviceCallSignature, ",");
+            for (int i = 0; i < parameters.length; i++) {
+                String[] parameterInfo = Strings.splitString(parameters[i], " ");
+                expressionInfo.addArgument(parameterInfo[0], parameterInfo[1]);
+            }
+        }
+
         final AdviceDefinition adviceDef = new AdviceDefinition(
             adviceName,
             adviceType,

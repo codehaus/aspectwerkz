@@ -8,7 +8,12 @@ public class ASTPointcutReference extends SimpleNode {
     }
 
     public void setName(String name) {
-        this.name = name;
+        if (name.endsWith("(")) {
+            // we have a pointcut reference with a signature
+            this.name = name.substring(0, name.length()-1);
+        } else {
+            this.name = name;
+        }
     }
 
     public String name;

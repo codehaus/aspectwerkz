@@ -9,7 +9,10 @@
 /**
  * JJTree grammar for pointcut expressions.
  *
+ * //FIXME: support for not(..) without space - braken since support for pc with args
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 
 options {
@@ -91,8 +94,6 @@ TOKEN : /* POINTCUTS */
 |
     < NOT : "!"  | "not" | "NOT" >
 |
-    < POINTCUT_REFERENCE : (["a"-"z", "A"-"Z", "_", "$", ".", "0"-"9"])+ >
-|
     < EXECUTION : "execution(" > : METHOD
 |
     < CALL : "call(" > : METHOD
@@ -120,6 +121,10 @@ TOKEN : /* POINTCUTS */
     < THIS : "this(" > : CLASS
 |
     < IF : "if(" >
+|
+    < POINTCUT_REFERENCE_WITH_ARGS : <POINTCUT_REFERENCE>"(" > : IN_ARGS
+|
+    < POINTCUT_REFERENCE : (["a"-"z", "A"-"Z", "_", "$", ".", "0"-"9"])+ >
 }
 
 //------------------ Lexical scope for classes ------------------
@@ -315,7 +320,6 @@ void NotExpression() : {}
  */
 void Pointcut() : {}
 {
-    LOOKAHEAD(4) PointcutReference() |
     LOOKAHEAD(4) Call() |
     LOOKAHEAD(4) Execution() |
     LOOKAHEAD(4) Set() |
@@ -326,7 +330,8 @@ void Pointcut() : {}
     LOOKAHEAD(4) StaticInitialization() |
     LOOKAHEAD(4) Cflow() |
     LOOKAHEAD(4) CflowBelow() |
-    LOOKAHEAD(4) Args()
+    LOOKAHEAD(4) Args() |
+    LOOKAHEAD(4) PointcutReference()
 }
 
 /**
@@ -337,10 +342,11 @@ void PointcutReference() #PointcutReference :
     Token name;
 }
 {
-    name=<POINTCUT_REFERENCE>
+    (name=<POINTCUT_REFERENCE_WITH_ARGS> | name=<POINTCUT_REFERENCE>)
     {
         jjtThis.setName(name.image);
     }
+    [ ArgsParameters() <ARGS_END> ]
 }
 
 /**

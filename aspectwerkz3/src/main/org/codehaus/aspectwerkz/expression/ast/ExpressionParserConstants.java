@@ -19,74 +19,75 @@ public interface ExpressionParserConstants {
   int AND = 8;
   int OR = 9;
   int NOT = 10;
-  int POINTCUT_REFERENCE = 11;
-  int EXECUTION = 12;
-  int CALL = 13;
-  int SET = 14;
-  int GET = 15;
-  int HANDLER = 16;
-  int WITHIN = 17;
-  int WITHIN_CODE = 18;
-  int STATIC_INITIALIZATION = 19;
-  int CFLOW = 20;
-  int CFLOW_BELOW = 21;
-  int ARGS = 22;
-  int TARGET = 23;
-  int THIS = 24;
-  int IF = 25;
-  int CLASS_PRIVATE = 26;
-  int CLASS_PROTECTED = 27;
-  int CLASS_PUBLIC = 28;
-  int CLASS_STATIC = 29;
-  int CLASS_ABSTRACT = 30;
-  int CLASS_FINAL = 31;
-  int CLASS_NOT = 32;
-  int CLASS_ATTRIBUTE = 33;
-  int CLASS_PATTERN = 34;
-  int CLASS_IDENTIFIER = 35;
-  int CLASS_JAVA_NAME_LETTER = 36;
-  int CLASS_POINTCUT_END = 37;
-  int METHOD_PUBLIC = 38;
-  int METHOD_PROTECTED = 39;
-  int METHOD_PRIVATE = 40;
-  int METHOD_STATIC = 41;
-  int METHOD_ABSTRACT = 42;
-  int METHOD_FINAL = 43;
-  int METHOD_NATIVE = 44;
-  int METHOD_SYNCHRONIZED = 45;
-  int METHOD_NOT = 46;
-  int METHOD_ANNOTATION = 47;
-  int METHOD_IDENTIFIER = 48;
-  int METHOD_CLASS_PATTERN = 49;
-  int METHOD_ARRAY_CLASS_PATTERN = 50;
-  int PARAMETER_START = 51;
-  int PARAMETER_END = 52;
-  int METHOD_JAVA_NAME_LETTER = 53;
-  int FIELD_PRIVATE = 54;
-  int FIELD_PROTECTED = 55;
-  int FIELD_PUBLIC = 56;
-  int FIELD_STATIC = 57;
-  int FIELD_ABSTRACT = 58;
-  int FIELD_FINAL = 59;
-  int FIELD_TRANSIENT = 60;
-  int FIELD_NOT = 61;
-  int FIELD_ANNOTATION = 62;
-  int FIELD_IDENTIFIER = 63;
-  int FIELD_CLASS_PATTERN = 64;
-  int FIELD_ARRAY_CLASS_PATTERN = 65;
-  int FIELD_JAVA_NAME_LETTER = 66;
-  int FIELD_POINTCUT_END = 67;
-  int PARAMETER_IDENTIFIER = 68;
-  int PARAMETER_CLASS_PATTERN = 69;
-  int PARAMETER_ARRAY_CLASS_PATTERN = 70;
-  int PARAMETER_ANNOTATION = 71;
-  int PARAMETER_JAVA_NAME_LETTER = 72;
-  int PARAMETER_NOT = 73;
-  int ARG_IDENTIFIER = 74;
-  int ARG_PATTERN = 75;
-  int ARG_ARRAY_PATTERN = 76;
-  int ARG_JAVA_NAME_LETTER = 77;
-  int ARGS_END = 78;
+  int EXECUTION = 11;
+  int CALL = 12;
+  int SET = 13;
+  int GET = 14;
+  int HANDLER = 15;
+  int WITHIN = 16;
+  int WITHIN_CODE = 17;
+  int STATIC_INITIALIZATION = 18;
+  int CFLOW = 19;
+  int CFLOW_BELOW = 20;
+  int ARGS = 21;
+  int TARGET = 22;
+  int THIS = 23;
+  int IF = 24;
+  int POINTCUT_REFERENCE_WITH_ARGS = 25;
+  int POINTCUT_REFERENCE = 26;
+  int CLASS_PRIVATE = 27;
+  int CLASS_PROTECTED = 28;
+  int CLASS_PUBLIC = 29;
+  int CLASS_STATIC = 30;
+  int CLASS_ABSTRACT = 31;
+  int CLASS_FINAL = 32;
+  int CLASS_NOT = 33;
+  int CLASS_ATTRIBUTE = 34;
+  int CLASS_PATTERN = 35;
+  int CLASS_IDENTIFIER = 36;
+  int CLASS_JAVA_NAME_LETTER = 37;
+  int CLASS_POINTCUT_END = 38;
+  int METHOD_PUBLIC = 39;
+  int METHOD_PROTECTED = 40;
+  int METHOD_PRIVATE = 41;
+  int METHOD_STATIC = 42;
+  int METHOD_ABSTRACT = 43;
+  int METHOD_FINAL = 44;
+  int METHOD_NATIVE = 45;
+  int METHOD_SYNCHRONIZED = 46;
+  int METHOD_NOT = 47;
+  int METHOD_ANNOTATION = 48;
+  int METHOD_IDENTIFIER = 49;
+  int METHOD_CLASS_PATTERN = 50;
+  int METHOD_ARRAY_CLASS_PATTERN = 51;
+  int PARAMETER_START = 52;
+  int PARAMETER_END = 53;
+  int METHOD_JAVA_NAME_LETTER = 54;
+  int FIELD_PRIVATE = 55;
+  int FIELD_PROTECTED = 56;
+  int FIELD_PUBLIC = 57;
+  int FIELD_STATIC = 58;
+  int FIELD_ABSTRACT = 59;
+  int FIELD_FINAL = 60;
+  int FIELD_TRANSIENT = 61;
+  int FIELD_NOT = 62;
+  int FIELD_ANNOTATION = 63;
+  int FIELD_IDENTIFIER = 64;
+  int FIELD_CLASS_PATTERN = 65;
+  int FIELD_ARRAY_CLASS_PATTERN = 66;
+  int FIELD_JAVA_NAME_LETTER = 67;
+  int FIELD_POINTCUT_END = 68;
+  int PARAMETER_IDENTIFIER = 69;
+  int PARAMETER_CLASS_PATTERN = 70;
+  int PARAMETER_ARRAY_CLASS_PATTERN = 71;
+  int PARAMETER_ANNOTATION = 72;
+  int PARAMETER_JAVA_NAME_LETTER = 73;
+  int PARAMETER_NOT = 74;
+  int ARG_IDENTIFIER = 75;
+  int ARG_PATTERN = 76;
+  int ARG_ARRAY_PATTERN = 77;
+  int ARG_JAVA_NAME_LETTER = 78;
+  int ARGS_END = 79;
 
   int IN_ARGS = 0;
   int PARAMETERS = 1;
@@ -107,7 +108,6 @@ public interface ExpressionParserConstants {
     "<AND>",
     "<OR>",
     "<NOT>",
-    "<POINTCUT_REFERENCE>",
     "\"execution(\"",
     "\"call(\"",
     "\"set(\"",
@@ -122,6 +122,8 @@ public interface ExpressionParserConstants {
     "\"target(\"",
     "\"this(\"",
     "\"if(\"",
+    "<POINTCUT_REFERENCE_WITH_ARGS>",
+    "<POINTCUT_REFERENCE>",
     "\"private\"",
     "\"protected\"",
     "\"public\"",
