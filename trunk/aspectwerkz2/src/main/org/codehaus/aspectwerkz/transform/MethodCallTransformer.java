@@ -142,32 +142,41 @@ public class MethodCallTransformer implements Transformer {
                                     // call the wrapper method instead of the callee method
                                     StringBuffer body = new StringBuffer();
                                     StringBuffer callBody = new StringBuffer();
+
                                     callBody.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
                                     callBody.append('.');
                                     callBody.append(TransformationUtil.PROCEED_WITH_CALL_JOIN_POINT_METHOD);
                                     callBody.append('(');
-                                    callBody.append(TransformationUtil.calculateHash(methodCall.getMethod()));
+                                    callBody.append(TransformationUtil.calculateHash(method));
                                     callBody.append(',');
                                     callBody.append(m_joinPointIndex);
-                                    callBody.append(", $args, $0, (Class)");
-                                    callBody.append(declaringClassMethodName);
-                                    callBody.append(',');
+                                    callBody.append(", args");
+                                    callBody.append(", $0, declaringClassMethodName, ");
                                     callBody.append(TransformationUtil.JOIN_POINT_TYPE_METHOD_CALL);
-                                    callBody.append(",\"");
-                                    callBody.append(methodCall.getMethod().getSignature());
-                                    callBody.append("\");");
+                                    callBody.append(");");
+
+                                    body.append('{');
+                                    if (method.getParameterTypes().length > 0) {
+                                        body.append("Object[] args = $args; ");
+                                    }
+                                    else {
+                                        body.append("Object[] args = null; ");
+                                    }
+                                    body.append("Class declaringClassMethodName = ");
+                                    body.append(declaringClassMethodName);
+                                    body.append("; ");
 
                                     if (methodCall.getMethod().getReturnType() == CtClass.voidType) {
-                                        body.append("{ $_ = ").append(callBody.toString()).append("}");
+                                        body.append("$_ = ").append(callBody.toString()).append("}");
                                     }
                                     else if (!methodCall.getMethod().getReturnType().isPrimitive()) {
-                                        body.append("{$_ = ($r)");
+                                        body.append("$_ = ($r)");
                                         body.append(callBody.toString());
                                         body.append("}");
                                     }
                                     else {
                                         String localResult = TransformationUtil.ASPECTWERKZ_PREFIX + "res";
-                                        body.append("{Object ").append(localResult).append(" = ");
+                                        body.append("Object ").append(localResult).append(" = ");
                                         body.append(callBody.toString());
                                         body.append("if (").append(localResult).append(" != null)");
                                         body.append("$_ = ($r) ").append(localResult).append("; else ");
