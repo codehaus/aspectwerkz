@@ -120,19 +120,16 @@ public class MethodCallTransformer implements Transformer {
 
                             // call the wrapper method instead of the callee method
                             StringBuffer body = new StringBuffer();
-                            body.append("{ $_ = ($r)");
+                            body.append("{$_=($r)");
                             body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
                             body.append('.');
                             body.append(TransformationUtil.PROCEED_WITH_CALL_JOIN_POINT_METHOD);
                             body.append('(');
                             body.append(TransformationUtil.calculateHash(methodCall.getMethod()));
-                            body.append(',');
-                            body.append("$args");
-                            body.append(',');
-                            body.append("$0");
-                            body.append(",(Class)");
+                            body.append(",$args,$0,(Class)");
                             body.append(
                                     TransformationUtil.STATIC_CLASS_FIELD +
+                                    TransformationUtil.DELIMITER + "method" +
                                     TransformationUtil.DELIMITER +
                                     methodCall.getMethod().getDeclaringClass().getName().replace('.', '_')
                             );
@@ -140,7 +137,7 @@ public class MethodCallTransformer implements Transformer {
                             body.append(TransformationUtil.JOIN_POINT_TYPE_METHOD_CALL);
                             body.append(",\"");
                             body.append(methodCall.getMethod().getSignature());
-                            body.append("\"); }");
+                            body.append("\");}");
 
                             methodCall.replace(body.toString());
                             context.markAsAdvised();
@@ -159,11 +156,13 @@ public class MethodCallTransformer implements Transformer {
      * Creates a new static class field, for the declaring class of the callee method.
      *
      * @param ctClass the class
+     * @param ctMethod the method
      */
     private void addCalleeMethodDeclaringClassField(final CtClass ctClass, final CtMethod ctMethod)
             throws NotFoundException, CannotCompileException {
 
         String fieldName = TransformationUtil.STATIC_CLASS_FIELD +
+                TransformationUtil.DELIMITER + "method" +
                 TransformationUtil.DELIMITER +
                 ctMethod.getDeclaringClass().getName().replace('.', '_');
 
