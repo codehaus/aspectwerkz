@@ -57,6 +57,9 @@ For now we only support a single system.
 A system contains use-aspect syntax OR *-def *-ref syntax. The DTD cannot represent that.
 Attributes:
     id: unique name of the AspectWerkz system (replaces <aspectwerkz id=..> in 0.8.1 DTD)
+    base-package: provides the global package prefix
+Notes:
+    Due to package nesting, we cannot define an order here
 ******************************************************************************************************************************-->
 <!ELEMENT system (
     (exclude | include)*,
@@ -64,6 +67,7 @@ Attributes:
 )>
 <!ATTLIST system
 	id CDATA #REQUIRED
+    base-package CDATA #IMPLIED
 >
 <!--*****************************************************************************************************************************
 exclude
@@ -96,20 +100,18 @@ During weaving, a class is considered to be in the transformation scope with a c
 package
 *********************************************************************************************************************************
 Declares a package prefix which applies to all FQN (introduction, advice) and patterns (pointcuts, class)
-contained in the package element. 
+contained in the package element.
 Package elements can be nested to ease writing of package and subpackage
 (package@name "bar" nested in package@name "foo" means "foo.bar").
 Attributes:
 	name: package prefix
-Note: does not support pattern, excepted ending ".*" like "foo.*" which is equivalent to "foo." and to "foo"
+Notes:
+    Does not support pattern, excepted ending ".*" like "foo.*" which is equivalent to "foo." and to "foo"
 ******************************************************************************************************************************-->
 <!ELEMENT package (
     introduction-def*,
-    (advice-def | advices-def)*,
-    abstract-aspect*,
-    aspect*,
-    use-aspect*,
-    package*
+    (advice-def | advices-def | abstract-aspect | aspect)*,
+    use-aspect*
 )>
 <!ATTLIST package
 	name CDATA #REQUIRED
