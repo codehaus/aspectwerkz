@@ -60,10 +60,6 @@ public class InliningWeavingStrategy implements WeavingStrategy {
      */
     public void transform(String className, final Context context) {
         try {
-            if (className.endsWith(TransformationConstants.JOIN_POINT_CLASS_SUFFIX)) {
-                return;
-            }
-
             final byte[] bytecode = context.getInitialBytecode();
             final ClassLoader loader = context.getLoader();
 
@@ -95,7 +91,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
 
             // build the ClassInfo from the bytecode to avoid loading it from the loader resource stream later
             // to support stub weaving
-            AsmClassInfo.getClassInfo(bytecode, loader);
+            //AsmClassInfo.getClassInfo(bytecode, loader);
 
             // compute CALL + GET/SET early matching results to avoid registering useless visitors
             final boolean filterForCall = classFilterFor(
