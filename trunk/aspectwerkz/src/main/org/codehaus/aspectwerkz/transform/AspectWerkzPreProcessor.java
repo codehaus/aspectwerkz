@@ -116,8 +116,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      * @param params not used
      */
     public void initialize(final Hashtable params) {
-        //initialized = true;
-
         m_metaDataRepository = new WeakHashMap();
         m_definitionRepository = new WeakHashMap();
         m_stack = new ArrayList();
@@ -147,15 +145,10 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             return bytecode;
         }
 
-        //if (className.startsWith("test.Per")&&className.endsWith("Impl"))
-        //    return bytecode;
-
         buildMixinMetaDataRepository(loader);
         loadAndMergeXmlDefinitions(loader);
 
-        if (VERBOSE && m_stack.size()<8)
-            log("re " + m_stack.size() + " " + loader + ":" + className + " ["+Thread.currentThread().getName()+"]");
-        else if (VERBOSE)
+        if (VERBOSE)
             log(loader + ":" + className + " ["+Thread.currentThread().getName()+"]");
         // prepare BCEL ClassGen
         Klass klass = null;

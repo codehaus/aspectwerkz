@@ -11,10 +11,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.lang.reflect.Modifier;
 
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.ExceptionTable;
+import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -159,9 +156,8 @@ public class BcelMetaDataMaker extends MetaDataMaker {
         }
         methodMetaData.setExceptionTypes(exceptions);
 
-        // set the modifier to public (needed for mixin impl)
-        methodMetaData.setModifiers(Modifier.PUBLIC);
-        //@todo is BCEL modifier the same as java modifier ?
+        //BCEL modifier is the same as java modifier used in ReflectionMetaDataMaker
+        methodMetaData.setModifiers(method.getModifiers());
 
         return methodMetaData;
     }
@@ -228,4 +224,5 @@ public class BcelMetaDataMaker extends MetaDataMaker {
         fieldMetaData.setType(instruction.getFieldType(cpg).toString());
         return fieldMetaData;
     }
+
 }
