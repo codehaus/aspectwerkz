@@ -394,7 +394,7 @@
     <target name="weaver:aspectwerkz" depends="init, compile, compile:aspectwerkz">
         <delete dir="_dump2"/>
         <java classname="awbench.weave.GenerateClasses" fork="true" classpathref="project.classpath">
-            <arg line="10 100"/>
+            <arg line="50 100"/>
         </java>
         <java classname="awbench.weave.PrintTime" fork="true" classpathref="project.classpath"/>
         <awweave classpathref="project.classpath" targetdir="_dump2"
@@ -408,7 +408,7 @@
     <target name="weaver:aspectj" depends="init, compile, compile:aspectj">
         <delete dir="_dump2"/>
         <java classname="awbench.weave.GenerateClasses" fork="true" classpathref="project.classpath">
-            <arg line="10 100"/>
+            <arg line="50 100"/>
         </java>
         <jar destfile="target.jar" basedir="${d}/target"/>
         <java classname="awbench.weave.PrintTime" fork="true" classpathref="project.classpath"/>

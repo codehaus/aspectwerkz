@@ -14,7 +14,7 @@ public aspect GenerateClassesAspect {
 
 
     before() :
-    within(*..*Generated_*) {
+    within(awbench.weave.IGenerated+) {
         int i = 1;
     }
 }
