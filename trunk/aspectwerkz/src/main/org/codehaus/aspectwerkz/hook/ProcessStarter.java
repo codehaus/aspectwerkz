@@ -316,7 +316,7 @@ public class ProcessStarter {
         // restore quote around classpath or escape whitespace depending on win*/*nix
         StringBuffer classPath = new StringBuffer();
         if (System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) {
-            classPath = classPath.append("\"").append(cpOptionsArgB).append("\"");
+            classPath = classPath.append("\"").append(cpOptionsArgB.toString()).append("\"");
         } else {
             classPath = classPath.append(escapeWhiteSpace(cpOptionsArgB.toString()));
         }
