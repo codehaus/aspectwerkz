@@ -221,6 +221,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
                || klass.startsWith("org.xml.sax.")
                || klass.startsWith("javax.xml.parsers.")
                || klass.startsWith("sun.reflect.Generated")// issue on J2SE 5 reflection - AW-245
+               || klass.startsWith("EDU.oswego.cs.dl.util.concurrent")
                 ;
     }
 

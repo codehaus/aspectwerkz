@@ -87,7 +87,7 @@ public class ContextImpl implements Context {
         m_loader = loader;
         m_initialBytecode = bytecode;
         m_currentBytecode = bytecode;
-        m_definitions = SystemDefinitionContainer.getRegularAndVirtualDefinitionsFor(m_loader);
+        m_definitions = SystemDefinitionContainer.getDefinitionsFor(m_loader);
     }
 
     public String getClassName() {

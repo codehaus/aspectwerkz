@@ -196,7 +196,7 @@ public class Deployer {
         final ClassInfo aspectClassInfo = JavaClassInfo.getClassInfo(aspectClass);
 
         // create a new aspect def and fill it up with the annotation def from the aspect class
-        final SystemDefinition systemDef = SystemDefinitionContainer.getVirtualDefinitionFor(deployLoader);
+        final SystemDefinition systemDef = SystemDefinitionContainer.getVirtualDefinitionAt(deployLoader);
         final AspectDefinition newAspectDef = new AspectDefinition(className, aspectClassInfo, systemDef);
         final Set newExpressions = getNewExpressionsForAspect(
                 aspectClass, newAspectDef, systemDef, deploymentScope, deploymentHandle
@@ -295,7 +295,7 @@ public class Deployer {
 
         final DeploymentHandle deploymentHandle = new DeploymentHandle(aspect, deployLoader);
 
-        final SystemDefinition systemDef = SystemDefinitionContainer.getVirtualDefinitionFor(deployLoader);
+        final SystemDefinition systemDef = SystemDefinitionContainer.getVirtualDefinitionAt(deployLoader);
         try {
             final Document document = XmlParser.createDocument(xmlDef);
             final AspectDefinition newAspectDef = DocumentParser.parseAspectDefinition(document, systemDef, aspect);
@@ -344,7 +344,12 @@ public class Deployer {
     public static void undeploy(final String className, final ClassLoader loader) {
         logUndeployment(className, loader);
 
-        Set systemDefs = SystemDefinitionContainer.getRegularAndVirtualDefinitionsFor(loader);
+        //TODO: this one should acquire lock or something
+
+        // lookup only in the given classloader scope
+        // since the system hierarchy holds reference, they will see the change
+        Set systemDefs = SystemDefinitionContainer.getDefinitionsAt(loader);
+
         for (Iterator it = systemDefs.iterator(); it.hasNext();) {
             SystemDefinition systemDef = (SystemDefinition) it.next();
             final AspectDefinition aspectDef = systemDef.getAspectDefinition(className);

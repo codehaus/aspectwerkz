@@ -168,7 +168,7 @@ public class Proxy {
         String proxyClassName = getUniqueClassNameForProxy(clazz);
 
         if (makeAdvisable) {
-            makeProxyAdvisable(clazz, loader);
+            makeProxyAdvisable(clazz);
         }
 
         byte[] bytes = ProxyCompiler.compileProxyFor(clazz, proxyClassName);
@@ -194,20 +194,11 @@ public class Proxy {
      * interceptors.
      *
      * @param clazz
-     * @param loader
      */
-    private static void makeProxyAdvisable(final Class clazz, ClassLoader loader) {
-        Set definitions = SystemDefinition.getDefinitionsFor(loader);
-        if (definitions.isEmpty()) {
-            SystemDefinition definition = new SystemDefinition(new Long(Uuid.newUuid()).toString());
-            addAdvisableDefToSystemDef(clazz, definition);
-
-            // TODO: Add this to the system def container somehow
-        }
-        for (Iterator it = definitions.iterator(); it.hasNext();) {
-            SystemDefinition definition = (SystemDefinition) it.next();
-            addAdvisableDefToSystemDef(clazz, definition);
-        }
+    private static void makeProxyAdvisable(final Class clazz) {
+        // changes occurs in the virtual definition only
+        SystemDefinition definition = SystemDefinitionContainer.getVirtualDefinitionAt(clazz.getClassLoader());
+        addAdvisableDefToSystemDef(clazz, definition);
     }
 
     private static void addAdvisableDefToSystemDef(final Class clazz, final SystemDefinition definition) {

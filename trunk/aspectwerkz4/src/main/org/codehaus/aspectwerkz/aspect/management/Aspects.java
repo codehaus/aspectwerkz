@@ -191,7 +191,7 @@ public class Aspects {
     private static AspectContainer createAspectContainer(final Class aspectClass) {
         AspectDefinition aspectDefinition = null;
 
-        Set definitions = SystemDefinitionContainer.getRegularAndVirtualDefinitionsFor(aspectClass.getClassLoader());
+        Set definitions = SystemDefinitionContainer.getDefinitionsFor(aspectClass.getClassLoader());
         for (Iterator iterator = definitions.iterator(); iterator.hasNext() && aspectDefinition == null;) {
             SystemDefinition systemDefinition = (SystemDefinition) iterator.next();
             for (Iterator iterator1 = systemDefinition.getAspectDefinitions().iterator(); iterator1.hasNext();) {
@@ -259,7 +259,7 @@ public class Aspects {
             return null;
         }
 
-        final Set definitionsBottomUp = SystemDefinitionContainer.getRegularAndVirtualDefinitionsFor(loader);
+        final Set definitionsBottomUp = SystemDefinitionContainer.getDefinitionsFor(loader);
         // TODO: bottom up is broken now
         //Collections.reverse(definitionsBottomUp);
 

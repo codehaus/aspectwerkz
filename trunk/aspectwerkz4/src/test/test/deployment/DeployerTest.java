@@ -12,6 +12,7 @@ import org.codehaus.aspectwerkz.transform.inlining.deployer.Deployer;
 import org.codehaus.aspectwerkz.transform.inlining.deployer.DeploymentHandle;
 import org.codehaus.aspectwerkz.definition.DeploymentScope;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 /**
  * TODO add more tests, tests that can make things break, evil tests
@@ -34,7 +35,7 @@ public class DeployerTest extends TestCase {
         assertEquals("deployUndeployUsingPreparedPointcut ", s_logString);
         s_logString = "";
 
-        SystemDefinition def = SystemDefinition.getDefinitionFor(
+        SystemDefinition def = SystemDefinitionContainer.getDefinitionFor(
                 Thread.currentThread().getContextClassLoader(), "tests"
         );
         DeploymentScope deploymentScope = def.getDeploymentScope("deployUndeployUsingPreparedPointcut");
@@ -58,7 +59,7 @@ public class DeployerTest extends TestCase {
         assertEquals("deployUndeployUsingHandle ", s_logString);
         s_logString = "";
 
-        SystemDefinition def = SystemDefinition.getDefinitionFor(
+        SystemDefinition def = SystemDefinitionContainer.getDefinitionFor(
                 Thread.currentThread().getContextClassLoader(), "tests"
         );
         DeploymentScope deploymentScope = def.getDeploymentScope("deployUndeployUsingHandle");
@@ -81,7 +82,7 @@ public class DeployerTest extends TestCase {
         assertEquals("deployUndeployUsingXmlDef ", s_logString);
         s_logString = "";
 
-        SystemDefinition def = SystemDefinition.getDefinitionFor(
+        SystemDefinition def = SystemDefinitionContainer.getDefinitionFor(
                 Thread.currentThread().getContextClassLoader(), "tests"
         );
         DeploymentScope deploymentScope = def.getDeploymentScope("deployUndeployUsingXmlDef");
