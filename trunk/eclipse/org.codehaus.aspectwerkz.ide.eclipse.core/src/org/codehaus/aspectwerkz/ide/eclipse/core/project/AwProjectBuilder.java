@@ -58,7 +58,7 @@ public class AwProjectBuilder extends IncrementalProjectBuilder {
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
             throws CoreException {
 
-        AwLog.logInfo("weaving for "
+        AwLog.logTrace("weaving for "
                 + ((kind == FULL_BUILD) ? "full" : "incremental"));
 
         switch (kind) {
@@ -157,12 +157,12 @@ public class AwProjectBuilder extends IncrementalProjectBuilder {
             // gets the class name from ASM Info
             ClassInfo classInfo = AsmClassInfo.getClassInfo(classBytes, pcl);
             String className = classInfo.getName();
-            AwLog.logInfo("got name from bytes " + className);
+            AwLog.logTrace("got name from bytes " + className);
 
             System.setProperty("aspectwerkz.transform.verbose", "true");
             AspectWerkzPreProcessor pp = new AspectWerkzPreProcessor();
             pp.initialize();
-            AwLog.logInfo("weaving - " + className + " in " + pcl.toString());
+            AwLog.logTrace("weaving - " + className + " in " + pcl.toString());
             byte[] weaved = pp.preProcess(className, classBytes, pcl);
 
             FileOutputStream os = new FileOutputStream(file);
@@ -171,11 +171,10 @@ public class AwProjectBuilder extends IncrementalProjectBuilder {
 
             monitor.worked(1);
 
-            AwLog.logInfo("weaved " + className);
+            AwLog.logTrace("weaved " + className);
 
         } catch (Exception e) {
             AwLog.logError(e);
-            e.printStackTrace();
         }
     }
 
