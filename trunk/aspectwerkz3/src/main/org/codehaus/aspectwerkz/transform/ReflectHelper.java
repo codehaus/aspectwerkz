@@ -181,7 +181,7 @@ public class ReflectHelper {
             && !method.equals(OBJECT_WAIT_3)
             && !method.equals(OBJECT_NOTIFY)
             && !method.equals(OBJECT_NOTIFY_ALL)
-            && !method.getName().startsWith(TransformationConstants.CLASS_LOOKUP_METHOD)
+            && !method.getName().startsWith(TransformationConstants.SYNTHETIC_MEMBER_PREFIX)
             && !method.getName().startsWith(TransformationConstants.ORIGINAL_METHOD_PREFIX)
             && !method.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
             return true;
