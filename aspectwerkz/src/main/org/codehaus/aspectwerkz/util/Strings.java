@@ -77,7 +77,9 @@ public class Strings {
         iRecords = 0;
         while (true) {
             iFound = sS.indexOf(sD, iFrom);
-            if (iFound == -1) {break;}
+            if (iFound == -1) {
+                break;
+            }
             iRecords++;
             iFrom = iFound + sD.length();
         }
@@ -87,18 +89,19 @@ public class Strings {
         aRet = new String[iRecords];
         if (iRecords == 1) {
             aRet[0] = sS;
-        } else {
+        }
+        else {
             iLast = 0;
             iFrom = 0;
             iFound = 0;
-            for (int i=0; i<iRecords; i++) {
+            for (int i = 0; i < iRecords; i++) {
                 iFound = sS.indexOf(sD, iFrom);
                 if (iFound == -1) //At End
                     aRet[i] = sS.substring(iLast + sD.length(), sS.length());
                 else if (iFound == 0) //At Beginning
-                     aRet[i] = "";
+                    aRet[i] = "";
                 else //Somewhere in middle
-                     aRet[i] = sS.substring(iFrom, iFound);
+                    aRet[i] = sS.substring(iFrom, iFound);
                 iLast = iFound;
                 iFrom = iFound + sD.length();
             }
