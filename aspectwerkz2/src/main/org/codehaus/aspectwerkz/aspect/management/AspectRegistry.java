@@ -397,11 +397,11 @@ public class AspectRegistry {
     }
 
     /**
-     * Returns an array with all the aspects.
+     * Returns an array with all the aspect containers.
      *
-     * @return the aspects
+     * @return the aspect containers
      */
-    public Object[] getAspectContainers() {
+    public AspectContainer[] getAspectContainers() {
         initialize();
         return m_aspectContainers;
     }

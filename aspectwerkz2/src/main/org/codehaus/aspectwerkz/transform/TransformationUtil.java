@@ -96,7 +96,7 @@ public final class TransformationUtil {
     public static final String GET_META_DATA_METHOD = ASPECTWERKZ_PREFIX + "getMetaData";
     public static final String SET_META_DATA_METHOD = ASPECTWERKZ_PREFIX + "addMetaData";
     public static final String CLASS_LOOKUP_METHOD = "class$";
-    public static final String GET_CROSS_CUTTING_INFO_METHOD = "getCrossCuttingInfo";
+    public static final String GET_CROSS_CUTTING_INFO_METHOD = "getCrossCuttingInfos";
     public static final String SET_CROSS_CUTTING_INFO_METHOD = "setCrossCuttingInfo";
 
     public static final String ASPECT_MANAGER_CLASS = "org.codehaus.aspectwerkz.aspect.management.AspectManager";

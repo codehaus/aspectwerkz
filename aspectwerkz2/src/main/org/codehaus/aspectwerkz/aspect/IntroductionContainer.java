@@ -242,33 +242,33 @@ public class IntroductionContainer {
      * @return related cross-cutting info
      */
 //    private CrossCuttingInfo getRelatedCrossCuttingInfo() {
-//        CrossCuttingInfo info = m_prototype.getCrossCuttingInfo();
+//        CrossCuttingInfo info = m_prototype.getCrossCuttingInfos();
 //
 //        switch (m_prototype.getDeploymentModel()) {
 //            case (DeploymentModel.PER_JVM):
-//                return info.getContainer().getCrossCuttingInfo();
+//                return info.getContainer().getCrossCuttingInfos();
 //
 //            case (DeploymentModel.PER_CLASS):
 //                if (info.getDeploymentModel() == DeploymentModel.PER_CLASS) {
-//                    return info.getContainer().getCrossCuttingInfo((Class)referent);
+//                    return info.getContainer().getCrossCuttingInfos((Class)referent);
 //                }
 //                else {//PER_JVM
-//                    return info.getContainer().getCrossCuttingInfo();
+//                    return info.getContainer().getCrossCuttingInfos();
 //                }
 //
 //            case (DeploymentModel.PER_INSTANCE):
 //                if (info.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
-//                    return info.getContainer().getCrossCuttingInfo(referent);
+//                    return info.getContainer().getCrossCuttingInfos(referent);
 //                }
 //                else if (info.getDeploymentModel() == DeploymentModel.PER_CLASS) {
-//                    return info.getContainer().getCrossCuttingInfo((Class)referent.getClass());
+//                    return info.getContainer().getCrossCuttingInfos((Class)referent.getClass());
 //                }
 //                else {//PER_JVM
-//                    return info.getContainer().getCrossCuttingInfo();
+//                    return info.getContainer().getCrossCuttingInfos();
 //                }
 //
 //            case (DeploymentModel.PER_THREAD):
-//                return info.getContainer().getCrossCuttingInfo(Thread.currentThread());
+//                return info.getContainer().getCrossCuttingInfos(Thread.currentThread());
 //
 //        }
 //        throw new RuntimeException("this point should never be reached");
