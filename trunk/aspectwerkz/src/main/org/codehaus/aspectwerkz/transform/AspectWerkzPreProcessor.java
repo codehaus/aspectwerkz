@@ -324,6 +324,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
                 || klass.startsWith("org.codehaus.aspectwerkz.metadata.")
                 || klass.startsWith("org.codehaus.aspectwerkz.")
                 || klass.startsWith("org.apache.commons.jexl.")
-                || klass.startsWith("org.dom4j.");
+                || klass.startsWith("org.dom4j.")
+                || klass.startsWith("org.xml.sax.")
+                || klass.startsWith("javax.xml.parsers.");
     }
 }
