@@ -434,11 +434,10 @@ public final class AttribDefSystem implements System {
     }
 
     /**
-     * Retrieves a specific Mixin based on its index.
-     * The Mixin is an instance of the Aspect.
+     * Retrieves a specific mixin based on its index.
      *
-     * @param index the index of the introduction
-     * @return the introduction
+     * @param index the index of the introduction (aspect in this case)
+     * @return the the mixin (aspect in this case)
      */
     public Mixin getMixin(final int index) {
         Aspect aspect;
@@ -458,10 +457,10 @@ public final class AttribDefSystem implements System {
     }
 
     /**
-     * Returns the introduction for a specific name.
+     * Returns the mixin implementation for a specific name.
      *
-     * @param name the name of the introduction
-     * @return the the introduction
+     * @param name the name of the introduction (aspect in this case)
+     * @return the the mixin (aspect in this case)
      */
     public Mixin getMixin(final String name) {
         if (name == null) throw new IllegalArgumentException("introduction name can not be null");

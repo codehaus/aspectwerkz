@@ -51,7 +51,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
     /**
      * The aspect prototype.
      */
-    protected final Aspect m_prototype;
+    protected Aspect m_prototype;
 
     /**
      * The methods repository.
@@ -318,33 +318,28 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
     }
 
     /**
-     * Swaps the current introduction implementation.
+     * Swaps the current aspect implementation.
      *
-     * @TODO: how to handle the SWAP of impl.?????
-     *
-     * @param implClass the class of the new implementation to use
+     * @param newAspectClass the class of the new aspect to use
      */
-    public void swapImplementation(final Class implClass) {
-        throw new UnsupportedOperationException("swap introduced implementation is currently not supported by this version of AspectWerkz");
-//        if (implClass == null) throw new IllegalArgumentException("implementation class can not be null");
-//        synchronized (this) {
-//            try {
-//                m_implClass = implClass;
-//                m_methodRepository = m_implClass.getDeclaredMethods();
-//
-//                for (int i = 0; i < m_methodRepository.length; i++) {
-//                    m_methodRepository[i].setAccessible(true);
-//                }
-//
-//                m_perJvm = null;
-//                m_perClass = new HashMap(m_perClass.size());
-//                m_perInstance = new WeakHashMap(m_perClass.size());
-//                m_perThread = new WeakHashMap(m_perClass.size());
-//            }
-//            catch (Exception e) {
-//                new WrappedRuntimeException(e);
-//            }
-//        }
+    public void swapImplementation(final Class newAspectClass) {
+        if (newAspectClass == null) throw new IllegalArgumentException("new aspect class class can not be null");
+        synchronized (this) {
+            try {
+                // create the new aspect to replace the current implementation
+                m_prototype = (Aspect)newAspectClass.newInstance();
+                createMethodRepository();
+
+                // clear the current aspect storages
+                m_perJvm = null;
+                m_perClass = new HashMap(m_perClass.size());
+                m_perInstance = new WeakHashMap(m_perClass.size());
+                m_perThread = new WeakHashMap(m_perClass.size());
+            }
+            catch (Exception e) {
+                new WrappedRuntimeException(e);
+            }
+        }
     }
 
     /**

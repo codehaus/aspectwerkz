@@ -114,8 +114,15 @@ public class IntroductionTest extends TestCase implements Identifiable {
     }
 
     public void testArrayArg() {
-        assertEquals("test1", ((Introductions)m_toBeIntroduced).arrayArg(new String[]{"test1", "test2"})[0]);
-        assertEquals("test2", ((Introductions)m_toBeIntroduced).arrayArg(new String[]{"test1", "test2"})[1]);
+        String[] strings = new String[0];
+        try {
+            strings = ((Introductions)m_toBeIntroduced).arrayArg(new String[]{"test1", "test2"});
+        }
+        catch (Throwable e) {
+            System.out.println("e = " + e);
+        }
+        assertEquals("test1", strings[0]);
+        assertEquals("test2", strings[1]);
     }
 
     public void testVariousArguments1() {
@@ -129,66 +136,41 @@ public class IntroductionTest extends TestCase implements Identifiable {
     }
 
     public void testReplaceImplementation() {
-        assertEquals("test.xmldef.IntroductionsImpl", ((Introduction)SystemLoader.getSystem("tests").getMixin("introductionReplacement")).getImplementation());
-        SystemLoader.getSystem("tests").
-                getMixin("introductionReplacement").
-                ___AW_swapImplementation("test.xmldef.IntroductionsImplReplacement");
-        assertEquals("test.xmldef.IntroductionsImplReplacement",
-                ((Introduction)SystemLoader.getSystem("tests").getMixin("introductionReplacement")).getImplementation());
-    }
+        assertEquals(
+                "test.attribdef.aspect.IntroductionTestAspect",
+                SystemLoader.getSystem("tests").
+                getMixin("test.attribdef.aspect.IntroductionTestAspect").
+                ___AW_getImplementationClassName());
 
-    public void testGetInterface() {
-        assertEquals("test.xmldef.PerJVM", ((Introduction)SystemLoader.getSystem("tests").getMixin("introductionPerJVM")).getInterface());
+        SystemLoader.getSystem("tests").
+                getMixin("test.attribdef.aspect.IntroductionTestAspect").
+                ___AW_swapImplementation("test.attribdef.aspect.IntroductionReplacementTestAspect");
+
+        assertEquals(
+                "test.attribdef.aspect.IntroductionReplacementTestAspect",
+                SystemLoader.getSystem("tests").
+                getMixin("test.attribdef.aspect.IntroductionTestAspect").
+                ___AW_getImplementationClassName());
     }
 
     public void testGetImplementation() {
-        assertEquals("test.xmldef.PerJVMImpl", ((Introduction)SystemLoader.getSystem("tests").getMixin("introductionPerJVM")).getImplementation());
+        assertEquals(
+                "test.attribdef.aspect.IntroductionReplacementTestAspect",
+                SystemLoader.getSystem("tests").
+                getMixin("test.attribdef.aspect.IntroductionTestAspect").
+                ___AW_getImplementationClassName());
     }
 
-    public void testGetMethod() {
-        assertEquals("runPerJVM", ((Introduction)SystemLoader.getSystem("tests").getMixin("introductionPerJVM")).getMethod(0).getName());
-    }
-
-    public void testGetMethods() {
-        assertEquals(1, ((Introduction)SystemLoader.getSystem("tests").getMixin("introductionPerJVM")).getMethods().length);
-    }
-
-    public void testInvokePerJVM() {
-        try {
-            SystemLoader.getSystem("tests").getMixin("introductionPerJVM").___AW_invokeMixin(0, this);
-        }
-        catch (Exception e) {
-            fail();
-        }
-    }
-
-    public void testInvokePerClass() {
-        try {
-            SystemLoader.getSystem("tests").getMixin("introductionPerClass").___AW_invokeMixin(0, this);
-        }
-        catch (Exception e) {
-            fail();
-        }
-    }
-
-    public void testInvokePerInstance() {
-        try {
-            SystemLoader.getSystem("tests").getMixin("introductionPerInstance").___AW_invokeMixin(0, this);
-        }
-        catch (Exception e) {
-            System.out.println("e = " + e);
-            fail();
-        }
-    }
-
-    public void testInvokePerThread() {
-        try {
-            SystemLoader.getSystem("tests").getMixin("introductionPerThread").___AW_invokeMixin(0, this);
-        }
-        catch (Exception e) {
-            fail();
-        }
-    }
+    // TODO: are these methods really needed (adds any value) for the Mixin interface (or even the Introduction class in xmldef)?
+//    public void testGetInterface() {
+//        assertEquals("test.xmldef.PerJVM", ((Introduction)SystemLoader.getSystem("tests").getMixin("introductionPerJVM")).getInterface());
+//    }
+//    public void testGetMethod() {
+//        assertEquals("runPerJVM", ((Introduction)SystemLoader.getSystem("tests").getMixin("introductionPerJVM")).getMethod(0).getName());
+//    }
+//    public void testGetMethods() {
+//        assertEquals(1, ((Introduction)SystemLoader.getSystem("tests").getMixin("introductionPerJVM")).getMethods().length);
+//    }
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());

@@ -316,18 +316,18 @@ public abstract class Aspect implements Serializable, Mixin {
     }
 
     /**
-     * Sets the name of the advice.
+     * Sets the name of the aspect.
      *
-     * @param name the name of the advice
+     * @param name the name of the aspect
      */
     public void ___AW_setName(final String name) {
         m_name = name;
     }
 
     /**
-     * Returns the name of the advice.
+     * Returns the name of the aspect.
      *
-     * @return the name of the advice
+     * @return the name of the aspect
      */
     public String ___AW_getName() {
         return m_name;
@@ -336,7 +336,7 @@ public abstract class Aspect implements Serializable, Mixin {
     /**
      * Sets the deployment model.
      *
-     * @param the deployment model
+     * @param deploymentModel the deployment model
      */
     public void ___AW_setDeploymentModel(final int deploymentModel) {
         m_deploymentModel = deploymentModel;
@@ -408,7 +408,7 @@ public abstract class Aspect implements Serializable, Mixin {
     /**
      * Sets the aspect definition.
      *
-     * @param the aspect definition
+     * @param aspectDef the aspect definition
      */
     public void ___AW_setAspectDef(final AspectDefinition aspectDef) {
         m_aspectDef = aspectDef;
@@ -449,6 +449,15 @@ public abstract class Aspect implements Serializable, Mixin {
      */
     public void ___AW_setTargetClass(final Object targetClass) {
         m_targetClass = targetClass;
+    }
+
+    /**
+     * Returns the implementation class name for the mixin.
+     *
+     * @return the implementation class name for the mixin
+     */
+    public String ___AW_getImplementationClassName() {
+        return m_aspectClass.getName();
     }
 
     /**

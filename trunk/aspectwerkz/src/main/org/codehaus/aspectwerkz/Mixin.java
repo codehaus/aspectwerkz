@@ -15,11 +15,18 @@ package org.codehaus.aspectwerkz;
 public interface Mixin {
 
     /**
-     * Swaps the current introduction implementation.
+     * Returns the name of the mixin.
      *
-     * @param className the class name of the new implementation
+     * @return the name
      */
-    void ___AW_swapImplementation(String className);
+    String ___AW_getName();
+
+    /**
+     * Returns the deployment model.
+     *
+     * @return the deployment model
+     */
+    int ___AW_getDeploymentModel();
 
     /**
      * Invokes the method with the index specified.
@@ -42,4 +49,18 @@ public interface Mixin {
      */
 
     Object ___AW_invokeMixin(int methodIndex, Object[] parameters, Object callingObject);
+
+    /**
+     * Returns the implementation class name for the mixin.
+     *
+     * @return the implementation class name for the mixin
+     */
+    String ___AW_getImplementationClassName();
+
+    /**
+     * Swaps the current introduction implementation.
+     *
+     * @param className the class name of the new implementation
+     */
+    void ___AW_swapImplementation(String className);
 }

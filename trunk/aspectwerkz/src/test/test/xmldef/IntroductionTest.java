@@ -128,32 +128,41 @@ public class IntroductionTest extends TestCase implements Identifiable {
     }
 
     public void testReplaceImplementation() {
-        assertEquals("test.xmldef.IntroductionsImpl", ((Introduction)((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionReplacement")).getImplementation());
+        assertEquals("test.xmldef.IntroductionsImpl",
+                SystemLoader.getSystem("tests").
+                getMixin("introductionReplacement").
+                ___AW_getImplementationClassName());
+
         SystemLoader.getSystem("tests").
                 getMixin("introductionReplacement").
                 ___AW_swapImplementation("test.xmldef.IntroductionsImplReplacement");
-        assertEquals("test.xmldef.IntroductionsImplReplacement", ((Introduction)((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionReplacement")).getImplementation());
+
+        assertEquals("test.xmldef.IntroductionsImplReplacement",
+                SystemLoader.getSystem("tests").
+                getMixin("introductionReplacement").
+                ___AW_getImplementationClassName());
     }
 
     public void testGetInterface() {
-        assertEquals("test.xmldef.PerJVM", ((Introduction)((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionPerJVM")).getInterface());
+        assertEquals("test.xmldef.PerJVM", ((Introduction)SystemLoader.getSystem("tests").getMixin("introductionPerJVM")).getInterface());
     }
 
     public void testGetImplementation() {
-        assertEquals("test.xmldef.PerJVMImpl", ((Introduction)((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionPerJVM")).getImplementation());
+        assertEquals("test.xmldef.PerJVMImpl",
+                SystemLoader.getSystem("tests").getMixin("introductionPerJVM").___AW_getImplementationClassName());
     }
 
     public void testGetMethod() {
-        assertEquals("runPerJVM", ((Introduction)((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionPerJVM")).getMethod(0).getName());
+        assertEquals("runPerJVM", ((Introduction)SystemLoader.getSystem("tests").getMixin("introductionPerJVM")).getMethod(0).getName());
     }
 
     public void testGetMethods() {
-        assertEquals(1, ((Introduction)((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionPerJVM")).getMethods().length);
+        assertEquals(1, ((Introduction)SystemLoader.getSystem("tests").getMixin("introductionPerJVM")).getMethods().length);
     }
 
     public void testInvokePerJVM() {
         try {
-            ((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionPerJVM").___AW_invokeMixin(0, this);
+            SystemLoader.getSystem("tests").getMixin("introductionPerJVM").___AW_invokeMixin(0, this);
         }
         catch (Exception e) {
             fail();
@@ -162,7 +171,7 @@ public class IntroductionTest extends TestCase implements Identifiable {
 
     public void testInvokePerClass() {
         try {
-            ((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionPerClass").___AW_invokeMixin(0, this);
+            SystemLoader.getSystem("tests").getMixin("introductionPerClass").___AW_invokeMixin(0, this);
         }
         catch (Exception e) {
             fail();
@@ -171,7 +180,7 @@ public class IntroductionTest extends TestCase implements Identifiable {
 
     public void testInvokePerInstance() {
         try {
-            ((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionPerInstance").___AW_invokeMixin(0, this);
+            SystemLoader.getSystem("tests").getMixin("introductionPerInstance").___AW_invokeMixin(0, this);
         }
         catch (Exception e) {
             System.out.println("e = " + e);
@@ -181,7 +190,7 @@ public class IntroductionTest extends TestCase implements Identifiable {
 
     public void testInvokePerThread() {
         try {
-            ((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionPerThread").___AW_invokeMixin(0, this);
+            SystemLoader.getSystem("tests").getMixin("introductionPerThread").___AW_invokeMixin(0, this);
         }
         catch (Exception e) {
             fail();
