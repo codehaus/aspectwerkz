@@ -232,8 +232,10 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
             } else if (withinInfo instanceof ClassInfo) {
                 return node.jjtGetChild(0).jjtAccept(this, withinInfo);
             }
+            return Boolean.FALSE;
+        } else {
+            return null;
         }
-        return Boolean.FALSE;
     }
 
     public Object visit(ASTWithinCode node, Object data) {
@@ -241,7 +243,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         if (context.hasWithinReflectionInfo()) {
             return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
         } else {
-            return Boolean.FALSE;
+            return null;
         }
     }
 

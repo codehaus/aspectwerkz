@@ -187,7 +187,11 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
 
     public Object visit(ASTWithinCode node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
+        if (context.getWithinReflectionInfo() instanceof MemberInfo) {
+            return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
+        } else {
+            return null;
+        }
     }
 
     public Object visit(ASTCflow node, Object data) {

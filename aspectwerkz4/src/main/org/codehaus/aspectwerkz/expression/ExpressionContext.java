@@ -90,8 +90,11 @@ public class ExpressionContext {
         if (withinReflectionInfo != null) {
             m_withinReflectionInfo = withinReflectionInfo;
         } else {
-            // backward compatible, mainly for test suite
-            m_withinReflectionInfo = m_matchingReflectionInfo;
+            if (pointcutType.equals(PointcutType.EXECUTION)) {
+                m_withinReflectionInfo = m_matchingReflectionInfo;
+            } else {
+                m_withinReflectionInfo = null;
+            }
         }
         if (reflectionInfo instanceof MethodInfo) {
             m_reflectionInfoType = METHOD_INFO;
