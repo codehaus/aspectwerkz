@@ -18,6 +18,34 @@ package org.codehaus.aspectwerkz.joinpoint;
 public interface JoinPoint extends StaticJoinPoint {
 
     /**
+     * Returns the callee instance.
+     *
+     * @return the callee instance
+     */
+    Object getCallee();
+
+    /**
+     * Returns the caller instance.
+     *
+     * @return the caller instance
+     */
+    Object getCaller();
+
+    /**
+     * Returns the 'this' instance (the one currently executing).
+     *
+     * @return 'this'
+     */
+    Object getThis();
+
+    /**
+     * Returns the target instance. If the join point is executing in a static context it returns null.
+     *
+     * @return the target instance
+     */
+    Object getTarget();    
+
+    /**
      * Returns the RTTI for the join point.
      *
      * @return the RTTI
