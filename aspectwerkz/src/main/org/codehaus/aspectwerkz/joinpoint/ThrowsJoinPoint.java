@@ -27,6 +27,7 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 
 /**
  * Matches well defined point of execution in the program where an exception is
@@ -35,7 +36,7 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ThrowsJoinPoint.java,v 1.5 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: ThrowsJoinPoint.java,v 1.6 2003-06-26 19:27:17 jboner Exp $
  */
 public class ThrowsJoinPoint implements JoinPoint {
 
@@ -321,21 +322,10 @@ public class ThrowsJoinPoint implements JoinPoint {
      * Creates meta-data for the join point.
      */
     protected void createMetaData() {
-        m_metadata = new MethodMetaData();
-        m_metadata.setName(getMethodName());
-        Class[] parameterTypes = getMethodParameterTypes();
-        String[] parameterTypeNames = new String[parameterTypes.length];
-        for (int i = 0; i < parameterTypes.length; i++) {
-            parameterTypeNames[i] = parameterTypes[i].getName();
-        }
-        m_metadata.setParameterTypes(parameterTypeNames);
-        Class returnType = getMethodReturnType();
-        if (returnType == null) {
-            m_metadata.setReturnType("void");
-        }
-        else {
-            m_metadata.setReturnType(returnType.getName());
-        }
+        m_metadata = ReflectionMetaDataMaker.createMethodMetaData(
+                getMethodName(),
+                getMethodParameterTypes(),
+                getMethodReturnType());
     }
 
     /**
@@ -352,7 +342,6 @@ public class ThrowsJoinPoint implements JoinPoint {
                 m_adviceIndexes.length);
         return clone;
     }
-
 
     /**
      * Provides custom deserialization.

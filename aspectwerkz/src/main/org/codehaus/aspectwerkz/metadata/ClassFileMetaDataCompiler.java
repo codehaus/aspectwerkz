@@ -40,8 +40,6 @@ import java.lang.reflect.Field;
 
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MetaDataCompiler;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 
@@ -55,7 +53,7 @@ import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
  * @todo problem with inner classes
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ClassFileMetaDataCompiler.java,v 1.2 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: ClassFileMetaDataCompiler.java,v 1.3 2003-06-26 19:27:17 jboner Exp $
  */
 public class ClassFileMetaDataCompiler extends MetaDataCompiler {
 
@@ -82,7 +80,7 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
      * @param definitionFile the definition file to use
      * @param classPath the path to the classes, directory or jar/zip file
      * @param metaDataDir the path to the dir where to store the meta-data
-     * @param uuid the user-defined UUID for the createWeaveModel model
+     * @param uuid the user-defined UUID for the weave model
      */
     public static void compile(final String definitionFile,
                                final String classPath,
@@ -96,7 +94,7 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
         final AspectWerkzDefinition definition =
                 AspectWerkzDefinition.getDefinition(definitionFile);
 
-        final WeaveModel weaveModel = createWeaveModel(uuid, definition);
+        final WeaveModel weaveModel = weave(uuid, definition);
         compileIntroductionMetaData(weaveModel, classPath);
         saveWeaveModelToFile(metaDataDir, weaveModel);
     }
@@ -104,7 +102,7 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
     /**
      * Compiles the class meta-data for all introduced implementations.
      *
-     * @param model the createWeaveModel model
+     * @param model the weave model
      * @param classPath the pathe to the classes
      * @param metaDataDir the meta-data dir
      */
@@ -124,7 +122,9 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
                         ((IntroductionDefinition)it2.next()).
                         getImplementation();
 
-                if (introduction == null) continue; // interface introduction
+                if (introduction == null) {
+                    continue; // interface introduction
+                }
 
                 if (introduction.equals(className)) {
                     model.addIntroductionMetaData(
@@ -247,12 +247,12 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
 
         final List methodList = new ArrayList(methods.length);
         for (int i = 0; i < methods.length; i++) {
-            methodList.add(createMethodMetaData(methods[i]));
+            methodList.add(ReflectionMetaDataMaker.createMethodMetaData(methods[i]));
         }
 
         final List fieldList = new ArrayList(fields.length);
         for (int i = 0; i < fields.length; i++) {
-            fieldList.add(createFieldMetaData(fields[i]));
+           fieldList.add(ReflectionMetaDataMaker.createFieldMetaData(fields[i]));
         }
 
         final ClassMetaData classMetaData = new ClassMetaData();
@@ -261,51 +261,6 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
         classMetaData.setFields(fieldList);
 
         return classMetaData;
-    }
-
-    /**
-     * Create a new <code>MethodMetaData</code>.
-     *
-     * @param method the method
-     * @return the method meta-data
-     */
-    private static MethodMetaData createMethodMetaData(final Method method) {
-        final MethodMetaData methodMetaData = new MethodMetaData();
-
-        methodMetaData.setName(method.getName());
-        methodMetaData.setModifiers(method.getModifiers());
-        methodMetaData.setReturnType(method.getReturnType().getName());
-
-        Class[] parameters = method.getParameterTypes();
-        String[] parameterTypes = new String[parameters.length];
-        for (int j = 0; j < parameters.length; j++) {
-            parameterTypes[j] = parameters[j].getName();
-        }
-        methodMetaData.setParameterTypes(parameterTypes);
-
-        Class[] exceptions = method.getExceptionTypes();
-        String[] exceptionTypes = new String[exceptions.length];
-        for (int j = 0; j < exceptions.length; j++) {
-            exceptionTypes[j] = exceptions[j].getName();
-        }
-        methodMetaData.setExceptionTypes(exceptionTypes);
-        return methodMetaData;
-    }
-
-    /**
-     * Create a new <code>FieldMetaData</code>.
-     *
-     * @param field the field
-     * @return the field meta-data
-     */
-    private static FieldMetaData createFieldMetaData(final Field field) {
-        final FieldMetaData fieldMetaData = new FieldMetaData();
-
-        fieldMetaData.setName(field.getName());
-        fieldMetaData.setModifiers(field.getModifiers());
-        fieldMetaData.setType(field.getType().getName());
-
-        return fieldMetaData;
     }
 
     /**

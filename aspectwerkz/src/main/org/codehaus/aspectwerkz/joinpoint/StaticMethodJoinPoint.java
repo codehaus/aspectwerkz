@@ -25,6 +25,7 @@ import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 
 /**
  * Mathes well defined point of execution in the program where a static method
@@ -34,7 +35,7 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
  * added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticMethodJoinPoint.java,v 1.5 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: StaticMethodJoinPoint.java,v 1.6 2003-06-26 19:27:17 jboner Exp $
  */
 public class StaticMethodJoinPoint extends MethodJoinPoint {
 
@@ -199,21 +200,10 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
      * Creates meta-data for the join point.
      */
     protected void createMetaData() {
-        m_metadata = new MethodMetaData();
-        m_metadata.setName(getMethodName());
-        Class[] parameterTypes = getParameterTypes();
-        String[] parameterTypeNames = new String[parameterTypes.length];
-        for (int i = 0; i < parameterTypes.length; i++) {
-            parameterTypeNames[i] = parameterTypes[i].getName();
-        }
-        m_metadata.setParameterTypes(parameterTypeNames);
-        Class returnType = getReturnType();
-        if (returnType == null) {
-            m_metadata.setReturnType("void");
-        }
-        else {
-            m_metadata.setReturnType(returnType.getName());
-        }
+        m_metadata = ReflectionMetaDataMaker.createMethodMetaData(
+                getMethodName(),
+                getParameterTypes(),
+                getReturnType());
     }
 
     /**

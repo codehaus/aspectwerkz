@@ -50,29 +50,30 @@ import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
 
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 
 /**
  * Transforms static methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticMethodTransformer.java,v 1.6 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: AdviseStaticMethodTransformer.java,v 1.7 2003-06-26 19:27:17 jboner Exp $
  */
 public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
 
     /**
-     * Holds the createWeaveModel model.
+     * Holds the weave model.
      */
     private final WeaveModel m_weaveModel;
 
     /**
-     * Retrieves the createWeaveModel model.
+     * Retrieves the weave model.
      */
     public AdviseStaticMethodTransformer() {
         super();
         List weaveModels = WeaveModel.loadModels();
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one createWeaveModel model is specified");
+            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);
@@ -582,7 +583,7 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
      * @param methodSequence the methods sequence number
      * @param accessFlags the access flags for the original method
      * @param isThreadSafe
-     * @param uuid the UUID for the createWeaveModel model
+     * @param uuid the UUID for the weave model
      * @return the proxy method
      */
     private Method createProxyMethod(final ConstantPoolGen cp,
@@ -1005,12 +1006,11 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
      *
      * @param cg the ClassGen
      * @param method the method to filter
-     * @return the UUID for the createWeaveModel model
+     * @return the UUID for the weave model
      */
     private String methodFilter(final ClassGen cg,
                                 final Method method) {
-        MethodMetaData methodMetaData =
-                TransformationUtil.createMethodMetaData(method);
+        MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(method);
 
         String uuid = null;
         if (methodMetaData.getName().equals("<init>") ||

@@ -18,8 +18,7 @@
  */
 package org.codehaus.aspectwerkz.task;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
@@ -30,7 +29,7 @@ import org.apache.tools.ant.BuildException;
  * mode.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: OfflineTransformationTask.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: OfflineTransformationTask.java,v 1.5 2003-06-26 19:27:17 jboner Exp $
  */
 public class OfflineTransformationTask extends Task {
 
@@ -96,9 +95,9 @@ public class OfflineTransformationTask extends Task {
      * @throws org.apache.tools.ant.BuildException
      */
     public void execute() throws BuildException {
-        if (m_aspectWerkzHome == null) throw new IllegalArgumentException("aspectWerkzHome must be specified");
-        if (m_classesDir == null) throw new IllegalArgumentException("classesDir must be specified");
-        if (m_definitionFile == null) throw new IllegalArgumentException("definitionFile must be specified");
+        if (m_aspectWerkzHome == null) throw new BuildException("aspectWerkzHome must be specified");
+        if (m_classesDir == null) throw new BuildException("classesDir must be specified");
+        if (m_definitionFile == null) throw new BuildException("definitionFile must be specified");
 
         System.out.println("CAUTION: This Ant task might be a bit shaky, does not show errors in compilation process properly (use at own risk or patch it :-))");
         System.out.println("NOTE: Make shure that you don't transform your classes more than once (without recompiling first)");
@@ -123,30 +122,26 @@ public class OfflineTransformationTask extends Task {
         }
 
         try {
-            Process p = Runtime.getRuntime().exec(command.toString());
+            Process p = Runtime.getRuntime().exec(command.toString(), new String[]{"ASPECTWERKZ_HOME=" + m_aspectWerkzHome, "JAVA_HOME=" + System.getProperty("java.home"), "CLASSPATH=" + System.getProperty("java.class.path")});
             System.out.flush();
-            InputStream stdInput = p.getInputStream();
-            Character newLine = new Character('\n');
-            StringBuffer line = new StringBuffer();
-            while (stdInput != null) {
-                if (stdInput.available() > 0) {
-                    char inChar = (char)stdInput.read();
-                    if (new Character(inChar).equals(newLine)) {
-                        System.out.print(line.toString());
-                        System.out.flush();
-                        if (line.toString().startsWith("Offline transformation")) {
-                            return;
-                        }
-                        line = new StringBuffer();
-                    }
-                    else {
-                        line.append(inChar);
-                    }
+            BufferedReader stdOut = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader stdErr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            String out, err = null;
+
+            while ((out = stdOut.readLine()) != null || (err = stdErr.readLine()) != null) {
+                if (out != null) {
+                    System.out.println(out);
+                    System.out.flush();
+                }
+                if (err != null) {
+                    System.err.println("Error: " + err);
                 }
             }
-        }
-        catch (Exception e) {
-            throw new RuntimeException("could not transform the classes due to: " + e);
+            p.waitFor();
+            if (p.exitValue() != 0)
+                throw new BuildException("Failed to transform classes, exit code: " + p.exitValue());
+        } catch (Throwable e) {
+            throw new BuildException("could not transform the classes due to: " + e);
         }
     }
 }

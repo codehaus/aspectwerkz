@@ -50,7 +50,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * Stores and indexes the introduced methods.<br/>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkz.java,v 1.5 2003-06-19 17:45:23 jboner Exp $
+ * @version $Id: AspectWerkz.java,v 1.6 2003-06-26 19:27:17 jboner Exp $
  */
 public final class AspectWerkz {
 
@@ -295,9 +295,7 @@ public final class AspectWerkz {
         Class adviceClass = null;
         try {
             if (loader == null) {
-                adviceClass = Thread.currentThread().
-                        getContextClassLoader().loadClass(className);
-            }
+                adviceClass = ContextClassLoader.loadClass(className);            }
             else {
                 adviceClass = loader.loadClass(className);
             }

@@ -51,18 +51,19 @@ import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
 
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 
 /**
  * Advises caller side method invocations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.6 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.7 2003-06-26 19:27:17 jboner Exp $
  */
 public class AdviseCallerSideMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
 
     /**
-     * Holds the createWeaveModel model.
+     * Holds the weave model.
      */
     private final WeaveModel m_weaveModel;
 
@@ -73,7 +74,7 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
         super();
         List weaveModels = WeaveModel.loadModels();
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one createWeaveModel model is specified");
+            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);
@@ -160,8 +161,7 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
 
                         // create the meta-data for the method
                         MethodMetaData callerSideMethodMetaData =
-                                TransformationUtil.
-                                createMethodMetaData(invokeInstruction, cpg);
+                                BcelMetaDataMaker.createMethodMetaData(invokeInstruction, cpg);
 
                         // is this a caller side method pointcut?
                         if (m_weaveModel.isCallerSideMethod(
@@ -420,7 +420,7 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
      * @param calleeMethodSignature the signature for the callee method
      * @param factory the objectfactory
      * @param joinPointType the type of the joinpoint
-     * @param uuid the UUID for the createWeaveModel model
+     * @param uuid the UUID for the weave model
      * @return the new method
      */
     private Method createClInitMethodWithStaticJoinPointField(
@@ -511,7 +511,7 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
      * @param calleeMethodSignature the signature for the callee method
      * @param factory the objectfactory
      * @param joinPointType the type of the joinpoint
-     * @param uuid the UUID for the createWeaveModel model
+     * @param uuid the UUID for the weave model
      * @return the modified clinit method
      */
     private Method createStaticJoinPointField(

@@ -27,6 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.codehaus.aspectwerkz.Aspect;
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
 import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
 import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
@@ -56,7 +57,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefinitionManager.java,v 1.8 2003-06-19 17:45:23 jboner Exp $
+ * @version $Id: DefinitionManager.java,v 1.9 2003-06-26 19:27:17 jboner Exp $
  */
 public class DefinitionManager {
 
@@ -140,9 +141,7 @@ public class DefinitionManager {
         if (implClass == null) return null; // interface introduction; skip
 
         try {
-            Class klass = Thread.currentThread().getContextClassLoader().
-                    loadClass(INTRODUCTION_CONTAINER_IMPLEMENTATION_CLASS);
-
+            Class klass = ContextClassLoader.loadClass(INTRODUCTION_CONTAINER_IMPLEMENTATION_CLASS);
             Constructor constructor = klass.getConstructor(new Class[]{Class.class});
             IntroductionContainer container = (IntroductionContainer)constructor.
                     newInstance(new Object[]{implClass});
@@ -168,8 +167,7 @@ public class DefinitionManager {
         if (prototype == null) throw new IllegalArgumentException("advice prototype can not be null");
 
         try {
-            Class klass = Thread.currentThread().getContextClassLoader().
-                    loadClass(ADVICE_CONTAINER_IMPLEMENTATION_CLASS);
+            Class klass = ContextClassLoader.loadClass(ADVICE_CONTAINER_IMPLEMENTATION_CLASS);
             Constructor constructor = klass.getConstructor(new Class[]{AbstractAdvice.class});
             AdviceContainer container = (AdviceContainer)constructor.
                     newInstance(new Object[]{prototype});
@@ -212,7 +210,6 @@ public class DefinitionManager {
     /**
      * Registers the introductions.
      *
-     * @todo what if the context classloader is NULL? Need a plan B.
      * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
      * @param definition the definition
@@ -232,9 +229,7 @@ public class DefinitionManager {
                 if (implClassName != null) { // we have an implementation introduction
                     // load the introduction class
                     try {
-                        implClass = Thread.currentThread().
-                                getContextClassLoader().
-                                loadClass(implClassName);
+                        implClass = ContextClassLoader.loadClass(implClassName);
                     }
                     catch (ClassNotFoundException e) {
                         throw new RuntimeException(implClassName + " could not be found on classpath");
@@ -309,7 +304,6 @@ public class DefinitionManager {
     /**
      * Creates and registers the advices defined.
      *
-     * @todo what if the context classloader is NULL? Need a plan B.
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the definition
      */
@@ -322,8 +316,7 @@ public class DefinitionManager {
             final String adviceClassName = def.getClassName();
 
             try {
-                final Class adviceClass = Thread.currentThread().
-                        getContextClassLoader().loadClass(adviceClassName);
+                final Class adviceClass = ContextClassLoader.loadClass(adviceClassName);
 
                 final AbstractAdvice newAdvice = (AbstractAdvice)adviceClass.
                         getConstructor(new Class[]{}).
@@ -557,7 +550,7 @@ public class DefinitionManager {
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
-     * @param weaveModel the createWeaveModel model
+     * @param weaveModel the weave model
      */
     private static void registerGetFieldPointcuts(
             final String uuid,
@@ -647,7 +640,7 @@ public class DefinitionManager {
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
-     * @param weaveModel the createWeaveModel model
+     * @param weaveModel the weave model
      */
     private static void registerThrowsPointcuts(
             final String uuid,
@@ -724,7 +717,7 @@ public class DefinitionManager {
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
-     * @param weaveModel the createWeaveModel model
+     * @param weaveModel the weave model
      */
     private static void registerCallerSidePointcuts(
             final String uuid,

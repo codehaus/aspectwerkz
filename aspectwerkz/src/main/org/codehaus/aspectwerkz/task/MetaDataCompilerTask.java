@@ -25,7 +25,7 @@ import org.apache.tools.ant.BuildException;
  * Base class for the meta-data compilers Ant tasks.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MetaDataCompilerTask.java,v 1.3 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: MetaDataCompilerTask.java,v 1.4 2003-06-26 19:27:17 jboner Exp $
  */
 public abstract class MetaDataCompilerTask extends Task {
 
@@ -40,7 +40,7 @@ public abstract class MetaDataCompilerTask extends Task {
     protected String m_metaDataDir;
 
     /**
-     * The user-defined UUID for the createWeaveModel model.
+     * The user-defined UUID for the weave model.
      */
     protected String m_uuid;
 
@@ -54,16 +54,16 @@ public abstract class MetaDataCompilerTask extends Task {
     }
 
     /**
-     * Sets the createWeaveModel model dir.
+     * Sets the weave model dir.
      *
-     * @param metaDataDir the createWeaveModel model dir
+     * @param metaDataDir the weave model dir
      */
     public void setMetaDataDir(final String metaDataDir) {
         m_metaDataDir = metaDataDir;
     }
 
     /**
-     * Sets the user-defined UUID for the createWeaveModel model.
+     * Sets the user-defined UUID for the weave model.
      *
      * @param uuid the UUID
      */

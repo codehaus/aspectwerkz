@@ -37,12 +37,13 @@ import org.codehaus.aspectwerkz.regexp.MethodPattern;
 import org.codehaus.aspectwerkz.regexp.FieldPattern;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
 import org.codehaus.aspectwerkz.regexp.ThrowsPattern;
+import org.codehaus.aspectwerkz.ContextClassLoader;
 
 /**
  * Implements the <code>AspectWerkz</code> definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzDefinition.java,v 1.7 2003-06-19 17:45:23 jboner Exp $
+ * @version $Id: AspectWerkzDefinition.java,v 1.8 2003-06-26 19:27:17 jboner Exp $
  */
 public class AspectWerkzDefinition implements Serializable {
 
@@ -118,8 +119,7 @@ public class AspectWerkzDefinition implements Serializable {
     public static AspectWerkzDefinition getDefinition(boolean isDirty) {
         String definitionFileName;
         if (DEFINITION_FILE == null) {
-            URL definition = Thread.currentThread().getContextClassLoader().
-                    getResource(DEFAULT_DEFINITION_FILE_NAME);
+            URL definition = ContextClassLoader.loadResource(DEFAULT_DEFINITION_FILE_NAME);
             if (definition == null) throw new DefinitionException("definition file could not be found on classpath (either specify the file by using the -Daspectwerkz.definition.file=.. option or by having a definition file called aspectwerkz.xml somewhere on the classpath)");
             definitionFileName = definition.getFile();
         }

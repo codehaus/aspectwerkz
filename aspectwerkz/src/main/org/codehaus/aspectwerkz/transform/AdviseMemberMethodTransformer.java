@@ -50,29 +50,30 @@ import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
 
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 
 /**
  * Transforms member methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberMethodTransformer.java,v 1.7 2003-06-20 06:14:27 jboner Exp $
+ * @version $Id: AdviseMemberMethodTransformer.java,v 1.8 2003-06-26 19:27:17 jboner Exp $
  */
 public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
 
     /**
-     * Holds the createWeaveModel model.
+     * Holds the weave model.
      */
     private final WeaveModel m_weaveModel;
 
     /**
-     * Retrieves the createWeaveModel model.
+     * Retrieves the weave model.
      */
     public AdviseMemberMethodTransformer() {
         super();
         List weaveModels = WeaveModel.loadModels();
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one createWeaveModel model is specified");
+            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);
@@ -234,7 +235,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
      * @param methodId the id of the current method in the lookup table
      * @param methodSequence the methods sequence number
      * @param isThreadSafe
-     * @param uuid the UUID for the createWeaveModel model
+     * @param uuid the UUID for the weave model
      * @return the modified constructor
      */
     private MethodGen createJoinPointField(final ConstantPoolGen cp,
@@ -393,7 +394,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
      * @param methodSequence the methods sequence number
      * @param accessFlags the access flags of the original method
      * @param isThreadSafe
-     * @param uuid the uuid for the createWeaveModel model defining the pointcut
+     * @param uuid the uuid for the weave model defining the pointcut
      * @return the proxy method
      */
     private Method createProxyMethod(final ConstantPoolGen cp,
@@ -810,7 +811,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
      *
      * @param cg the ClassGen
      * @param method the method to filter
-     * @return the UUID for the createWeaveModel model
+     * @return the UUID for the weave model
      */
     private String methodFilter(final ClassGen cg, final Method method) {
         String uuid = null;
@@ -824,15 +825,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
             uuid = null;
         }
         else {
-            MethodMetaData methodMetaData = new MethodMetaData();
-            methodMetaData.setName(method.getName());
-            methodMetaData.setReturnType(method.getReturnType().toString());
-            Type[] javaParameters = method.getArgumentTypes();
-            String[] parameterTypes = new String[javaParameters.length];
-            for (int j = 0; j < javaParameters.length; j++) {
-                parameterTypes[j] = javaParameters[j].toString();
-            }
-            methodMetaData.setParameterTypes(parameterTypes);
+            MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(method);
 
             if (m_weaveModel.hasMethodPointcut(cg.getClassName(), methodMetaData)) {
                 uuid = m_weaveModel.getUuid();

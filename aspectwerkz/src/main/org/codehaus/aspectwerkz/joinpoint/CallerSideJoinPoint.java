@@ -30,6 +30,7 @@ import org.apache.bcel.generic.Type;
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
@@ -38,10 +39,8 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * original object and method, name and type of the field etc. Handles the
  * invocation of the advices added to the join point.
  *
- * @todo if a parameter type or return type is an array => always returned as Object[] (fix bug in TransformationUtil.convertBcelTypeToClass(Type)
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CallerSideJoinPoint.java,v 1.7 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: CallerSideJoinPoint.java,v 1.8 2003-06-26 19:27:17 jboner Exp $
  */
 public class CallerSideJoinPoint implements JoinPoint {
 
@@ -294,7 +293,6 @@ public class CallerSideJoinPoint implements JoinPoint {
 
     /**
      * Returns the parameter types for the callee method.
-     * @todo does not represent array structures properly.
      *
      * @return the parameter types
      */
@@ -328,7 +326,6 @@ public class CallerSideJoinPoint implements JoinPoint {
 
     /**
      * Returns the return type for the callee method.
-     * @todo does not represent array structures properly.
      *
      * @return the return type
      */
@@ -393,7 +390,6 @@ public class CallerSideJoinPoint implements JoinPoint {
 
     /**
      * Returns the parameter types for the method.
-     * @todo does not represent array structures properly.
      *
      * @return the parameter types
      */
@@ -427,7 +423,6 @@ public class CallerSideJoinPoint implements JoinPoint {
 
     /**
      * Returns the return type for the caller method.
-     * @todo does not represent array structures properly.
      *
      * @return the return type
      */
@@ -508,21 +503,10 @@ public class CallerSideJoinPoint implements JoinPoint {
      * Creates meta-data for the join point.
      */
     protected void createMetaData() {
-        m_metadata = new MethodMetaData();
-        m_metadata.setName(getCalleeMethodName());
-        Class[] parameterTypes = getCalleeMethodParameterTypes();
-        String[] parameterTypeNames = new String[parameterTypes.length];
-        for (int i = 0; i < parameterTypes.length; i++) {
-            parameterTypeNames[i] = parameterTypes[i].getName();
-        }
-        m_metadata.setParameterTypes(parameterTypeNames);
-        Class returnType = getCalleeMethodReturnType();
-        if (returnType == null) {
-            m_metadata.setReturnType("void");
-        }
-        else {
-            m_metadata.setReturnType(returnType.getName());
-        }
+        m_metadata = ReflectionMetaDataMaker.createMethodMetaData(
+                getCalleeMethodName(),
+                getCalleeMethodParameterTypes(),
+                getCalleeMethodReturnType());
     }
 
     /**

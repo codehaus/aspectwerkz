@@ -24,6 +24,7 @@ import java.io.ObjectInputStream;
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.Type;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 
 /**
  * Matches well defined point of execution in the program where a field is set
@@ -32,7 +33,7 @@ import org.codehaus.aspectwerkz.metadata.FieldMetaData;
  * invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: FieldJoinPoint.java,v 1.5 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: FieldJoinPoint.java,v 1.6 2003-06-26 19:27:17 jboner Exp $
  */
 public abstract class FieldJoinPoint implements JoinPoint {
 
@@ -260,9 +261,8 @@ public abstract class FieldJoinPoint implements JoinPoint {
      * Creates a meta-data for the field for this joinpoint.
      */
     public void createMetaData() {
-        m_metadata = new FieldMetaData();
-        m_metadata.setName(m_fieldName);
-        m_metadata.setType(m_typeName);
+        m_metadata = ReflectionMetaDataMaker.
+                createFieldMetaData(m_fieldName, m_typeName);
     }
 
     /**
