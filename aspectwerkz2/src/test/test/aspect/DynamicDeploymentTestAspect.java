@@ -23,21 +23,19 @@ public class DynamicDeploymentTestAspect extends Aspect {
 
     // ============ Pointcuts ============
 
-    /** @Execution * test.DynamicDeploymentTest.reorderAdvicesTestMethod(..) */
+    /** @Execution void test.DynamicDeploymentTest.reorderAdvicesTestMethod() */
     Pointcut pc1;
-    /** @Execution * test.DynamicDeploymentTest.removeAdviceTestMethod(..) */
+    /** @Execution void test.DynamicDeploymentTest.removeAdviceTestMethod() */
     Pointcut pc2;
-    /** @Execution * test.DynamicDeploymentTest.addAdviceTestMethod(..) */
+    /** @Execution void test.DynamicDeploymentTest.addAdviceTestMethod() */
     Pointcut pc3;
-    /** @Execution * test.DynamicDeploymentTest.createAspectTestMethod(..) */
+    /** @Execution void test.DynamicDeploymentTest.createAspectTestMethod() */
     Pointcut pc4;
 
     // ============ Advices ============
 
     /**
-     * @Around pc1
-     * @Around pc2
-     * @Around pc3
+     * @Around pc1 || pc2 || pc3
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
@@ -47,9 +45,7 @@ public class DynamicDeploymentTestAspect extends Aspect {
     }
 
     /**
-     * @Around pc1 name=advice2
-     * @Around pc2 name=advice2
-     * @Around pc4 name=advice2
+     * @Around pc1 || pc2 || pc4
     */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("before2 ");

@@ -34,13 +34,15 @@ public class AllTests extends TestCase {
 //        suite.addTestSuite(test.FieldAdviceTest.class);
         suite.addTestSuite(test.CallerSideAdviceTest.class);
         suite.addTestSuite(test.CFlowTest.class);
-        suite.addTestSuite(test.DynamicDeploymentTest.class);
         suite.addTestSuite(test.abstractclass.AbstractClassTest.class);
         suite.addTestSuite(test.hierarchicalpattern.HierachicalPatternTest.class);
         suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
         suite.addTestSuite(test.reflection.ReflectionTest.class);
         suite.addTestSuite(test.staticfield.StaticFieldAdviceTest.class);
         suite.addTestSuite(test.superclassconstructor.SuperClassConstructorTest.class);
+
+        // TODO: deprecated until a better hot deployment model has been implemented
+//        suite.addTestSuite(test.DynamicDeploymentTest.class);
 
         // TODO: Alex fix this test please, don't understand it
 //        suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
