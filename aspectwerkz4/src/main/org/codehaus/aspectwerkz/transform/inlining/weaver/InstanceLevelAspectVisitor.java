@@ -184,21 +184,22 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                 INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
         );
 
-        cv.visitVarInsn(ALOAD, 2);
+        cv.visitVarInsn(ALOAD, 2);//qName
         cv.visitMethodInsn(INVOKEINTERFACE, MAP_CLASS_NAME, GET_METHOD_NAME, GET_METHOD_SIGNATURE);
-        cv.visitVarInsn(ASTORE, 3);
-        cv.visitVarInsn(ALOAD, 3);
+        cv.visitVarInsn(ASTORE, 4);
+        cv.visitVarInsn(ALOAD, 4);
         Label ifNullNotLabel = new Label();
         cv.visitJumpInsn(IFNONNULL, ifNullNotLabel);
-        cv.visitVarInsn(ALOAD, 1);
-        cv.visitVarInsn(ALOAD, 0);
+        cv.visitVarInsn(ALOAD, 2);//qName
+        cv.visitVarInsn(ALOAD, 3);//containerClassName
+        cv.visitVarInsn(ALOAD, 0);//this (perInstance)
         cv.visitMethodInsn(
                 INVOKESTATIC,
                 ASPECTS_CLASS_NAME,
                 ASPECT_OF_METHOD_NAME,
                 ASPECT_OF_PER_INSTANCE_METHOD_SIGNATURE
         );
-        cv.visitVarInsn(ASTORE, 3);
+        cv.visitVarInsn(ASTORE, 4);
         cv.visitVarInsn(ALOAD, 0);
         cv.visitFieldInsn(
                 GETFIELD,
@@ -207,11 +208,11 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                 INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
         );
         cv.visitVarInsn(ALOAD, 2);
-        cv.visitVarInsn(ALOAD, 3);
+        cv.visitVarInsn(ALOAD, 4);
         cv.visitMethodInsn(INVOKEINTERFACE, MAP_CLASS_NAME, PUT_METHOD_NAME, PUT_METHOD_SIGNATURE);
         cv.visitInsn(POP);
         cv.visitLabel(ifNullNotLabel);
-        cv.visitVarInsn(ALOAD, 3);
+        cv.visitVarInsn(ALOAD, 4);
         cv.visitInsn(ARETURN);
         cv.visitMaxs(0, 0);
 

@@ -34,6 +34,11 @@ public final class AspectContext implements Serializable {
     private String m_name;
 
     /**
+     * The qualified name of the aspect
+     */
+    private String m_qName;
+
+    /**
      * The aspect class, wrapped in a weak reference since is a key of aspect container referenced by this object.
      */
     private transient WeakReference m_aspectClassRef;
@@ -86,6 +91,7 @@ public final class AspectContext implements Serializable {
         m_uuid = uuid;
         m_aspectClassRef = new WeakReference(aspectClass);
         m_name = name;
+        m_qName = aspectDef.getQualifiedName();
         m_deploymentModel = deploymentModel;
         m_aspectDefinition = aspectDef;
         if (parameters != null) {
@@ -241,11 +247,17 @@ public final class AspectContext implements Serializable {
         ObjectInputStream.GetField fields = stream.readFields();
         m_uuid = (String) fields.get("m_uuid", null);
         m_name = (String) fields.get("m_name", null);
+        m_qName = (String) fields.get("m_qName", null);
         Class aspectClass = Class.forName(m_name);
         m_aspectClassRef = new WeakReference(aspectClass);
         m_deploymentModel = (DeploymentModel) fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
         m_parameters = (Map) fields.get("m_parameters", new HashMap());
         m_metaData = (Map) fields.get("m_metaData", new HashMap());
-        m_container = Aspects.getContainer(aspectClass);
+
+        String containerClassName = Aspects.getAspectQNameContainerClassName(Thread.currentThread().getContextClassLoader(), m_qName)[1];
+        Class containerClass = Class.forName(containerClassName);
+        m_container = Aspects.getContainerQNamed(Thread.currentThread().getContextClassLoader(), containerClass, m_qName);
+
+        //TODO aspectDef
     }
 }

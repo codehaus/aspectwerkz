@@ -20,6 +20,8 @@ import java.util.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import gnu.trove.TIntObjectHashMap;
+
 /**
  * Manages the aspects, registry for the aspect containers (one container per aspect type).
  *
@@ -34,45 +36,54 @@ public class Aspects {
     public static final String DEFAULT_ASPECT_CONTAINER = DefaultAspectContainerStrategy.class.getName();
 
     /**
-     * Map with all the aspect containers mapped to the aspects class
-     * TODO: if the map is weak, then aspects are lost. If the key is the aspect itself, then
-     * we cannot handle aspect reuse in a good way. For now we will strong ref the aspect
+     * Map of TIntHashMap, whose key is containerClass. The TIntHashMap maps container instance, whith qName.hashCode()
+     * as a key.
+     * TODO: still not perfect: uuid / qName handled correctly, but when DefaultContainer is used,
+     * we end up in having one entry with a list that strong refs the container instances
+     * ie leaks since the DefaultContainer leaves in system CL.
      */
-    private static final Map ASPECT_CONTAINERS = new HashMap();
+    private static Map ASPECT_CONTAINER_LISTS = new WeakHashMap();
 
     /**
-     * Returns the aspect container for the aspect with the given name.
+     * Returns the aspect container class for the given aspect class qName.
+     * The qName is returned since we may have only the aspect class name upon lookup
      *
-     * @param aspectClass the class of the aspect
-     * @return the container, put in cache based on aspect class as a key
+     * @param visibleFrom class loader to look from
+     * @param qName
+     * @return the container class
      */
-    public static AspectContainer getContainer(final Class aspectClass) {
-        return getContainerQNamed(aspectClass, null);
+    public static String[] getAspectQNameContainerClassName(final ClassLoader visibleFrom, final String qName) {
+        AspectDefinition aspectDefinition = lookupAspectDefinition(visibleFrom, qName);
+        return new String[]{aspectDefinition.getQualifiedName(), aspectDefinition.getContainerClassName()};
     }
 
     /**
-     * Returns or create the aspect container for the given aspect class with the given qualified name
+     * Returns or create the aspect container for the given container class with the given aspect qualified name
      *
-     * @param aspectClass
+     * @param visibleFrom class loader hosting the advised class ie from where all is visible
+     * @param containerClass
      * @param qName
      * @return
      */
-    private static AspectContainer getContainerQNamed(final Class aspectClass, final String qName) {
-        ContainerKey key = ContainerKey.get(aspectClass, qName);
-        synchronized (ASPECT_CONTAINERS) {
-            AspectContainer container = (AspectContainer) ASPECT_CONTAINERS.get(key);
+    public static AspectContainer getContainerQNamed(final ClassLoader visibleFrom, final Class containerClass, final String qName) {
+        synchronized (ASPECT_CONTAINER_LISTS) {
+            TIntObjectHashMap containers = (TIntObjectHashMap) ASPECT_CONTAINER_LISTS.get(containerClass);
+            if (containers == null) {
+                containers = new TIntObjectHashMap();
+                ASPECT_CONTAINER_LISTS.put(containerClass, containers);
+            }
+            AspectContainer container = (AspectContainer) containers.get(qName.hashCode());
             if (container == null) {
-                container = createAspectContainer(aspectClass, qName);
-                ASPECT_CONTAINERS.put(key, container);
+                container = createAspectContainer(visibleFrom, containerClass, qName);
+                containers.put(qName.hashCode(), container);
             }
             return container;
         }
-
     }
 
     /**
      * Returns the singleton aspect instance for the aspect with the given qualified name.
-     * The aspect is looked up from the thread context classloader
+     * The aspect is looked up from the thread context classloader.
      *
      * @param qName the qualified name of the aspect
      * @return the singleton aspect instance
@@ -82,183 +93,136 @@ public class Aspects {
     }
 
     /**
-     * Returns the singleton aspect instance for the aspect with the given qualified name.
-     * The class loader from where to lookup the aspect must be the callER side class loader for get/set/call joinpoints.
-     *
-     * @param loader the classloader to look from
-     * @param qName the qualified name of the aspect
-     * @return the singleton aspect instance
-     */
-    public static Object aspectOf(final ClassLoader loader, final String qName) {
-        try {
-            Class aspectClass = ContextClassLoader.forName(loader, qName);
-            return aspectOfQNamed(aspectClass, qName);
-        } catch (ClassNotFoundException e) {
-            // try to guess it from the system definitions if we have a uuid prefix
-            String className = lookupAspectClassName(loader, qName);
-            if (className != null) {
-                try {
-                    Class aspectClass = ContextClassLoader.forName(loader, className);
-                    return aspectOfQNamed(aspectClass, qName);
-                } catch (ClassNotFoundException ee) {
-                    throw new Error("Could not load aspect " + qName + " from " + loader);
-                }
-            } else {
-                throw new Error("Could not load aspect " + qName + " from " + loader);
-            }
-        }
-    }
-
-    /**
-     * Returns the singleton aspect instance for the aspect with the given name.
+     * Returns the singleton aspect instance for the given aspect class.
+     * Consider using aspectOf(visibleFrom, qName) if the aspect is used more than once
+     * or if it is used in a class loader which is child of its own classloader.
      *
      * @param aspectClass the class of the aspect
      * @return the singleton aspect instance
      */
     public static Object aspectOf(final Class aspectClass) {
-        return getContainer(aspectClass).aspectOf();
-    }
-
-    private static Object aspectOfQNamed(final Class aspectClass, final String qName) {
-        return getContainerQNamed(aspectClass, qName).aspectOf();
+        String aspectClassName = aspectClass.getName().replace('/', '.');
+        return aspectOf(aspectClass.getClassLoader(), aspectClassName);
     }
 
     /**
-     * Returns the per class aspect instance for the aspect with the given qualified name for the perTarget model
+     * Returns the singleton aspect instance for given aspect qName, with visibility from the given class loader
      *
-     * @param qName        the qualified name of the aspect
-     * @param targetClass the targetClass class
-     * @return the per class aspect instance
+     * @param visibleFrom the class loader from where aspect is visible, likely to be the class loader of the
+     * advised classes, or the one where the system hosting the aspect is deployed.
+     * @return the singleton aspect instance
      */
-    public static Object aspectOf(final String qName, final Class targetClass) {
-        try {
-            Class aspectClass = ContextClassLoader.forName(targetClass.getClassLoader(), qName);
-            return aspectOf(aspectClass, targetClass);
-        } catch (ClassNotFoundException e) {
-            // try to guess it from the system definitions if we have a uuid prefix
-            String className = lookupAspectClassName(targetClass.getClassLoader(), qName);
-            if (className != null) {
-                try {
-                    Class aspectClass = ContextClassLoader.forName(targetClass.getClassLoader(), className);
-                    return aspectOfQNamed(aspectClass, qName, targetClass);
-                } catch (ClassNotFoundException e2) {
-                    throw new Error("Could not load aspect " + qName + " from " + targetClass.getClassLoader());
-                }
-            } else {
-                throw new Error("Could not load aspect " + qName + " from " + targetClass.getClassLoader());
-            }
-        }
+    public static Object aspectOf(final ClassLoader visibleFrom, final String qName) {
+        String[] qNameContainerClassName = getAspectQNameContainerClassName(visibleFrom, qName);
+        return aspect$Of(visibleFrom, qNameContainerClassName[0], qNameContainerClassName[1]);
     }
 
     /**
-     * Returns the per class aspect instance for the aspect with the given name for the perTarget model
+     * Returns the per class aspect attached to targetClass
+     * Consider using aspectOf(qName, targetClass) if the aspect is used more than once
      *
      * @param aspectClass the name of the aspect
-     * @param targetClass the targetClass class
+     * @param targetClass the target class
      * @return the per class aspect instance
      */
     public static Object aspectOf(final Class aspectClass, final Class targetClass) {
-        return getContainer(aspectClass).aspectOf(targetClass);
-    }
-    private static Object aspectOfQNamed(final Class aspectClass, final String qName, final Class targetClass) {
-        return getContainerQNamed(aspectClass, qName).aspectOf(targetClass);
+        String aspectClassName = aspectClass.getName().replace('/', '.');
+        return aspectOf(aspectClassName, targetClass);
     }
 
     /**
-     * Returns the per targetClass instance aspect instance for the aspect with the given qualified name for the perTarget model
+     * Returns the per class aspect instance for the aspect with the given qualified name for targetClass
      *
-     * @param qName           the qualified name of the aspect
-     * @param targetInstance the targetClass instance, can be null (static method, ctor call)
-     * @return the per instance aspect instance, fallback on perClass if targetInstance is null
+     * @param qName        the qualified name of the aspect
+     * @param targetClass the target class
+     * @return the per class aspect instance
+     */
+    public static Object aspectOf(final String qName, final Class targetClass) {
+        // look up from the targetClass loader is enough in that case
+        String[] qNameContainerClassName = getAspectQNameContainerClassName(targetClass.getClassLoader(), qName);
+        return aspect$Of(qNameContainerClassName[0], qNameContainerClassName[1], targetClass);
+    }
+
+    /**
+     * Returns the per instance aspect attached to targetInstance
+     * Consider using aspectOf(qName, targetInstance) if the aspect is used more than once
+     *
+     * @param aspectClass the name of the aspect
+     * @param targetInstance the target instance
+     * @return the per class aspect instance
+     */
+    public static Object aspectOf(final Class aspectClass, final Object targetInstance) {
+        String aspectClassName = aspectClass.getName().replace('/', '.');
+        return aspectOf(aspectClassName, targetInstance);
+    }
+
+    /**
+     * Returns the per instance aspect attached to targetInstance
+     *
+     * @param qName the qualified name of the aspect
+     * @param targetInstance the target instance
+     * @return the per class aspect instance
      */
     public static Object aspectOf(final String qName, final Object targetInstance) {
+        // look up from the targetInstance loader is enough in that case
+        String[] qNameContainerClassName = getAspectQNameContainerClassName(targetInstance.getClass().getClassLoader(), qName);
+        return aspect$Of(qNameContainerClassName[0], qNameContainerClassName[1], targetInstance);
+    }
+
+    //---------- weaver exposed
+
+    public static Object aspect$Of(ClassLoader loader, String qName, String containerClassName) {
         try {
-            Class aspectClass = ContextClassLoader.forName(targetInstance.getClass().getClassLoader(), qName);
-            return aspectOf(aspectClass, targetInstance);
-        } catch (ClassNotFoundException e) {
-            // try to guess it from the system definitions if we have a uuid prefix
-            String className = lookupAspectClassName(targetInstance.getClass().getClassLoader(), qName);
-            if (className != null) {
-                try {
-                    Class aspectClass = ContextClassLoader.forName(targetInstance.getClass().getClassLoader(), className);
-                    return aspectOfQNamed(aspectClass, qName, targetInstance);
-                } catch (ClassNotFoundException e2) {
-                    throw new Error(
-                            "Could not load aspect " + qName + " from " + targetInstance.getClass().getClassLoader()
-                    );
-                }
-            } else {
-                throw new Error(
-                        "Could not load aspect " + qName + " from " + targetInstance.getClass().getClassLoader()
-                );
-            }
+            Class containerClass = ContextClassLoader.forName(loader, containerClassName);
+            return getContainerQNamed(loader, containerClass, qName).aspectOf();
+        } catch (Throwable t) {
+            throw new NoAspectBoundException(t, qName);
         }
     }
 
-    /**
-     * Returns the per targetClass instance aspect instance for the aspect with the given name for the perTarget model
-     *
-     * @param aspectClass    the name of the aspect
-     * @param targetInstance the targetClass instance, can be null
-     * @return the per targetClass instance aspect instance, fallback to perClass if targetInstance is null
-     */
-    public static Object aspectOf(final Class aspectClass, final Object targetInstance) {
-        return getContainer(aspectClass).aspectOf(targetInstance);
+    public static Object aspect$Of(String qName, String containerClassName, final Class perClass) {
+        try {
+            ClassLoader loader = perClass.getClassLoader();
+            Class containerClass = ContextClassLoader.forName(loader, containerClassName);
+            return getContainerQNamed(loader, containerClass, qName).aspectOf(perClass);
+        } catch (Throwable t) {
+            throw new NoAspectBoundException(t, qName);
+        }
     }
-    private static Object aspectOfQNamed(final Class aspectClass, final String qName, final Object targetInstance) {
-        return getContainerQNamed(aspectClass, qName).aspectOf(targetInstance);
+
+    public static Object aspect$Of(String qName, String containerClassName, final Object perInstance) {
+        try {
+            ClassLoader loader = perInstance.getClass().getClassLoader();
+            Class containerClass = ContextClassLoader.forName(loader, containerClassName);
+            return getContainerQNamed(loader, containerClass, qName).aspectOf(perInstance);
+        } catch (Throwable t) {
+            throw new NoAspectBoundException(t, qName);
+        }
     }
+
+
+
+
+    //---------- helpers
 
     /**
      * Creates a new aspect container.
      *
-     * @param aspectClass the aspect class
-     * @param qName the aspect qualified name or null
+     * @param visibleFrom class loader of the advised class from all is visible
+     * @param containerClass the container class
+     * @param qName the aspect qualified name
      */
-    private static AspectContainer createAspectContainer(final Class aspectClass, final String qName) {
-        AspectDefinition aspectDefinition = null;
+    private static AspectContainer createAspectContainer(final ClassLoader visibleFrom, final Class containerClass, final String qName) {
+        AspectDefinition aspectDefinition = lookupAspectDefinition(visibleFrom, qName);
 
-        Set definitions = SystemDefinitionContainer.getDefinitionsFor(aspectClass.getClassLoader());
-        int found = 0;
-        for (Iterator iterator = definitions.iterator(); iterator.hasNext() && aspectDefinition == null;) {
-            SystemDefinition systemDefinition = (SystemDefinition) iterator.next();
-            for (Iterator iterator1 = systemDefinition.getAspectDefinitions().iterator(); iterator1.hasNext();) {
-                AspectDefinition aspectDef = (AspectDefinition) iterator1.next();
-                // if no qName, lookup is made on aspectClass name and me must find only one
-                if (qName == null) {
-                    if (aspectClass.getName().replace('/', '.').equals(aspectDef.getClassName())) {
-                        if (found == 0) {
-                            // keep the first def
-                            aspectDefinition = aspectDef;
-                        }
-                        found++;
-                    }
-                } else {
-                    if (qName.equals(aspectDef.getQualifiedName())) {
-                        aspectDefinition = aspectDef;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (qName == null && found > 1) {
-            throw new Error("Could not find AspectDefinition for " + aspectClass.getName()
-                            + " using unqualified name. Found " + found + " definitions");
-        }
-
-        if (aspectDefinition == null) {
-            throw new Error("Could not find AspectDefinition for " + aspectClass.getName() + " (" + qName+")");
-        }
-
-        String containerClassName = aspectDefinition.getContainerClassName();
+        Class aspectClass = null;
         try {
-            Class containerClass;
-            if (containerClassName == null) {
-                containerClass = ContextClassLoader.forName(aspectClass.getClassLoader(), DEFAULT_ASPECT_CONTAINER);
-            } else {
-                containerClass = ContextClassLoader.forName(aspectClass.getClassLoader(), containerClassName);
-            }
+            aspectClass = ContextClassLoader.forName(visibleFrom, aspectDefinition.getClassName());
+        } catch (Throwable t) {
+            throw new NoAspectBoundException(t, qName);
+        }
+
+        try {
             Constructor constructor = containerClass.getConstructor(new Class[]{AspectContext.class});
             final AspectContext aspectContext = new AspectContext(
                     aspectDefinition.getSystemDefinition().getUuid(),
@@ -272,92 +236,107 @@ public class Aspects {
             aspectContext.setContainer(container);
             return container;
         } catch (InvocationTargetException e) {
-            throw new DefinitionException(e.getTargetException().toString());
+            throw new NoAspectBoundException(e, qName);
         } catch (NoSuchMethodException e) {
-            throw new DefinitionException(
-                    "aspect container does not have a valid constructor ["
-                    + containerClassName
+            throw new NoAspectBoundException(
+                    "AspectContainer does not have a valid constructor ["
+                    + containerClass.getName()
                     + "] need to take an AspectContext instance as its only parameter: "
-                    + e.toString()
+                    + e.toString(),
+                    qName
             );
         } catch (Throwable e) {
             StringBuffer cause = new StringBuffer();
-            cause.append("could not create aspect container using the implementation specified [");
-            cause.append(containerClassName);
-            cause.append("] due to: ");
-            cause.append(e.toString());
-            e.printStackTrace();
-            throw new DefinitionException(cause.toString());
+            cause.append("Could not create AspectContainer using the implementation specified [");
+            cause.append(containerClass.getName());
+            cause.append("] for ").append(qName);
+            throw new NoAspectBoundException(e, cause.toString());
         }
     }
 
     /**
-     * Looks up the aspect class name, based on the qualified name of the aspect.
+     * Lookup the aspect definition with the given qName, visible from the given loader.
+     * If qName is a class name only, the fallback will ensure only one aspect use is found.
      *
-     * @param loader
-     * @param qualifiedName
+     * @param visibleFrom
+     * @param qName
      * @return
      */
-    private static String lookupAspectClassName(final ClassLoader loader, final String qualifiedName) {
-        if (qualifiedName.indexOf('/') <= 0) {
-            // no uuid
-            return null;
-        }
+    private static AspectDefinition lookupAspectDefinition(final ClassLoader visibleFrom, final String qName) {
+        AspectDefinition aspectDefinition = null;
 
-        final Set definitionsBottomUp = SystemDefinitionContainer.getDefinitionsFor(loader);
-        // TODO: bottom up is broken now
-        //Collections.reverse(definitionsBottomUp);
-
-        for (Iterator iterator = definitionsBottomUp.iterator(); iterator.hasNext();) {
-            SystemDefinition definition = (SystemDefinition) iterator.next();
-            for (Iterator iterator1 = definition.getAspectDefinitions().iterator(); iterator1.hasNext();) {
-                AspectDefinition aspectDefinition = (AspectDefinition) iterator1.next();
-                if (qualifiedName.equals(aspectDefinition.getQualifiedName())) {
-                    return aspectDefinition.getClassName();
+        Set definitions = SystemDefinitionContainer.getDefinitionsFor(visibleFrom);
+        if (qName.indexOf('/')>0) {
+            // has system uuid ie real qName
+            for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
+                SystemDefinition systemDefinition = (SystemDefinition) iterator.next();
+                for (Iterator iterator1 = systemDefinition.getAspectDefinitions().iterator(); iterator1.hasNext();) {
+                    AspectDefinition aspectDef = (AspectDefinition) iterator1.next();
+                    if (qName.equals(aspectDef.getQualifiedName())) {
+                        aspectDefinition = aspectDef;
+                        break;
+                    }
                 }
             }
+        } else {
+            // fallback on class name lookup
+            // must find at most one
+            int found = 0;
+            for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
+                SystemDefinition systemDefinition = (SystemDefinition) iterator.next();
+                for (Iterator iterator1 = systemDefinition.getAspectDefinitions().iterator(); iterator1.hasNext();) {
+                    AspectDefinition aspectDef = (AspectDefinition) iterator1.next();
+                    if (qName.equals(aspectDef.getClassName())) {
+                        aspectDefinition = aspectDef;
+                        found++;
+                    }
+                }
+            }
+            if (found > 1) {
+                throw new NoAspectBoundException("More than one AspectDefinition found, consider using other API methods", qName);
+            }
+
         }
-        return null;
+
+        if (aspectDefinition == null) {
+            throw new NoAspectBoundException("Could not find AspectDefinition", qName);
+        }
+
+        return aspectDefinition;
     }
+
+//    /**
+//     * Looks up the aspect class name, based on the qualified name of the aspect.
+//     *
+//     * @param loader
+//     * @param qualifiedName
+//     * @return
+//     */
+//    private static String lookupAspectClassName(final ClassLoader loader, final String qualifiedName) {
+//        if (qualifiedName.indexOf('/') <= 0) {
+//            // no uuid
+//            return null;
+//        }
+//
+//        final Set definitionsBottomUp = SystemDefinitionContainer.getDefinitionsFor(loader);
+//        // TODO: bottom up is broken now
+//        //Collections.reverse(definitionsBottomUp);
+//
+//        for (Iterator iterator = definitionsBottomUp.iterator(); iterator.hasNext();) {
+//            SystemDefinition definition = (SystemDefinition) iterator.next();
+//            for (Iterator iterator1 = definition.getAspectDefinitions().iterator(); iterator1.hasNext();) {
+//                AspectDefinition aspectDefinition = (AspectDefinition) iterator1.next();
+//                if (qualifiedName.equals(aspectDefinition.getQualifiedName())) {
+//                    return aspectDefinition.getClassName();
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
     /**
      * Class is non-instantiable.
      */
     private Aspects() {
-    }
-
-    private static class ContainerKey {
-        Class aspectClass;
-        String qName;
-        private long aspectClassHash;
-
-        private ContainerKey(final Class aspectClass, final String qName) {
-            this.aspectClass = aspectClass;
-            this.qName = qName;
-            this.aspectClassHash = aspectClass.hashCode();
-        }
-
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof ContainerKey)) return false;
-
-            final ContainerKey containerKey = (ContainerKey) o;
-
-            if (aspectClassHash != containerKey.aspectClassHash) return false;
-            if (qName != null ? !qName.equals(containerKey.qName) : containerKey.qName != null) return false;
-
-            return true;
-        }
-
-        public int hashCode() {
-            int result;
-            result = (qName != null ? qName.hashCode() : 0);
-            result = 29 * result + (int) (aspectClassHash ^ (aspectClassHash >>> 32));
-            return result;
-        }
-
-        static ContainerKey get(final Class aspectClass, final String qName) {
-            return new ContainerKey(aspectClass, qName);
-        }
     }
 }

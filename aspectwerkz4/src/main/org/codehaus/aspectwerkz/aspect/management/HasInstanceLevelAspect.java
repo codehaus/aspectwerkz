@@ -21,7 +21,8 @@ public interface HasInstanceLevelAspect {
      *
      * @param aspectClassName     the class name of the aspect
      * @param qualifiedAspectName the qualified name of the aspect
+     * @param containerClassName  the aspect container class name
      * @return the aspect instance
      */
-    Object aw$getAspect(String aspectClassName, String qualifiedAspectName);
+    Object aw$getAspect(String aspectClassName, String qualifiedAspectName, String containerClassName);
 }
