@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.lang.ref.WeakReference;
+
 import javassist.CtConstructor;
 
 /**
@@ -50,10 +52,11 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
      * @return the constructor info
      */
     public static JavassistConstructorInfo getConstructorInfo(final CtConstructor constructor, final ClassLoader loader) {
-        JavassistConstructorInfo constructorInfo = (JavassistConstructorInfo)s_cache.get(constructor);
+        WeakReference constructorRef = new WeakReference(constructor);
+        JavassistConstructorInfo constructorInfo = (JavassistConstructorInfo)s_cache.get(constructorRef);
         if (constructorInfo == null) {
             new JavassistClassInfo(constructor.getDeclaringClass(), loader);
-            constructorInfo = (JavassistConstructorInfo)s_cache.get(constructor);
+            constructorInfo = (JavassistConstructorInfo)s_cache.get(constructorRef);
         }
         return constructorInfo;
     }
@@ -65,7 +68,7 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
      * @param methodInfo  the constructor info
      */
     public static void addConstructorInfo(final CtConstructor constructor, final JavassistConstructorInfo methodInfo) {
-        s_cache.put(constructor, methodInfo);
+        s_cache.put(new WeakReference(constructor), methodInfo);
     }
 
     /**

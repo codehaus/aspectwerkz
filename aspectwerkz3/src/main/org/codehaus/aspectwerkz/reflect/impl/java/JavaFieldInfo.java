@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import java.lang.reflect.Field;
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -49,10 +50,11 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
      * @return the field info
      */
     public static JavaFieldInfo getFieldInfo(final Field field) {
-        JavaFieldInfo fieldInfo = (JavaFieldInfo)s_cache.get(field);
+        WeakReference fieldRef = new WeakReference(field);
+        JavaFieldInfo fieldInfo = (JavaFieldInfo)s_cache.get(fieldRef);
         if (fieldInfo == null) { //  declaring class is not loaded yet; load it and retry
             new JavaClassInfo(field.getDeclaringClass());
-            fieldInfo = (JavaFieldInfo)s_cache.get(field);
+            fieldInfo = (JavaFieldInfo)s_cache.get(fieldRef);
         }
         return fieldInfo;
     }
@@ -76,7 +78,7 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
      * @param fieldInfo the field info
      */
     public static void addFieldInfo(final Field field, final JavaFieldInfo fieldInfo) {
-        s_cache.put(field, fieldInfo);
+        s_cache.put(new WeakReference(field), fieldInfo);
     }
 
     /**

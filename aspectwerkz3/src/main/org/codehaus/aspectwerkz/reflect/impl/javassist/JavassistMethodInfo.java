@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.lang.ref.WeakReference;
+
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
@@ -57,10 +59,11 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
      * @return the method info
      */
     public static JavassistMethodInfo getMethodInfo(final CtMethod method, final ClassLoader classLoader) {
-        JavassistMethodInfo methodInfo = (JavassistMethodInfo)s_cache.get(method);
+        WeakReference methodRef = new WeakReference(method);
+        JavassistMethodInfo methodInfo = (JavassistMethodInfo)s_cache.get(methodRef);
         if (methodInfo == null) {
             new JavassistClassInfo(method.getDeclaringClass(), classLoader);
-            methodInfo = (JavassistMethodInfo)s_cache.get(method);
+            methodInfo = (JavassistMethodInfo)s_cache.get(methodRef);
         }
         return methodInfo;
     }
@@ -72,7 +75,7 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
      * @param methodInfo the method info
      */
     public static void addMethodInfo(final CtMethod method, final JavassistMethodInfo methodInfo) {
-        s_cache.put(method, methodInfo);
+        s_cache.put(new WeakReference(method), methodInfo);
     }
 
     /**

@@ -41,7 +41,7 @@ public abstract class JavassistMemberInfo implements MemberInfo {
     /**
      * The class loader that loaded the declaring class.
      */
-    protected final ClassLoader m_loader;
+    protected transient final ClassLoader m_loader;
 
     /**
      * The annotation extractor.
