@@ -58,7 +58,6 @@ public class ClassPreProcessorHelper {
      * in the regular classpath whereas the instrumentation layer (layer 1) is in the bootclasspath
      */
     public static synchronized void initializePreProcessor() {
-        //@todo review log statement according to log layer
         if (preProcessorInitialized) {
             return;
         }
@@ -69,20 +68,13 @@ public class ClassPreProcessorHelper {
             // force loading thru System class loader to allow
             // preprocessor implementation to be in standard classpath
             klass = Class.forName(s, true, ClassLoader.getSystemClassLoader());
-
-            // special hidden option to allow testing of HotSwap weaving when WeavingCL is used
-            // in such a case the CLPP must be in the WeavingCL hierarchy, which is parrallel
-            // to the regulare SystemCL
-            if (System.getProperty("aspectwerkz.transform.forceWCL") != null) {
-                klass = Class.forName(s, true, Thread.currentThread().getContextClassLoader());
-            }
         } catch (ClassNotFoundException _ex) {
             System.err.println("AspectWerkz - WARN - Pre-processor class '" + s + "' not found");
         }
         if (klass != null) {
             try {
                 preProcessor = (ClassPreProcessor) klass.newInstance();
-                preProcessor.initialize(null);
+                preProcessor.initialize();
                 System.out.println("AspectWerkz - INFO - Pre-processor " + s + " loaded and initialized");
             } catch (Throwable throwable) {
                 System.err.println("AspectWerkz - WARN - Error initializing pre-processor class " + s + ':');
@@ -100,9 +92,6 @@ public class ClassPreProcessorHelper {
                                          int off,
                                          int len,
                                          ProtectionDomain pd) {
-        if (!preProcessorInitialized) {
-            initializePreProcessor();
-        }
         if (preProcessor == null) {
             // we need to check this due to reentrancy when ClassPreProcessorHelper is beeing
             // initialized
@@ -113,10 +102,8 @@ public class ClassPreProcessorHelper {
         } else {
             try {
                 byte[] ibyte = new byte[len];
-                byte[] obyte = new byte[]{};
                 System.arraycopy(b, off, ibyte, 0, len);
-                obyte = preProcessor.preProcess(name, ibyte, caller);
-                return obyte;
+                return preProcessor.preProcess(name, ibyte, caller);
             } catch (Throwable throwable) {
                 System.err.println(
                         "AspectWerkz - WARN - Error pre-processing class "
@@ -125,10 +112,9 @@ public class ClassPreProcessorHelper {
                         + Thread.currentThread()
                 );
                 throwable.printStackTrace();
+                // fallback to unweaved bytecode
                 byte[] obyte = new byte[len];
                 System.arraycopy(b, off, obyte, 0, len);
-
-                //abyte = preProcessor.preProcess(name, abyte, caller);
                 return obyte;
             }
         }

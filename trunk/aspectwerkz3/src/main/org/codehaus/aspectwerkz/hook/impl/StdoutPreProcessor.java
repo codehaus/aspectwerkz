@@ -46,7 +46,7 @@ public class StdoutPreProcessor implements ClassPreProcessor {
         System.out.println(Thread.currentThread().getName() + ": StdoutPreProcessor: " + s);
     }
 
-    public void initialize(Hashtable hashtable) {
+    public void initialize() {
         log("initialize");
         log("loaded by " + this.getClass().getClassLoader());
         classloaders = Collections.synchronizedMap(new WeakHashMap());

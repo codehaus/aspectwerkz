@@ -174,24 +174,25 @@ public class EWorldUtil {
     }
 
     public static void hotswap(String classPattern) {
-        AspectWerkzPreProcessor awpp = (AspectWerkzPreProcessor) ClassPreProcessorHelper
-                .getClassPreProcessor();
-        for (Iterator it = awpp.getClassCacheTuples().iterator(); it.hasNext();) {
-            ClassCacheTuple tuple = (ClassCacheTuple) it.next();
-            if (tuple.getClassName().startsWith(classPattern)) {
-                try {
-                    System.out.println("hotswap " + tuple.getClassName());
-                    HotSwapClient.hotswap(tuple.getClassLoader().loadClass(tuple.getClassName()));
-                } catch (Throwable t) {
-                    System.err.println(
-                            "Unable to hotswap "
-                            + tuple.getClassName()
-                            + ": "
-                            + t.getMessage()
-                    );
-                }
-            }
-        }
+        throw new UnsupportedOperationException("not supported in AW 2.0");
+//        AspectWerkzPreProcessor awpp = (AspectWerkzPreProcessor) ClassPreProcessorHelper
+//                .getClassPreProcessor();
+//        for (Iterator it = awpp.getClassCacheTuples().iterator(); it.hasNext();) {
+//            ClassCacheTuple tuple = (ClassCacheTuple) it.next();
+//            if (tuple.getClassName().startsWith(classPattern)) {
+//                try {
+//                    System.out.println("hotswap " + tuple.getClassName());
+//                    HotSwapClient.hotswap(tuple.getClassLoader().loadClass(tuple.getClassName()));
+//                } catch (Throwable t) {
+//                    System.err.println(
+//                            "Unable to hotswap "
+//                            + tuple.getClassName()
+//                            + ": "
+//                            + t.getMessage()
+//                    );
+//                }
+//            }
+//        }
     }
 
     public static void dumpSystemDefinitions(ClassLoader loader) {
