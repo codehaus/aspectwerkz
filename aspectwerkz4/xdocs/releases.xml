@@ -41,11 +41,14 @@
 
             <subsection name="Changes in 2.0 final">
                 <p>
-                    AspectWerkz 2.0 final comes with small bug fixes.
+                    AspectWerkz 2.0 final comes with bug fixes.
                     <ul>
                         <li>option -keepjp renamed in -genjp (generate jit join points) (affects offline mode)</li>
+                        <li>perJVM mixin deployment-model restablished</li>
                         <li>after returning advice was not handled properly in some cases</li>
                         <li>issue with around advice and set() pointcut could happen with long/double fields</li>
+                        <li>issue with serialization and advised classes not implementing directly java.io.Serializable</li>
+                        <li>issue could happen when using hot re-deployment of advised J2EE applications</li>
                     </ul>
                 </p>
             </subsection>

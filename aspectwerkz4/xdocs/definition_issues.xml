@@ -995,7 +995,7 @@ Set<SystemDefinition> systems = SystemDefinition.getDefinitionsFor(classLoader);
                 </ul>
             </p>
             <p>
-                The two different deployment models for Mixins are:
+                The three different deployment models for Mixins are:
                 <ul>
                     <li>
                         <code>perInstance</code> - one instance per class instance.
@@ -1003,6 +1003,10 @@ Set<SystemDefinition> systems = SystemDefinition.getDefinitionsFor(classLoader);
                     <br/>
                     <li>
                         <code>perClass</code> - one instance per class.
+                    </li>
+                    <li>
+                        <code>perJVM</code> - one instance per JVM.
+                        Basically the same thing as a singleton class.
                     </li>
                 </ul>
             </p>
