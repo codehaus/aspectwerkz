@@ -14,6 +14,7 @@ import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
@@ -159,8 +160,8 @@ public class CFlowSystemAspect {
      *
      * @return the created within info
      */
-    private static JavaClassInfo createWithinInfo(final JoinPoint joinPoint) {
+    private static ClassInfo createWithinInfo(final JoinPoint joinPoint) {
         Class targetClass = joinPoint.getTargetClass();
-        return new JavaClassInfo(targetClass);
+        return JavaClassInfo.getClassInfo(targetClass);
     }
 }

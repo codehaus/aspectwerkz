@@ -56,7 +56,7 @@ public class MethodCallTransformer implements Transformer {
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
             final CtClass ctClass = klass.getCtClass();
-            ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
+            ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
             if (classFilter(definition, new ExpressionContext(PointcutType.CALL, classInfo, classInfo), ctClass)) {
                 continue;
             }
@@ -95,7 +95,7 @@ public class MethodCallTransformer implements Transformer {
                             // TODO: callee side class info is NOT used, make use of it
                             ClassInfo calleeSideClassInfo = classInfoRepository.getClassInfo(calleeClassName);
                             if (calleeSideClassInfo == null) {
-                                calleeSideClassInfo = new JavassistClassInfo(ctClass.getClassPool().get(calleeClassName),
+                                calleeSideClassInfo = JavassistClassInfo.getClassInfo(ctClass.getClassPool().get(calleeClassName),
                                                                              context.getLoader());
                             }
 

@@ -605,7 +605,7 @@ public class JoinPointManager {
     private ClassInfo createClassInfo(final Class klass) {
         ClassInfo classInfo = m_classInfoRepository.getClassInfo(klass.getName());
         if (classInfo == null) {
-            classInfo = new JavaClassInfo(klass);
+            classInfo = JavaClassInfo.getClassInfo(klass);
         }
         return classInfo;
     }

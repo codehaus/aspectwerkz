@@ -19,6 +19,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import gnu.trove.TIntObjectHashMap;
+
 /**
  * Implementation of the ClassInfo interface for java.lang.reflect.*.
  *
@@ -53,17 +55,17 @@ public class JavaClassInfo implements ClassInfo {
     /**
      * A list with the <code>ConstructorMetaData</code> instances.
      */
-    private ConstructorInfo[] m_constructors = null;
+    private final TIntObjectHashMap m_constructors = new TIntObjectHashMap();
 
     /**
      * A list with the <code>MethodInfo</code> instances.
      */
-    private MethodInfo[] m_methods = null;
+    private final TIntObjectHashMap m_methods = new TIntObjectHashMap();
 
     /**
      * A list with the <code>FieldMetaData</code> instances.
      */
-    private FieldInfo[] m_fields = null;
+    private final TIntObjectHashMap m_fields = new TIntObjectHashMap();
 
     /**
      * A list with the interfaces.
@@ -91,11 +93,25 @@ public class JavaClassInfo implements ClassInfo {
     private final ClassInfoRepository m_classInfoRepository;
 
     /**
+     * Returns the class info for a specific class.
+     *
+     * @return the class info
+     */
+    public static ClassInfo getClassInfo(final Class clazz) {
+        ClassInfoRepository repository = ClassInfoRepository.getRepository(clazz.getClassLoader());
+        ClassInfo classInfo = repository.getClassInfo(clazz.getName());
+        if (classInfo == null) {
+            classInfo = new JavaClassInfo(clazz);
+        }
+        return classInfo;
+    }
+
+    /**
      * Creates a new class meta data instance.
      *
      * @param klass
      */
-    public JavaClassInfo(final Class klass) {
+    JavaClassInfo(final Class klass) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
@@ -108,29 +124,26 @@ public class JavaClassInfo implements ClassInfo {
         } else if (klass.getComponentType() != null) {
             m_name = convertArrayTypeName(klass.getName());
             m_isArray = true;
-            m_methods = new MethodInfo[0];
-            m_constructors = new ConstructorInfo[0];
-            m_fields = new FieldInfo[0];
             m_interfaces = new ClassInfo[0];
         } else {
             m_name = klass.getName();
             Method[] methods = m_class.getDeclaredMethods();
-            m_methods = new MethodInfo[methods.length];
             for (int i = 0; i < methods.length; i++) {
-                m_methods[i] = new JavaMethodInfo(methods[i], this);
+                Method method = methods[i];
+                m_methods.put(JavaMethodInfo.calculateHash(method), new JavaMethodInfo(method, this));
             }
             Constructor[] constructors = m_class.getDeclaredConstructors();
-            m_constructors = new ConstructorInfo[constructors.length];
             for (int i = 0; i < constructors.length; i++) {
-                m_constructors[i] = new JavaConstructorInfo(constructors[i], this);
+                Constructor constructor = constructors[i];
+                m_constructors.put(JavaConstructorInfo.calculateHash(constructor), new JavaConstructorInfo(constructor, this));
             }
             Field[] fields = m_class.getDeclaredFields();
-            m_fields = new FieldInfo[fields.length];
             for (int i = 0; i < fields.length; i++) {
                 if (fields[i].getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
                     continue;
                 }
-                m_fields[i] = new JavaFieldInfo(fields[i], this);
+                Field field = fields[i];
+                m_fields.put(JavaFieldInfo.calculateHash(field), new JavaFieldInfo(field, this));
             }
         }
         m_classInfoRepository.addClassInfo(this);
@@ -167,12 +180,38 @@ public class JavaClassInfo implements ClassInfo {
     }
 
     /**
+     * Returns a constructor info by its hash.
+     *
+     * @param hash
+     * @return
+     */
+    public ConstructorInfo getConstructor(final int hash) {
+        return (ConstructorInfo)m_constructors.get(hash);
+    }
+
+    /**
      * Returns a list with all the constructors info.
      *
      * @return the constructors info
      */
     public ConstructorInfo[] getConstructors() {
-        return m_constructors;
+        Object[] values = m_methods.getValues();
+        ConstructorInfo[] methodInfos = new ConstructorInfo[values.length];
+        for (int i = 0; i < values.length; i++) {
+            methodInfos[i] = (ConstructorInfo)values[i];
+
+        }
+        return methodInfos;
+    }
+
+    /**
+     * Returns a method info by its hash.
+     *
+     * @param hash
+     * @return
+     */
+    public MethodInfo getMethod(final int hash) {
+        return (MethodInfo)m_methods.get(hash);
     }
 
     /**
@@ -181,7 +220,23 @@ public class JavaClassInfo implements ClassInfo {
      * @return the methods info
      */
     public MethodInfo[] getMethods() {
-        return m_methods;
+        Object[] values = m_methods.getValues();
+        MethodInfo[] methodInfos = new MethodInfo[values.length];
+        for (int i = 0; i < values.length; i++) {
+            methodInfos[i] = (MethodInfo)values[i];
+
+        }
+        return methodInfos;
+    }
+
+    /**
+     * Returns a field info by its hash.
+     *
+     * @param hash
+     * @return
+     */
+    public FieldInfo getField(final int hash) {
+        return (FieldInfo)m_fields.get(hash);
     }
 
     /**
@@ -190,7 +245,13 @@ public class JavaClassInfo implements ClassInfo {
      * @return the field info
      */
     public FieldInfo[] getFields() {
-        return m_fields;
+        Object[] values = m_fields.getValues();
+        FieldInfo[] fieldInfos = new FieldInfo[values.length];
+        for (int i = 0; i < values.length; i++) {
+            fieldInfos[i] = (FieldInfo)values[i];
+
+        }
+        return fieldInfos;
     }
 
     /**
@@ -204,7 +265,7 @@ public class JavaClassInfo implements ClassInfo {
             m_interfaces = new ClassInfo[interfaces.length];
             for (int i = 0; i < interfaces.length; i++) {
                 Class anInterface = interfaces[i];
-                ClassInfo classInfo = new JavaClassInfo(anInterface);
+                ClassInfo classInfo = JavaClassInfo.getClassInfo(anInterface);
                 m_interfaces[i] = classInfo;
                 if (!m_classInfoRepository.hasClassInfo(anInterface.getName())) {
                     m_classInfoRepository.addClassInfo(classInfo);
@@ -226,7 +287,7 @@ public class JavaClassInfo implements ClassInfo {
                 if (m_classInfoRepository.hasClassInfo(superclass.getName())) {
                     m_superClass = m_classInfoRepository.getClassInfo(superclass.getName());
                 } else {
-                    m_superClass = new JavaClassInfo(superclass);
+                    m_superClass = JavaClassInfo.getClassInfo(superclass);
                     m_classInfoRepository.addClassInfo(m_superClass);
                 }
             }
@@ -245,7 +306,7 @@ public class JavaClassInfo implements ClassInfo {
             if (m_classInfoRepository.hasClassInfo(componentType.getName())) {
                 m_componentType = m_classInfoRepository.getClassInfo(componentType.getName());
             } else {
-                m_componentType = new JavaClassInfo(componentType);
+                m_componentType = JavaClassInfo.getClassInfo(componentType);
                 m_classInfoRepository.addClassInfo(m_componentType);
             }
         }

@@ -28,7 +28,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
     private static final String ASPECT_NAME = "test.aspect.DynamicDeploymentTestAspect";
     private static final String NEW_ASPECT_NAME = "test.aspect.DynamicallyCreatedAspect";
     private String m_logString = "";
-    private ClassInfo m_classMetaData = new JavaClassInfo(DynamicDeploymentTest.class);
+    private ClassInfo m_classMetaData = JavaClassInfo.getClassInfo(DynamicDeploymentTest.class);
 
     public DynamicDeploymentTest(String name) {
         super(name);

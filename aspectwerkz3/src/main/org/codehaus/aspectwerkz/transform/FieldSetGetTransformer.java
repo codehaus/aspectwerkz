@@ -52,7 +52,7 @@ public class FieldSetGetTransformer implements Transformer {
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
             final CtClass ctClass = klass.getCtClass();
-            final ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
+            final ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
             if (classFilter(ctClass, new ExpressionContext(PointcutType.SET, classInfo, null), definition)
                 && classFilter(ctClass, new ExpressionContext(PointcutType.GET, classInfo, null), definition)) {
                 continue;

@@ -7,11 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.java;
 
-import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import java.lang.ref.WeakReference;
+import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
+
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -21,10 +21,6 @@ import java.util.List;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
-    /**
-     * Caches the method infos.
-     */
-    private static final TIntObjectHashMap s_cache = new TIntObjectHashMap();
 
     /**
      * The return type.
@@ -49,7 +45,6 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
      */
     JavaMethodInfo(final Method method, final JavaClassInfo declaringType) {
         super(method, declaringType);
-        JavaMethodInfo.addMethodInfo(method, this);
     }
 
     /**
@@ -58,31 +53,34 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
      * @param method the method
      * @return the method info
      */
-    public static JavaMethodInfo getMethodInfo(final Method method) {
-        int hash = method.hashCode();
-        WeakReference methodInfoRef = (WeakReference)s_cache.get(hash);
-        JavaMethodInfo methodInfo = ((methodInfoRef == null) ? null : (JavaMethodInfo)methodInfoRef.get());
-        if ((methodInfoRef == null) || (methodInfo == null)) { //  declaring class is not loaded yet; load it and retry
-            new JavaClassInfo(method.getDeclaringClass());
-            methodInfo = (JavaMethodInfo)((WeakReference)s_cache.get(hash)).get();
+    public static MethodInfo getMethodInfo(final Method method) {
+        Class declaringClass = method.getDeclaringClass();
+        ClassInfoRepository repository = ClassInfoRepository.getRepository(declaringClass.getClassLoader());
+        ClassInfo classInfo = repository.getClassInfo(declaringClass.getName());
+        if (classInfo == null) {
+            classInfo = JavaClassInfo.getClassInfo(declaringClass);
         }
-        return methodInfo;
+        return classInfo.getMethod(calculateHash(method));
     }
 
     /**
-     * Adds the method info to the cache.
+     * Calculates the method hash.
      *
-     * @param method     the method
-     * @param methodInfo the method info
+     * @param method
+     * @return the hash
      */
-    public static void addMethodInfo(final Method method, final JavaMethodInfo methodInfo) {
-        s_cache.put(method.hashCode(), new WeakReference(methodInfo));
+    public static int calculateHash(final Method method) {
+        int hash = method.getName().hashCode();
+        for (int i = 0; i < method.getParameterTypes().length; i++) {
+            hash = 17 * hash + method.getParameterTypes()[i].getName().hashCode();
+        }
+        return hash;
     }
 
     /**
-     * Returns the attributes.
+     * Returns the annotations.
      *
-     * @return the attributes
+     * @return the annotations
      */
     public List getAnnotations() {
         if (m_annotations == null) {
@@ -102,7 +100,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
             if (m_classInfoRepository.hasClassInfo(returnTypeClass.getName())) {
                 m_returnType = m_classInfoRepository.getClassInfo(returnTypeClass.getName());
             } else {
-                m_returnType = new JavaClassInfo(returnTypeClass);
+                m_returnType = JavaClassInfo.getClassInfo(returnTypeClass);
                 m_classInfoRepository.addClassInfo(m_returnType);
             }
         }
@@ -124,7 +122,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
                 if (m_classInfoRepository.hasClassInfo(parameterType.getName())) {
                     metaData = m_classInfoRepository.getClassInfo(parameterType.getName());
                 } else {
-                    metaData = new JavaClassInfo(parameterType);
+                    metaData = JavaClassInfo.getClassInfo(parameterType);
                     m_classInfoRepository.addClassInfo(metaData);
                 }
                 m_parameterTypes[i] = metaData;
@@ -148,7 +146,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
                 if (m_classInfoRepository.hasClassInfo(exceptionType.getName())) {
                     metaData = m_classInfoRepository.getClassInfo(exceptionType.getName());
                 } else {
-                    metaData = new JavaClassInfo(exceptionType);
+                    metaData = JavaClassInfo.getClassInfo(exceptionType);
                     m_classInfoRepository.addClassInfo(metaData);
                 }
                 m_exceptionTypes[i] = metaData;

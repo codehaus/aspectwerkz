@@ -178,7 +178,7 @@ class JoinPointRegistry {
     private ClassInfo createClassInfo(final Class klass) {
         ClassInfo classInfo = ClassInfoRepository.getRepository(klass.getClassLoader()).getClassInfo(klass.getName());
         if (classInfo == null) {
-            classInfo = new JavaClassInfo(klass);
+            classInfo = JavaClassInfo.getClassInfo(klass);
         }
         return classInfo;
     }

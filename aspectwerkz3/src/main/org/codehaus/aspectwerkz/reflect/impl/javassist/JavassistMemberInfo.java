@@ -13,6 +13,8 @@ import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.ArrayList;
+
 import javassist.CtMember;
 
 /**
@@ -32,7 +34,7 @@ public abstract class JavassistMemberInfo implements MemberInfo {
     /**
      * The annotations.
      */
-    protected List m_annotations = null;
+    protected List m_annotations = new ArrayList();
 
     /**
      * The class info repository.

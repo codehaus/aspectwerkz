@@ -7,12 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.javassist;
 
-import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
-import java.lang.ref.WeakReference;
+import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
+
 import java.util.ArrayList;
 import java.util.List;
 import javassist.CtClass;
@@ -25,10 +25,6 @@ import javassist.NotFoundException;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo {
-    /**
-     * Caches the field infos.
-     */
-    private static final TIntObjectHashMap s_cache = new TIntObjectHashMap();
 
     /**
      * The field type.
@@ -46,7 +42,7 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
     JavassistFieldInfo(final CtField field, final JavassistClassInfo declaringType, final ClassLoader loader,
                        final AttributeExtractor attributeExtractor) {
         super(field, declaringType, loader, attributeExtractor);
-        JavassistFieldInfo.addFieldInfo(field, this);
+        addAnnotations();
     }
 
     /**
@@ -56,25 +52,24 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
      * @param loader the class loader
      * @return the field info
      */
-    public static JavassistFieldInfo getFieldInfo(final CtField field, final ClassLoader loader) {
-        int hash = field.hashCode();
-        WeakReference fieldInfoRef = (WeakReference)s_cache.get(hash);
-        JavassistFieldInfo fieldInfo = ((fieldInfoRef == null) ? null : (JavassistFieldInfo)fieldInfoRef.get());
-        if ((fieldInfoRef == null) || (fieldInfo == null)) { //  declaring class is not loaded yet; load it and retry
-            new JavassistClassInfo(field.getDeclaringClass(), loader);
-            fieldInfo = (JavassistFieldInfo)((WeakReference)s_cache.get(hash)).get();
+    public static FieldInfo getFieldInfo(final CtField field, final ClassLoader loader) {
+        CtClass declaringClass = field.getDeclaringClass();
+        ClassInfoRepository repository = ClassInfoRepository.getRepository(loader);
+        ClassInfo classInfo = repository.getClassInfo(declaringClass.getName());
+        if (classInfo == null) {
+            classInfo = JavassistClassInfo.getClassInfo(declaringClass, loader);
         }
-        return fieldInfo;
+        return classInfo.getField(calculateHash(field));
     }
 
     /**
-     * Adds the field info to the cache.
+     * Calculates the field hash.
      *
-     * @param field     the field
-     * @param fieldInfo the field info
+     * @param field
+     * @return the hash
      */
-    public static void addFieldInfo(final CtField field, final JavassistFieldInfo fieldInfo) {
-        s_cache.put(field.hashCode(), new WeakReference(fieldInfo));
+    public static int calculateHash(final CtField field) {
+        return field.getName().hashCode();
     }
 
     /**
@@ -83,9 +78,6 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
      * @return the attributes
      */
     public List getAnnotations() {
-        if (m_annotations == null) {
-            addAnnotations();
-        }
         return m_annotations;
     }
 
@@ -101,7 +93,7 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
                 if (m_classInfoRepository.hasClassInfo(type.getName())) {
                     m_type = m_classInfoRepository.getClassInfo(type.getName());
                 } else {
-                    m_type = new JavassistClassInfo(type, (ClassLoader)m_loaderRef.get());
+                    m_type = JavassistClassInfo.getClassInfo(type, (ClassLoader)m_loaderRef.get());
                     m_classInfoRepository.addClassInfo(m_type);
                 }
             } catch (NotFoundException e) {
@@ -150,7 +142,6 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
         if (m_attributeExtractor == null) {
             return;
         }
-        m_annotations = new ArrayList();
         Object[] attributes = m_attributeExtractor.getFieldAttributes(m_member.getName());
         for (int i = 0; i < attributes.length; i++) {
             Object attribute = attributes[i];
