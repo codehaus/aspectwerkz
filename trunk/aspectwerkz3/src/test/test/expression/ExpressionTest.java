@@ -30,6 +30,7 @@ public class ExpressionTest extends TestCase {
     private static MethodInfo modifiers1;
     private static MethodInfo modifiers2;
     private static MethodInfo modifiers3;
+    private static MethodInfo modifiers4;
     private static MethodInfo parameters1;
     private static MethodInfo parameters2;
     private static MethodInfo parameters3;
@@ -65,6 +66,9 @@ public class ExpressionTest extends TestCase {
             }
             if (method.getName().equals("modifiers3")) {
                 modifiers3 = method;
+            }
+            if (method.getName().equals("modifiers4")) {
+                modifiers4 = method;
             }
             if (method.getName().equals("parameters1")) {
                 parameters1 = method;
@@ -214,6 +218,21 @@ public class ExpressionTest extends TestCase {
                                                                                                                    .match(new ExpressionContext(PointcutType.CALL,
                                                                                                                                                 modifiers3,
                                                                                                                                                 null)));
+    }
+
+    public void testMethodModifiers4() throws Exception {
+        assertFalse(new ExpressionInfo("call(public * test.expression.*.*(..)) && within(test.expression.*)", NAMESPACE).getExpression()
+                                                                                                                        .match(new ExpressionContext(PointcutType.CALL,
+                                                                                                                                                     modifiers4,
+                                                                                                                                                     s_declaringType)));
+        assertTrue(new ExpressionInfo("call(private * test.expression.*.*(..)) && within(test.expression.*)", NAMESPACE).getExpression()
+                                                                                                                        .match(new ExpressionContext(PointcutType.CALL,
+                                                                                                                                                     modifiers4,
+                                                                                                                                                     s_declaringType)));
+        assertFalse(new ExpressionInfo("call(protected * test.expression.*.*(..)) && within(test.expression.*)",
+                                       NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL,
+                                                                                              modifiers4,
+                                                                                              s_declaringType)));
     }
 
     // ============ method parameters test =============

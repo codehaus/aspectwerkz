@@ -45,6 +45,9 @@ public final class Target {
 
     protected native static final synchronized void modifiers3();
 
+    private void modifiers4() {
+    }
+
     // ============ method parameters test =============
     void parameters1() {
     }
