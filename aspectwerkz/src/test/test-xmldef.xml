@@ -549,14 +549,6 @@
                 <advice-ref name="BindingSyntax_1"/>
             </bind-advice>
         </aspect>
-        <!-- bindingsyntax : two advices bounded -->
-        <aspect name="BindingSyntaxRB">
-            <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doRB*(..)"/>
-            <bind-advice pointcut="test">
-                <advice-ref name="BindingSyntax_2"/>
-                <advice-ref name="BindingSyntax_1"/>
-            </bind-advice>
-        </aspect>
         <!-- bindingsyntax : two equivalent pointcuts, one advice bounded on each -->
         <!-- Note: the precedence is altered, since the first pointcut is completeted
              before applying the second pointcut
