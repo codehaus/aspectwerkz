@@ -143,7 +143,14 @@ public class AwProjectBuilder extends IncrementalProjectBuilder {
 
     private void weave(IResource resource, IProgressMonitor monitor) {
         try {
+            // skip JITjp
+            if (AwCorePlugin.isJoinPointClass(resource.getName())) {
+                return;
+            }
+
+            
             AwLog.logInfo("weaving " + resource.getName());
+            AwLog.logTrace(Thread.currentThread().getContextClassLoader().toString());
             IJavaProject jproject = JavaCore.create(getProject());
             ClassLoader pcl = AwCorePlugin.getDefault().getProjectClassLoader(
                     jproject);
@@ -155,15 +162,24 @@ public class AwProjectBuilder extends IncrementalProjectBuilder {
                 return;
 
             // gets the class name from ASM Info
+            // NOTE: this should ensure that the cache is flushed...
             ClassInfo classInfo = AsmClassInfo.getClassInfo(classBytes, pcl);
             String className = classInfo.getName();
             AwLog.logTrace("got name from bytes " + className);
-
+            
             System.setProperty("aspectwerkz.transform.verbose", "true");
+            //System.setProperty("aspectwerkz.transform.verbose", "true");
             AspectWerkzPreProcessor pp = new AspectWerkzPreProcessor();
             pp.initialize();
             AwLog.logTrace("weaving - " + className + " in " + pcl.toString());
-            AspectWerkzPreProcessor.Output weaved = pp.preProcessWithOutput(className, classBytes, pcl);
+            //ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
+            AspectWerkzPreProcessor.Output weaved = null;
+            try {
+                 //Thread.currentThread().setContextClassLoader(pcl);
+                 weaved = pp.preProcessWithOutput(className, classBytes, pcl);
+            } finally {
+                //Thread.currentThread().setContextClassLoader(currentCL);
+            }
             
             FileOutputStream os = new FileOutputStream(file);
             os.write(weaved.bytecode);
@@ -175,7 +191,7 @@ public class AwProjectBuilder extends IncrementalProjectBuilder {
             
             // notify the listeners
             AwCorePlugin.getDefault().notifyWeaverListener(jproject, className, pcl, weaved.emittedJoinPoints);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             AwLog.logError(e);
         }
     }

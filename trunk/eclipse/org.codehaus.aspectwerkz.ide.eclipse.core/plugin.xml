@@ -8,16 +8,10 @@
    class="org.codehaus.aspectwerkz.ide.eclipse.core.AwCorePlugin">
 
    <runtime>
-      <library name="aw-core.jar">
+      <library name="aspectwerkz-eclipse.jar">
          <export name="*"/>
       </library>
       <library name="lib/ant-1.5.2.jar">
-         <export name="*"/>
-      </library>
-      <library name="lib/aspectwerkz-2.0beta1.jar">
-         <export name="*"/>
-      </library>
-      <library name="lib/aspectwerkz-core-2.0beta1.jar">
          <export name="*"/>
       </library>
       <library name="lib/concurrent-1.3.1.jar">
@@ -39,6 +33,15 @@
          <export name="*"/>
       </library>
       <library name="lib/trove-1.0.2.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/aspectwerkz-2.0.RC3-snapshot.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/aspectwerkz-core-2.0.RC3-snapshot.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/aspectwerkz-jdk14-2.0.RC3-snapshot.jar">
          <export name="*"/>
       </library>
    </runtime>
@@ -194,5 +197,28 @@
             id="launch.LaunchGroupDebug">
       </launchGroup>
    </extension>
+   <extension
+         id="joinpoint"
+         name="Join point"
+         point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.textmarker"/>
+      <persistent value="false"/>
+   </extension>
+   <extension
+         name="Join point image provider"
+         point="org.eclipse.ui.ide.markerImageProviders">
+      <imageprovider
+            markertype="org.codehaus.aspectwerkz.ide.eclipse.core.joinpoint"
+            icon="icons/advice.gif"
+            id="org.codehaus.aspectwerkz.ide.eclipse.core.joinpoint.imageprovider"/>
+   </extension>
+	<extension point="org.eclipse.ui.ide.markerResolution">
+	  <markerResolutionGenerator
+	    markerType="org.codehaus.aspectwerkz.ide.eclipse.core.joinpoint"
+	    class="org.codehaus.aspectwerkz.ide.eclipse.ui.JoinPointMarkerResolution">
+	  </markerResolutionGenerator>
+	</extension>
+
+   
 
 </plugin>

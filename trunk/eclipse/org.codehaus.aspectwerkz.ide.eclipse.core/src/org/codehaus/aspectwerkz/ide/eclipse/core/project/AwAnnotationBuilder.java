@@ -31,6 +31,9 @@ import org.codehaus.aspectwerkz.hook.*;
 import org.codehaus.aspectwerkz.ide.eclipse.core.AwCorePlugin;
 import org.codehaus.aspectwerkz.ide.eclipse.core.AwLog;
 import org.codehaus.aspectwerkz.annotation.*;
+import org.codehaus.aspectwerkz.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 
 /**
@@ -65,7 +68,7 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
         case FULL_BUILD:
         case CLEAN_BUILD:
             monitor.beginTask("AspectWerkz annotation", 50);
-            fullWeave(monitor);
+            fullAnnotationC(monitor);
             break;
 
         case AUTO_BUILD:
@@ -74,7 +77,7 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
                 break;
             monitor.beginTask("AspectWerkz annotation", 1 + 2 * getDelta(
                     getProject()).getAffectedChildren().length);
-            incrementalWeave(monitor);
+            incrementalAnnotationC(monitor);
             break;
 
         default:
@@ -114,22 +117,25 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
     //	      return false;
     //	   }
 
-    private void fullWeave(IProgressMonitor monitor) throws CoreException {
-        getProject().accept(new AwAnnotationBuilderVisitor(monitor));
+    private void fullAnnotationC(IProgressMonitor monitor) throws CoreException {
+        getProject().accept(new AwAnnotationBuilderVisitor(monitor, true));
     }
 
-    private void incrementalWeave(IProgressMonitor monitor)
+    private void incrementalAnnotationC(IProgressMonitor monitor)
             throws CoreException {
-        getDelta(getProject()).accept(new AwAnnotationBuilderVisitor(monitor));
+        getDelta(getProject()).accept(new AwAnnotationBuilderVisitor(monitor, false));
     }
 
     private class AwAnnotationBuilderVisitor implements IResourceVisitor,
             IResourceDeltaVisitor {
+        
+        private final boolean m_isFull;
 
         private IProgressMonitor m_monitor;
 
-        public AwAnnotationBuilderVisitor(IProgressMonitor monitor) {
+        public AwAnnotationBuilderVisitor(IProgressMonitor monitor, boolean isFull) {
             m_monitor = monitor;
+            m_isFull = isFull;
         }
 
         public boolean visit(IResource resource) throws CoreException {
@@ -137,7 +143,7 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
                 if (resource.getFileExtension().equals("class")) {
                     m_monitor.subTask(resource.getName());
 
-                    annotate(resource, m_monitor);
+                    annotate(resource, m_monitor, m_isFull);
 
                     m_monitor.worked(1);
                 }
@@ -156,7 +162,7 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
                     case IResourceDelta.ADDED:
                     case IResourceDelta.CHANGED:
                     case IResourceDelta.CONTENT:
-                        annotate(resource, m_monitor);
+                        annotate(resource, m_monitor, m_isFull);
                         break;
 
                     default:
@@ -171,13 +177,18 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
 
     }
 
-    private void annotate(IResource resource, IProgressMonitor monitor) {
+    private void annotate(IResource resource, IProgressMonitor monitor, boolean isFull) {
         try {
+            // skip JITjp
+            if (AwCorePlugin.isJoinPointClass(resource.getName())) {
+                return;
+            }
+            
             AwLog.logInfo("annotate " + resource.getName());
             IJavaProject jproject = JavaCore.create(getProject());
             ClassLoader pcl = AwCorePlugin.getDefault().getProjectClassLoader(
                     jproject);
-
+            
             File file = resource.getRawLocation().toFile();
             byte[] classBytes = AwCorePlugin.getDefault().readClassFile(file);
 
@@ -192,6 +203,37 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
             // skip inner class since they will be annnotated when their outer is annotated
             if (className.indexOf('$')>0) {
                 return;
+            }
+            
+            // check if we have an aspect
+            boolean isAspect = false;
+            Set defs = SystemDefinitionContainer.getDefinitionsFor(pcl);
+            for (Iterator it = defs.iterator(); it.hasNext();) {
+                SystemDefinition def = (SystemDefinition)it.next();
+                Collection aspectDefs = def.getAspectDefinitions();
+                for (Iterator at = aspectDefs.iterator(); at.hasNext();) {
+                    AspectDefinition aspectDef = (AspectDefinition)at.next();
+                    if (aspectDef.getClassName().equals(className)) {
+                        isAspect = true;
+                        break;
+                    }
+                }
+                if (isAspect) {
+                    break;
+                }
+            }
+            if (isAspect) {
+                AwLog.logInfo("Detected a change in aspect " + className);
+                IProject project = resource.getProject();
+                project.getProject().build(IncrementalProjectBuilder.FULL_BUILD,
+                        monitor);                
+//                getProject().getProject().build(AwAnnotationBuilder.FULL_BUILD,
+//                        AwAnnotationBuilder.BUILDER_ID, null, monitor);
+//                getProject().getProject().build(AwProjectBuilder.FULL_BUILD,
+//                        AwProjectBuilder.BUILDER_ID, null, monitor);
+//                AwLog.logInfo("DONE Detected a change in aspect " + className);
+//                AwLog.logInfo("full .? " + isFull );
+                //return;
             }
 
             // AnnotationC
@@ -237,7 +279,7 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
                         .toString();
                 AnnotationC.compile(verbose, new String[0],
                         new String[] { targetFile }, pathFiles, destDir,
-                        annotationPropsFile);
+                        annotationPropsFile==null?null:new String[]{annotationPropsFile});
                 AwLog.logTrace("annotated " + className + " from " + targetFile);
             }
             if (checkCancel(monitor))
@@ -247,7 +289,7 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
 
             // write back
             // -> has been done by AnnotationC
-        } catch (Exception e) {
+        } catch (Throwable e) {
             AwLog.logError(e);
         }
     }

@@ -8,6 +8,8 @@
 package org.codehaus.aspectwerkz.ide.eclipse.core;
 
 
+import org.codehaus.aspectwerkz.ide.eclipse.ui.WeaverListener;
+import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.eclipse.core.resources.ICommand;
@@ -43,7 +45,7 @@ public class AwCorePlugin extends AbstractUIPlugin {
 
     private ResourceBundle m_resourceBundle;
     
-    private List/*IWeaverListener*/ m_weaverListeners = new ArrayList();
+    private IWeaverListener m_weaverListener;
 
 
     public AwCorePlugin() {
@@ -59,6 +61,7 @@ public class AwCorePlugin extends AbstractUIPlugin {
 
     public void start(BundleContext context) throws Exception {
         super.start(context);
+        m_weaverListener = new WeaverListener();
     }
 
     public void stop(BundleContext context) throws Exception {
@@ -70,14 +73,15 @@ public class AwCorePlugin extends AbstractUIPlugin {
     }
     
     public void registerWeaverListener(IWeaverListener listener) {
-        m_weaverListeners.add(listener);
+        m_weaverListener = listener;
     }
     
     public void notifyWeaverListener(IJavaProject jproject, String className, ClassLoader loader,
             			 			 EmittedJoinPoint[] emittedJoinPoint) {
-        for (Iterator it = m_weaverListeners.iterator(); it.hasNext();) {
-            ((IWeaverListener)it.next()).onWeaved(jproject, className, loader, emittedJoinPoint);
-        }
+        //for (Iterator it = m_weaverListeners.iterator(); it.hasNext();) {
+        //    ((IWeaverListener)it.next()).onWeaved(jproject, className, loader, emittedJoinPoint);
+        //}
+        m_weaverListener.onWeaved(jproject, className, loader, emittedJoinPoint);
     }
     
     public static String getResourceString(String key) {
@@ -96,7 +100,9 @@ public class AwCorePlugin extends AbstractUIPlugin {
     public URLClassLoader getProjectClassLoader(IJavaProject project) {
         List paths = getProjectClassPathURLs(project);
         URL pathUrls[] = (URL[]) paths.toArray(new URL[0]);
-        return new URLClassLoader(pathUrls, Thread.currentThread().getContextClassLoader());
+        return new URLClassLoader(pathUrls,
+                ClassLoader.getSystemClassLoader());
+                //Thread.currentThread().getContextClassLoader());
     }
 
     public List getProjectClassPathURLs(IJavaProject project) {
@@ -271,4 +277,7 @@ public class AwCorePlugin extends AbstractUIPlugin {
         }
     }
     
+    public static boolean isJoinPointClass(String name) {
+        return name.indexOf(TransformationConstants.JOIN_POINT_CLASS_SUFFIX) > 0;
+    }
 }
