@@ -68,7 +68,7 @@ public final class AspectSystem {
     /**
      * The aspect managers in the order of the hierarchy
      */
-    private final AspectManager[] m_aspectManagers;
+    private AspectManager[] m_aspectManagers;
 
     /**
      * Holds a list of the cflow join points passed by the control flow of the current thread.
@@ -317,4 +317,14 @@ public final class AspectSystem {
             }
         }
     }
+    public void propagateAspectManagers(AspectManager[] block, int blockSizeBefore) {
+        AspectManager[] newAspectManagers = new AspectManager[m_aspectManagers.length + (block.length - blockSizeBefore)];
+        System.arraycopy(block, 0, newAspectManagers, 0, block.length);
+        if (blockSizeBefore < m_aspectManagers.length) {
+            System.arraycopy(m_aspectManagers, blockSizeBefore, newAspectManagers, block.length+1, m_aspectManagers.length - blockSizeBefore);
+        }
+        m_aspectManagers = newAspectManagers;
+    }
+
+
 }

@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.extension.hotswap;
 import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
 import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.joinpoint.management.JoinPointManager;
 
 /**
  * In process HotSwap - Java level API
@@ -64,7 +65,15 @@ public class HotSwapClient {
         }
         try {
             RuntimeClassProcessor runtimeProcessor = (RuntimeClassProcessor) ClassPreProcessorHelper.getClassPreProcessor();
-            hotswap(klazz, runtimeProcessor.preProcessActivate(klazz));
+            byte[] newBytes = runtimeProcessor.preProcessActivate(klazz);
+
+            hotswap(klazz, newBytes);
+            // trash the join points
+            JoinPointManager joinPointManager = JoinPointManager.getJoinPointManager(klazz, "N/A/notneeded");
+            joinPointManager.reset();
+
+
+
         } catch (Throwable t) {
             throw new WrappedRuntimeException(t);
         }

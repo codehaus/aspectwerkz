@@ -12,8 +12,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.lang.reflect.Constructor;
 
-import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
@@ -25,7 +23,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.aspect.management.PointcutManager;
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
-import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.*;
 
 /**
  * Manages the startup procedure, walks through the definition and instantiates the
@@ -106,7 +104,10 @@ public class StartupManager {
      * @param uuid       the UUID for the weave model to load
      * @param definition the definition for the system
      */
-    public static void reinitializeSystem(final String uuid, final SystemDefinition definition) {
+    public static void reinitializeSystem(final ClassLoader loader, final SystemDefinition definition) {
+        AspectSystem as  = SystemLoader.getSystem(loader);
+        AspectManager am = as.getAspectManager(definition.getUuid());
+        registerPointcuts(am, definition);
         //TODO//AVAOPC
         return;
 //        if (! s_initialized.containsKey(uuid)) {

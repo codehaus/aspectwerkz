@@ -61,7 +61,9 @@ public class MetaDataMaker {
         ClassLoader loader = klass.getClassLoader();
         while (loader != null) {
             MetaDataMaker maker = (MetaDataMaker)s_metaDataMakers.get(loader);
-            maker.m_classMetaDataCache.remove(klass.getName());
+            if (maker != null) {
+                maker.m_classMetaDataCache.remove(klass.getName());
+            }
             loader = loader.getParent();
         }
     }

@@ -951,6 +951,12 @@ public class JoinPointManager {
         public long invocations = 0L;
         public boolean isJitCompiled = false;
     }
+
+    public synchronized void reset() {
+        System.out.println("JoinPointManager.reset " + m_targetClass.getName());
+        m_joinPoints = null;
+        m_joinPoints = new ThreadLocal[0];
+    }
 }
 
 

@@ -7,10 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.List;
+import java.util.*;
+
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 
 /**
  * Stores the AspectSystem on a per ClassLoader basis.<p/>
@@ -70,4 +71,48 @@ public class SystemLoader {
 
     private SystemLoader() {
     }
+
+    public static Collection getAllSystems() {
+        return s_systems.values();
+    }
+
+    public static synchronized void deploySystemDefinitions(ClassLoader loader, List definitions) {
+        SystemDefinitionContainer.deploySystemDefinitions(loader, definitions);
+
+        //TODO check uuid in the bottom hierarchy
+        AspectSystem system = getSystem(loader);
+        AspectManager[] currentAspectManagers = system.getAspectManagers();
+
+        AspectManager[] newAspectManagers = new AspectManager[currentAspectManagers.length + definitions.size()];
+        System.arraycopy(currentAspectManagers, 0, newAspectManagers, 0, currentAspectManagers.length);
+        int index = currentAspectManagers.length;
+        for (Iterator it = definitions.iterator(); it.hasNext();) {
+            newAspectManagers[index++] = new AspectManager(system, (SystemDefinition)it.next());
+        }
+
+        // now we should grab all subclassloader' AspectSystem and rebuild em
+        Collection systems = SystemLoader.getAllSystems();
+        for (Iterator it = systems.iterator(); it.hasNext();) {
+            AspectSystem aspectSystem = (AspectSystem)it.next();
+            if (isChildOfOrEqual(aspectSystem.getDefiningClassLoader(), loader)) {
+                system.propagateAspectManagers(newAspectManagers, currentAspectManagers.length);
+            }
+        }
+    }
+
+    private static boolean isChildOfOrEqual(ClassLoader loader, ClassLoader parent) {
+        if (loader.equals(parent))
+            return true;
+        ClassLoader currentParent = loader.getParent();
+        while (currentParent != null) {
+            if (currentParent.equals(parent)) {
+                return true;
+            }
+            currentParent = currentParent.getParent();
+        }
+        return false;
+    }
+
+
+
 }
