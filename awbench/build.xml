@@ -11,7 +11,6 @@
 <!-- Use ant -Dargs=100 run to have only 100 iteration etc      -->
 <!-- Important targets are ant run, ant run:XXXX                -->
 
-
 <!-- ============================================================== -->
 <!-- Ant build file for the AspectWerkz Bench project -->
 <!-- ============================================================== -->
@@ -143,9 +142,15 @@
         </javac>
     </target>
 
-    <target name="compile:extensions:aopalliance" depends="init">
+    <target name="compile:ext:aopalliance" depends="init">
         <javac destdir="${d}/target" debug="${javac.debug}" classpathref="project.classpath">
             <src path="${d}/src/compiler-extensions/aopalliance"/>
+        </javac>
+    </target>
+
+    <target name="compile:ext:spring" depends="init">
+        <javac destdir="${d}/target" debug="${javac.debug}" classpathref="project.classpath">
+            <src path="${d}/src/compiler-extensions/spring"/>
         </javac>
     </target>
 
@@ -174,7 +179,7 @@
         </aopc>
     </target>
 
-    <target name="pre:extensions:aopalliance">
+    <target name="pre:ext:aopalliance">
         <awweave classpathref="project.classpath" targetdir="${d}/target"
             verbose="true"
             definition="${d}/src/compiler-extensions/aopalliance/META-INF/aop.xml"/>
@@ -225,12 +230,22 @@
         </java>
     </target>
 
-    <target name="run:extensions:aopalliance" depends="init, compile, compile:extensions:aopalliance">
+    <target name="run:ext:aopalliance" depends="init, compile, compile:ext:aopalliance">
         <java classpathref="project.classpath" classname="awbench.MethodExecutionRun" fork="true">
             <classpath>
                 <pathelement path="${d}/src/compiler-extensions/aopalliance/"/>
             </classpath>
             <jvmarg line="-Xrunaspectwerkz -Xdebug -Xbootclasspath/a:lib/aspectwerkz-core-2.0beta1.jar:lib/asm-1.5.1.jar:lib/asm-attrs-1.5.1.jar -Daspectwerkz.extension.aspectmodels=org.codehaus.aspectwerkz.transform.aopalliance.AopAllianceAspectModel -Daspectwerkz.transform.verbose=true ${java.jvmarg}"/>
+            <arg line="${args}"/>
+        </java>
+    </target>
+
+    <target name="run:ext:spring" depends="init, compile, compile:ext:spring">
+        <java classpathref="project.classpath" classname="awbench.MethodExecutionRun" fork="true">
+            <classpath>
+                <pathelement path="${d}/src/compiler-extensions/spring/"/>
+            </classpath>
+            <jvmarg line="-Xrunaspectwerkz -Xdebug -Xbootclasspath/a:lib/aspectwerkz-core-2.0beta1.jar:lib/asm-1.5.1.jar:lib/asm-attrs-1.5.1.jar -Daspectwerkz.extension.aspectmodels=org.codehaus.aspectwerkz.transform.spring.SpringAspectModel -Daspectwerkz.transform.verbose=true ${java.jvmarg}"/>
             <arg line="${args}"/>
         </java>
     </target>
