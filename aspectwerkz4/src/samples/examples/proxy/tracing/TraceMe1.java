@@ -26,7 +26,7 @@ public class TraceMe1 {
         // get a proxy instance of the TraceMe1 class
         // this class will have been weaved with all AW aspects on the classpath
         System.out.println("\nINFO:: ------ get a weaved proxy to the TraceMe1 class -----");
-        TraceMe1 traceMe1 = (TraceMe1) Proxy.newInstance(TraceMe1.class, false);
+        TraceMe1 traceMe1 = (TraceMe1) Proxy.newInstance(TraceMe1.class, false, true);
 
         // invoke the method - trigger deployed matched aspects (one around, one before and one after)
         System.out.println("\nINFO:: ------ run method chain with only regular AW aspects -----");
