@@ -181,4 +181,11 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
         }
         return result;
     }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer(m_declaringTypeName);
+        sb.append('.').append(m_member.name);
+        sb.append(m_member.desc);
+        return sb.toString();
+    }
 }

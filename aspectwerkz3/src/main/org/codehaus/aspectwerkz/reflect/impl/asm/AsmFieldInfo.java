@@ -135,4 +135,11 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
         result = (29 * result) + m_typeName.hashCode();
         return result;
     }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer(m_declaringTypeName);
+        sb.append('.').append(m_member.name).append(' ');
+        sb.append(m_member.desc);
+        return sb.toString();
+    }
 }
