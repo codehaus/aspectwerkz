@@ -25,6 +25,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,7 +39,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     protected int m_type;
     protected String m_typeAsString;
     protected transient AspectSystem m_system;
-    protected CflowExpressionVisitor[] m_cflowExpressions;
+    protected List m_cflowExpressions;
     protected boolean m_checkCflow;
     protected AroundAdviceExecutor m_aroundAdviceExecutor;
     protected BeforeAdviceExecutor m_beforeAdviceExecutor;
@@ -51,11 +53,12 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      *
      * @param type
      * @param targetClass
+     * @param cflowExpressions
      * @param aroundAdviceExecutor
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
      */
-    public JoinPointBase(final int type, final Class targetClass, final CflowExpressionVisitor[] cflowExpressions,
+    public JoinPointBase(final int type, final Class targetClass, final List cflowExpressions,
                          final AroundAdviceExecutor aroundAdviceExecutor,
                          final BeforeAdviceExecutor beforeAdviceExecutor, final AfterAdviceExecutor afterAdviceExecutor) {
         m_type = type;
@@ -63,11 +66,28 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         m_pointcutType = getPointcutType(type);
         m_targetClass = targetClass;
         m_cflowExpressions = cflowExpressions;
-        m_checkCflow = cflowExpressions.length > 0;
+        m_checkCflow = cflowExpressions.size() > 0;
         m_aroundAdviceExecutor = aroundAdviceExecutor;
         m_beforeAdviceExecutor = beforeAdviceExecutor;
         m_afterAdviceExecutor = afterAdviceExecutor;
         m_system = SystemLoader.getSystem(targetClass.getClassLoader());
+    }
+
+    /**
+     * Creates a new join point base instance.
+     *
+     * @param uuid
+     * @param type
+     * @param targetClass
+     * @param cflowExpressions
+     * @param aroundAdviceExecutor
+     * @param beforeAdviceExecutor
+     * @param afterAdviceExecutor
+     */
+    public JoinPointBase(final String uuid, final int type, final Class targetClass, final List cflowExpressions,
+                         final AroundAdviceExecutor aroundAdviceExecutor,
+                         final BeforeAdviceExecutor beforeAdviceExecutor, final AfterAdviceExecutor afterAdviceExecutor) {
+        this(type, targetClass, cflowExpressions, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
     }
 
     /**
@@ -358,17 +378,11 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     public boolean isInCflow() {
         if (m_checkCflow) {
             boolean isInCFlow = false;
-            for (int i = 0; i < m_cflowExpressions.length; i++) {
-                CflowExpressionVisitor cflowExpression = m_cflowExpressions[i];
+            for (Iterator iterator = m_cflowExpressions.iterator(); iterator.hasNext();) {
+                CflowExpressionVisitor cflowExpression = (CflowExpressionVisitor)iterator.next();
                 if (m_system.isInControlFlowOf(cflowExpression)) {
-                    //                    MethodRtti rtti = (MethodRtti)getRtti();
-                    //                    JavaMethodInfo methodInfo = JavaMethodInfo.getMethodInfo(rtti.getMethod());
-                    //                    ExpressionContext ctx = new ExpressionContext(m_pointcutType, methodInfo, null);
-                    //                    if (cflowExpression.match(ctx)) {
                     isInCFlow = true;
                     break;
-
-                    //                    }
                 }
             }
             if (!isInCFlow) {
@@ -390,8 +404,8 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         m_type = fields.get("m_type", 0);
         m_typeAsString = getJoinPointTypeAsString(m_type);
         m_targetClass = (Class)fields.get("m_targetClass", null);
-        m_cflowExpressions = (CflowExpressionVisitor[])fields.get("m_cflowExpressions", null);
-        m_checkCflow = m_cflowExpressions.length > 0;
+        m_cflowExpressions = (List)fields.get("m_cflowExpressions", null);
+        m_checkCflow = m_cflowExpressions.size() > 0;
         m_aroundAdviceExecutor = (AroundAdviceExecutor)fields.get("m_aroundAdviceExecutor", null);
         m_beforeAdviceExecutor = (BeforeAdviceExecutor)fields.get("m_beforeAdviceExecutor", null);
         m_afterAdviceExecutor = (AfterAdviceExecutor)fields.get("m_afterAdviceExecutor", null);

@@ -14,7 +14,6 @@ import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.aspect.management.AspectRegistry;
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
-import org.codehaus.aspectwerkz.expression.CflowExpressionVisitor;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti;
 import org.codehaus.aspectwerkz.joinpoint.CodeRtti;
@@ -217,7 +216,7 @@ public class JoinPointManager {
             Map joinPointMetaDataMap = s_registry.getJoinPointMetaData(m_classHash, methodHash);
             JoinPointMetaData joinPointMetaData = (JoinPointMetaData)joinPointMetaDataMap.get(PointcutType.EXECUTION);
             AdviceIndexInfo[] adviceIndexes = joinPointMetaData.adviceIndexes;
-            CflowExpressionVisitor[] cflowExpressions = joinPointMetaData.cflowExpressions;
+            List cflowExpressions = joinPointMetaData.cflowExpressions;
             Pointcut cflowPointcut = joinPointMetaData.cflowPointcut;
             initCflowManagement(cflowPointcut, joinPointInfo);
             switch (joinPointType) {
@@ -310,7 +309,7 @@ public class JoinPointManager {
             Map joinPointMetaDataMap = s_registry.getJoinPointMetaData(m_classHash, methodHash);
             JoinPointMetaData joinPointMetaData = (JoinPointMetaData)joinPointMetaDataMap.get(PointcutType.CALL);
             AdviceIndexInfo[] adviceIndexes = joinPointMetaData.adviceIndexes;
-            CflowExpressionVisitor[] cflowExpressions = joinPointMetaData.cflowExpressions;
+            List cflowExpressions = joinPointMetaData.cflowExpressions;
             Pointcut cflowPointcut = joinPointMetaData.cflowPointcut;
             initCflowManagement(cflowPointcut, joinPointInfo);
             switch (joinPointType) {
@@ -399,7 +398,7 @@ public class JoinPointManager {
             Map joinPointMetaDataMap = s_registry.getJoinPointMetaData(m_classHash, fieldHash);
             JoinPointMetaData joinPointMetaData = (JoinPointMetaData)joinPointMetaDataMap.get(PointcutType.SET);
             AdviceIndexInfo[] adviceIndexes = joinPointMetaData.adviceIndexes;
-            CflowExpressionVisitor[] cflowExpressions = joinPointMetaData.cflowExpressions;
+            List cflowExpressions = joinPointMetaData.cflowExpressions;
             Pointcut cflowPointcut = joinPointMetaData.cflowPointcut;
             initCflowManagement(cflowPointcut, joinPointInfo);
             joinPoint = createFieldJoinPoint(fieldHash, JoinPointType.FIELD_SET, m_targetClass, adviceIndexes,
@@ -473,7 +472,7 @@ public class JoinPointManager {
             Map joinPointMetaDataMap = s_registry.getJoinPointMetaData(m_classHash, fieldHash);
             JoinPointMetaData joinPointMetaData = (JoinPointMetaData)joinPointMetaDataMap.get(PointcutType.GET);
             AdviceIndexInfo[] adviceIndexes = joinPointMetaData.adviceIndexes;
-            CflowExpressionVisitor[] cflowExpressions = joinPointMetaData.cflowExpressions;
+            List cflowExpressions = joinPointMetaData.cflowExpressions;
             Pointcut cflowPointcut = joinPointMetaData.cflowPointcut;
             initCflowManagement(cflowPointcut, joinPointInfo);
             joinPoint = createFieldJoinPoint(fieldHash, JoinPointType.FIELD_GET, m_targetClass, adviceIndexes,
@@ -545,7 +544,7 @@ public class JoinPointManager {
             Map joinPointMetaDataMap = s_registry.getJoinPointMetaData(m_classHash, handlerHash);
             JoinPointMetaData joinPointMetaData = (JoinPointMetaData)joinPointMetaDataMap.get(PointcutType.HANDLER);
             AdviceIndexInfo[] adviceIndexes = joinPointMetaData.adviceIndexes;
-            CflowExpressionVisitor[] cflowExpressions = joinPointMetaData.cflowExpressions;
+            List cflowExpressions = joinPointMetaData.cflowExpressions;
             Pointcut cflowPointcut = joinPointMetaData.cflowPointcut;
             initCflowManagement(cflowPointcut, joinPointInfo);
             joinPoint = createCatchClauseJoinPoint(exceptionInstance.getClass(), m_targetClass, handlerSignature,
@@ -634,8 +633,8 @@ public class JoinPointManager {
     private final MethodJoinPoint createMethodJoinPoint(final int methodHash, final int joinPointType,
                                                         final Class declaringClass,
                                                         final AdviceIndexInfo[] adviceIndexes,
-                                                        final CflowExpressionVisitor[] cflowExpressions,
-                                                        final Object thisInstance, final Object targetInstance) {
+                                                        final List cflowExpressions, final Object thisInstance,
+                                                        final Object targetInstance) {
         MethodTuple methodTuple = AspectRegistry.getMethodTuple(declaringClass, methodHash);
         Class declaringType = methodTuple.getDeclaringClass();
         MethodSignatureImpl signature = new MethodSignatureImpl(declaringType, methodTuple);
@@ -659,8 +658,8 @@ public class JoinPointManager {
     private final JoinPoint createConstructorJoinPoint(final int constructorHash, final int joinPointType,
                                                        final Class declaringClass,
                                                        final AdviceIndexInfo[] adviceIndexes,
-                                                       final CflowExpressionVisitor[] cflowExpressions,
-                                                       final Object thisInstance, final Object targetInstance) {
+                                                       final List cflowExpressions, final Object thisInstance,
+                                                       final Object targetInstance) {
         ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(declaringClass, constructorHash);
         Class declaringType = constructorTuple.getDeclaringClass();
         ConstructorSignatureImpl signature = new ConstructorSignatureImpl(declaringType, constructorTuple);
@@ -684,8 +683,8 @@ public class JoinPointManager {
      */
     private final JoinPoint createFieldJoinPoint(final int fieldHash, final int joinPointType,
                                                  final Class declaringClass, final AdviceIndexInfo[] adviceIndexes,
-                                                 final CflowExpressionVisitor[] cflowExpressions,
-                                                 final Object thisInstance, final Object targetInstance) {
+                                                 final List cflowExpressions, final Object thisInstance,
+                                                 final Object targetInstance) {
         Field field = AspectRegistry.getField(declaringClass, fieldHash);
         FieldSignatureImpl signature = new FieldSignatureImpl(declaringClass, field);
         Rtti rtti = new FieldRttiImpl(signature, thisInstance, targetInstance);
@@ -708,8 +707,8 @@ public class JoinPointManager {
     private final JoinPoint createCatchClauseJoinPoint(final Class exceptionClass, final Class declaringClass,
                                                        final String catchClauseSignature,
                                                        final AdviceIndexInfo[] adviceIndexes,
-                                                       final CflowExpressionVisitor[] cflowExpressions,
-                                                       final Object thisInstance, final Object targetInstance) {
+                                                       final List cflowExpressions, final Object thisInstance,
+                                                       final Object targetInstance) {
         CatchClauseSignatureImpl signature = new CatchClauseSignatureImpl(exceptionClass, declaringClass,
                                                                           catchClauseSignature);
         Rtti rtti = new CatchClauseRttiImpl(signature, thisInstance, targetInstance);

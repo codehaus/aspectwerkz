@@ -7,11 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.expression.CflowExpressionVisitor;
 import org.codehaus.aspectwerkz.joinpoint.FieldRtti;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
+import java.util.List;
 
 /**
  * Abstraction of a field join point.
@@ -35,8 +35,7 @@ class FieldJoinPoint extends JoinPointBase {
      * @param afterAdviceExecutor
      */
     public FieldJoinPoint(final int type, final Class targetClass, final Signature signature, final Rtti rtti,
-                          final CflowExpressionVisitor[] cflowExpressions,
-                          final AroundAdviceExecutor aroundAdviceExecutor,
+                          final List cflowExpressions, final AroundAdviceExecutor aroundAdviceExecutor,
                           final BeforeAdviceExecutor beforeAdviceExecutor, final AfterAdviceExecutor afterAdviceExecutor) {
         super(type, targetClass, cflowExpressions, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
         m_signature = (FieldSignature)signature;

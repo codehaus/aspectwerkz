@@ -12,7 +12,6 @@ import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.aspect.management.AspectRegistry;
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
-import org.codehaus.aspectwerkz.expression.CflowExpressionVisitor;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
@@ -233,14 +232,15 @@ class JoinPointRegistry {
         for (Iterator iterator = adviceIndexInfoList.iterator(); iterator.hasNext(); i++) {
             adviceIndexInfo[i] = (AdviceIndexInfo)iterator.next();
         }
-        CflowExpressionVisitor[] cflowExpressions = new CflowExpressionVisitor[cflowExpressionList.size()];
-        int j = 0;
-        for (Iterator iterator = cflowExpressionList.iterator(); iterator.hasNext(); j++) {
-            cflowExpressions[j] = (CflowExpressionVisitor)iterator.next();
-        }
+
+        //        CflowExpressionVisitor[] cflowExpressions = new CflowExpressionVisitor[cflowExpressionList.size()];
+        //        int j = 0;
+        //        for (Iterator iterator = cflowExpressionList.iterator(); iterator.hasNext(); j++) {
+        //            cflowExpressions[j] = (CflowExpressionVisitor)iterator.next();
+        //        }
         JoinPointMetaData metaData = new JoinPointMetaData();
         metaData.adviceIndexes = adviceIndexInfo;
-        metaData.cflowExpressions = cflowExpressions;
+        metaData.cflowExpressions = cflowExpressionList;
         metaData.cflowPointcut = cflowPointcut;
         joinPointMetaDataMap.put(type, metaData);
     }

@@ -215,7 +215,8 @@
     <goal name="aspectwerkz:samples:logging">
         <attainGoal name="aspectwerkz:samples:aspectc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-Daspectwerkz.jit.off=true -cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=*,before examples.logging.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=*,before examples.logging.Target"/>
+<!--            <arg line="-Daspectwerkz.jit.off=true -cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=*,before examples.logging.Target"/>-->
         </exec>
     </goal>
 
