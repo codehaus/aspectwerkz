@@ -14,6 +14,7 @@ import org.codehaus.aspectwerkz.CrossCuttingInfo;
 import org.codehaus.aspectwerkz.AdviceInfo;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.Mixin;
+import org.codehaus.aspectwerkz.joinpoint.management.JoinPointManager;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.aspect.Introduction;
 import org.codehaus.aspectwerkz.aspect.IntroductionContainer;
@@ -507,6 +508,11 @@ public class AspectRegistry {
         } catch (Throwable e1) {
             throw new WrappedRuntimeException(e1);
         }
+        // if no tuple found - we have a ctor call jp only - no wrapper.
+        if (constructorTuple == null) {
+            Constructor constructor = getConstructor(klass, constructorHash);
+            return new ConstructorTuple(constructor, constructor);
+        }
         return constructorTuple;
     }
 
@@ -644,65 +650,90 @@ public class AspectRegistry {
         TIntObjectHashMap constructorMap = new TIntObjectHashMap(constructors.length);
         for (int i = 0; i < constructors.length; i++) {
             Constructor constructor1 = constructors[i];
-            Constructor prefixedConstructor = constructor1;
-            Constructor wrapperConstructor = constructor1;
-            for (int j = 0; j < constructors.length; j++) {
-                Constructor constructor2 = constructors[j];
-                Class[] parameterTypes1 = constructor1.getParameterTypes();
-                Class[] parameterTypes2 = constructor2.getParameterTypes();
-                if (!constructor2.getName().equals(constructor1.getName())) {
-                    continue;
-                }
-                if (parameterTypes1.length == parameterTypes2.length) {
-                    continue;
-                } else if ((parameterTypes1.length < parameterTypes2.length)
-                    && (parameterTypes1.length == (parameterTypes2.length - 1))) {
-                    boolean match = true;
-                    for (int k = 0; k < parameterTypes1.length; k++) {
-                        if (parameterTypes1[k] != parameterTypes2[k]) {
-                            match = false;
-                            break;
-                        }
-                    }
-                    if (parameterTypes2[parameterTypes1.length].getName().equals(
-                        TransformationConstants.JOIN_POINT_MANAGER_CLASS)) {
-                        match = true;
-                    }
-                    if (!match) {
-                        continue;
-                    }
-                    wrapperConstructor = constructor1;
-                    prefixedConstructor = constructor2;
-                    break;
-                } else if ((parameterTypes2.length < parameterTypes1.length)
-                    && (parameterTypes2.length == (parameterTypes1.length - 1))) {
-                    boolean match = true;
-                    for (int k = 0; k < parameterTypes2.length; k++) {
-                        if (parameterTypes2[k] != parameterTypes1[k]) {
-                            match = false;
-                            break;
-                        }
-                    }
-                    if (parameterTypes1[parameterTypes2.length].getName().equals(
-                        TransformationConstants.JOIN_POINT_MANAGER_CLASS)) {
-                        match = true;
-                    }
-                    if (!match) {
-                        continue;
-                    }
-                    wrapperConstructor = constructor2;
-                    prefixedConstructor = constructor1;
-                    break;
-                }
+            Constructor prefixedConstructor = null;
+            // try to find a prefixed ctor for this one, that is with JPManager as last argument
+            Class[] parameterTypes2 = new Class[constructor1.getParameterTypes().length + 1];
+            System.arraycopy(constructor1.getParameterTypes(), 0, parameterTypes2, 0, constructor1.getParameterTypes().length);
+            parameterTypes2[parameterTypes2.length-1] = JoinPointManager.class;
+            try {
+                prefixedConstructor = klass.getDeclaredConstructor(parameterTypes2);
+            } catch (NoSuchMethodException e) {
+                // this one as no tuple available ie call pc or already a wrapper constructor
+                continue;
             }
 
             // create a constructor tuple with 'wrapper constructor' and 'prefixed constructor'
-            ConstructorTuple constructorTuple = new ConstructorTuple(wrapperConstructor, prefixedConstructor);
+            ConstructorTuple constructorTuple = new ConstructorTuple(constructor1, prefixedConstructor);
 
             // map the tuple to the hash for the 'wrapper constructor'
-            int constructorHash = ReflectHelper.calculateHash(wrapperConstructor);
+            int constructorHash = ReflectHelper.calculateHash(constructor1);
             constructorMap.put(constructorHash, constructorTuple);
         }
+
+//
+//
+//
+//
+//
+//            Constructor prefixedConstructor = constructor1;
+//            Constructor wrapperConstructor = constructor1;
+//            for (int j = 0; j < constructors.length; j++) {
+//                Constructor constructor2 = constructors[j];
+//                Class[] parameterTypes1 = constructor1.getParameterTypes();
+//                Class[] parameterTypes2 = constructor2.getParameterTypes();
+//                if (!constructor2.getName().equals(constructor1.getName())) {
+//                    continue;
+//                }
+//                if (parameterTypes1.length == parameterTypes2.length) {
+//                    continue;
+//                } else if ((parameterTypes1.length < parameterTypes2.length)
+//                    && (parameterTypes1.length == (parameterTypes2.length - 1))) {
+//                    boolean match = true;
+//                    for (int k = 0; k < parameterTypes1.length; k++) {
+//                        if (parameterTypes1[k] != parameterTypes2[k]) {
+//                            match = false;
+//                            break;
+//                        }
+//                    }
+//                    if (parameterTypes2[parameterTypes1.length].getName().equals(
+//                        TransformationConstants.JOIN_POINT_MANAGER_CLASS)) {
+//                        match = true;
+//                    }
+//                    if (!match) {
+//                        continue;
+//                    }
+//                    wrapperConstructor = constructor1;
+//                    prefixedConstructor = constructor2;
+//                    break;
+//                } else if ((parameterTypes2.length < parameterTypes1.length)
+//                    && (parameterTypes2.length == (parameterTypes1.length - 1))) {
+//                    boolean match = true;
+//                    for (int k = 0; k < parameterTypes2.length; k++) {
+//                        if (parameterTypes2[k] != parameterTypes1[k]) {
+//                            match = false;
+//                            break;
+//                        }
+//                    }
+//                    if (parameterTypes1[parameterTypes2.length].getName().equals(
+//                        TransformationConstants.JOIN_POINT_MANAGER_CLASS)) {
+//                        match = true;
+//                    }
+//                    if (!match) {
+//                        continue;
+//                    }
+//                    wrapperConstructor = constructor2;
+//                    prefixedConstructor = constructor1;
+//                    break;
+//                }
+//            }
+//
+//            // create a constructor tuple with 'wrapper constructor' and 'prefixed constructor'
+//            ConstructorTuple constructorTuple = new ConstructorTuple(wrapperConstructor, prefixedConstructor);
+//
+//            // map the tuple to the hash for the 'wrapper constructor'
+//            int constructorHash = ReflectHelper.calculateHash(wrapperConstructor);
+//            constructorMap.put(constructorHash, constructorTuple);
+//        }
         synchronized (s_constructors) {
             s_constructors.put(klass, constructorMap);
         }
