@@ -28,7 +28,7 @@ public class Main {
      * See the TransactionAttributeAwareTransactionProtocol aspect.
      */
     @Inject
-    public TransactionManager m_transactionManager;
+    public UserTransaction m_userTransaction;
 
     // ==== top level methods ====
 
@@ -85,36 +85,42 @@ public class Main {
     @TransactionAttribute(TransactionAttributeType.NEVER)
     private void txNever() {
         logInfo("        txNever");
+        noOp();
     }
 
     @TransactionAttribute(TransactionAttributeType.MANDATORY)
     private void txMandatory() {
         logInfo("        txMandatory");
+        noOp();
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRESNEW)
     private void txRequiresNew() {
         logInfo("        txRequiresNew");
+        noOp();
     }
 
     @TransactionAttribute(TransactionAttributeType.NOTSUPPORTED)
     private void txNotSupported() {
         logInfo("        txNotSupported");
-        printTxStatus();
+        noOp();
     }
 
     private void throwException() throws Exception {
         logInfo("        throwException");
+        noOp();
         throw new Exception();
     }
 
     private void throwRuntimeException() {
         logInfo("        throwRuntimeException");
+        noOp();
         throw new RuntimeException();
     }
 
     private void noOp() {
         logInfo("        noOp");
+        printTxStatus();
     }
 
     public static void main(String[] args) {
@@ -167,41 +173,45 @@ public class Main {
     }
 
     private void printTxStatus() {
-        try {
-            switch (m_transactionManager.getStatus()) {
-                case Status.STATUS_COMMITTED:
-                    logInfo("TX status: STATUS_COMMITTED");
-                    break;
-                case Status.STATUS_COMMITTING:
-                    logInfo("TX status: STATUS_COMMITTING");
-                    break;
-                case Status.STATUS_ACTIVE:
-                    logInfo("TX status: STATUS_ACTIVE");
-                    break;
-                case Status.STATUS_MARKED_ROLLBACK:
-                    logInfo("TX status: STATUS_MARKED_ROLLBACK");
-                    break;
-                case Status.STATUS_NO_TRANSACTION:
-                    logInfo("TX status: STATUS_NO_TRANSACTION");
-                    break;
-                case Status.STATUS_PREPARED:
-                    logInfo("TX status: STATUS_PREPARED");
-                    break;
-                case Status.STATUS_PREPARING:
-                    logInfo("TX status: STATUS_PREPARING");
-                    break;
-                case Status.STATUS_ROLLEDBACK:
-                    logInfo("TX status: STATUS_ROLLEDBACK");
-                    break;
-                case Status.STATUS_ROLLING_BACK:
-                    logInfo("TX status: STATUS_ROLLING_BACK");
-                    break;
-                case Status.STATUS_UNKNOWN:
-                    logInfo("TX status: STATUS_UNKNOWN");
-                    break;
+        if (m_userTransaction == null) {
+            logInfo("TX status: STATUS_NO_TRANSACTION");
+        } else {
+            try {
+                switch (m_userTransaction.getStatus()) {
+                    case Status.STATUS_COMMITTED:
+                        logInfo("TX status: STATUS_COMMITTED");
+                        break;
+                    case Status.STATUS_COMMITTING:
+                        logInfo("TX status: STATUS_COMMITTING");
+                        break;
+                    case Status.STATUS_ACTIVE:
+                        logInfo("TX status: STATUS_ACTIVE");
+                        break;
+                    case Status.STATUS_MARKED_ROLLBACK:
+                        logInfo("TX status: STATUS_MARKED_ROLLBACK");
+                        break;
+                    case Status.STATUS_NO_TRANSACTION:
+                        logInfo("TX status: STATUS_NO_TRANSACTION");
+                        break;
+                    case Status.STATUS_PREPARED:
+                        logInfo("TX status: STATUS_PREPARED");
+                        break;
+                    case Status.STATUS_PREPARING:
+                        logInfo("TX status: STATUS_PREPARING");
+                        break;
+                    case Status.STATUS_ROLLEDBACK:
+                        logInfo("TX status: STATUS_ROLLEDBACK");
+                        break;
+                    case Status.STATUS_ROLLING_BACK:
+                        logInfo("TX status: STATUS_ROLLING_BACK");
+                        break;
+                    case Status.STATUS_UNKNOWN:
+                        logInfo("TX status: STATUS_UNKNOWN");
+                        break;
+                }
+            } catch (SystemException e) {
+                logInfo("TX status: fault : " + e.toString());
             }
-        } catch (SystemException e) {
-            logInfo("TX status: fault : " + e.toString());            
         }
     }
 
