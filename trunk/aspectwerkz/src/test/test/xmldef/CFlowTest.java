@@ -1,0 +1,55 @@
+package test;
+
+import junit.framework.TestCase;
+
+import org.codehaus.aspectwerkz.AspectWerkz;
+
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: CFlowTest.java,v 1.1 2003-06-30 15:56:51 jboner Exp $
+ */
+public class CFlowTest extends TestCase implements Loggable {
+
+    private String m_logString = "";
+
+    public void testCallWithinCFlow() {
+        m_logString = "";
+        step1();
+        System.out.println("m_logString = " + m_logString);
+        assertEquals("step1 advice-before step2 advice-after ", m_logString);
+    }
+
+    public void testCallOutsideCFlow() {
+        m_logString = "";
+        step2();
+        assertEquals("step2 ", m_logString);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(suite());
+    }
+
+    public static junit.framework.Test suite() {
+        return new junit.framework.TestSuite(CFlowTest.class);
+    }
+
+    public CFlowTest(String name) {
+        super(name);
+        AspectWerkz.getSystem("tests").initialize();
+    }
+
+    // ==== methods to test ====
+
+    public void log(final String wasHere) {
+        m_logString += wasHere;
+    }
+
+    public void step1() {
+        log("step1 ");
+        step2();
+    }
+
+    public void step2() {
+        log("step2 ");
+    }
+}
