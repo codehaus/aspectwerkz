@@ -61,8 +61,9 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
      */
     public static JavaMethodInfo getMethodInfo(final Method method) {
         int hash = method.hashCode();
-        JavaMethodInfo methodInfo = (JavaMethodInfo)((WeakReference)s_cache.get(hash)).get();
-        if (methodInfo == null) { //  declaring class is not loaded yet; load it and retry
+        WeakReference methodInfoRef = (WeakReference)s_cache.get(hash);
+        JavaMethodInfo methodInfo = (methodInfoRef==null?null:(JavaMethodInfo)methodInfoRef.get());
+        if (methodInfoRef == null || methodInfo == null) { //  declaring class is not loaded yet; load it and retry
             new JavaClassInfo(method.getDeclaringClass());
             methodInfo = (JavaMethodInfo)((WeakReference)s_cache.get(hash)).get();
         }

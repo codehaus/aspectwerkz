@@ -61,8 +61,9 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
      */
     public static JavassistMethodInfo getMethodInfo(final CtMethod method, final ClassLoader classLoader) {
         int hash = method.hashCode();
-        JavassistMethodInfo methodInfo = (JavassistMethodInfo)((WeakReference)s_cache.get(hash)).get();
-        if (methodInfo == null) {
+        WeakReference methodInfoRef = (WeakReference)s_cache.get(hash);
+        JavassistMethodInfo methodInfo = (methodInfoRef==null?null:(JavassistMethodInfo)methodInfoRef.get());
+        if (methodInfoRef == null || methodInfo == null) {
             new JavassistClassInfo(method.getDeclaringClass(), classLoader);
             methodInfo = (JavassistMethodInfo)((WeakReference)s_cache.get(hash)).get();
         }

@@ -49,12 +49,11 @@ public class ClassInfoRepository {
      * @return
      */
     public static synchronized ClassInfoRepository getRepository(final ClassLoader loader) {
-        WeakReference loaderRef = new WeakReference(loader);
         if (s_repositories.containsKey(loader)) {
-            return (ClassInfoRepository)s_repositories.get(loaderRef);
+            return (ClassInfoRepository)s_repositories.get(loader);
         } else {
             final ClassInfoRepository repository = new ClassInfoRepository(loader);
-            s_repositories.put(loaderRef, repository);
+            s_repositories.put(loader, repository);
             return repository;
         }
     }
@@ -65,12 +64,14 @@ public class ClassInfoRepository {
      * @param className the name of the class
      */
     public static void removeClassInfoFromAllClassLoaders(final String className) {
-        for (Iterator it = s_repositories.entrySet().iterator(); it.hasNext();) {
-            Map.Entry entry = (Map.Entry)it.next();
-            if (entry.getKey().equals(className)) {
-                s_repositories.remove(className);
-            }
-        }
+        //TODO - fix algorithm
+        throw new UnsupportedOperationException("fix algorithm");
+//        for (Iterator it = s_repositories.entrySet().iterator(); it.hasNext();) {
+//            Map.Entry entry = (Map.Entry)it.next();
+//            if (entry.getKey().equals(className)) {
+//                s_repositories.remove(className);
+//            }
+//        }
     }
 
     /**
@@ -95,6 +96,7 @@ public class ClassInfoRepository {
     public void addClassInfo(final ClassInfo classInfo) {
         // is the class loaded by a class loader higher up in the hierarchy?
         if (checkParentClassRepository(classInfo.getName(), (ClassLoader)m_loaderRef.get()) == null) {
+            //TODO - refactor as a Trove int hashmap since it will never be freed
             m_repository.put(classInfo.getName(), classInfo);
         } else {
             // TODO: remove class in child class repository and add it for the current (parent) CL
