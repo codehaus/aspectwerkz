@@ -11,6 +11,7 @@ import org.apache.xmlbeans.impl.jam.*;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.annotation.instrumentation.bcel.BcelAttributeEnhancer;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -69,10 +70,12 @@ public class AnnotationC {
             printUsage();
         }
         Map commandLineOptions = parseCommandLineOptions(args);
-        compile((String)commandLineOptions.get(COMMAND_LINE_OPTION_SRC),
+        compile(
+                (String)commandLineOptions.get(COMMAND_LINE_OPTION_SRC),
                 (String)commandLineOptions.get(COMMAND_LINE_OPTION_CLASSES),
                 (String)commandLineOptions.get(COMMAND_LINE_OPTION_DEST),
-                (String)commandLineOptions.get(COMMAND_LINE_OPTION_CUSTOM));
+                (String)commandLineOptions.get(COMMAND_LINE_OPTION_CUSTOM)
+        );
     }
 
     /**
@@ -83,8 +86,9 @@ public class AnnotationC {
      * @param destDir                 the path where to write the compiled aspects (can be NULL)
      * @param annotationPropetiesFile the annotation properties file (for custom annotations) (can be NULL)
      */
-    public static void compile(final String sourcePath, final String classPath, String destDir,
-                               final String annotationPropetiesFile) {
+    public static void compile(
+            final String sourcePath, final String classPath, String destDir,
+            final String annotationPropetiesFile) {
         if (sourcePath == null) {
             throw new IllegalArgumentException("source path can not be null");
         }
@@ -95,7 +99,8 @@ public class AnnotationC {
             destDir = classPath;
         }
         try {
-            s_loader = new URLClassLoader(new URL[] { new File(classPath).toURL() }, ClassLoader.getSystemClassLoader());
+            s_loader =
+            new URLClassLoader(new URL[]{new File(classPath).toURL()}, ClassLoader.getSystemClassLoader());
         } catch (MalformedURLException e) {
             String message = "URL [" + classPath + "] is not valid: " + e.toString();
             logError(message);
@@ -156,7 +161,7 @@ public class AnnotationC {
         registerUserDefinedAnnotations(params, annotationPropetiesFile);
 
         // register the source files of interest
-        params.includeSourcePattern(new File[] { new File(sourcePath) }, FILE_PATTERN);
+        params.includeSourcePattern(new File[]{new File(sourcePath)}, FILE_PATTERN);
 
         // create the JAM service
         JamService service;
@@ -187,9 +192,9 @@ public class AnnotationC {
             JClass clazz = classes[i];
             try {
                 AttributeEnhancer enhancer = new BcelAttributeEnhancer();
-                if (enhancer.initialize(clazz.getQualifiedName(), classPath, false)) {
+                if (enhancer.initialize(clazz.getQualifiedName(), classPath)) {
                     handleClassAnnotations(enhancer, clazz);
-                    handleInnerClassAnnotations(enhancer, clazz);
+                    handleInnerClassAnnotations(enhancer, clazz, classPath, destDir);
 
                     //                    handleInnerClassAnnotations(classPath, destDir, clazz);
                     JMethod[] methods = clazz.getDeclaredMethods();
@@ -206,8 +211,10 @@ public class AnnotationC {
                 }
             } catch (Throwable e) {
                 e.printStackTrace();
-                logWarning("could not compile annotations for class [" + clazz.getQualifiedName() + "] due to: "
-                           + e.toString());
+                logWarning(
+                        "could not compile annotations for class [" + clazz.getQualifiedName() + "] due to: "
+                        + e.toString()
+                );
             }
         }
         logInfo("compiled classes written to " + destDir);
@@ -299,8 +306,10 @@ public class AnnotationC {
             ImplementsAnnotationProxy implementsProxy = (ImplementsAnnotationProxy)implementsAnnotation.getProxy();
             if (implementsProxy != null) {
                 enhancer.insertFieldAttribute(field, new AnnotationInfo(ANNOTATION_IMPLEMENTS, implementsProxy));
-                logInfo("    interface introduction [" + field.getSimpleName() + " :: " + implementsProxy.expression()
-                        + ']');
+                logInfo(
+                        "    interface introduction [" + field.getSimpleName() + " :: " + implementsProxy.expression()
+                        + ']'
+                );
             }
         }
         for (Iterator it = s_customAnnotations.keySet().iterator(); it.hasNext();) {
@@ -319,8 +328,11 @@ public class AnnotationC {
     /**
      * @param enhancer
      * @param clazz
+     * @param classPath
+     * @param destDir
      */
-    private static void handleInnerClassAnnotations(final AttributeEnhancer enhancer, final JClass clazz) {
+    private static void handleInnerClassAnnotations(
+            final AttributeEnhancer enhancer, final JClass clazz, final String classPath, final String destDir) {
         JClass[] innerClasses = clazz.getClasses();
         for (int i = 0; i < innerClasses.length; i++) {
             JClass innerClass = innerClasses[i];
@@ -347,35 +359,38 @@ public class AnnotationC {
                     }
                     introduceProxy.setIntroducedInterfaces(introducedInterfaceNames);
                     introduceProxy.setInnerClassName(innerClassName);
-                    logInfo("    mixin introduction [" + innerClass.getQualifiedName() + " :: "
-                            + introduceProxy.expression() + "] deployment model [" + introduceProxy.deploymentModel()
-                            + ']');
+                    logInfo(
+                            "    mixin introduction [" + innerClass.getQualifiedName() + " :: "
+                            + introduceProxy.expression() + "] deployment model [" +
+                            introduceProxy.deploymentModel()
+                            + ']'
+                    );
                     enhancer.insertClassAttribute(new AnnotationInfo(ANNOTATION_INTRODUCE, introduceProxy));
                 }
             }
+            try {
+                // TODO: for safety we don not support parsing inner classes of inner classes (good or bad?)
+                AttributeEnhancer innerClassEnhancer = new BcelAttributeEnhancer();
+                if (innerClassEnhancer.initialize(innerClass.getQualifiedName(), classPath)) {
+                    handleClassAnnotations(innerClassEnhancer, innerClass);
+                    JMethod[] methods = innerClass.getDeclaredMethods();
+                    for (int k = 0; k < methods.length; k++) {
+                        handleMethodAnnotations(innerClassEnhancer, methods[k]);
+                    }
+                    JField[] fields = innerClass.getDeclaredFields();
+                    for (int k = 0; k < fields.length; k++) {
+                        handleFieldAnnotations(innerClassEnhancer, fields[k]);
+                    }
 
-            //            try {
-            //                AttributeEnhancer enhancer = new BcelAttributeEnhancer();
-            //                if (enhancer.initialize(innerClass.getQualifiedName(), classPath, true)) {
-            //                    handleClassAnnotations(enhancer, innerClass);
-            //                    JMethod[] methods = innerClass.getDeclaredMethods();
-            //                    for (int k = 0; k < methods.length; k++) {
-            //                        handleMethodAnnotations(enhancer, methods[k]);
-            //                    }
-            //                    JField[] fields = innerClass.getDeclaredFields();
-            //                    for (int k = 0; k < fields.length; k++) {
-            //                        handleFieldAnnotations(enhancer, fields[k]);
-            //                    }
-            //
-            //                    // write enhanced class to disk
-            //                    enhancer.write(destDir);
-            //                }
-            //            } catch (Throwable e) {
-            //                logWarning(
-            //                        "could not compile annotations for class [" + clazz.getQualifiedName() + "] due to: " +
-            //                        e.toString()
-            //                );
-            //            }
+                    // write enhanced class to disk
+                    innerClassEnhancer.write(destDir);
+                }
+            } catch (Throwable e) {
+                logWarning(
+                        "could not compile annotations for class [" + innerClassName + "] due to: " +
+                        e.toString()
+                );
+            }
         }
     }
 
@@ -416,7 +431,8 @@ public class AnnotationC {
                 klass = s_loader.loadClass(className);
             } catch (ClassNotFoundException e) {
                 String message = className
-                                 + " could not be found on system classpath or class path provided as argument to the compiler";
+                                 +
+                                 " could not be found on system classpath or class path provided as argument to the compiler";
                 logError(message);
                 throw new DefinitionException(message);
             }
@@ -431,9 +447,15 @@ public class AnnotationC {
      */
     private static void printUsage() {
         System.out.println("AspectWerkz (c) 2002-2004 Jonas Bonér, Alexandre Vasseur");
-        System.out.println("usage: java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC [-verbose] -src <path to src dir> -classes <path to classes dir> [-dest <path to destination dir>] [-custom <property file for custom annotations>]");
-        System.out.println("       -dest <path to destination dir> is optional, if omitted the compiled classes will be written to the initial directory");
-        System.out.println("       -custom <property file for cutom annotations> is optional, only needed if you have custom annotations you want to compile");
+        System.out.println(
+                "usage: java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC [-verbose] -src <path to src dir> -classes <path to classes dir> [-dest <path to destination dir>] [-custom <property file for custom annotations>]"
+        );
+        System.out.println(
+                "       -dest <path to destination dir> is optional, if omitted the compiled classes will be written to the initial directory"
+        );
+        System.out.println(
+                "       -custom <property file for cutom annotations> is optional, only needed if you have custom annotations you want to compile"
+        );
         System.out.println("       -verbose activates compilation status information");
         System.exit(0);
     }
