@@ -388,6 +388,11 @@ public class SystemDefinition {
         }
     }
 
+    /**
+     * Returns the prepare packages.
+     *
+     * @return
+     */
     public Set getPreparePackages() {
         return m_preparePackages;
     }

@@ -50,13 +50,14 @@ public class Target {
     public java.lang.String[] toLog2(java.lang.String[] arg) {
         System.out.println("Target.toLog2()");
         new Target().toLog3();
-        return null;
+        throw new RuntimeException();
+//        return null;
     }
 
     /**
      * @log level=4 darr={4.5D,8.98665D,0.00000342}
      */
-    public String toLog3() {
+    public Object toLog3() {
         System.out.println("Target.toLog3()");
         return "result";
     }

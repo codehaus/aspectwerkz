@@ -36,7 +36,7 @@ import java.util.Map;
 
 /**
  * Manages the registration of join points and advices for these join points.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JoinPointRegistry {
@@ -60,7 +60,7 @@ public class JoinPointRegistry {
 
     /**
      * Registers the advices for the method join point.
-     * 
+     *
      * @param joinPointType
      * @param joinPointHash
      * @param signature
@@ -70,14 +70,13 @@ public class JoinPointRegistry {
      * @param system
      * @TODO: cache the metadata created in the method - map it to the method hash (see pointcut for caching)
      */
-    public void registerJoinPoint(
-        final int joinPointType,
-        final int joinPointHash,
-        final String signature,
-        final int classHash,
-        final Class declaringClass,
-        final ReflectionInfo withinInfo,
-        final AspectSystem system) {
+    public void registerJoinPoint(final int joinPointType,
+                                  final int joinPointHash,
+                                  final String signature,
+                                  final int classHash,
+                                  final Class declaringClass,
+                                  final ReflectionInfo withinInfo,
+                                  final AspectSystem system) {
         if (!m_joinPointMetaDataMap.containsKey(classHash)) {
             m_joinPointMetaDataMap.put(classHash, new TLongObjectHashMap());
         }
@@ -94,7 +93,9 @@ public class JoinPointRegistry {
             case JoinPointType.METHOD_EXECUTION:
                 Method wrapperMethod = AspectRegistry.getMethodTuple(declaringClass, joinPointHash).getWrapperMethod();
                 MethodInfo methodInfo = JavaMethodInfo.getMethodInfo(wrapperMethod);
-                registerJoinPoint(PointcutType.EXECUTION, system, methodInfo, methodInfo/*AVAJ*/, joinPointMetaDataMap);
+                registerJoinPoint(
+                        PointcutType.EXECUTION, system, methodInfo, methodInfo/*AVAJ*/, joinPointMetaDataMap
+                );
                 break;
             case JoinPointType.METHOD_CALL:
                 wrapperMethod = AspectRegistry.getMethodTuple(declaringClass, joinPointHash).getWrapperMethod();
@@ -105,7 +106,9 @@ public class JoinPointRegistry {
                 Constructor wrapperConstructor = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash)
                         .getWrapperConstructor();
                 ConstructorInfo constructorInfo = JavaConstructorInfo.getConstructorInfo(wrapperConstructor);
-                registerJoinPoint(PointcutType.EXECUTION, system, constructorInfo, constructorInfo/*AVAJ*/, joinPointMetaDataMap);
+                registerJoinPoint(
+                        PointcutType.EXECUTION, system, constructorInfo, constructorInfo/*AVAJ*/, joinPointMetaDataMap
+                );
                 break;
             case JoinPointType.CONSTRUCTOR_CALL:
                 wrapperConstructor = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash)
@@ -124,11 +127,12 @@ public class JoinPointRegistry {
                 break;
             case JoinPointType.HANDLER:
                 registerJoinPoint(
-                    PointcutType.HANDLER,
-                    system,
-                    createClassInfo(declaringClass),
-                    withinInfo,
-                    joinPointMetaDataMap);
+                        PointcutType.HANDLER,
+                        system,
+                        createClassInfo(declaringClass),
+                        withinInfo,
+                        joinPointMetaDataMap
+                );
                 break;
             case JoinPointType.STATIC_INITALIZATION:
                 throw new UnsupportedOperationException("not implemented");
@@ -139,7 +143,7 @@ public class JoinPointRegistry {
 
     /**
      * Returns the keys to the advices for the join point.
-     * 
+     *
      * @param classHash
      * @param joinPointHash
      * @return the advices attached to the join point
@@ -151,7 +155,7 @@ public class JoinPointRegistry {
 
     /**
      * Returns the keys to the advices for the join point.
-     * 
+     *
      * @param classHash
      * @param joinPointHash
      * @return the advices attached to the join point
@@ -163,10 +167,10 @@ public class JoinPointRegistry {
 
     /**
      * Resets the registry.
-     * 
+     *
      * @param classHash
      * @TODO do better RW/RuW/JPredef eWorld brute force reset Needed since JoinPointRegistry is somehow a singleton
-     *       (static in JoinPointManager)
+     * (static in JoinPointManager)
      */
     public void reset(final int classHash) {
         m_joinPointMetaDataMap.remove(classHash);
@@ -175,13 +179,14 @@ public class JoinPointRegistry {
 
     /**
      * Creates a class info instance out of a class instance.
-     * 
+     *
      * @param klass
      * @return class info
      */
     private ClassInfo createClassInfo(final Class klass) {
         ClassInfo classInfo = JavaClassInfoRepository.getRepository(klass.getClassLoader()).getClassInfo(
-            klass.getName());
+                klass.getName()
+        );
         if (classInfo == null) {
             classInfo = JavaClassInfo.getClassInfo(klass);
         }
@@ -190,19 +195,18 @@ public class JoinPointRegistry {
 
     /**
      * Register field get join points.
-     * 
+     *
      * @param type
      * @param system
      * @param reflectInfo
      * @param withinInfo
      * @param joinPointMetaDataMap
      */
-    private void registerJoinPoint(
-        final PointcutType type,
-        final AspectSystem system,
-        final ReflectionInfo reflectInfo,
-        final ReflectionInfo withinInfo,
-        final Map joinPointMetaDataMap) {
+    private void registerJoinPoint(final PointcutType type,
+                                   final AspectSystem system,
+                                   final ReflectionInfo reflectInfo,
+                                   final ReflectionInfo withinInfo,
+                                   final Map joinPointMetaDataMap) {
         List adviceIndexInfoList = new ArrayList();
         List cflowExpressionList = new ArrayList();
         Pointcut cflowPointcut = null;
@@ -224,10 +228,15 @@ public class JoinPointRegistry {
                 Pointcut pointcut = (Pointcut) it.next();
                 AdviceInfo[] aroundAdviceIndexes = pointcut.getAroundAdviceIndexes();
                 AdviceInfo[] beforeAdviceIndexes = pointcut.getBeforeAdviceIndexes();
-                AdviceInfo[] afterAdviceIndexes = pointcut.getAfterAdviceIndexes();
+                AdviceInfo[] afterAdviceIndexes = pointcut.getAfterFinallyAdviceIndexes();
 
-                AdviceIndexInfo adviceIndexInfo = new AdviceIndexInfo(aroundAdviceIndexes, pointcut
-                        .getBeforeAdviceIndexes(), pointcut.getAfterAdviceIndexes());
+                AdviceIndexInfo adviceIndexInfo = new AdviceIndexInfo(
+                        aroundAdviceIndexes,
+                        pointcut.getBeforeAdviceIndexes(),
+                        pointcut.getAfterFinallyAdviceIndexes(),
+                        pointcut.getAfterReturningAdviceIndexes(),
+                        pointcut.getAfterThrowingAdviceIndexes()
+                );
 
                 // args() support
                 // TODO refactor from JPMetaData used in inlining weaving
@@ -238,7 +247,7 @@ public class JoinPointRegistry {
 
                 //TODO can we do cache, can we do in another visitor
                 //TODO skip map when no args()
-                for (int j = 0; j <beforeAdviceIndexes.length; j++) {
+                for (int j = 0; j < beforeAdviceIndexes.length; j++) {
                     AdviceInfo indexTuple = beforeAdviceIndexes[j];
                     String adviceName = pointcut.getBeforeAdviceName(j);
 
@@ -265,7 +274,7 @@ public class JoinPointRegistry {
                 }
                 for (int j = 0; j < afterAdviceIndexes.length; j++) {
                     AdviceInfo indexTuple = afterAdviceIndexes[j];
-                    String adviceName = pointcut.getAfterAdviceName(j);
+                    String adviceName = pointcut.getAfterFinallyAdviceName(j);
 
                     //grab the parameters names
                     String[] adviceArgNames = JoinPointMetaData.getParameterNames(adviceName);

@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * Holds and creates meta data about a specific join point.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -49,18 +49,17 @@ public class JoinPointMetaData {
 
     /**
      * Retrieves the join point metadata.
-     * 
+     *
      * @param type
      * @param system
      * @param reflectInfo
      * @param withinInfo
      */
-    public static JoinPointMetaData getJoinPointMetaData(
-        final PointcutType type,
-        final AspectSystem system,
-        final ReflectionInfo reflectInfo,
-        final ReflectionInfo withinInfo) {
-        
+    public static JoinPointMetaData getJoinPointMetaData(final PointcutType type,
+                                                         final AspectSystem system,
+                                                         final ReflectionInfo reflectInfo,
+                                                         final ReflectionInfo withinInfo) {
+
         List adviceIndexInfoList = new ArrayList();
         List cflowExpressionList = new ArrayList();
         Pointcut cflowPointcut = null;
@@ -84,10 +83,17 @@ public class JoinPointMetaData {
 
                 AdviceInfo[] aroundAdviceIndexes = pointcut.getAroundAdviceIndexes();
                 AdviceInfo[] beforeAdviceIndexes = pointcut.getBeforeAdviceIndexes();
-                AdviceInfo[] afterAdviceIndexes = pointcut.getAfterAdviceIndexes();
-                
-                AdviceIndexInfo adviceIndexInfo = new AdviceIndexInfo(aroundAdviceIndexes, pointcut
-                        .getBeforeAdviceIndexes(), pointcut.getAfterAdviceIndexes());
+                AdviceInfo[] afterFinallyAdviceIndexes = pointcut.getAfterFinallyAdviceIndexes();
+                AdviceInfo[] afterReturningAdviceIndexes = pointcut.getAfterReturningAdviceIndexes();
+                AdviceInfo[] afterThrowingAdviceIndexes = pointcut.getAfterThrowingAdviceIndexes();
+
+                AdviceIndexInfo adviceIndexInfo = new AdviceIndexInfo(
+                        aroundAdviceIndexes,
+                        beforeAdviceIndexes,
+                        afterFinallyAdviceIndexes,
+                        afterReturningAdviceIndexes,
+                        afterThrowingAdviceIndexes
+                );
 
                 // compute target args to advice args mapping, it is a property of each *advice*
 
@@ -96,81 +102,32 @@ public class JoinPointMetaData {
 
                 //TODO can we do cache, can we do in another visitor
                 //TODO skip map when no args()
-                for (int j = 0; j <beforeAdviceIndexes.length; j++) {
-                    AdviceInfo indexTuple = beforeAdviceIndexes[j];
-                    String adviceName = pointcut.getBeforeAdviceName(j);
-
-                    //grab the parameters names
-                    String[] adviceArgNames = JoinPointMetaData.getParameterNames(adviceName);
-
-                    // map them from the ctx info
-                    int[] adviceToTargetArgs = new int[adviceArgNames.length];
-                    for (int k = 0; k < adviceArgNames.length; k++) {
-                        String adviceArgName = adviceArgNames[k];
-                        int exprArgIndex = pointcut.getExpressionInfo().getArgumentIndex(adviceArgName);
-                        if (exprArgIndex >= 0 && ctx.m_exprIndexToTargetIndex.containsKey(exprArgIndex)) {
-                            adviceToTargetArgs[k] = ctx.m_exprIndexToTargetIndex.get(exprArgIndex);
-                        } else {
-                            adviceToTargetArgs[k] = -1;
-                        }
-                    }
-                    //                    //debug:
-                    //                    for (int k = 0; k < adviceToTargetArgs.length; k++) {
-                    //                        int adviceToTargetArg = adviceToTargetArgs[k];
-                    //                        System.out.println(" " + k + " -> " + adviceToTargetArg);
-                    //                    }
-                    indexTuple.setMethodToArgIndexes(adviceToTargetArgs);
-                }
-                for (int j = 0; j < afterAdviceIndexes.length; j++) {
-                    AdviceInfo indexTuple = afterAdviceIndexes[j];
-                    String adviceName = pointcut.getAfterAdviceName(j);
-
-                    //grab the parameters names
-                    String[] adviceArgNames = JoinPointMetaData.getParameterNames(adviceName);
-
-                    // map them from the ctx info
-                    int[] adviceToTargetArgs = new int[adviceArgNames.length];
-                    for (int k = 0; k < adviceArgNames.length; k++) {
-                        String adviceArgName = adviceArgNames[k];
-                        int exprArgIndex = pointcut.getExpressionInfo().getArgumentIndex(adviceArgName);
-                        if (exprArgIndex >= 0 && ctx.m_exprIndexToTargetIndex.containsKey(exprArgIndex)) {
-                            adviceToTargetArgs[k] = ctx.m_exprIndexToTargetIndex.get(exprArgIndex);
-                        } else {
-                            adviceToTargetArgs[k] = -1;
-                        }
-                    }
-                    //                    //debug:
-                    //                    for (int k = 0; k < adviceToTargetArgs.length; k++) {
-                    //                        int adviceToTargetArg = adviceToTargetArgs[k];
-                    //                        System.out.println(" " + k + " -> " + adviceToTargetArg);
-                    //                    }
-                    indexTuple.setMethodToArgIndexes(adviceToTargetArgs);
-                }
 
                 for (int j = 0; j < aroundAdviceIndexes.length; j++) {
-                    AdviceInfo indexTuple = aroundAdviceIndexes[j];
-                    String adviceName = pointcut.getAroundAdviceName(j);
+                    setMethodArgumentIndexes(pointcut.getAroundAdviceName(j), pointcut, ctx, aroundAdviceIndexes[j]);
+                }
 
-                    //grab the parameters names
-                    String[] adviceArgNames = JoinPointMetaData.getParameterNames(adviceName);
+                for (int j = 0; j < beforeAdviceIndexes.length; j++) {
+                    setMethodArgumentIndexes(pointcut.getBeforeAdviceName(j), pointcut, ctx, beforeAdviceIndexes[j]);
+                }
 
-                    // map them from the ctx info
-                    int[] adviceToTargetArgs = new int[adviceArgNames.length];
-                    for (int k = 0; k < adviceArgNames.length; k++) {
-                        String adviceArgName = adviceArgNames[k];
-                        int exprArgIndex = pointcut.getExpressionInfo().getArgumentIndex(adviceArgName);
-                        if (exprArgIndex >= 0 && ctx.m_exprIndexToTargetIndex.containsKey(exprArgIndex)) {
-                            adviceToTargetArgs[k] = ctx.m_exprIndexToTargetIndex.get(exprArgIndex);
-                        } else {
-                            adviceToTargetArgs[k] = -1;
-                        }
-                    }
-                    //                    //debug:
-                    //                    for (int k = 0; k < adviceToTargetArgs.length; k++) {
-                    //                        int adviceToTargetArg = adviceToTargetArgs[k];
-                    //                        System.out.println(" " + k + " -> " + adviceToTargetArg);
-                    //                    }
-                    indexTuple.setMethodToArgIndexes(adviceToTargetArgs);
+                for (int j = 0; j < afterFinallyAdviceIndexes.length; j++) {
+                    setMethodArgumentIndexes(
+                            pointcut.getAfterFinallyAdviceName(j), pointcut, ctx, afterFinallyAdviceIndexes[j]
+                    );
+                }
+
+                for (int j = 0; j < afterReturningAdviceIndexes.length; j++) {
+                    setMethodArgumentIndexes(
+                            pointcut.getAfterReturningAdviceName(j), pointcut, ctx, afterReturningAdviceIndexes[j]
+                    );
+                }
+
+                for (int j = 0; j < afterThrowingAdviceIndexes.length; j++) {
+                    setMethodArgumentIndexes(
+                            pointcut.getAfterThrowingAdviceName(j), pointcut, ctx, afterThrowingAdviceIndexes[j]
+                    );
+
                 }
 
                 adviceIndexInfoList.add(adviceIndexInfo);
@@ -198,7 +155,7 @@ public class JoinPointMetaData {
 
     /**
      * Get the parameter names from a "method declaration" signature like pc(type a, type2 b) => 0:a, 1:b
-     * 
+     *
      * @param expression
      * @return the parameter names
      */
@@ -220,6 +177,35 @@ public class JoinPointMetaData {
             paramNamesArray[index] = (String) it.next();
         }
         return paramNamesArray;
+    }
+
+    /**
+     * Sets the method argument indexes.
+     * 
+     * @param adviceName
+     * @param pointcut
+     * @param ctx
+     * @param indexTuple
+     */
+    private static void setMethodArgumentIndexes(final String adviceName,
+                                                 final Pointcut pointcut,
+                                                 final ExpressionContext ctx,
+                                                 final AdviceInfo indexTuple) {
+        //grab the parameters names
+        String[] adviceArgNames = JoinPointMetaData.getParameterNames(adviceName);
+
+        // map them from the ctx info
+        int[] adviceToTargetArgs = new int[adviceArgNames.length];
+        for (int k = 0; k < adviceArgNames.length; k++) {
+            String adviceArgName = adviceArgNames[k];
+            int exprArgIndex = pointcut.getExpressionInfo().getArgumentIndex(adviceArgName);
+            if (exprArgIndex >= 0 && ctx.m_exprIndexToTargetIndex.containsKey(exprArgIndex)) {
+                adviceToTargetArgs[k] = ctx.m_exprIndexToTargetIndex.get(exprArgIndex);
+            } else {
+                adviceToTargetArgs[k] = -1;
+            }
+        }
+        indexTuple.setMethodToArgIndexes(adviceToTargetArgs);
     }
 
 }

@@ -942,7 +942,7 @@ public class JoinPointManager {
     private final AroundAdviceExecutor createAroundAdviceExecutor(
         final AdviceIndexInfo[] adviceIndexes,
         final int joinPointType) {
-        return new AroundAdviceExecutor(extractAroundAdvice(adviceIndexes), joinPointType);
+        return new AroundAdviceExecutor(extractAroundAdvices(adviceIndexes), joinPointType);
     }
 
     /**
@@ -952,7 +952,7 @@ public class JoinPointManager {
      * @return the advice executor
      */
     private final BeforeAdviceExecutor createBeforeAdviceExecutor(final AdviceIndexInfo[] adviceIndexes) {
-        return new BeforeAdviceExecutor(extractBeforeAdvice(adviceIndexes));
+        return new BeforeAdviceExecutor(extractBeforeAdvices(adviceIndexes));
     }
 
     /**
@@ -962,7 +962,7 @@ public class JoinPointManager {
      * @return the advice executor
      */
     private final AfterAdviceExecutor createAfterAdviceExecutor(final AdviceIndexInfo[] adviceIndexes) {
-        return new AfterAdviceExecutor(extractAfterAdvice(adviceIndexes));
+        return new AfterAdviceExecutor(extractAfterFinallyAdvices(adviceIndexes));
     }
 
     /**
@@ -971,7 +971,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    public final static AdviceInfo[] extractAroundAdvice(final AdviceIndexInfo[] adviceIndexes) {
+    public final static AdviceInfo[] extractAroundAdvices(final AdviceIndexInfo[] adviceIndexes) {
         int i;
         int j;
         List aroundAdviceList = new ArrayList();
@@ -996,7 +996,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    public final static AdviceInfo[] extractBeforeAdvice(final AdviceIndexInfo[] adviceIndexes) {
+    public final static AdviceInfo[] extractBeforeAdvices(final AdviceIndexInfo[] adviceIndexes) {
         int i;
         int j;
         List beforeAdviceList = new ArrayList();
@@ -1016,18 +1016,68 @@ public class JoinPointManager {
     }
 
     /**
-     * Extracts the after advices.
-     * 
+     * Extracts the after finally advices.
+     *
      * @param adviceIndexes
      * @return
      */
-    public final static AdviceInfo[] extractAfterAdvice(final AdviceIndexInfo[] adviceIndexes) {
+    public final static AdviceInfo[] extractAfterFinallyAdvices(final AdviceIndexInfo[] adviceIndexes) {
         int i;
         int j;
         List afterAdviceList = new ArrayList();
         for (i = 0; i < adviceIndexes.length; i++) {
             AdviceIndexInfo adviceIndex = adviceIndexes[i];
-            AdviceInfo[] indexTuples = adviceIndex.getAfterAdvices();
+            AdviceInfo[] indexTuples = adviceIndex.getAfterFinallyAdvices();
+            for (j = 0; j < indexTuples.length; j++) {
+                afterAdviceList.add(indexTuples[j]);
+            }
+        }
+        AdviceInfo[] afterAdvices = new AdviceInfo[afterAdviceList.size()];
+        i = 0;
+        for (Iterator it = afterAdviceList.iterator(); it.hasNext(); i++) {
+            afterAdvices[i] = (AdviceInfo) it.next();
+        }
+        return afterAdvices;
+    }
+
+    /**
+     * Extracts the after returning advices.
+     *
+     * @param adviceIndexes
+     * @return
+     */
+    public final static AdviceInfo[] extractAfterReturningAdvices(final AdviceIndexInfo[] adviceIndexes) {
+        int i;
+        int j;
+        List afterAdviceList = new ArrayList();
+        for (i = 0; i < adviceIndexes.length; i++) {
+            AdviceIndexInfo adviceIndex = adviceIndexes[i];
+            AdviceInfo[] indexTuples = adviceIndex.getAfterReturningAdvices();
+            for (j = 0; j < indexTuples.length; j++) {
+                afterAdviceList.add(indexTuples[j]);
+            }
+        }
+        AdviceInfo[] afterAdvices = new AdviceInfo[afterAdviceList.size()];
+        i = 0;
+        for (Iterator it = afterAdviceList.iterator(); it.hasNext(); i++) {
+            afterAdvices[i] = (AdviceInfo) it.next();
+        }
+        return afterAdvices;
+    }
+
+    /**
+     * Extracts the after throwing advices.
+     *
+     * @param adviceIndexes
+     * @return
+     */
+    public final static AdviceInfo[] extractAfterThrowingAdvices(final AdviceIndexInfo[] adviceIndexes) {
+        int i;
+        int j;
+        List afterAdviceList = new ArrayList();
+        for (i = 0; i < adviceIndexes.length; i++) {
+            AdviceIndexInfo adviceIndex = adviceIndexes[i];
+            AdviceInfo[] indexTuples = adviceIndex.getAfterThrowingAdvices();
             for (j = 0; j < indexTuples.length; j++) {
                 afterAdviceList.add(indexTuples[j]);
             }
@@ -1100,7 +1150,7 @@ public class JoinPointManager {
     private void initCflowManagement(final Pointcut cflowPointcut, final JoinPointInfo joinPointInfo) {
         if (cflowPointcut != null) {
             AdviceInfo[] beforeAdviceIndexes = cflowPointcut.getBeforeAdviceIndexes();
-            AdviceInfo[] afterAdviceIndexes = cflowPointcut.getAfterAdviceIndexes();
+            AdviceInfo[] afterAdviceIndexes = cflowPointcut.getAfterFinallyAdviceIndexes();
             if ((beforeAdviceIndexes.length != 0) && (afterAdviceIndexes.length != 0)) {
                 joinPointInfo.enterCflow = beforeAdviceIndexes[0];
                 joinPointInfo.exitCflow = afterAdviceIndexes[0];

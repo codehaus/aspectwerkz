@@ -177,7 +177,9 @@ public class AspectRegistry {
                                     AdviceInfo tuple = new AdviceInfo(
                                         indexAspect,
                                         adviceDef.getMethodIndex(),
-                                        m_aspectManager);
+                                        m_aspectManager,
+                                        adviceDef.getType(),
+                                        adviceDef.getSpecialArgumentType());
 
                                     //prefix AdviceName with AspectName to allow AspectReuse
                                     m_adviceIndexes.put(crossCuttingInfo.getName() + "/" + adviceDef.getName(), tuple);

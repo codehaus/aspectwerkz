@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz;
 
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
+import org.codehaus.aspectwerkz.aspect.AdviceType;
 
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -15,7 +16,7 @@ import java.io.Serializable;
 /**
  * Contains advice info, like indexes describing the aspect and a method (advice or introduced),
  * aspect manager etc.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -46,21 +47,41 @@ public class AdviceInfo implements Serializable {
     private int[] m_methodToArgIndexes;
 
     /**
-     * Creates a new advice info.
-     * 
-     * @param aspectIndex the aspect index
-     * @param methodIndex the method index
-     * @param aspectManager the aspectManager
+     * The "special" argument for the advice.
      */
-    public AdviceInfo(final int aspectIndex, final int methodIndex, final AspectManager aspectManager) {
+    private String m_specialArgumentType;
+
+    /**
+     * The advice type.
+     */
+    private AdviceType m_type;
+
+    /**
+     * Creates a new advice info.
+     *
+     * @param aspectIndex         the aspect index
+     * @param methodIndex         the method index
+     * @param aspectManager       the aspectManager
+     * @param type
+     * @param specialArgumentType
+     */
+    public AdviceInfo(final int aspectIndex,
+                      final int methodIndex,
+                      final AspectManager aspectManager,
+                      final AdviceType type,
+                      final String specialArgumentType) {
         m_aspectIndex = aspectIndex;
         m_methodIndex = methodIndex;
         m_aspectManager = aspectManager;
+        m_type = type;
+        if (specialArgumentType != null) {
+            m_specialArgumentType = specialArgumentType.replace('.', '/');
+        }
     }
 
     /**
      * Return the aspect index.
-     * 
+     *
      * @return the aspect index
      */
     public int getAspectIndex() {
@@ -69,7 +90,7 @@ public class AdviceInfo implements Serializable {
 
     /**
      * Return the method index.
-     * 
+     *
      * @return the method index
      */
     public int getMethodIndex() {
@@ -78,7 +99,7 @@ public class AdviceInfo implements Serializable {
 
     /**
      * Return the aspectManager.
-     * 
+     *
      * @return the aspect manager
      */
     public AspectManager getAspectManager() {
@@ -87,7 +108,7 @@ public class AdviceInfo implements Serializable {
 
     /**
      * Sets the advice method to target method arg mapping A value of -1 means "not mapped"
-     * 
+     *
      * @param map
      */
     public void setMethodToArgIndexes(final int[] map) {
@@ -96,35 +117,59 @@ public class AdviceInfo implements Serializable {
 
     /**
      * Returns the advice method to target method arg index mapping.
-     * 
+     *
      * @return the indexes
      */
     public int[] getMethodToArgIndexes() {
         return m_methodToArgIndexes;
     }
 
+    /**
+     * Returns the special argument type.
+     *
+     * @return
+     */
+    public String getSpecialArgumentType() {
+        return m_specialArgumentType;
+    }
+
+    /**
+     * Returns the advice type.
+     *
+     * @return
+     */
+    public AdviceType getType() {
+        return m_type;
+    }
+
     public String toString() {
         StringBuffer sb = new StringBuffer("IndexTuple[");
+        sb.append(m_type).append(',');
         sb.append(m_aspectManager).append(',');
         sb.append(m_aspectIndex).append(',');
-        sb.append(m_methodIndex).append(']');
+        sb.append(m_methodIndex).append(',');
+        sb.append(m_specialArgumentType).append(']');
         sb.append(hashCode());
         return sb.toString();
     }
 
     /**
      * Provides custom deserialization.
-     * 
+     *
      * @param stream the object input stream containing the serialized object
      * @throws Exception in case of failure
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
         m_uuid = (String) fields.get("m_uuid", null);
+        m_type = (AdviceType) fields.get("m_type", null);
         m_methodIndex = fields.get("m_methodIndex", 0);
         m_aspectIndex = fields.get("m_aspectIndex", 0);
-        m_methodToArgIndexes = (int[])fields.get("m_methodToArgIndexes", null);
-        m_aspectManager = SystemLoader.getSystem(Thread.currentThread().getContextClassLoader()).getAspectManager(
-            m_uuid);
+        m_methodToArgIndexes = (int[]) fields.get("m_methodToArgIndexes", null);
+        m_specialArgumentType = (String) fields.get("m_specialArgumentType", null);
+        m_aspectManager = SystemLoader.getSystem(
+                Thread.currentThread().
+                getContextClassLoader()
+        ).getAspectManager(m_uuid);
     }
 }
