@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import java.io.Serializable;
 
 /**
@@ -55,6 +56,7 @@ public class AroundAdviceExecutor implements Serializable {
      * @return the result from the next advice in the chain or the invocation of the target method
      */
     public Object proceed(final JoinPointBase joinPoint) throws Throwable {
+        // if we have cflow advice then let it run first, then check if we are in cflow
         if (!joinPoint.isInCflow()) {
             return JoinPointBase.invokeJoinPoint(joinPoint, m_joinPointType);
         }
@@ -77,9 +79,8 @@ public class AroundAdviceExecutor implements Serializable {
                 m_currentAdviceIndex++;
                 try {
                     IndexTuple index = m_adviceIndexes[m_currentAdviceIndex];
-                    result = index.getAspectManager().getAspectContainer(index.getAspectIndex()).invokeAdvice(index
-                                                                                                              .getMethodIndex(),
-                                                                                                              joinPoint);
+                    AspectContainer container = index.getAspectManager().getAspectContainer(index.getAspectIndex());
+                    result = container.invokeAdvice(index.getMethodIndex(), joinPoint);
                 } finally {
                     m_currentAdviceIndex--;
                 }
@@ -105,10 +106,10 @@ public class AroundAdviceExecutor implements Serializable {
     }
 
     /**
-       * Resets the executor.
-       * <p/>
-       * Will restart the execution chain of advice.
-       */
+     * Resets the invocation flow.
+     * <p/>
+     * Will restart the execution chain of advice.
+     */
     public void reset() {
         m_currentAdviceIndex = -1;
         m_stackIndex = -1;

@@ -81,6 +81,7 @@ public class CFlowTest extends WeavedTestCase implements Loggable {
     }
 
     public void step1() {
+        System.out.println("CFlowTest.step1");
         log("step1 ");
         step2();
     }
@@ -101,6 +102,7 @@ public class CFlowTest extends WeavedTestCase implements Loggable {
     }
 
     public void step2() {
+        System.out.println("CFlowTest.step2");
         log("step2 ");
     }
 

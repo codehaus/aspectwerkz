@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.aspect.management.Pointcut;
 import org.codehaus.aspectwerkz.expression.CflowExpressionVisitor;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
@@ -350,7 +351,8 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         if (m_checkCflow) {
             boolean isInCFlow = false;
             for (Iterator it = m_cflowExpressions.iterator(); it.hasNext();) {
-                CflowExpressionVisitor cflowExpression = (CflowExpressionVisitor)it.next();
+                Pointcut pointcut = (Pointcut)it.next();
+                CflowExpressionVisitor cflowExpression = pointcut.getExpressionInfo().getCflowExpression();
                 if (m_system.isInControlFlowOf(cflowExpression)) {
                     isInCFlow = true;
                     break;

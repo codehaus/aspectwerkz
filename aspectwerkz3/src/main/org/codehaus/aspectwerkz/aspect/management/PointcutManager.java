@@ -144,9 +144,12 @@ public class PointcutManager {
      */
     public void addPointcut(final Pointcut pointcut) {
         synchronized (m_pointcuts) {
-            m_pointcuts.add(pointcut);
-            if (pointcut.getExpressionInfo().hasCflowPointcut()) {
-                m_cflowPointcuts.add(pointcut);
+            synchronized (m_cflowPointcuts) {
+                if (pointcut.getExpressionInfo().hasCflowPointcut()) {
+                    m_cflowPointcuts.add(pointcut);
+                } else {
+                    m_pointcuts.add(pointcut);
+                }
             }
         }
     }
@@ -169,7 +172,7 @@ public class PointcutManager {
     public Pointcut getPointcut(final String expression) {
         for (Iterator it = m_pointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
-            if (pointcut.getExpressionInfo().toString().equals(expression)) {
+            if (pointcut.getExpressionInfo().getExpressionAsString().equals(expression)) {
                 return pointcut;
             }
         }
@@ -185,7 +188,7 @@ public class PointcutManager {
     public Pointcut getCflowPointcut(final String expression) {
         for (Iterator it = m_cflowPointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
-            if (pointcut.getExpressionInfo().toString().equals(expression)) {
+            if (pointcut.getExpressionInfo().getExpressionAsString().equals(expression)) {
                 return pointcut;
             }
         }
@@ -202,10 +205,10 @@ public class PointcutManager {
     }
 
     /**
-    * Returns all the pointcuts defined by a specific aspect that has a cflow pointcut referenced.
-    *
-    * @return the pointcuts
-    */
+     * Returns all the pointcuts defined by a specific aspect that has a cflow pointcut referenced.
+     *
+     * @return the pointcuts
+     */
     public List getCflowPointcuts() {
         return m_cflowPointcuts;
     }

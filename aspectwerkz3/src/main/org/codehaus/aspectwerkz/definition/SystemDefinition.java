@@ -12,7 +12,6 @@ import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionVisitor;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +33,6 @@ public class SystemDefinition {
     public static final String PER_CLASS = "perClass";
     public static final String PER_INSTANCE = "perInstance";
     public static final String PER_THREAD = "perThread";
-    public static final String SYSTEM_CFLOW_ASPECT = TransformationUtil.ASPECTWERKZ_PREFIX + "system_cflow";
 
     /**
      * Empty hash map.
@@ -99,10 +97,10 @@ public class SystemDefinition {
      * Creates a new instance, creates and sets the system cflow aspect.
      */
     public SystemDefinition() {
-        AspectDefinition systemAspect = new AspectDefinition(SYSTEM_CFLOW_ASPECT, CFlowSystemAspect.CLASS_NAME);
+        AspectDefinition systemAspect = new AspectDefinition(CFlowSystemAspect.CLASS_NAME, CFlowSystemAspect.CLASS_NAME);
         systemAspect.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
         synchronized (m_aspectMap) {
-            m_aspectMap.put(SYSTEM_CFLOW_ASPECT, systemAspect);
+            m_aspectMap.put(CFlowSystemAspect.CLASS_NAME, systemAspect);
         }
     }
 
@@ -452,7 +450,8 @@ public class SystemDefinition {
     /**
      * Checks if a class should be included.
      *
-     * @param className the name or the class
+     * @param className
+     *  the name or the class
      * @return boolean
      */
     public boolean inIncludePackage(final String className) {
@@ -529,21 +528,17 @@ public class SystemDefinition {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
         }
-
         for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
             IntroductionDefinition introDef = (IntroductionDefinition)it.next();
             ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
-
             for (int i = 0; i < expressionInfos.length; i++) {
                 ExpressionInfo expressionInfo = expressionInfos[i];
                 ExpressionVisitor expression = expressionInfo.getExpression();
-
                 if (expression.match(ctx)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -557,19 +552,15 @@ public class SystemDefinition {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
         }
-
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
-
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-
                 if (adviceDef.getExpressionInfo().getExpression().match(ctx)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -583,14 +574,12 @@ public class SystemDefinition {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
         }
-
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
-
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-
-                if (adviceDef.getExpressionInfo().getCflowExpression().match(ctx)) {
+                ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
+                if (expressionInfo.hasCflowPointcut() && expressionInfo.getCflowExpression().match(ctx)) {
                     return true;
                 }
             }
@@ -609,21 +598,17 @@ public class SystemDefinition {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
         }
-
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
             List advices = aspectDef.getAllAdvices();
-
             for (Iterator it2 = advices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-
                 if (adviceDef.getExpressionInfo().getAdvisedClassFilterExpression().match(ctx)
                     || adviceDef.getExpressionInfo().getAdvisedCflowClassFilterExpression().match(ctx)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -637,20 +622,16 @@ public class SystemDefinition {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
         }
-
         for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
             IntroductionDefinition introDef = (IntroductionDefinition)it.next();
             ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
-
             for (int i = 0; i < expressionInfos.length; i++) {
                 ExpressionInfo expressionInfo = expressionInfos[i];
-
                 if (expressionInfo.getAdvisedClassFilterExpression().match(ctx)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -665,7 +646,6 @@ public class SystemDefinition {
      */
     public void addParameter(final String aspectName, final String key, final String value) {
         Map parameters;
-
         if (m_parametersToAspects.containsKey(aspectName)) {
             parameters = (Map)m_parametersToAspects.get(aspectName);
             parameters.put(key, value);

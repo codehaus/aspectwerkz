@@ -104,6 +104,7 @@ public class CFlowSystemAspect {
      * @throws Throwable the exception from the invocation
      */
     public void enterControlFlow(final JoinPoint joinPoint) throws Throwable {
+        System.out.println("CFlowSystemAspect.enterControlFlow");
         m_system.enteringControlFlow(getPointcutType(joinPoint), createMethodInfo(joinPoint),
                                      createWithinInfo(joinPoint));
     }
@@ -115,6 +116,7 @@ public class CFlowSystemAspect {
      * @throws Throwable the exception from the invocation
      */
     public void exitControlFlow(final JoinPoint joinPoint) throws Throwable {
+        System.out.println("CFlowSystemAspect.exitControlFlow");
         m_system.exitingControlFlow(getPointcutType(joinPoint), createMethodInfo(joinPoint), createWithinInfo(joinPoint));
     }
 

@@ -187,47 +187,43 @@ public class StartupManager {
     private static void registerPointcuts(final AspectManager aspectManager, final SystemDefinition definition) {
         for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
-
+            if (aspectDef.getName().equals(CFlowSystemAspect.CLASS_NAME)) {
+                continue;
+            }
             PointcutManager pointcutManager = aspectManager.getPointcutManager(aspectDef.getName());
 
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo().toString());
+                Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo().getExpressionAsString());
                 if (pointcut == null) {
                     pointcut = new Pointcut(aspectManager, adviceDef.getExpressionInfo());
                     pointcutManager.addPointcut(pointcut);
                 }
-
-                // add aspect name as prefix to allow advice reuse
                 pointcut.addAroundAdvice(aspectDef.getName() + '/' + adviceDef.getName());
             }
 
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo().toString());
+                Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo().getExpressionAsString());
                 if (pointcut == null) {
                     pointcut = new Pointcut(aspectManager, adviceDef.getExpressionInfo());
                     pointcutManager.addPointcut(pointcut);
                 }
-
-                // add aspect name as prefix to allow advice reuse
                 pointcut.addBeforeAdvice(aspectDef.getName() + '/' + adviceDef.getName());
             }
 
             for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo().toString());
+                Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo().getExpressionAsString());
                 if (pointcut == null) {
                     pointcut = new Pointcut(aspectManager, adviceDef.getExpressionInfo());
                     pointcutManager.addPointcut(pointcut);
                 }
-
-                // add aspect name as prefix to allow advice reuse
                 pointcut.addAfterAdvice(aspectDef.getName() + '/' + adviceDef.getName());
             }
         }
 
-        // registerCflowPointcuts(aspectManager, definition);
+        registerCflowPointcuts(aspectManager, definition);
     }
 
     /**
@@ -236,16 +232,23 @@ public class StartupManager {
      * @param aspectManager the aspectManager for the system
      * @param definition    the AspectWerkz definition
      */
-    private static void NEW__registerCflowPointcuts(final AspectManager aspectManager, final SystemDefinition definition) {
-        // get all aspects definitions
+    private static void registerCflowPointcuts(final AspectManager aspectManager, final SystemDefinition definition) {
+        // get all aspects to be able to get all poincuts defined
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it1.next();
+            if (aspectDef.getName().equals(CFlowSystemAspect.CLASS_NAME)) {
+                continue;
+            }
+
             PointcutManager pointcutManager = aspectManager.getPointcutManager(aspectDef.getName());
 
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
-                Pointcut cflowPointcut = pointcutManager.getCflowPointcut(expressionInfo.toString());
+                Pointcut cflowPointcut = pointcutManager.getCflowPointcut(expressionInfo.getExpressionAsString());
+                if (cflowPointcut == null) {
+                    continue;
+                }
 
                 // register the cflow advices in the system and create the cflow system pointcutManager
                 // (if it does not already exist)
@@ -253,54 +256,49 @@ public class StartupManager {
                     AspectDefinition cflowAspectDef = new AspectDefinition(CFlowSystemAspect.NAME,
                                                                            CFlowSystemAspect.CLASS_NAME);
 
-                    PointcutDefinition pointcutDef = new PointcutDefinition(expressionInfo.toString());
+                    PointcutDefinition pointcutDef = new PointcutDefinition(expressionInfo.getExpressionAsString());
 
                     cflowAspectDef.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
                     cflowAspectDef.addPointcut(pointcutDef);
 
                     try {
-                        // add the cflow pre advice
-                        cflowAspectDef.addBeforeAdvice(new AdviceDefinition(CFlowSystemAspect.PRE_ADVICE,
-                                                                            AdviceDefinition.BEFORE_ADVICE,
-                                                                            cflowAspectDef.getName(),
-                                                                            cflowAspectDef.getClassName(),
-                                                                            expressionInfo,
-                                                                            CFlowSystemAspect.class.getDeclaredMethod(CFlowSystemAspect.PRE_ADVICE,
-                                                                                                                      new Class[] {
-                                                                                                                          JoinPoint.class
-                                                                                                                      }),
-                                                                            CFlowSystemAspect.PRE_ADVICE_INDEX,
-                                                                            cflowAspectDef));
+                        AdviceDefinition beforeAdviceDefinition = new AdviceDefinition(CFlowSystemAspect.PRE_ADVICE,
+                                                                                       AdviceDefinition.BEFORE_ADVICE,
+                                                                                       cflowAspectDef.getName(),
+                                                                                       cflowAspectDef.getClassName(),
+                                                                                       expressionInfo,
+                                                                                       CFlowSystemAspect.class
+                                                                                       .getDeclaredMethod(CFlowSystemAspect.PRE_ADVICE,
+                                                                                                          new Class[] {
+                                                                                                              JoinPoint.class
+                                                                                                          }),
+                                                                                       CFlowSystemAspect.PRE_ADVICE_INDEX,
+                                                                                       cflowAspectDef);
+                        cflowAspectDef.addBeforeAdvice(beforeAdviceDefinition);
 
-                        // add the cflow post advice
-                        cflowAspectDef.addAfterAdvice(new AdviceDefinition(CFlowSystemAspect.POST_ADVICE,
-                                                                           AdviceDefinition.AFTER_ADVICE,
-                                                                           cflowAspectDef.getName(),
-                                                                           cflowAspectDef.getClassName(),
-                                                                           expressionInfo,
-                                                                           CFlowSystemAspect.class.getDeclaredMethod(CFlowSystemAspect.POST_ADVICE,
-                                                                                                                     new Class[] {
-                                                                                                                         JoinPoint.class
-                                                                                                                     }),
-                                                                           CFlowSystemAspect.POST_ADVICE_INDEX,
-                                                                           cflowAspectDef));
+                        AdviceDefinition afterAdviceDefinition = new AdviceDefinition(CFlowSystemAspect.POST_ADVICE,
+                                                                                      AdviceDefinition.AFTER_ADVICE,
+                                                                                      cflowAspectDef.getName(),
+                                                                                      cflowAspectDef.getClassName(),
+                                                                                      expressionInfo,
+                                                                                      CFlowSystemAspect.class
+                                                                                      .getDeclaredMethod(CFlowSystemAspect.POST_ADVICE,
+                                                                                                         new Class[] {
+                                                                                                             JoinPoint.class
+                                                                                                         }),
+                                                                                      CFlowSystemAspect.POST_ADVICE_INDEX,
+                                                                                      cflowAspectDef);
+                        cflowAspectDef.addAfterAdvice(afterAdviceDefinition);
                     } catch (NoSuchMethodException e) {
                         ; // TODO: why ignore exception? ALEX??
                     }
 
-                    // add the advice to the aspectwerkz definition
                     definition.addAspect(cflowAspectDef);
-
-                    // add the advice to the aspectwerkz system
                     registerAspect(aspectManager, cflowAspectDef, new HashMap());
                 }
-
-                // add references to the cflow advices to the cflow cflowPointcut
-                // add pointcutManager name as prefix to allow advice reuse
                 cflowPointcut.addBeforeAdvice(CFlowSystemAspect.NAME + '/' + CFlowSystemAspect.PRE_ADVICE);
                 cflowPointcut.addAfterAdvice(CFlowSystemAspect.NAME + '/' + CFlowSystemAspect.POST_ADVICE);
 
-                // add the call cflowPointcut
                 pointcutManager.addPointcut(cflowPointcut);
             }
         }

@@ -270,8 +270,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     public Object createPerInstanceAspect(final Object callingInstance) {
         if (callingInstance == null) {
             return m_perJvm;
-
-            //            throw new RuntimeException("target instance is null for perInstance deployed aspects");
         }
         synchronized (m_perInstance) {
             if (!m_perInstance.containsKey(callingInstance)) {

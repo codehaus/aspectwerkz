@@ -130,7 +130,7 @@ public class JavaLoggingAspect {
         List removedAdviceDefs = new ArrayList();
         for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
             AdviceDefinition around = (AdviceDefinition)arounds.next();
-            if (pointcutName.equals(around.getExpressionInfo().toString())) {
+            if (pointcutName.equals(around.getExpressionInfo().getExpressionAsString())) {
                 System.out.println("<removing> " + around.getName() + " at " + pointcutName);
                 removedAdviceDefs.add(around);
             }

@@ -173,7 +173,7 @@ class JoinPointRegistry {
      * @param joinPointHash
      * @return the advices attached to the join point
      */
-    public Map getCflowExpressionsForJoinPoint(final long classHash, final long joinPointHash) {
+    public Map getCflowPointcutsForJoinPoint(final long classHash, final long joinPointHash) {
         TLongObjectHashMap joinPoints = (TLongObjectHashMap)m_joinPointCflowExpressionMap.get(classHash);
         return (Map)joinPoints.get(joinPointHash);
     }
@@ -216,35 +216,34 @@ class JoinPointRegistry {
     private void registerJoinPoint(final PointcutType type, final AspectSystem system,
                                    final ReflectionInfo reflectInfo, final ReflectionInfo withinInfo,
                                    final Map pointcutTypeToAdvicesMap, final Map pointcutTypeToCflowExpressionsMap) {
-        List getAdvices = new ArrayList();
-        List getPointcuts = new ArrayList();
+        List advices = new ArrayList();
+        List pointcuts = new ArrayList();
         List cflowExpressions = new ArrayList();
 
         AspectManager[] aspectManagers = system.getAspectManagers();
         for (int i = 0; i < aspectManagers.length; i++) {
             AspectManager aspectManager = aspectManagers[i];
+
             ExpressionContext ctx = new ExpressionContext(type, reflectInfo, withinInfo);
-            getPointcuts.addAll(aspectManager.getPointcuts(ctx));
-            List pointcuts = aspectManager.getCflowPointcuts(ctx);
-            for (Iterator it = pointcuts.iterator(); it.hasNext();) {
+            pointcuts.addAll(aspectManager.getPointcuts(ctx));
+
+            List cflowPointcuts = aspectManager.getCflowPointcuts(ctx);
+            for (Iterator it = cflowPointcuts.iterator(); it.hasNext();) {
                 Pointcut pointcut = (Pointcut)it.next();
-                cflowExpressions.add(pointcut.getExpressionInfo().getCflowExpression());
+                cflowExpressions.add(pointcut);
             }
         }
 
-        for (Iterator it = getPointcuts.iterator(); it.hasNext();) {
+        for (Iterator it = pointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
-            AdviceContainer advices = new AdviceContainer(pointcut.getAroundAdviceIndexes(),
-                                                          pointcut.getBeforeAdviceIndexes(),
-                                                          pointcut.getAfterAdviceIndexes());
-            getAdvices.add(advices);
+            advices.add(new AdviceContainer(pointcut.getAroundAdviceIndexes(), pointcut.getBeforeAdviceIndexes(),
+                                            pointcut.getAfterAdviceIndexes()));
         }
 
-        AdviceContainer[] adviceContainers = new AdviceContainer[getAdvices.size()];
+        AdviceContainer[] adviceContainers = new AdviceContainer[advices.size()];
         int i = 0;
-        for (Iterator iterator = getAdvices.iterator(); iterator.hasNext(); i++) {
-            AdviceContainer adviceContainer = (AdviceContainer)iterator.next();
-            adviceContainers[i] = adviceContainer;
+        for (Iterator iterator = advices.iterator(); iterator.hasNext(); i++) {
+            adviceContainers[i] = (AdviceContainer)iterator.next();
         }
 
         pointcutTypeToAdvicesMap.put(type, adviceContainers);

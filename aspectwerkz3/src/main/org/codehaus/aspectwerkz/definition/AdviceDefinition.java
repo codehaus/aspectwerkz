@@ -82,35 +82,27 @@ public class AdviceDefinition {
         if (name == null) {
             throw new IllegalArgumentException("name can not be null");
         }
-
         if (!type.equals(AROUND_ADVICE) && !type.equals(BEFORE_ADVICE) && !type.equals(AFTER_ADVICE)) {
             throw new IllegalArgumentException("illegal advice type");
         }
-
         if (aspectName == null) {
             throw new IllegalArgumentException("aspect name can not be null");
         }
-
         if (aspectClassName == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
-
         if (expressionInfo == null) {
             throw new IllegalArgumentException("expressionInfo can not be null");
         }
-
         if (method == null) {
             throw new IllegalArgumentException("method can not be null");
         }
-
         if (methodIndex < 0) {
             throw new IllegalArgumentException("method index is not valid");
         }
-
         if (aspectDef == null) {
             throw new IllegalArgumentException("aspect definition can not be null");
         }
-
         m_name = name;
         m_type = type;
         m_aspectName = aspectName;

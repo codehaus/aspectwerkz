@@ -48,6 +48,15 @@ public class ExpressionInfo {
     }
 
     /**
+     * Returns the expression as string.
+     *
+     * @return the expression as string
+     */
+    public String getExpressionAsString() {
+        return m_expression.toString();
+    }
+
+    /**
      * Returns the regular expression.
      *
      * @return the regular expression
@@ -99,5 +108,14 @@ public class ExpressionInfo {
      */
     public boolean hasCflowPointcut() {
         return m_hasCflowPointcut;
+    }
+
+    /**
+     * Returns the expression as string.
+     *
+     * @return the expression as string
+     */
+    public String toString() {
+        return m_expression.toString();
     }
 }
