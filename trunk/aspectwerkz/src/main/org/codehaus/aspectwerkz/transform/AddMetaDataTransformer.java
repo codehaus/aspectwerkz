@@ -37,7 +37,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public final class AddMetaDataTransformer
-        extends AspectWerkzAbstractInterfaceTransformer implements AspectWerkzCodeTransformerComponent {
+        implements AspectWerkzCodeTransformerComponent, AspectWerkzInterfaceTransformerComponent {
     ///CLOVER:OFF
     /**
      * Holds references to the classes that have already been transformed by this
@@ -75,77 +75,73 @@ public final class AddMetaDataTransformer
     /**
      * Adds a map for meta-data storage to all the transformed classes.
      *
-     * @param es the extension set
-     * @param cs the unextendable class set
+     * @param context the transformation context
+     * @param klass the class
      */
-    public void transformInterface(final AspectWerkzExtensionSet es,
-                                   final AspectWerkzUnextendableClassSet cs) {
+    public void transformInterface(final Context context, final AW_Class klass) {
         if (ADD_METADATA == null) return; // do not do any transformations
 
-        final Iterator it = cs.getIteratorForTransformableClasses();
-        while (it.hasNext()) {
+        final ClassGen cg = klass.getClassGen();
+        final ConstantPoolGen cpg = cg.getConstantPool();
+        final InstructionFactory factory = new InstructionFactory(cg);
 
-            final ClassGen cg = (ClassGen)it.next();
-            final ConstantPoolGen cpg = cg.getConstantPool();
-            final InstructionFactory factory = new InstructionFactory(cg);
-
-            if (classFilter(cg)) {
-                continue;
-            }
-            if (m_hasBeenTransformed.contains(cg.getClassName())) {
-                continue;
-            }
-
-            // mark the class as transformed
-            m_hasBeenTransformed.add(cg.getClassName());
-
-            addMetaDataEnhancableInterface(cg, cpg, es);
-            addMapField(cg, es);
-            addMetaDataGetterMethod(cg, cpg, factory, es);
-            addMetaDataSetterMethod(cg, cpg, factory, es);
+        if (classFilter(cg)) {
+            return;
         }
+        if (m_hasBeenTransformed.contains(cg.getClassName())) {
+            return;
+        }
+
+        // mark the class as transformed
+        m_hasBeenTransformed.add(cg.getClassName());
+
+        addMetaDataEnhancableInterface(cg, cpg);
+        addMapField(cg);
+        addMetaDataGetterMethod(cg, cpg, factory);
+        addMetaDataSetterMethod(cg, cpg, factory);
     }
 
     /**
      * Creates a HashMap and sets it to the Map field.
      *
-     * @param cs the class set.
+     * @param context the transformation context
+     * @param klass the class
      */
-    public void transformCode(final AspectWerkzUnextendableClassSet cs) {
+    public void transformCode(final Context context, final AW_Class klass) {
         if (ADD_METADATA == null) return; // do not do any transformations
 
-        final Iterator iterator = cs.getIteratorForTransformableClasses();
-        while (iterator.hasNext()) {
-            final ClassGen cg = (ClassGen)iterator.next();
-
-            if (classFilter(cg)) continue;
-            if (cg.containsField(TransformationUtil.META_DATA_FIELD) == null) continue;
-
-            final InstructionFactory factory = new InstructionFactory(cg);
-            final ConstantPoolGen cpg = cg.getConstantPool();
-            final Method[] methods = cg.getMethods();
-
-            // get the indexes for the <init> methods
-            List initIndexes = new ArrayList();
-            for (int i = 0; i < methods.length; i++) {
-                if (methods[i].getName().equals("<init>")) {
-                    initIndexes.add(new Integer(i));
-                }
-            }
-
-            // advise all the constructors
-            for (Iterator it = initIndexes.iterator(); it.hasNext();) {
-                final int initIndex = ((Integer)it.next()).intValue();
-
-                methods[initIndex] = createMetaDataField(
-                        cpg, cg,
-                        methods[initIndex],
-                        factory).getMethod();
-            }
-
-            // update the old methods
-            cg.setMethods(methods);
+        final ClassGen cg = klass.getClassGen();
+        if (classFilter(cg)) {
+            return;
         }
+        if (cg.containsField(TransformationUtil.META_DATA_FIELD) == null) {
+            return;
+        }
+
+        final InstructionFactory factory = new InstructionFactory(cg);
+        final ConstantPoolGen cpg = cg.getConstantPool();
+        final Method[] methods = cg.getMethods();
+
+        // get the indexes for the <init> methods
+        List initIndexes = new ArrayList();
+        for (int i = 0; i < methods.length; i++) {
+            if (methods[i].getName().equals("<init>")) {
+                initIndexes.add(new Integer(i));
+            }
+        }
+
+        // advise all the constructors
+        for (Iterator it = initIndexes.iterator(); it.hasNext();) {
+            final int initIndex = ((Integer)it.next()).intValue();
+
+            methods[initIndex] = createMetaDataField(
+                    cpg, cg,
+                    methods[initIndex],
+                    factory).getMethod();
+        }
+
+        // update the old methods
+        cg.setMethods(methods);
     }
 
     /**
@@ -153,11 +149,8 @@ public final class AddMetaDataTransformer
      *
      * @param cg the class gen
      * @param cpg the constant pool
-     * @param es the extension set
      */
-    private void addMetaDataEnhancableInterface(final ClassGen cg,
-                                                final ConstantPoolGen cpg,
-                                                final AspectWerkzExtensionSet es) {
+    private void addMetaDataEnhancableInterface(final ClassGen cg, final ConstantPoolGen cpg) {
         final int[] interfaces = cg.getInterfaces();
         final String interfaceName = TransformationUtil.META_DATA_INTERFACE;
 
@@ -172,7 +165,7 @@ public final class AddMetaDataTransformer
             }
         }
         if (addInterface) {
-            es.addInterfaceToClass(cg, interfaceName);
+            TransformationUtil.addInterfaceToClass(cg, interfaceName);
         }
     }
 
@@ -180,9 +173,8 @@ public final class AddMetaDataTransformer
      * Adds a field holding a Map.
      *
      * @param cg the classgen
-     * @param es the extension set
      */
-    private void addMapField(final ClassGen cg, final AspectWerkzExtensionSet es) {
+    private void addMapField(final ClassGen cg) {
         if (cg.containsField(TransformationUtil.META_DATA_FIELD) == null) {
 
             FieldGen field = new FieldGen(
@@ -191,7 +183,7 @@ public final class AddMetaDataTransformer
                     TransformationUtil.META_DATA_FIELD,
                     cg.getConstantPool());
 
-            es.addField(cg, field.getField());
+            TransformationUtil.addField(cg, field.getField());
         }
     }
 
@@ -199,12 +191,12 @@ public final class AddMetaDataTransformer
      * Adds a getter method for the meta-data storage.
      *
      * @param cg the classgen
-     * @param es the extension set
+     * @param cpg the constant pool
+     * @param factory the instruction factory
      */
     private void addMetaDataGetterMethod(final ClassGen cg,
                                          final ConstantPoolGen cpg,
-                                         final InstructionFactory factory,
-                                         final AspectWerkzExtensionSet es) {
+                                         final InstructionFactory factory) {
         InstructionList il = new InstructionList();
         MethodGen method = new MethodGen(
                 Constants.ACC_PUBLIC,
@@ -241,19 +233,19 @@ public final class AddMetaDataTransformer
         method.setMaxStack();
         method.setMaxLocals();
 
-        es.addMethod(cg, method.getMethod());
+        TransformationUtil.addMethod(cg, method.getMethod());
     }
 
     /**
      * Adds a setter method for the meta-data storage.
      *
      * @param cg the classgen
-     * @param es the extension set
+     * @param cpg the constant pool
+     * @param factory the instruction factory
      */
     private void addMetaDataSetterMethod(final ClassGen cg,
                                          final ConstantPoolGen cpg,
-                                         final InstructionFactory factory,
-                                         final AspectWerkzExtensionSet es) {
+                                         final InstructionFactory factory) {
 
         InstructionList il = new InstructionList();
 
@@ -294,7 +286,7 @@ public final class AddMetaDataTransformer
         method.setMaxStack();
         method.setMaxLocals();
 
-        es.addMethod(cg, method.getMethod());
+        TransformationUtil.addMethod(cg, method.getMethod());
     }
 
     /**
@@ -375,24 +367,26 @@ public final class AddMetaDataTransformer
     }
 
     /**
-     * JMangler callback method. Is being called before each transformation.
+     * Callback method. Is being called before each transformation.
      */
     public void sessionStart() {
     }
 
     /**
-     * JMangler callback method. Is being called after each transformation.
+     * Callback method. Is being called after each transformation.
      */
     public void sessionEnd() {
     }
 
     /**
-     * Logs a message.
+     * Callback method. Prints a log/status message at
+     * each transformation.
      *
-     * @return the log message
+     * @return a log string
      */
     public String verboseMessage() {
-        return getClass().getName();
+        return this.getClass().getName();
     }
+
     ///CLOVER:ON
 }

@@ -31,6 +31,7 @@ import java.util.Iterator;
  * </ul>
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.ClassPreProcessor {
 
@@ -42,7 +43,7 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
     };
 
     public static ClassLoader alexContextGet() {
-        return (ClassLoader) context.get();
+        return (ClassLoader)context.get();
     }
 
     private static void alexContextSet(ClassLoader cl) {
@@ -62,9 +63,9 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
      */
     private boolean filter(String klass) {
         return klass.startsWith("org.codehaus.aspectwerkz.transform.")
-            || klass.startsWith("org.codehaus.aspectwerkz.metadata.")
-            || klass.startsWith("org.apache.commons.jexl.")
-            || klass.startsWith("org.codehaus.aspectwerkz.");
+                || klass.startsWith("org.codehaus.aspectwerkz.metadata.")
+                || klass.startsWith("org.apache.commons.jexl.")
+                || klass.startsWith("org.codehaus.aspectwerkz.");
     }
 
     /**
@@ -96,89 +97,107 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
 
     /**
      * Transform bytecode going thru the interface transformation first
-     * @param klass class name
+     * @param className class name
      * @param bytecode bytecode to transform
      * @param loader classloader loading the class
      * @return modified (or not) bytecode
      */
-    public /*synchronized*/ byte[] preProcess(String klass, byte[] bytecode, ClassLoader loader) {
-        if (filter(klass))
-            return bytecode;
+    public /*synchronized*/ byte[] preProcess(String className, byte[] bytecode, ClassLoader loader) {
 
-        //log(loader + ":" + klass);
+        if (filter(className)) {
+            return bytecode;
+        }
+        //log(loader + ":" + className);
 
         // prepare BCEL ClassGen
-        AspectWerkzUnextendableClassSet cs = null;
+        AW_Class klass = null;
         try {
-            cs = new AspectWerkzUnextendableClassSet(klass, bytecode);
-        } catch (Exception e) {
-            log("failed " + klass);
+            klass = new AW_Class(className, bytecode);
+        }
+        catch (Exception e) {
+            log("failed " + className);
             e.printStackTrace();
             return bytecode;
         }
 
+        // TODO: remove ThreadLocal stuff
         // set Repository, from where to start finding interfaces and parent classes
-        // cs.getClassGen().getJavaClass().setRepository(new ClassLoaderRepository(loader));
+        // klass.getClassGen().getJavaClass().setRepository(new ClassLoaderRepository(loader));
         alexContextSet(loader);
+
+        // create a new transformation context
+        Context context = new Context(loader);
 
         //dump
         //@todo dump is not compliant with multiple CL weaving same class differently
-        if (AW_TRANSFORM_DUMP.length()>0) {
-            if (klass.startsWith(AW_TRANSFORM_DUMP)) {
+        if (AW_TRANSFORM_DUMP.length() > 0) {
+            if (className.startsWith(AW_TRANSFORM_DUMP)) {
                 try {
-                    cs.getClassGen().getJavaClass().dump("_dump/before/"+klass.replace('.', '/')+".class");
-                } catch (Exception e) {
-                    System.err.println("failed to dump " + klass);
+                    klass.getClassGen().getJavaClass().dump(
+                            "_dump/before/" + className.replace('.', '/') + ".class");
+                }
+                catch (Exception e) {
+                    System.err.println("failed to dump " + className);
                     e.printStackTrace();
                 }
             }
         }
-        int stackIndex=0;
-        for (Iterator i = stack.iterator(); i.hasNext(); ) {
+        int stackIndex = 0;
+        for (Iterator i = stack.iterator(); i.hasNext();) {
             Object transformer = i.next();
             stackIndex++;
 
             // if VERBOSE keep a copy of initial bytecode before transfo
             byte[] bytecodeBeforeLocalTransformation = null;
             if (VERBOSE) {
-                bytecodeBeforeLocalTransformation = new byte[cs.getBytecode().length];
-                System.arraycopy(cs.getBytecode(), 0, bytecodeBeforeLocalTransformation, 0, cs.getBytecode().length);
+                bytecodeBeforeLocalTransformation = new byte[klass.getBytecode().length];
+                System.arraycopy(
+                        klass.getBytecode(), 0,
+                        bytecodeBeforeLocalTransformation, 0,
+                        klass.getBytecode().length
+                );
             }
 
-            // JMangler doco say intf before code transfo
-            if (transformer instanceof AspectWerkzAbstractInterfaceTransformer) {
-                AspectWerkzAbstractInterfaceTransformer intfTransformer = (AspectWerkzAbstractInterfaceTransformer) transformer;
+            // do the interface transformations before the code transformations
+            if (transformer instanceof AspectWerkzInterfaceTransformerComponent) {
+                AspectWerkzInterfaceTransformerComponent intfTransformer =
+                        (AspectWerkzInterfaceTransformerComponent)transformer;
                 intfTransformer.sessionStart();
-                intfTransformer.transformInterface(new AspectWerkzExtensionSet(), cs);
+                intfTransformer.transformInterface(context, klass);
                 intfTransformer.sessionEnd();
             }
 
             if (transformer instanceof AspectWerkzCodeTransformerComponent) {
-                AspectWerkzCodeTransformerComponent codeTransformer = (AspectWerkzCodeTransformerComponent) transformer;
+                AspectWerkzCodeTransformerComponent codeTransformer =
+                        (AspectWerkzCodeTransformerComponent)transformer;
                 codeTransformer.sessionStart();
-                codeTransformer.transformCode(cs);
+                codeTransformer.transformCode(context, klass);
                 codeTransformer.sessionEnd();
             }
 
             // if VERBOSE confirm modification
-            if (VERBOSE && !java.util.Arrays.equals(cs.getBytecode(), bytecodeBeforeLocalTransformation)) {
+            if (VERBOSE && !java.util.Arrays.equals(klass.getBytecode(), bytecodeBeforeLocalTransformation)) {
                 //double check
-                byte[] after = cs.getBytecode();
+                byte[] after = klass.getBytecode();
                 int afterL = after.length;
-                System.out.println("length: "+bytecodeBeforeLocalTransformation.length + "\t" + afterL);
+                System.out.println("length: " + bytecodeBeforeLocalTransformation.length + "\t" + afterL);
                 /*for (int bi = 0; bi < afterL; bi++) {
                     if (after[bi] != bytecodeBeforeLocalTransformation[bi])
                         System.out.println(bi+"\t"+after[bi]+"\t"+bytecodeBeforeLocalTransformation[bi]);
                 }*/
 
-                System.out.println(klass + " <- " + transformer.getClass().getName());
+                System.out.println(className + " <- " + transformer.getClass().getName());
                 // dump modified
-                if (AW_TRANSFORM_DUMP.length()>0) {
-                    if (klass.startsWith(AW_TRANSFORM_DUMP)) {
+                if (AW_TRANSFORM_DUMP.length() > 0) {
+                    if (className.startsWith(AW_TRANSFORM_DUMP)) {
                         try {
-                            cs.getClassGen().getJavaClass().dump("_dump/"+stackIndex+"_"+transformer.getClass().getName()+"/"+klass.replace('.', '/')+".class");
-                        } catch (Exception e) {
-                            System.err.println("failed to dump " + klass);
+                            klass.getClassGen().getJavaClass().
+                                    dump("_dump/" + stackIndex + "_" +
+                                    transformer.getClass().getName() + "/" +
+                                    className.replace('.', '/') + ".class");
+                        }
+                        catch (Exception e) {
+                            System.err.println("failed to dump " + className);
                             e.printStackTrace();
                         }
                     }
@@ -189,20 +208,20 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
 
         //dump
         //@todo dump is not compliant with multiple CL weaving same class differently
-        if (AW_TRANSFORM_DUMP.length()>0) {
-            if (klass.startsWith(AW_TRANSFORM_DUMP)) {
+        if (AW_TRANSFORM_DUMP.length() > 0) {
+            if (className.startsWith(AW_TRANSFORM_DUMP)) {
                 try {
-                    cs.getClassGen().getJavaClass().dump("_dump/after/"+klass.replace('.', '/')+".class");
-                } catch (Exception e) {
-                    System.err.println("failed to dump " + klass);
+                    klass.getClassGen().getJavaClass().
+                            dump("_dump/after/" + className.replace('.', '/') + ".class");
+                }
+                catch (Exception e) {
+                    System.err.println("failed to dump " + className);
                     e.printStackTrace();
                 }
             }
         }
 
-        return cs.getBytecode();
+        return klass.getBytecode();
     }
 
-
-
- }
+}

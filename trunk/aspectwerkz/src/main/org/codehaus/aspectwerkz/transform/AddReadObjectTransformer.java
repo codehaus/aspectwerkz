@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-import java.util.Iterator;
 import java.util.Set;
 import java.util.List;
 import java.util.HashSet;
@@ -29,7 +28,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AddReadObjectTransformer extends AspectWerkzAbstractInterfaceTransformer {
+public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformerComponent {
     ///CLOVER:ON
 
     /**
@@ -63,26 +62,25 @@ public class AddReadObjectTransformer extends AspectWerkzAbstractInterfaceTransf
     /**
      * Adds a UUID to all the transformed classes.
      *
-     * @param es the extension set
-     * @param cs the unextendable class set
+     * @param context the transformation context
+     * @param klass the class
      */
-    public void transformInterface(final AspectWerkzExtensionSet es,
-                                   final AspectWerkzUnextendableClassSet cs) {
-        final Iterator it = cs.getIteratorForTransformableClasses();
-        while (it.hasNext()) {
-
-            final ClassGen cg = (ClassGen)it.next();
+    public void transformInterface(final Context context, final AW_Class klass) {
+        final ClassGen cg = klass.getClassGen();
             final ConstantPoolGen cpg = cg.getConstantPool();
             final InstructionFactory factory = new InstructionFactory(cg);
 
-            if (classFilter(cg)) continue;
-            if (m_hasBeenTransformed.contains(cg.getClassName())) continue;
+            if (classFilter(cg)) {
+                return;
+            }
+            if (m_hasBeenTransformed.contains(cg.getClassName())) {
+                return;
+            }
 
             // mark the class as transformed
             m_hasBeenTransformed.add(cg.getClassName());
 
-            addReadObjectMethod(cg, cpg, factory, es);
-        }
+            addReadObjectMethod(cg, cpg, factory);
     }
 
     /**
@@ -103,12 +101,10 @@ public class AddReadObjectTransformer extends AspectWerkzAbstractInterfaceTransf
      * @param cg the class gen
      * @param cpg the constant pool gen
      * @param factory the instruction objectfactory
-     * @param es the extension set
      */
     private void addReadObjectMethod(final ClassGen cg,
                                      final ConstantPoolGen cpg,
-                                     final InstructionFactory factory,
-                                     final AspectWerkzExtensionSet es) {
+                                     final InstructionFactory factory) {
 
         InstructionList il = new InstructionList();
         MethodGen method = new MethodGen(
@@ -129,7 +125,7 @@ public class AddReadObjectTransformer extends AspectWerkzAbstractInterfaceTransf
         method.setMaxStack();
         method.setMaxLocals();
 
-        es.addMethod(cg, method.getMethod());
+        TransformationUtil.addMethod(cg, method.getMethod());
     }
 
     /**
@@ -149,24 +145,26 @@ public class AddReadObjectTransformer extends AspectWerkzAbstractInterfaceTransf
     }
 
     /**
-     * JMangler callback method. Is being called before each transformation.
+     * Callback method. Is being called before each transformation.
      */
     public void sessionStart() {
     }
 
     /**
-     * JMangler callback method. Is being called after each transformation.
+     * Callback method. Is being called after each transformation.
      */
     public void sessionEnd() {
     }
 
     /**
-     * Logs a message.
+     * Callback method. Prints a log/status message at
+     * each transformation.
      *
-     * @return the log message
+     * @return a log string
      */
     public String verboseMessage() {
-        return getClass().getName();
+        return this.getClass().getName();
     }
+
     ///CLOVER:ON
 }

@@ -29,7 +29,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 
 /**
- * Holds the constants and utility method used by the transformers.
+ * Contains constants and utility method used by the transformers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -439,5 +439,56 @@ public final class TransformationUtil {
             }
         }
         return hasSerialVerUid;
+    }
+
+    /**
+     * Add the given interface to the given class representation.
+     *
+     * @param cg ClassGen representation
+     * @param interf FQN of the interface
+     */
+    public static void addInterfaceToClass(final ClassGen cg, final String interf) {
+
+        //@todo review log
+        AspectWerkzPreProcessor.log("adding interface to " + cg.getClassName() + ": " + interf);
+
+        //@todo: check for readonly class ??
+        if ( ! Arrays.asList(cg.getInterfaceNames()).contains(interf)) {
+            cg.addInterface(interf);
+        }
+    }
+
+    /**
+     * Add the given method implementation to the given class representation.
+     *
+     * @param cg ClassGen representation
+     * @param method method implementation
+     */
+    public static void addMethod(final ClassGen cg, final Method method) {
+
+        //@todo review log
+        AspectWerkzPreProcessor.log("adding method to " + cg.getClassName() + ": " + method.toString());
+
+        //@todo: check for read only ??
+        if (cg.containsMethod(method.getName(), method.getSignature()) == null) {
+            cg.addMethod(method);
+        }
+    }
+
+    /**
+     * Add the given field implementation to the given class representation.
+     *
+     * @param cg ClassGen representation
+     * @param field field implementation
+     */
+    public static void addField(final ClassGen cg, final Field field) {
+
+        //@todo review log
+        AspectWerkzPreProcessor.log("adding field to " + cg.getClassName() + ": " + field.toString());
+
+        //@todo: check for read only ??
+        if ( ! cg.containsField(field)) {
+            cg.addField(field);
+        }
     }
 }

@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.transform;
 
 import java.util.List;
-import java.util.Iterator;
 
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.FieldGen;
@@ -23,7 +22,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AddSerialVersionUidTransformer extends AspectWerkzAbstractInterfaceTransformer {
+public class AddSerialVersionUidTransformer implements AspectWerkzInterfaceTransformerComponent {
 
     /**
      * Holds the weave model.
@@ -50,26 +49,21 @@ public class AddSerialVersionUidTransformer extends AspectWerkzAbstractInterface
     /**
      * Adds a UUID to all the transformed classes.
      *
-     * @param es the extension set
-     * @param cs the unextendable class set
+     * @param context the transformation context
+     * @param klass the unextendable class set
      */
-    public void transformInterface(final AspectWerkzExtensionSet es, final AspectWerkzUnextendableClassSet cs) {
-        Iterator it = cs.getIteratorForTransformableClasses();
-        while (it.hasNext()) {
-
-            final ClassGen cg = (ClassGen)it.next();
-            if (classFilter(cg)) {
-                continue;
-            }
-            if (!TransformationUtil.isSerializable(cg)) {
-                return;
-            }
-            if (TransformationUtil.hasSerialVersionUid(cg)) {
-                return;
-            }
-
-            addSerialVersionUidField(cg, es);
+    public void transformInterface(final Context context, final AW_Class klass) {
+        final ClassGen cg = klass.getClassGen();
+        if (classFilter(cg)) {
+            return;
         }
+        if (!TransformationUtil.isSerializable(cg)) {
+            return;
+        }
+        if (TransformationUtil.hasSerialVersionUid(cg)) {
+            return;
+        }
+        addSerialVersionUidField(cg);
     }
 
     /**
@@ -77,9 +71,8 @@ public class AddSerialVersionUidTransformer extends AspectWerkzAbstractInterface
      * have a UID already defined).
      *
      * @param cg the class gen
-     * @param es the extension set
      */
-    private void addSerialVersionUidField(final ClassGen cg, final AspectWerkzExtensionSet es) {
+    private void addSerialVersionUidField(final ClassGen cg) {
         FieldGen field = new FieldGen(
                 Constants.ACC_FINAL | Constants.ACC_STATIC,
                 Type.LONG,
@@ -87,7 +80,7 @@ public class AddSerialVersionUidTransformer extends AspectWerkzAbstractInterface
                 cg.getConstantPool());
         final long uid = TransformationUtil.calculateSerialVersionUid(cg);
         field.setInitValue(uid);
-        es.addField(cg, field.getField());
+        TransformationUtil.addField(cg, field.getField());
     }
 
     /**
@@ -107,23 +100,23 @@ public class AddSerialVersionUidTransformer extends AspectWerkzAbstractInterface
     }
 
     /**
-     * JMangler callback method. Is being called before each transformation.
+     * Callback method. Is being called before each transformation.
      */
     public void sessionStart() {
     }
 
     /**
-     * JMangler callback method. Is being called after each transformation.
+     * Callback method. Is being called after each transformation.
      */
     public void sessionEnd() {
     }
 
     /**
-     * Logs a message.
+     * Callback method. Prints a log/status message at each transformation.
      *
-     * @return the log message
+     * @return a log string
      */
     public String verboseMessage() {
-        return getClass().getName();
+        return this.getClass().getName();
     }
 }

@@ -25,16 +25,10 @@ import org.apache.bcel.generic.InstructionConstants;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.Constants;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.JavaClass;
 
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
-import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.MethodComparator;
-import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
@@ -42,7 +36,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AddImplementationTransformer extends AspectWerkzAbstractInterfaceTransformer {
+public class AddImplementationTransformer implements AspectWerkzInterfaceTransformerComponent {
     ///CLOVER:OFF
 
     /**
@@ -75,38 +69,32 @@ public class AddImplementationTransformer extends AspectWerkzAbstractInterfaceTr
     /**
      * Adds introductions to a class.
      *
-     * @param es the extension set
-     * @param cs the unextendable class set
+     * @param context the transformation context
+     * @param klass the class
      */
-    public void transformInterface(final AspectWerkzExtensionSet es,
-                                   final AspectWerkzUnextendableClassSet cs) {
-        Iterator it = cs.getIteratorForTransformableClasses();
-        while (it.hasNext()) {
-            final ClassGen cg = (ClassGen)it.next();
+    public void transformInterface(final Context context, final AW_Class klass) {
+            final ClassGen cg = klass.getClassGen();
             if (classFilter(cg)) {
-                continue;
+                return;
             }
             if (m_transformed.contains(cg.getClassName())) {
-                continue;
+                return;
             }
             m_transformed.add(cg.getClassName());
 
             final ConstantPoolGen cpg = cg.getConstantPool();
             final InstructionFactory factory = new InstructionFactory(cg);
-            addIntroductions(es, cg, cpg, factory);
-        }
+            addIntroductions(cg, cpg, factory);
     }
 
     /**
      * Adds introductions to the class.
      *
-     * @param es the extension set
      * @param cg the class gen
      * @param cpg the constant pool gen
      * @param factory the instruction objectfactory
      */
-    private void addIntroductions(final AspectWerkzExtensionSet es,
-                                  final ClassGen cg,
+    private void addIntroductions(final ClassGen cg,
                                   final ConstantPoolGen cpg,
                                   final InstructionFactory factory) {
 
@@ -167,7 +155,7 @@ public class AddImplementationTransformer extends AspectWerkzAbstractInterfaceTr
                 }
                 methodIndex++;
                 createProxyMethod(
-                        es, cg, cpg, factory,
+                        cg, cpg, factory,
                         methodMetaData,
                         introductionIndex,
                         methodIndex,
@@ -179,7 +167,6 @@ public class AddImplementationTransformer extends AspectWerkzAbstractInterfaceTr
     /**
      * Creates a proxy method for the introduces method.
      *
-     * @param es the extension set
      * @param cg the class gen
      * @param cpg the constant pool gen
      * @param factory the instruction objectfactory
@@ -188,8 +175,7 @@ public class AddImplementationTransformer extends AspectWerkzAbstractInterfaceTr
      * @param methodIndex the method index
      * @param uuid the uuid for the weave model
      */
-    private void createProxyMethod(final AspectWerkzExtensionSet es,
-                                   final ClassGen cg,
+    private void createProxyMethod(final ClassGen cg,
                                    final ConstantPoolGen cpg,
                                    final InstructionFactory factory,
                                    final MethodMetaData methodMetaData,
@@ -492,7 +478,7 @@ public class AddImplementationTransformer extends AspectWerkzAbstractInterfaceTr
         methodGen.setMaxStack();
         methodGen.setMaxLocals();
 
-        es.addMethod(cg, methodGen.getMethod());
+        TransformationUtil.addMethod(cg, methodGen.getMethod());
         il.dispose();
     }
 
@@ -527,6 +513,28 @@ public class AddImplementationTransformer extends AspectWerkzAbstractInterfaceTr
             return false;
         }
         return true;
+    }
+
+    /**
+     * Callback method. Is being called before each transformation.
+     */
+    public void sessionStart() {
+    }
+
+    /**
+     * Callback method. Is being called after each transformation.
+     */
+    public void sessionEnd() {
+    }
+
+    /**
+     * Callback method. Prints a log/status message at
+     * each transformation.
+     *
+     * @return a log string
+     */
+    public String verboseMessage() {
+        return this.getClass().getName();
     }
     ///CLOVER:ON
 }
