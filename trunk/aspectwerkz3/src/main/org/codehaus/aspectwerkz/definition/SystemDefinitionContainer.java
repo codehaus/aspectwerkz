@@ -7,6 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
+import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -130,7 +132,7 @@ public class SystemDefinitionContainer {
                         defsLocation.add(def);
                     }
                 }
-//                dump(loader);
+                dump(loader);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -171,6 +173,10 @@ public class SystemDefinitionContainer {
      * @param loader
      */
     public static void dump(final ClassLoader loader) {
+        if (!AspectWerkzPreProcessor.VERBOSE) {
+            return;
+        }
+
         StringBuffer dump = new StringBuffer("******************************************************************");
         dump.append("\n* ClassLoader = ");
 

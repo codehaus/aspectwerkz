@@ -665,8 +665,8 @@
                         <br/>
                         This pointcut can be used when you need to limit the scope on which join points you pick out based on
                         a structural information of the class in which the join point may appear. This pointcut is similar to
-                        <code>within</code> (hasmethod(* com.Foo.*(..)) is equivalent to within(com.Foo) unless the com.Foo class
-                        has no method at all)
+                        <code>within</code> - that is for example: hasmethod(* com.Foo.*(..)) is equivalent to within(com.Foo) unless the com.Foo class
+                        has no method at all.
                     </li>
                     <br/>
                     <li>
