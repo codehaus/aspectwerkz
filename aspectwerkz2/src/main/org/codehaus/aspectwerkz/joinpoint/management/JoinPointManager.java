@@ -20,6 +20,7 @@ import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature;
 import org.codehaus.aspectwerkz.joinpoint.CodeSignature;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
@@ -627,6 +628,11 @@ public class JoinPointManager {
                 ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod()),
                 null, PointcutType.EXECUTION//TODO CAN BE @CALL - see proceedWithCallJoinPoint
         );
+
+        // ALEX - cflow is a pain to debug
+        for (Iterator it = cflowExpressions.iterator(); it.hasNext();) {
+            java.lang.System.out.println("(Expression)(it.next() = " + ((Expression)(it.next())).getExpression());
+        }
 
         // TODO: cflow for before and after advices needed
         return new MethodJoinPoint(

@@ -23,11 +23,7 @@ import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
-import org.codehaus.aspectwerkz.pointcut.CallPointcut;
-import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
-import org.codehaus.aspectwerkz.pointcut.GetPointcut;
-import org.codehaus.aspectwerkz.pointcut.SetPointcut;
-import org.codehaus.aspectwerkz.pointcut.HandlerPointcut;
+import org.codehaus.aspectwerkz.aspect.management.Pointcut;
 
 /**
  * Manages the registration of join points and advices for these join points.
@@ -165,7 +161,7 @@ class JoinPointRegistry {
                 ReflectionMetaDataMaker.createMethodMetaData(wrapperMethod)
         );
         for (Iterator it = executionPointcuts.iterator(); it.hasNext();) {
-            ExecutionPointcut pointcut = (ExecutionPointcut)it.next();
+            Pointcut pointcut = (Pointcut)it.next();
             AdviceContainer advices = new AdviceContainer(
                     pointcut.getAroundAdviceIndexes(),
                     pointcut.getBeforeAdviceIndexes(),
@@ -209,7 +205,7 @@ class JoinPointRegistry {
                 )
         );
         for (Iterator it = methodCallPointcuts.iterator(); it.hasNext();) {
-            CallPointcut pointcut = (CallPointcut)it.next();
+            Pointcut pointcut = (Pointcut)it.next();
             AdviceContainer advices = new AdviceContainer(
                     pointcut.getAroundAdviceIndexes(),
                     pointcut.getBeforeAdviceIndexes(),
@@ -251,7 +247,7 @@ class JoinPointRegistry {
                 ReflectionMetaDataMaker.createConstructorMetaData(wrapperConstructor)
         );
         for (Iterator it = executionPointcuts.iterator(); it.hasNext();) {
-            ExecutionPointcut pointcut = (ExecutionPointcut)it.next();
+            Pointcut pointcut = (Pointcut)it.next();
             AdviceContainer advices = new AdviceContainer(
                     pointcut.getAroundAdviceIndexes(),
                     pointcut.getBeforeAdviceIndexes(),
@@ -294,7 +290,7 @@ class JoinPointRegistry {
                 )
         );
         for (Iterator it = constructorCallPointcuts.iterator(); it.hasNext();) {
-            CallPointcut pointcut = (CallPointcut)it.next();
+            Pointcut pointcut = (Pointcut)it.next();
             AdviceContainer advices = new AdviceContainer(
                     pointcut.getAroundAdviceIndexes(),
                     pointcut.getBeforeAdviceIndexes(),
@@ -331,7 +327,7 @@ class JoinPointRegistry {
                 ReflectionMetaDataMaker.createFieldMetaData(signature)
         );
         for (Iterator it = setPointcuts.iterator(); it.hasNext();) {
-            SetPointcut pointcut = (SetPointcut)it.next();
+            Pointcut pointcut = (Pointcut)it.next();
             AdviceContainer advices = new AdviceContainer(
                     pointcut.getAroundAdviceIndexes(),
                     pointcut.getBeforeAdviceIndexes(),
@@ -368,7 +364,7 @@ class JoinPointRegistry {
                 ReflectionMetaDataMaker.createFieldMetaData(signature)
         );
         for (Iterator it = getPointcuts.iterator(); it.hasNext();) {
-            GetPointcut pointcut = (GetPointcut)it.next();
+            Pointcut pointcut = (Pointcut)it.next();
             AdviceContainer advices = new AdviceContainer(
                     pointcut.getAroundAdviceIndexes(),
                     pointcut.getBeforeAdviceIndexes(),
@@ -399,7 +395,7 @@ class JoinPointRegistry {
         List handlerAdvices = new ArrayList();
         List handlerPointcuts = system.getAspectManager().getHandlerPointcuts(exceptionClassMetaData);
         for (Iterator it = handlerPointcuts.iterator(); it.hasNext();) {
-            HandlerPointcut pointcut = (HandlerPointcut)it.next();
+            Pointcut pointcut = (Pointcut)it.next();
             AdviceContainer advices = new AdviceContainer(
                     EMPTY_INDEX_TUPLE_ARRAY,
                     pointcut.getBeforeAdviceIndexes(),
