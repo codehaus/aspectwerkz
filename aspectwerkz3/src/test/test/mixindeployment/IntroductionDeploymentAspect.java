@@ -79,4 +79,15 @@ public class IntroductionDeploymentAspect {
             return m_info.getMixinTargetClass(this.getClass().getName(), this);
         }
     }
+
+    /**
+     * Note: will fail with a StackOverflow if perInstance - due to hashCode use to fetch mixin impl.
+     * @Introduce within(test.mixindeployment.IntroductionDeploymentTest$TargetD)
+     *            deploymentModel=perClass
+     */
+    public static class HashcodeImpl implements Hashcode {
+        public int hashCode() {
+            return 2;
+        }
+    }
 }
