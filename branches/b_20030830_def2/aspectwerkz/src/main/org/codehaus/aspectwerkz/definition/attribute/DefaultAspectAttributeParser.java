@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.definition.attribute;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,10 +18,10 @@ import org.codehaus.aspectwerkz.definition.attribute.AspectAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.AroundAdviceAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.PostAdviceAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.PreAdviceAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.PointcutAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.IntroductionAttribute;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.Pointcut;
 
 /**
  * Extracts the aspects attributes from the class files and creates a meta-data representation of them.
@@ -49,26 +50,89 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                 aspectAttr.getDeploymentModel()
         );
 
-        List methodList = TransformationUtil.createSortedMethodList(klass);
+        Field[] fieldList = klass.getDeclaredFields();
 
         // parse the pointcuts
-        for (Iterator it = methodList.iterator(); it.hasNext(); ) {
-            Method method = (Method)it.next();
-            Object[] methodAttributes = Attributes.getAttributes(method);
-            for (int j = 0; j < methodAttributes.length; j++) {
-                Object methodAttr = methodAttributes[j];
-                if (methodAttr instanceof PointcutAttribute) {
-                    PointcutAttribute attribute = ((PointcutAttribute)methodAttr);
+        for (int i = 0; i < fieldList.length; i++) {
+            Field field = fieldList[i];
+            Object[] fieldAttributes = Attributes.getAttributes(field);
+            for (int j = 0; j < fieldAttributes.length; j++) {
+                Object fieldAttr = fieldAttributes[j];
+
+                if (fieldAttr instanceof ExecutionAttribute) {
+                    ExecutionAttribute attribute = ((ExecutionAttribute)fieldAttr);
                     createAndAddPointcutDefToAspectDef(
-                            attribute.getType(),
+                            Pointcut.EXECUTION,
                             attribute.getExpression(),
                             aspectDef,
-                            method
+                            field
+                    );
+                    break;
+                }
+                else if (fieldAttr instanceof CallAttribute) {
+                    CallAttribute attribute = ((CallAttribute)fieldAttr);
+                    createAndAddPointcutDefToAspectDef(
+                            Pointcut.CALL,
+                            attribute.getExpression(),
+                            aspectDef,
+                            field
+                    );
+                    break;
+                }
+                else if (fieldAttr instanceof ClassAttribute) {
+                    ClassAttribute attribute = ((ClassAttribute)fieldAttr);
+                    createAndAddPointcutDefToAspectDef(
+                            Pointcut.CLASS,
+                            attribute.getExpression(),
+                            aspectDef,
+                            field
+                    );
+                    break;
+                }
+                else if (fieldAttr instanceof SetAttribute) {
+                    SetAttribute attribute = ((SetAttribute)fieldAttr);
+                    createAndAddPointcutDefToAspectDef(
+                            Pointcut.SET,
+                            attribute.getExpression(),
+                            aspectDef,
+                            field
+                    );
+                    break;
+                }
+                else if (fieldAttr instanceof GetAttribute) {
+                    GetAttribute attribute = ((GetAttribute)fieldAttr);
+                    createAndAddPointcutDefToAspectDef(
+                            Pointcut.GET,
+                            attribute.getExpression(),
+                            aspectDef,
+                            field
+                    );
+                    break;
+                }
+                else if (fieldAttr instanceof ThrowsAttribute) {
+                    ThrowsAttribute attribute = ((ThrowsAttribute)fieldAttr);
+                    createAndAddPointcutDefToAspectDef(
+                            Pointcut.THROWS,
+                            attribute.getExpression(),
+                            aspectDef,
+                            field
+                    );
+                    break;
+                }
+                else if (fieldAttr instanceof CFlowAttribute) {
+                    CFlowAttribute attribute = ((CFlowAttribute)fieldAttr);
+                    createAndAddPointcutDefToAspectDef(
+                            Pointcut.CFLOW,
+                            attribute.getExpression(),
+                            aspectDef,
+                            field
                     );
                     break;
                 }
             }
         }
+
+        List methodList = TransformationUtil.createSortedMethodList(klass);
 
         // parse the advices and introductions
         int methodIndex = 0;

@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.definition.attribute;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.exception.DefinitionException;
@@ -45,8 +46,8 @@ public abstract class AspectAttributeParser {
     protected void createAndAddPointcutDefToAspectDef(final String type,
                                                       final String expression,
                                                       final AspectDefinition aspectDef,
-                                                      final Method method) {
-        aspectDef.addPointcut(new PointcutDefinition(type, expression, method));
+                                                      final Field field) {
+        aspectDef.addPointcut(new PointcutDefinition(type, expression, field));
     }
 
     /**

@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
 import org.codehaus.aspectwerkz.aspect.AbstractAspect;
+import org.codehaus.aspectwerkz.Pointcut;
 
 /**
  * @Aspect perJVM
@@ -24,29 +25,29 @@ public class LoggingAspect extends AbstractAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Pointcut execution(* examples.logging.Target.toLog1(..))
+     * @Execution * examples.logging.Target.toLog1(..)
      */
-    void methodsToLog1() {}
+    Pointcut methodsToLog1;
 
     /**
-     * @Pointcut execution(* examples.logging.Target.toLog2(..))
+     * @Execution * examples.logging.Target.toLog2(..)
      */
-    void methodsToLog2() {}
+    Pointcut methodsToLog2;
 
     /**
-     * @Pointcut execution(* examples.logging.Target.toLog3(..))
+     * @Execution * examples.logging.Target.toLog3(..)
      */
-    void methodsToLog3() {}
+    Pointcut methodsToLog3;
 
     /**
-     * @Pointcut get(int examples.logging.Target.m_counter1)
+     * @Get int examples.logging.Target.m_counter1
      */
-    void logGet() {}
+    Pointcut logGet;
 
     /**
-     * @Pointcut set(int examples.logging.Target.m_counter2)
+     * @Set int examples.logging.Target.m_counter2
      */
-    void logSet() {}
+    Pointcut logSet;
 
     // ============ Advices ============
 

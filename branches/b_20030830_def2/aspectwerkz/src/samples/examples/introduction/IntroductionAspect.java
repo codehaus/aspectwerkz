@@ -8,7 +8,7 @@
 package examples.introduction;
 
 import org.codehaus.aspectwerkz.aspect.AbstractAspect;
-import org.codehaus.aspectwerkz.pointcut.Pointcut;
+import org.codehaus.aspectwerkz.Pointcut;
 
 /**
  * @Aspect perJVM

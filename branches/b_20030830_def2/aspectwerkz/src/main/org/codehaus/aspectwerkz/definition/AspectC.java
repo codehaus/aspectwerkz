@@ -10,15 +10,22 @@ package org.codehaus.aspectwerkz.definition;
 import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaField;
 
 import org.codehaus.aspectwerkz.metadata.QDoxParser;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.PointcutAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.AroundAdviceAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.PreAdviceAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.PostAdviceAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.IntroductionAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.AttributeEnhancer;
+import org.codehaus.aspectwerkz.definition.attribute.ExecutionAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.CallAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.ClassAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.SetAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.GetAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.ThrowsAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.CFlowAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.bcel.BcelAttributeEnhancer;
 
 /**
@@ -29,11 +36,18 @@ import org.codehaus.aspectwerkz.definition.attribute.bcel.BcelAttributeEnhancer;
 public class AspectC {
 
     public static final String ATTR_ASPECT = "Aspect";
-    public static final String ATTR_POINTCUT = "Pointcut";
+    public static final String ATTR_EXECUTION = "Execution";
+    public static final String ATTR_CALL = "Call";
+    public static final String ATTR_CLASS = "Class";
+    public static final String ATTR_SET = "Set";
+    public static final String ATTR_GET = "Get";
+    public static final String ATTR_THROWS = "Throws";
+    public static final String ATTR_CFLOW = "CFlow";
     public static final String ATTR_AROUND_ADVICE = "AroundAdvice";
     public static final String ATTR_PRE_ADVICE = "PreAdvice";
     public static final String ATTR_POST_ADVICE = "PostAdvice";
     public static final String ATTR_INTRODUCTION = "Introduction";
+    public static final String ATTR_IMPLEMENTS = "Implements";
 
     /**
      * Compiles attributes for the aspects.
@@ -72,10 +86,21 @@ public class AspectC {
                 boolean isAspect = parseAspect(javaClass, enhancer);
 
                 if (isAspect) {
+                    JavaField[] javaFields = javaClass.getFields();
+                    for (int j = 0; j < javaFields.length; j++) {
+                        JavaField javaField = javaFields[j];
+                        parseExecutionPointcut(javaField, enhancer);
+                        parseCallPointcut(javaField, enhancer);
+                        parseClassPointcut(javaField, enhancer);
+                        parseSetPointcut(javaField, enhancer);
+                        parseGetPointcut(javaField, enhancer);
+                        parseThrowsPointcut(javaField, enhancer);
+                        parseCFlowPointcut(javaField, enhancer);
+                    }
+
                     JavaMethod[] javaMethods = javaClass.getMethods();
                     for (int j = 0; j < javaMethods.length; j++) {
                         JavaMethod javaMethod = javaMethods[j];
-                        parsePointcut(javaMethod, enhancer);
                         parseAroundAdvice(javaMethod, enhancer);
                         parsePreAdvice(javaMethod, enhancer);
                         parsePostAdvice(javaMethod, enhancer);
@@ -107,25 +132,163 @@ public class AspectC {
     }
 
     /**
-     * Parses the pointcut attribute.
+     * Parses the execution pointcut attribute.
      *
-     * @param javaMethod the java method
+     * @param javaField the java field
      * @param enhancer the attribute enhancer
      */
-    private static void parsePointcut(final JavaMethod javaMethod,
-                                      final AttributeEnhancer enhancer) {
-        DocletTag[] pointcutTags = javaMethod.getTagsByName(ATTR_POINTCUT);
+    private static void parseExecutionPointcut(final JavaField javaField,
+                                               final AttributeEnhancer enhancer) {
+        DocletTag[] pointcutTags = javaField.getTagsByName(ATTR_EXECUTION);
         StringBuffer pointcutExpr = new StringBuffer();
         for (int k = 0; k < pointcutTags.length; k++) {
             pointcutExpr.append(pointcutTags[k].getValue());
         }
         if (pointcutTags.length != 0) {
             String expression = pointcutExpr.toString();
-            enhancer.insertMethodAttribute(
-                    javaMethod,
-                    new PointcutAttribute(expression)
+            enhancer.insertFieldAttribute(
+                    javaField.getName(),
+                    new ExecutionAttribute(expression)
             );
-            log("\tpointcut [" + javaMethod.getName() + "::" + expression + "]");
+            log("\texecution pointcut [" + javaField.getName() + "::" + expression + "]");
+        }
+    }
+
+    /**
+     * Parses the call pointcut attribute.
+     *
+     * @param javaField the java field
+     * @param enhancer the attribute enhancer
+     */
+    private static void parseCallPointcut(final JavaField javaField,
+                                          final AttributeEnhancer enhancer) {
+        DocletTag[] pointcutTags = javaField.getTagsByName(ATTR_CALL);
+        StringBuffer pointcutExpr = new StringBuffer();
+        for (int k = 0; k < pointcutTags.length; k++) {
+            pointcutExpr.append(pointcutTags[k].getValue());
+        }
+        if (pointcutTags.length != 0) {
+            String expression = pointcutExpr.toString();
+            enhancer.insertFieldAttribute(
+                    javaField.getName(),
+                    new CallAttribute(expression)
+            );
+            log("\tcall pointcut [" + javaField.getName() + "::" + expression + "]");
+        }
+    }
+
+    /**
+     * Parses the class pointcut attribute.
+     *
+     * @param javaField the java field
+     * @param enhancer the attribute enhancer
+     */
+    private static void parseClassPointcut(final JavaField javaField,
+                                           final AttributeEnhancer enhancer) {
+        DocletTag[] pointcutTags = javaField.getTagsByName(ATTR_CLASS);
+        StringBuffer pointcutExpr = new StringBuffer();
+        for (int k = 0; k < pointcutTags.length; k++) {
+            pointcutExpr.append(pointcutTags[k].getValue());
+        }
+        if (pointcutTags.length != 0) {
+            String expression = pointcutExpr.toString();
+            enhancer.insertFieldAttribute(
+                    javaField.getName(),
+                    new ClassAttribute(expression)
+            );
+            log("\tclass pointcut [" + javaField.getName() + "::" + expression + "]");
+        }
+    }
+
+    /**
+     * Parses the set pointcut attribute.
+     *
+     * @param javaField the java field
+     * @param enhancer the attribute enhancer
+     */
+    private static void parseSetPointcut(final JavaField javaField,
+                                         final AttributeEnhancer enhancer) {
+        DocletTag[] pointcutTags = javaField.getTagsByName(ATTR_SET);
+        StringBuffer pointcutExpr = new StringBuffer();
+        for (int k = 0; k < pointcutTags.length; k++) {
+            pointcutExpr.append(pointcutTags[k].getValue());
+        }
+        if (pointcutTags.length != 0) {
+            String expression = pointcutExpr.toString();
+            enhancer.insertFieldAttribute(
+                    javaField.getName(),
+                    new SetAttribute(expression)
+            );
+            log("\tset pointcut [" + javaField.getName() + "::" + expression + "]");
+        }
+    }
+
+    /**
+     * Parses the get pointcut attribute.
+     *
+     * @param javaField the java field
+     * @param enhancer the attribute enhancer
+     */
+    private static void parseGetPointcut(final JavaField javaField,
+                                         final AttributeEnhancer enhancer) {
+        DocletTag[] pointcutTags = javaField.getTagsByName(ATTR_GET);
+        StringBuffer pointcutExpr = new StringBuffer();
+        for (int k = 0; k < pointcutTags.length; k++) {
+            pointcutExpr.append(pointcutTags[k].getValue());
+        }
+        if (pointcutTags.length != 0) {
+            String expression = pointcutExpr.toString();
+            enhancer.insertFieldAttribute(
+                    javaField.getName(),
+                    new GetAttribute(expression)
+            );
+            log("\tget pointcut [" + javaField.getName() + "::" + expression + "]");
+        }
+    }
+
+    /**
+     * Parses the throws pointcut attribute.
+     *
+     * @param javaField the java field
+     * @param enhancer the attribute enhancer
+     */
+    private static void parseThrowsPointcut(final JavaField javaField,
+                                            final AttributeEnhancer enhancer) {
+        DocletTag[] pointcutTags = javaField.getTagsByName(ATTR_THROWS);
+        StringBuffer pointcutExpr = new StringBuffer();
+        for (int k = 0; k < pointcutTags.length; k++) {
+            pointcutExpr.append(pointcutTags[k].getValue());
+        }
+        if (pointcutTags.length != 0) {
+            String expression = pointcutExpr.toString();
+            enhancer.insertFieldAttribute(
+                    javaField.getName(),
+                    new ThrowsAttribute(expression)
+            );
+            log("\tthrows pointcut [" + javaField.getName() + "::" + expression + "]");
+        }
+    }
+
+    /**
+     * Parses the cflow pointcut attribute.
+     *
+     * @param javaField the java field
+     * @param enhancer the attribute enhancer
+     */
+    private static void parseCFlowPointcut(final JavaField javaField,
+                                               final AttributeEnhancer enhancer) {
+        DocletTag[] pointcutTags = javaField.getTagsByName(ATTR_CFLOW);
+        StringBuffer pointcutExpr = new StringBuffer();
+        for (int k = 0; k < pointcutTags.length; k++) {
+            pointcutExpr.append(pointcutTags[k].getValue());
+        }
+        if (pointcutTags.length != 0) {
+            String expression = pointcutExpr.toString();
+            enhancer.insertFieldAttribute(
+                    javaField.getName(),
+                    new CFlowAttribute(expression)
+            );
+            log("\tcflow pointcut [" + javaField.getName() + "::" + expression + "]");
         }
     }
 
