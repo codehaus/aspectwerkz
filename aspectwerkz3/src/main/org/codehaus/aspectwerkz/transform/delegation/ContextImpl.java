@@ -25,7 +25,7 @@ public class ContextImpl implements Context {
     /**
      * The name of the class.
      */
-    private final String m_name;
+    private final String m_className;
 
     /**
      * The initial bytecode of the class
@@ -73,7 +73,7 @@ public class ContextImpl implements Context {
      * @param loader the class loader
      */
     public ContextImpl(final String className, final byte[] bytecode, final ClassLoader loader) {
-        m_name = className.replace('/', '.');
+        m_className = className.replace('/', '.');//TODO change this to only have "/" based.
         m_loader = loader;
         m_initialBytecode = bytecode;
 
@@ -81,6 +81,10 @@ public class ContextImpl implements Context {
 
         // Note: we are not using a lazy loading for the definitions since it is cached anyway
         m_definitions = SystemDefinitionContainer.getHierarchicalDefs(m_loader);
+    }
+
+    public String getClassName() {
+        return m_className;
     }
 
     /**

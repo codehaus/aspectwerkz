@@ -9,9 +9,12 @@ package examples.logging;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.lang.reflect.Method;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
+import org.codehaus.aspectwerkz.joinpoint.management.SignatureFactory;
+import org.codehaus.aspectwerkz.transform.ReflectHelper;
 
 public class InlinedJoinPoint extends InlinedJoinPointBase {
 
@@ -24,10 +27,10 @@ public class InlinedJoinPoint extends InlinedJoinPointBase {
     private static final Map META_DATA = new HashMap();
 
     static {
-        SIGNATURE = null;
-        ASPECT1 = (LoggingAspect) SYSTEM.getAspectManager("ID_1").getAspectContainer(8)
+        SIGNATURE = SignatureFactory.newMethodSignature(TARGET_CLASS, -2091835264);
+        ASPECT1 = (LoggingAspect) SYSTEM.getAspectManager("samples").getAspectContainer(4)
                 .createPerJvmAspect();
-        ASPECT2 = (LoggingAspect) SYSTEM.getAspectManager("ID_2").getAspectContainer(4)
+        ASPECT2 = (LoggingAspect) SYSTEM.getAspectManager("samples").getAspectContainer(4)
                 .createPerClassAspect(TARGET_CLASS);
     }
 
@@ -51,7 +54,7 @@ public class InlinedJoinPoint extends InlinedJoinPointBase {
         m_stackFrame++;
         try {
             // add 'before' advice
-            ASPECT1.logEntry(null);
+            ASPECT1.logEntry(this);
             // add cflow
 //            switch (m_stackFrame) {
 //                case 0:
@@ -84,7 +87,7 @@ public class InlinedJoinPoint extends InlinedJoinPointBase {
 
         } finally {
             // add 'after' and 'after finally' advice
-            ASPECT1.logExit(null);
+            ASPECT1.logExit(this);
             // add cflow
             m_stackFrame--;
         }
@@ -104,7 +107,7 @@ public class InlinedJoinPoint extends InlinedJoinPointBase {
         return META_DATA.get(obj);
     }
 
-    public Target getTarget()
+    public Object/*Target*/ getTarget()
     {
         return m_target;
     }
