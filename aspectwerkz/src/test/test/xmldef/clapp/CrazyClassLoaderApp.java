@@ -19,7 +19,7 @@ import java.io.File;
  * If no args are provided, defaults to 2, 5, 5ms.<br/>
  * <br/>
  * Each thread loop loads DummyClass thru a dedicated URLClassLoader (no parent) at each loop<br/>
- * test.clapp.DummyClass and test.clapp.ReentrantDummyClass must be in directory specified thru
+ * test.xmldef.clapp.DummyClass and test.xmldef.clapp.ReentrantDummyClass must be in directory specified thru
  * -DDummyClass, defaults <i>ASPECTWERKZ_HOME</i>/target/test-classes
  * <br/>
  * During the DummyClass clinit, another class is loaded thru another URLClassLoader (no parent)
@@ -104,7 +104,7 @@ public class CrazyClassLoaderApp {
                 try {
                     i++;
                     ClassLoader tmpLoader = new URLClassLoader(new URL[]{url}, null);
-                    Class dummyClass = tmpLoader.loadClass("test.clapp.DummyClass");
+                    Class dummyClass = tmpLoader.loadClass("test.xmldef.clapp.DummyClass");
                     Object dummyInstance = dummyClass.newInstance();
                     total++;
                     log(total+" "+this.getName() + ":" + i + ":DumyClass.hashcode=" + dummyInstance.getClass().hashCode());
