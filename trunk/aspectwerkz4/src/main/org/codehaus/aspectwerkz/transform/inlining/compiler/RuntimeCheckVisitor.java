@@ -269,7 +269,7 @@ public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants 
         } else if (b.booleanValue()) {
             cv.visitInsn(ICONST_1);
         } else {
-            cv.visitInsn(ICONST_0);
+            cv.visitInsn(ICONST_M1);
         }
     }
 }
