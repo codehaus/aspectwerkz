@@ -48,9 +48,9 @@ public interface AdviceContainer {
     Object getPerThreadAdvice();
 
     /**
-     * Returns the memory type.
+     * Returns the container type.
      *
-     * @return the memory type
+     * @return the container type
      */
     ContainerType getContainerType();
 }
