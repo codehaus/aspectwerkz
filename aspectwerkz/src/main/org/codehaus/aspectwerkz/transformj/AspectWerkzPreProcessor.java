@@ -323,8 +323,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
                 || klass.startsWith("gnu.trove.")
                 || klass.startsWith("org.dom4j.")
                 || klass.startsWith("org.xml.sax.")
-                || klass.startsWith("javax.xml.parsers."
-                );
+                || klass.startsWith("javax.xml.parsers.");
     }
 
 //    public static byte[] preProcessActivateS(final Class klazz) throws Throwable {
