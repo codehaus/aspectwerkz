@@ -810,13 +810,13 @@ public class DocumentParser {
                     int start = type.indexOf('(');
                     int end = type.indexOf(')');
                     specialArgumentType = type.substring(start + 1, end).trim();
-                } else if (type.startsWith("after returning ")) {
+                } else if (type.startsWith("after returning")) {
                     adviceType = AdviceType.AFTER_RETURNING;
-                } else if (type.startsWith("after throwing ")) {
+                } else if (type.startsWith("after throwing")) {
                     adviceType = AdviceType.AFTER_THROWING;
-                } else if (type.startsWith("after ")) {
+                } else if (type.startsWith("after")) {
                     adviceType = AdviceType.AFTER_FINALLY;
-                } else if (type.startsWith("after finally ")) {
+                } else if (type.startsWith("after finally")) {
                     adviceType = AdviceType.AFTER_FINALLY;
                 }
                 if (specialArgumentType != null && specialArgumentType.indexOf(' ') > 0) {

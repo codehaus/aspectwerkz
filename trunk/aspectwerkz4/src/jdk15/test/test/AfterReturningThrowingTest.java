@@ -35,6 +35,23 @@ public class AfterReturningThrowingTest extends TestCase {
         return 0;
     }
 
+    public void greet() {
+       if (1==1) {
+           throw new RuntimeException("Just kidding!");
+       }
+    }
+
+    public void testGreet() {
+        s_log = new StringBuffer();
+        try {
+            greet();
+        } catch (Exception e) {
+            ;
+        } finally {
+            assertEquals("beforeGreeting afterGreetingException ", s_log.toString());
+        }
+    }
+
     public void testAfterRet() {
         s_log = new StringBuffer();
         credit();
@@ -70,6 +87,21 @@ public class AfterReturningThrowingTest extends TestCase {
                        type = "test.AfterReturningThrowingTest$NoMoreCreditException")
         public void afterThrowing(JoinPoint jp) {
             log("AOP."+jp.getSignature().getName());
+        }
+    }
+
+    public static class XmlAspect {
+
+        public void beforeGreeting(JoinPoint joinPoint) {
+            log("beforeGreeting");
+        }
+
+        public void afterGreeting(JoinPoint joinPoint) {
+            log("afterGreeting");
+        }
+
+        public void afterGreeting(JoinPoint joinPoint, java.lang.Exception ex) {
+            log("afterGreetingException");
         }
     }
 
