@@ -22,7 +22,7 @@
                             <li><a href="#Model 1 - Join points">Join points</a></li>
                         </ol>
                     </li>
-                    <li><a href="#Model 2">Model 2 - Self defined Aspects</a>
+                    <li><a href="#Model 2 - Self defined Aspects">Model 2 - Self defined Aspects</a>
                         <ol>
                             <li><a href="#Model 2 - Aspects">Aspects</a></li>
                             <li><a href="#Model 2 - Pointcuts">Pointcuts</a></li>
@@ -32,7 +32,7 @@
                             <li><a href="#Model 2 - Aspect post compilation">Aspect post compilation</a></li>
                         </ol>
                     </li>
-                    <li><a href="Choosing a model">Choosing a model</a></li>
+                    <li><a href="#Choosing a model">Choosing a model</a></li>
                 </ol>
             </p>
         </section>
@@ -686,7 +686,6 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                     <li><a href="#Model 2 - Pointcuts">Pointcuts</a></li>
                     <li><a href="#Model 2 - Advices">Advices</a></li>
                     <li><a href="#Model 2 - Introductions">Introductions</a></li>
-                    <li><a href="#2_Abstract Aspects">Abstract Aspects</a></li>
                     <li><a href="#Model 2 - Metadata reference">Metadata reference</a></li>
                     <li><a href="#Model 2 - Aspect post compilation">Aspect compilation</a></li>
                 </ol>
@@ -1266,7 +1265,7 @@ public MyAspect extends Aspect {
                 The model 2 - self defined Aspects have to be post compiled to incorporate the metadata into the class file bybtecode.
                 This post compilation will not be needed with java 1.5 and JSR-175. For now you need to first compile the aspect classes with javac compiler
                 and thus post compile the <code>.class</code> files with the aspect source code as inputs.<br/>
-                See <a href="startup_and_runtime_issues.html#Aspect compilation">specific part</a>
+                See <a href="definition_issues.html#Model 2 - Aspects compilation">specific part</a>
             </p>
         </section>
 
