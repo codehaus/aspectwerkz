@@ -35,6 +35,9 @@ public class ClassPreProcessorHelper {
     /** option used to defined the class preprocessor */
     private static String PRE_PROCESSOR_CLASSNAME_PROPERTY = "aspectwerkz.classloader.preprocessor";
 
+    /** default class preprocessor */
+    private static String PRE_PROCESSOR_CLASSNAME_DEFAULT = "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor";
+
     /**
      * Initialization of the ClassPreProcessor
      * The ClassPreProcessor implementation is lazy loaded. This allow to put it
@@ -47,11 +50,7 @@ public class ClassPreProcessorHelper {
             return;
         preProcessorInitialized = true;
         Class klass = null;
-        String s = System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY);
-        if (s == null) {
-            System.out.println("AspectWerkz - WARN - no pre-processor defined");
-            return;
-        }
+        String s = System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT);
 
         try {
             // force loading thru System class loader to allow

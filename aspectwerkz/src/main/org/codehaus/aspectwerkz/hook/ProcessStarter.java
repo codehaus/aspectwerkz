@@ -77,7 +77,7 @@ import java.util.StringTokenizer;
  * (except for class loaded by the bootstrap classloader).<br/>
  * The effective class preprocessor is defined with <code>-Daspectwerkz.classloader.preprocessor=...</code>
  * in [target jvm option]. Specify the FQN of your implementation of org.codehaus.aspectwerkz.hook.ClassPreProcessor interface.<br/>
- * If this parameter is not given, no pre processing of loaded classed will occurs.<br/>
+ * If this parameter is not given, the default AspectWerkz layer 2 org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor is used.<br/>
  * </p>
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>

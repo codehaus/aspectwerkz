@@ -24,8 +24,9 @@ import java.text.SimpleDateFormat;
  *
  * <h2>Usage</h2>
  * <pre>
- * java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] {ClassPreProcessorImpl} {target 1} .. {target n}
+ * java [-Daspectwerkz.classloader.preprocessor={ClassPreProcessorImpl}] -cp ... [-verbose] [-haltOnError] {target 1} .. {target n}
  *   {ClassPreProcessorImpl} : full qualified name of the ClassPreProcessor implementation (must be in classpath)
+ *      defaults to org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor
  *   {target i} : exploded dir, jar, zip files to compile
  *   Ant 1.5 must be in the classpath
  * </pre>
@@ -49,6 +50,12 @@ import java.text.SimpleDateFormat;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class AspectWerkzC {
+
+    /** option used to defined the class preprocessor */
+    private static String PRE_PROCESSOR_CLASSNAME_PROPERTY = "aspectwerkz.classloader.preprocessor";
+
+    /** default class preprocessor */
+    private static String PRE_PROCESSOR_CLASSNAME_DEFAULT = "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor";
 
     private final static String MF_CUSTOM_DATE = "X-AspectWerkzC-created";
 
@@ -409,8 +416,16 @@ public class AspectWerkzC {
             System.exit(-1);
         }
 
+        // set preprocessor
+        try {
+            compiler.setPreprocessor(System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT));
+        } catch (CompileException e) {
+            System.err.println("Cannot instantiate ClassPreProcessor: " + System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT));
+            e.printStackTrace();
+            System.exit(-1);
+        }
+
         // analyse arguments
-        boolean foundCP = false;
         for (int i = 0; i < args.length; i++) {
             if ("-verbose".equals(args[i]))
                 compiler.setVerbose(true);
@@ -419,20 +434,9 @@ public class AspectWerkzC {
             else if (args[i].startsWith("-")) {
                 ;
             } else {
-                if ( ! foundCP ) {
-                    try {
-                        compiler.setPreprocessor(args[i]);
-                        foundCP = true;
-                    } catch (CompileException e) {
-                        System.err.println("Cannot instantiate ClassPreProcessor: " + args[i]);
-                        e.printStackTrace();
-                        System.exit(-1);
-                    }
-                } else {
-                    if ( ! compiler.compile(args[i]) ) {
-                        compiler.postCompile("*** An error occured ***");
-                        System.exit(-1);
-                    }
+                if ( ! compiler.compile(args[i]) ) {
+                    compiler.postCompile("*** An error occured ***");
+                    System.exit(-1);
                 }
             }
         }
