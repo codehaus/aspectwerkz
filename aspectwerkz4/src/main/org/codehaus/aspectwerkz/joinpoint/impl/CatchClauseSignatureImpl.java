@@ -16,40 +16,25 @@ import org.codehaus.aspectwerkz.joinpoint.Signature;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class CatchClauseSignatureImpl implements CatchClauseSignature {
-    private final Class m_declaringType;
 
-    private final int m_modifiers;
-
-    private final String m_name;
-
-    private Class m_parameterType;
-
-    private String m_joinPointSignature;
+    private Class m_exceptionType;
 
     /**
      * Creates a new catch clause signature.
      *
      * @param exceptionClass
-     * @param declaringClass
-     * @param joinPointSignature
      */
-    public CatchClauseSignatureImpl(final Class exceptionClass,
-                                    final Class declaringClass,
-                                    final String joinPointSignature) {
-        m_declaringType = declaringClass;
-        m_joinPointSignature = joinPointSignature;
-        m_parameterType = exceptionClass;
-        m_modifiers = exceptionClass.getModifiers();
-        m_name = exceptionClass.getName();
+    public CatchClauseSignatureImpl(final Class exceptionClass) {
+        m_exceptionType = exceptionClass;
     }
 
     /**
-     * Returns the declaring class.
+     * Returns the exception class.
      *
      * @return the declaring class
      */
     public Class getDeclaringType() {
-        return m_declaringType;
+        return m_exceptionType;
     }
 
     /**
@@ -62,25 +47,26 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
      * @return the mofifiers
      */
     public int getModifiers() {
-        return m_modifiers;
+        return m_exceptionType.getModifiers();
     }
 
     /**
-     * Returns the name (f.e. name of method of field).
+     * Returns the name
      *
      * @return
      */
     public String getName() {
-        return m_name;
+        return m_exceptionType.getName();
     }
 
     /**
-     * Returns the parameter type.
+     * Returns the exception type.
      *
      * @return the parameter type
+     * @deprecated
      */
     public Class getParameterType() {
-        return m_parameterType;
+        return m_exceptionType;
     }
 
     /**
@@ -98,6 +84,6 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
      * @return a deep copy of the signature
      */
     public Signature newInstance() {
-        return new CatchClauseSignatureImpl(m_parameterType, m_declaringType, m_joinPointSignature);
+        return new CatchClauseSignatureImpl(m_exceptionType);
     }
 }

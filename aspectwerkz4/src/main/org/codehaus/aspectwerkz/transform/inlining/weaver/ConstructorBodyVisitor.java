@@ -163,7 +163,7 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
                 INIT_METHOD_NAME,
                 desc,
                 m_declaringTypeName,
-                JoinPointType.CONSTRUCTOR_EXECUTION,
+                JoinPointType.CONSTRUCTOR_EXECUTION_INT,
                 joinPointHash
         );
 
@@ -181,7 +181,7 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
         // emit the joinpoint
         m_ctx.addEmittedJoinPoint(
                 new EmittedJoinPoint(
-                        JoinPointType.CONSTRUCTOR_EXECUTION,
+                        JoinPointType.CONSTRUCTOR_EXECUTION_INT,
                         m_declaringTypeName,
                         TransformationConstants.INIT_METHOD_NAME,
                         desc,

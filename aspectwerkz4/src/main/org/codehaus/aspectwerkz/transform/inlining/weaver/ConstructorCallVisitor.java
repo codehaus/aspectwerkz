@@ -339,7 +339,7 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
                         m_callerMethodName,
                         m_callerMethodDesc,
                         calleeClassName,
-                        JoinPointType.CONSTRUCTOR_CALL,
+                        JoinPointType.CONSTRUCTOR_CALL_INT,
                         struct.joinPointHash
                 );
 
@@ -366,7 +366,7 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
                 // emit the joinpoint
                 m_ctx.addEmittedJoinPoint(
                         new EmittedJoinPoint(
-                                JoinPointType.CONSTRUCTOR_CALL,
+                                JoinPointType.CONSTRUCTOR_CALL_INT,
                                 m_callerClassName,
                                 m_callerMethodName,
                                 m_callerMethodDesc,

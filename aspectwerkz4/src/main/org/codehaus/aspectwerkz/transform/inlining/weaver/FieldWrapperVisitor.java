@@ -228,27 +228,14 @@ public class FieldWrapperVisitor extends ClassAdapter implements TransformationC
                                    final int joinPointHash) {
         FieldInfo fieldInfo = classInfo.getField(joinPointHash);
         if (fieldInfo == null) {
-            // lookup in the class hierarchy
-            ClassInfo superClassInfo = classInfo.getSuperclass();
-            while (superClassInfo != null) {
-                fieldInfo = superClassInfo.getField(joinPointHash);
-                if (fieldInfo == null) {
-                    // go up in the hierarchy
-                    superClassInfo = superClassInfo.getSuperclass();
-                } else {
-                    break;
-                }
-            }
-            if (fieldInfo == null) {
-                throw new Error(
-                        "field info metadata structure could not be build for field: "
-                        + className
-                        + '.'
-                        + fieldName
-                        + ':'
-                        + fieldDesc
-                );
-            }
+            throw new Error(
+                    "field info metadata structure could not be build for field: "
+                    + className
+                    + '.'
+                    + fieldName
+                    + ':'
+                    + fieldDesc
+            );
         }
         return fieldInfo;
     }

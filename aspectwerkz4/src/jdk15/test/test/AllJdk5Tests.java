@@ -25,6 +25,10 @@ public class AllJdk5Tests extends TestCase {
 
         suite.addTestSuite(DefaultValueTest.class);
         suite.addTestSuite(HotDeployedTest.class);
+
+        // bug fix tests
+        suite.addTestSuite(FieldGetOutOfWeaver.class);
+        suite.addTestSuite(InterfaceDefinedMethodTestCase.class);
         return suite;
     }
 

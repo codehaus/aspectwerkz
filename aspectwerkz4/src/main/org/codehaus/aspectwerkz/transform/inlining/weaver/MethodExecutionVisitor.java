@@ -189,7 +189,7 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
                 name,
                 desc,
                 m_declaringTypeName,
-                JoinPointType.METHOD_EXECUTION,
+                JoinPointType.METHOD_EXECUTION_INT,
                 joinPointHash
         );
 
@@ -211,7 +211,7 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
         // emit the joinpoint
         m_ctx.addEmittedJoinPoint(
                 new EmittedJoinPoint(
-                        JoinPointType.METHOD_EXECUTION,
+                        JoinPointType.METHOD_EXECUTION_INT,
                         m_declaringTypeName,
                         name,
                         desc,

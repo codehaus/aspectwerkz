@@ -74,15 +74,6 @@ public class MethodRttiImpl implements MethodRtti {
     }
 
     /**
-     * Returns the method tuple.
-     *
-     * @return the method tuple
-     */
-    public MethodTuple getMethodTuple() {
-        return m_signature.getMethodTuple();
-    }
-
-    /**
      * Returns the method.
      *
      * @return the method

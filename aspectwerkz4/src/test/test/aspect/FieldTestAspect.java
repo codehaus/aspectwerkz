@@ -196,7 +196,7 @@ public class FieldTestAspect {
     }
 
     /**
-     * @Before get(* java.lang.System) && withincode(* test.FieldAdviceTest.testPublicFieldOutOfWeaverScope())
+     * @Before get(java.io.PrintStream out) && withincode(* test.FieldAdviceTest.testPublicFieldOutOfWeaverScope())
      */
     public void beforePublicFieldOutOfWeaverScope() {
         FieldAdviceTest.log("adviceOnPublicField ");

@@ -92,25 +92,36 @@ public class FieldSetJoinPointCompiler extends AbstractJoinPointCompiler {
             cv.visitVarInsn(ALOAD, 0);
         }
 
-        String joinPointName = null; // can be prefixed
         loadArgumentMemberFields(cv, argStartIndex);
-        joinPointName = m_calleeMemberName;
-        joinPointName = TransformationUtil.getWrapperMethodName(
-                joinPointName,
-                m_calleeMemberDesc,
-                m_calleeClassName,
-                PUTFIELD_WRAPPER_METHOD_PREFIX
-        );
-        StringBuffer sig = new StringBuffer();
-        sig.append('(');
-        sig.append(m_calleeMemberDesc);
-        sig.append(')');
-        sig.append('V');
-        if (Modifier.isStatic(m_calleeMemberModifiers)) {
-            cv.visitMethodInsn(INVOKESTATIC, m_calleeClassName, joinPointName, sig.toString());
+
+        // do we have a public field ? If so don't use the wrappers
+        if (Modifier.isPublic(m_calleeMemberModifiers)) {
+            if (Modifier.isStatic(m_calleeMemberModifiers)) {
+                cv.visitFieldInsn(PUTSTATIC, m_calleeClassName, m_calleeMemberName, m_calleeMemberDesc);
+            } else {
+                cv.visitFieldInsn(PUTFIELD, m_calleeClassName, m_calleeMemberName, m_calleeMemberDesc);
+            }
         } else {
-            cv.visitMethodInsn(INVOKEVIRTUAL, m_calleeClassName, joinPointName, sig.toString());
+            String joinPointName = null; // can be prefixed
+            joinPointName = m_calleeMemberName;
+            joinPointName = TransformationUtil.getWrapperMethodName(
+                    joinPointName,
+                    m_calleeMemberDesc,
+                    m_calleeClassName,
+                    PUTFIELD_WRAPPER_METHOD_PREFIX
+            );
+            StringBuffer sig = new StringBuffer();
+            sig.append('(');
+            sig.append(m_calleeMemberDesc);
+            sig.append(')');
+            sig.append('V');
+            if (Modifier.isStatic(m_calleeMemberModifiers)) {
+                cv.visitMethodInsn(INVOKESTATIC, m_calleeClassName, joinPointName, sig.toString());
+            } else {
+                cv.visitMethodInsn(INVOKEVIRTUAL, m_calleeClassName, joinPointName, sig.toString());
+            }
         }
+
         AsmHelper.addDefaultValue(cv, m_argumentTypes[0]);
     }
 
@@ -129,22 +140,33 @@ public class FieldSetJoinPointCompiler extends AbstractJoinPointCompiler {
         }
 
         loadArguments(cv);
-        String joinPointName = TransformationUtil.getWrapperMethodName(
-                m_calleeMemberName,
-                m_calleeMemberDesc,
-                m_calleeClassName,
-                PUTFIELD_WRAPPER_METHOD_PREFIX
-        );
-        StringBuffer putFieldWrapperDesc = new StringBuffer();
-        putFieldWrapperDesc.append('(');
-        putFieldWrapperDesc.append(m_calleeMemberDesc);
-        putFieldWrapperDesc.append(')');
-        putFieldWrapperDesc.append('V');
-        if (Modifier.isStatic(m_calleeMemberModifiers)) {
-            cv.visitMethodInsn(INVOKESTATIC, m_calleeClassName, joinPointName, putFieldWrapperDesc.toString());
+
+        // do we have a public field ? If so don't use the wrappers
+        if (Modifier.isPublic(m_calleeMemberModifiers)) {
+            if (Modifier.isStatic(m_calleeMemberModifiers)) {
+                cv.visitFieldInsn(PUTSTATIC, m_calleeClassName, m_calleeMemberName, m_calleeMemberDesc);
+            } else {
+                cv.visitFieldInsn(PUTFIELD, m_calleeClassName, m_calleeMemberName, m_calleeMemberDesc);
+            }
         } else {
-            cv.visitMethodInsn(INVOKEVIRTUAL, m_calleeClassName, joinPointName, putFieldWrapperDesc.toString());
+            String joinPointName = TransformationUtil.getWrapperMethodName(
+                    m_calleeMemberName,
+                    m_calleeMemberDesc,
+                    m_calleeClassName,
+                    PUTFIELD_WRAPPER_METHOD_PREFIX
+            );
+            StringBuffer putFieldWrapperDesc = new StringBuffer();
+            putFieldWrapperDesc.append('(');
+            putFieldWrapperDesc.append(m_calleeMemberDesc);
+            putFieldWrapperDesc.append(')');
+            putFieldWrapperDesc.append('V');
+            if (Modifier.isStatic(m_calleeMemberModifiers)) {
+                cv.visitMethodInsn(INVOKESTATIC, m_calleeClassName, joinPointName, putFieldWrapperDesc.toString());
+            } else {
+                cv.visitMethodInsn(INVOKEVIRTUAL, m_calleeClassName, joinPointName, putFieldWrapperDesc.toString());
+            }
         }
+
         AsmHelper.addDefaultValue(cv, m_argumentTypes[0]);
     }
 

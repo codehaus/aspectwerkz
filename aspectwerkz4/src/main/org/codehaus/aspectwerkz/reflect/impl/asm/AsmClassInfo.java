@@ -488,21 +488,11 @@ public class AsmClassInfo implements ClassInfo {
      * @return
      */
     public ConstructorInfo getConstructor(final int hash) {
-        ConstructorInfo constructorInfo = (ConstructorInfo) m_constructors.get(hash);
-        if (constructorInfo == null) {
-            // lookup in the class hierarchy
-            ClassInfo superClassInfo = getSuperclass();
-            while (superClassInfo != null) {
-                constructorInfo = superClassInfo.getConstructor(hash);
-                if (constructorInfo == null) {
-                    // go up in the hierarchy
-                    superClassInfo = superClassInfo.getSuperclass();
-                } else {
-                    break;
-                }
-            }
+        ConstructorInfo constructor = (ConstructorInfo) m_constructors.get(hash);
+        if (constructor == null && getSuperclass() != null) {
+            constructor = getSuperclass().getConstructor(hash);
         }
-        return constructorInfo;
+        return constructor;
     }
 
     /**
@@ -528,21 +518,19 @@ public class AsmClassInfo implements ClassInfo {
      * @return
      */
     public MethodInfo getMethod(final int hash) {
-        MethodInfo methodInfo = (MethodInfo) m_methods.get(hash);
-        if (methodInfo == null) {
-            // lookup in the class hierarchy
-            ClassInfo superClassInfo = getSuperclass();
-            while (superClassInfo != null) {
-                methodInfo = superClassInfo.getMethod(hash);
-                if (methodInfo == null) {
-                    // go up in the hierarchy
-                    superClassInfo = superClassInfo.getSuperclass();
-                } else {
+        MethodInfo method = (MethodInfo) m_methods.get(hash);
+        if (method == null) {
+            for (int i = 0; i < getInterfaces().length; i++) {
+                method = getInterfaces()[i].getMethod(hash);
+                if (method != null) {
                     break;
                 }
             }
         }
-        return methodInfo;
+        if (method == null && getSuperclass() != null) {
+            method = getSuperclass().getMethod(hash);
+        }
+        return method;
     }
 
     /**
@@ -568,21 +556,11 @@ public class AsmClassInfo implements ClassInfo {
      * @return
      */
     public FieldInfo getField(final int hash) {
-        FieldInfo fieldInfo = (FieldInfo) m_fields.get(hash);
-        if (fieldInfo == null) {
-            // lookup in the class hierarchy
-            ClassInfo superClassInfo = getSuperclass();
-            while (superClassInfo != null) {
-                fieldInfo = superClassInfo.getField(hash);
-                if (fieldInfo == null) {
-                    // go up in the hierarchy
-                    superClassInfo = superClassInfo.getSuperclass();
-                } else {
-                    break;
-                }
-            }
+        FieldInfo field = (FieldInfo) m_fields.get(hash);
+        if (field == null && getSuperclass() != null) {
+            field = getSuperclass().getField(hash);
         }
-        return fieldInfo;
+        return field;
     }
 
     /**

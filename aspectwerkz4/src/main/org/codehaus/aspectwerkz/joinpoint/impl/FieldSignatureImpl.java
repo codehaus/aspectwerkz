@@ -120,6 +120,7 @@ public class FieldSignatureImpl implements FieldSignature {
      */
     public String toString() {
         StringBuffer sb = new StringBuffer();
+        sb.append(getFieldType().getName()).append(" ");
         sb.append(getDeclaringType().getName());
         sb.append(".");
         sb.append(getName());
