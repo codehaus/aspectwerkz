@@ -29,9 +29,10 @@ import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.Constants;
 
 import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
@@ -57,7 +58,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
      */
     public AddImplementationTransformer() {
         super();
-        m_definition = AspectWerkzDefinition.getDefinitionForTransformation();
+        m_definition = AbstractAspectWerkzDefinition.getDefinitionForTransformation();
     }
 
     /**

@@ -37,7 +37,8 @@ import org.apache.bcel.classfile.Field;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
  * Transforms member fields to become "aspect-aware".
@@ -57,7 +58,7 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
      */
     public AdviseStaticFieldTransformer() {
         super();
-        m_definition = AspectWerkzDefinition.getDefinitionForTransformation();
+        m_definition = AbstractAspectWerkzDefinition.getDefinitionForTransformation();
     }
 
     /**

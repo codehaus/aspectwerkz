@@ -12,7 +12,8 @@ import org.apache.bcel.generic.FieldGen;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.Constants;
 
-import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
  * Adds a new serialVersionUID to the class (if the class is serializable and does not
@@ -32,7 +33,7 @@ public class AddSerialVersionUidTransformer implements AspectWerkzInterfaceTrans
      */
     public AddSerialVersionUidTransformer() {
         super();
-        m_definition = AspectWerkzDefinition.getDefinitionForTransformation();
+        m_definition = AbstractAspectWerkzDefinition.getDefinitionForTransformation();
     }
 
     /**

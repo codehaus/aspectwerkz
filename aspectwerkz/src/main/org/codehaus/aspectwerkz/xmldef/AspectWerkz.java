@@ -27,7 +27,7 @@ import org.codehaus.aspectwerkz.xmldef.advice.Advice;
 import org.codehaus.aspectwerkz.xmldef.advice.AbstractAdvice;
 import org.codehaus.aspectwerkz.xmldef.introduction.Introduction;
 import org.codehaus.aspectwerkz.xmldef.definition.StartupManager;
-import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
@@ -46,6 +46,7 @@ import org.codehaus.aspectwerkz.connectivity.RemoteProxy;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
  * Manages the aspects in the AspectWerkz system.<br/>
@@ -266,7 +267,7 @@ public final class AspectWerkz {
     private AspectWerkz(final String uuid) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         m_uuid = uuid;
-        m_definition = AspectWerkzDefinition.getDefinition(m_uuid);
+        m_definition = AbstractAspectWerkzDefinition.getDefinition(m_uuid);
 
         if (START_REMOTE_PROXY_SERVER) {
             startRemoteProxyServer();

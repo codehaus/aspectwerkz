@@ -8,7 +8,7 @@
 package org.codehaus.aspectwerkz.xmldef.advice;
 
 import org.codehaus.aspectwerkz.xmldef.definition.AdviceDefinition;
-import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinitionImpl;
 import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.xmldef.joinpoint.CallerSideJoinPoint;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
@@ -30,7 +30,7 @@ public class CFlowPostAdvice extends PostAdvice {
     /**
      * The deployment model for the advice.
      */
-    public static final String DEPLOYMENT_MODEL = AspectWerkzDefinition.PER_THREAD;
+    public static final String DEPLOYMENT_MODEL = AspectWerkzDefinitionImpl.PER_THREAD;
 
     /**
      * Creates a new cflow advice.

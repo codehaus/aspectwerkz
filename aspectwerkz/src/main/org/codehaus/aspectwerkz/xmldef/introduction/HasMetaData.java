@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.xmldef.introduction;
 
-import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinitionImpl;
 
 /**
  * Mixin that is applied to all Introductions. Enables the retrieval of
@@ -35,7 +35,7 @@ public interface HasMetaData {
     /**
      * The deployment model for the mixin.
      */
-    public static final String DEPLOYMENT_MODEL = AspectWerkzDefinition.PER_INSTANCE;
+    public static final String DEPLOYMENT_MODEL = AspectWerkzDefinitionImpl.PER_INSTANCE;
 
     /**
      * Returns the deployment model for the introduction/advice

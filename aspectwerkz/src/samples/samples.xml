@@ -22,28 +22,28 @@
         class="examples.xmldef.asynchronous.AsynchronousAdvice"
         deployment-model="perJVM"/>
 
-    <advice-def name="synchronize"
-        class="examples.xmldef.synchronization.SynchronizationAdvice"
-        deployment-model="perJVM"/>
+<!--    <advice-def name="synchronize"-->
+<!--        class="examples.xmldef.synchronization.SynchronizationAdvice"-->
+<!--        deployment-model="perJVM"/>-->
 
     <!-- ============================================= -->
     <!--  Abstract aspects                             -->
     <!-- ============================================= -->
-    <abstract-aspect name="AbstractSynchronization">
-        <bind-advice pointcut="synchronized_calls">
-            <advice-ref name="synchronize"/>
-        </bind-advice>
-    </abstract-aspect>
+<!--    <abstract-aspect name="AbstractSynchronization">-->
+<!--        <bind-advice pointcut="synchronized_calls">-->
+<!--            <advice-ref name="synchronize"/>-->
+<!--        </bind-advice>-->
+<!--    </abstract-aspect>-->
 
     <!-- ============================================= -->
     <!--  Concrete aspects                             -->
     <!-- ============================================= -->
-    <aspect name="Synchronization" extends="AbstractSynchronization">
-        <pointcut-def name="synchronized_calls"
-            type="method"
-            pattern="* examples.xmldef.synchronization.Target.toSynchronize()"
-            non-reentrant="true"/>
-    </aspect>
+<!--    <aspect name="Synchronization" extends="AbstractSynchronization">-->
+<!--        <pointcut-def name="synchronized_calls"-->
+<!--            type="method"-->
+<!--            pattern="* examples.xmldef.synchronization.Target.toSynchronize()"-->
+<!--            non-reentrant="true"/>-->
+<!--    </aspect>-->
 
     <aspect name="Caching">
         <pointcut-def name="callee"

@@ -35,7 +35,8 @@ import org.apache.bcel.classfile.Field;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
  * Transforms static methods to become "aspect-aware".
@@ -55,7 +56,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      */
     public AdviseStaticMethodTransformer() {
         super();
-        m_definition = AspectWerkzDefinition.getDefinitionForTransformation();
+        m_definition = AbstractAspectWerkzDefinition.getDefinitionForTransformation();
     }
 
     /**

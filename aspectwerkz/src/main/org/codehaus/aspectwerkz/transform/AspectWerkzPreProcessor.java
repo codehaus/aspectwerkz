@@ -15,20 +15,11 @@ import java.util.Hashtable;
 import java.util.ArrayList;
 import java.util.WeakHashMap;
 import java.util.HashSet;
-import java.util.Enumeration;
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
 
-import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
-import org.codehaus.aspectwerkz.xmldef.definition.IntroductionDefinition;
-import org.codehaus.aspectwerkz.xmldef.definition.XmlDefinitionParser;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
+import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.Pattern;
-import org.dom4j.Document;
 
 /**
  * AspectWerkzPreProcessor is the entry poinbt of the AspectWerkz layer 2
@@ -59,12 +50,12 @@ import org.dom4j.Document;
 public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     private final static String AW_TRANSFORM_FILTER = "aspectwerkz.transform.filter";
-    private final static boolean NOFILTER;
+    private final static String AW_TRANSFORM_VERBOSE = "aspectwerkz.transform.verbose";
     private final static String AW_TRANSFORM_DUMP = "aspectwerkz.transform.dump";
+    private final static ClassPattern DUMP_PATTERN;
+    private final static boolean NOFILTER;
     private final static boolean DUMP_BEFORE;
     private final static boolean DUMP_AFTER;
-    private final static ClassPattern DUMP_PATTERN;
-    private final static String AW_TRANSFORM_VERBOSE = "aspectwerkz.transform.verbose";
     private final static boolean VERBOSE;
 
     static {
@@ -82,12 +73,16 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             DUMP_BEFORE = false;
             DUMP_AFTER = false;
             DUMP_PATTERN = null;
-        } else {
+        }
+        else {
             DUMP_AFTER = true;
-            DUMP_BEFORE =  dumpPattern.indexOf(",before")>0;
+            DUMP_BEFORE = dumpPattern.indexOf(",before") > 0;
             if (DUMP_BEFORE) {
-                DUMP_PATTERN = Pattern.compileClassPattern(dumpPattern.substring(0, dumpPattern.indexOf(',')));
-            } else {
+                DUMP_PATTERN = Pattern.compileClassPattern(
+                        dumpPattern.substring(0, dumpPattern.indexOf(','))
+                );
+            }
+            else {
                 DUMP_PATTERN = Pattern.compileClassPattern(dumpPattern);
             }
         }
@@ -149,7 +144,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         loadAndMergeXmlDefinitions(loader);
 
         if (VERBOSE)
-            log(loader + ":" + className + " ["+Thread.currentThread().getName()+"]");
+            log(loader + ":" + className + " [" + Thread.currentThread().getName() + "]");
         // prepare BCEL ClassGen
         Klass klass = null;
         try {
@@ -224,7 +219,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             if (DUMP_PATTERN.matches(className)) {
                 try {
                     klass.getClassGen().getJavaClass().
-                            dump("_dump/" + (DUMP_BEFORE?"after/":"") + className.replace('.', '/') + ".class");
+                            dump("_dump/" + (DUMP_BEFORE ? "after/" : "") + className.replace('.', '/') + ".class");
                 }
                 catch (Exception e) {
                     System.err.println("failed to dump " + className);
@@ -259,20 +254,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         Set repository = new HashSet();
         m_metaDataRepository.put(loader, repository); // add the loader here already to prevent recursive calls
 
-        AspectWerkzDefinition def = AspectWerkzDefinition.getDefinitionForTransformation();
-        for (Iterator it = def.getIntroductionDefinitions().iterator(); it.hasNext();) {
-            String className = ((IntroductionDefinition)it.next()).getImplementation();
-            if (className != null) {
-                try {
-                    Class mixin = loader.loadClass(className);
-                    ClassMetaData metaData = ReflectionMetaDataMaker.createClassMetaData(mixin);
-                    repository.add(metaData);
-                }
-                catch (ClassNotFoundException e) {
-                    ;// ignore
-                }
-            }
-        }
+        AbstractAspectWerkzDefinition.getDefinitionForTransformation().
+                buildMixinMetaDataRepository(repository, loader);
     }
 
     /**
@@ -289,53 +272,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         }
         m_definitionRepository.put(loader, null);
 
-        try {
-            Enumeration definitions = loader.getResources(
-                    "META-INF/" +
-                    AspectWerkzDefinition.DEFAULT_DEFINITION_FILE_NAME
-            );
-
-            // grab the definition in the current class loader
-            Document document = null;
-            if (definitions.hasMoreElements()) {
-                URL url = (URL)definitions.nextElement();
-                document = XmlDefinitionParser.createDocument(url);
-            }
-
-            // merge the definition with the definitions in class loaders
-            // higher up in the class loader hierachy
-            while (definitions.hasMoreElements()) {
-                document = XmlDefinitionParser.mergeDocuments(
-                        document,
-                        XmlDefinitionParser.createDocument((URL)definitions.nextElement())
-                );
-            }
-
-            // handle the merging of the 'aspectwerkz.xml' definition on the classpath
-            // (if there is one)
-            InputStream stream = AspectWerkzDefinition.getDefinitionInputStream();
-            if (stream != null) {
-                document = XmlDefinitionParser.mergeDocuments(
-                        document,
-                        XmlDefinitionParser.createDocument(stream)
-                );
-            }
-
-            // handle the merging of the definition file specified using the JVM option
-            String definitionFile = AspectWerkzDefinition.DEFINITION_FILE;
-            if (definitionFile != null) {
-                document = XmlDefinitionParser.mergeDocuments(
-                        document,
-                        XmlDefinitionParser.createDocument(new File(definitionFile).toURL())
-                );
-            }
-
-            // create a new definition based on the merged definition documents
-            AspectWerkzDefinition.createDefinition(document);
-        }
-        catch (Exception e) {
-            ;// ignore
-        }
+        AbstractAspectWerkzDefinition.loadAndMergeDefinitions(loader);
     }
 
     /**
@@ -344,7 +281,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      * @param klass the AspectWerkz class
      */
     private static boolean filter(final String klass) {
-        return     klass.startsWith("org.codehaus.aspectwerkz.")
+        return klass.startsWith("org.codehaus.aspectwerkz.")
                 || klass.startsWith("org.apache.commons.jexl.")
                 || klass.startsWith("gnu.trove.")
                 || klass.startsWith("org.dom4j.")

@@ -17,7 +17,8 @@ import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantUtf8;
 
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
  * Adds an interfaces to classes.
@@ -41,7 +42,7 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
      */
     public AddInterfaceTransformer() {
         super();
-        m_definition = AspectWerkzDefinition.getDefinitionForTransformation();
+        m_definition = AbstractAspectWerkzDefinition.getDefinitionForTransformation();
     }
 
     /**
