@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.reflect.impl.asm;
 
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttribute;
+import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttributeHelper;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
@@ -129,23 +130,18 @@ public abstract class AsmMemberInfo implements MemberInfo {
     private void addAnnotations(final Attribute attrs) {
         Attribute attributes = attrs;
         while (attributes != null) {
-            if (attributes instanceof CustomAttribute) {
-                CustomAttribute customAttribute = (CustomAttribute)attributes;
-                byte[] bytes = customAttribute.getBytes();
-                try {
-                    m_annotations.add(new UnbrokenObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
-                } catch (Exception e) {
-                    System.err.println("WARNING: could not deserialize annotation due to: " + e.toString());
-                }
-            }
             if (attributes instanceof RuntimeInvisibleAnnotations) {
                 for (Iterator it = ((RuntimeInvisibleAnnotations)attributes).annotations.iterator(); it.hasNext();) {
                     Annotation annotation = (Annotation)it.next();
-                    AnnotationInfo annotationInfo = AsmClassInfo.getAnnotationInfo(
-                            annotation,
-                            (ClassLoader)m_loaderRef.get()
-                    );
-                    m_annotations.add(annotationInfo);
+                    if (CustomAttribute.TYPE.equals(annotation.type)) {
+                        m_annotations.add(CustomAttributeHelper.extractCustomAnnotation(annotation));
+                    } else {
+                        AnnotationInfo annotationInfo = AsmClassInfo.getAnnotationInfo(
+                                annotation,
+                                (ClassLoader)m_loaderRef.get()
+                        );
+                        m_annotations.add(annotationInfo);
+                    }
                 }
             }
             if (attributes instanceof RuntimeVisibleAnnotations) {

@@ -50,7 +50,7 @@
             </p>
             <p>
                 To run the example type:
-                <code>maven aspectwerkz:samples:caching</code>
+                <code>ant samples:caching</code>
             </p>
             <source><![CDATA[
  /**
@@ -126,7 +126,9 @@
             </p>
             <p>
                 To run the example type:
-                <code>maven aspectwerkz:samples:logging</code>
+                <code>ant samples:logging</code>
+                It is possible to run this sample using offline weaving thru
+                <code>ant samples:offline:logging</code>
             </p>
             <p>
                 An abstract aspect is provided. By extending the abstract aspect we just need to define the pointcuts
@@ -217,7 +219,7 @@ public class LoggingAspect extends AbstractLoggingAspect {
             </p>
             <p>
                 To run the example type:
-                <code>maven aspectwerkz:samples:introduction</code>
+                <code>ant samples:introduction</code>
                 <br/>
                 The example makes use of mixin inheritance within aspect
                 inheritance. Moreover, the concrete aspect hides the introduced interface by using
@@ -297,7 +299,7 @@ public class Target {
             </p>
             <p>
                 To run the example type:
-                <code>maven aspectwerkz:samples:cflow</code>
+                <code>ant samples:cflow</code>
                 <br/>
             </p>
             <p>
@@ -341,7 +343,7 @@ public class CFlowAspect {
             </p>
             <p>
                 To run the example type:
-                <code>maven aspectwerkz:samples:exception</code>
+                <code>ant samples:exception</code>
                 <br/>
             </p>
             <p>

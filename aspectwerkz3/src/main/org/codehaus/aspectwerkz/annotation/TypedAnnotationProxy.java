@@ -59,7 +59,10 @@ public abstract class TypedAnnotationProxy implements Annotation, Serializable {
             throw new IllegalArgumentException("name can not be null");
         }
         setName(name);
-        
+
+        // FIXME - Alex to Jonas: why not keeping the FQN ?
+        // if proxy was used, the real "shortName" should be extracted back from the properties file anywaay
+
         String shortName = name;
         int index = name.lastIndexOf('$');
         if (index > 0) {

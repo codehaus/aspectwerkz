@@ -16,12 +16,16 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.expression.QDoxParser;
 import org.codehaus.aspectwerkz.reflect.TypeConverter;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.util.Base64;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
+import org.objectweb.asm.attrs.Annotation;
+import org.objectweb.asm.attrs.AnnotationElementValue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -281,22 +285,10 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     private class AttributeClassAdapter extends ClassAdapter {
         private static final String INIT_METHOD_NAME = "<init>";
 
+        private boolean classLevelAnnotationDone = false;
+
         public AttributeClassAdapter(final ClassVisitor cv) {
             super(cv);
-        }
-
-        public void visit(
-            final int version,
-            final int access,
-            final String name,
-            final String superName,
-            final String[] interfaces,
-            final String sourceFile) {
-
-            for (Iterator it = m_classAttributes.iterator(); it.hasNext();) {
-                visitAttribute(new CustomAttribute((((byte[]) it.next())), null));
-            }
-            super.visit(version, access, name, superName, interfaces, sourceFile);
         }
 
         public void visitField(
@@ -306,25 +298,17 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             final Object value,
             final Attribute attrs) {
 
-            Attribute first = null;
-            Attribute current = null;
-            if (attrs != null) {
-                first = attrs;
-            }
-            current = first;
+            RuntimeInvisibleAnnotations invisible = CustomAttributeHelper.linkRuntimeInvisibleAnnotations(attrs);
             for (Iterator it = m_fieldAttributes.iterator(); it.hasNext();) {
                 FieldAttributeInfo struct = (FieldAttributeInfo) it.next();
                 if (name.equals(struct.field.getName())) {
-                    if (first == null) {
-                        first = new CustomAttribute(struct.attribute);
-                        current = first;
-                    } else {
-                        current.next = new CustomAttribute(struct.attribute);
-                        current = current.next;
-                    }
+                    invisible.annotations.add(CustomAttributeHelper.createCustomAnnotation(struct.attribute));
                 }
             }
-            super.visitField(access, name, desc, value, first);
+            if (invisible.annotations.size() == 0) {
+                invisible = null;
+            }
+            super.visitField(access, name, desc, value, (attrs!=null)?attrs:invisible);
         }
 
         public CodeVisitor visitMethod(
@@ -334,44 +318,58 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             final String[] exceptions,
             final Attribute attrs) {
 
-            Attribute first = null;
-            Attribute current = null;
-            if (attrs != null) {
-                first = attrs;
-            }
-            current = first;
-            for (Iterator it = m_methodAttributes.iterator(); it.hasNext();) {
-                MethodAttributeInfo struct = (MethodAttributeInfo) it.next();
-                JavaMethod method = struct.method;
-                if (name.equals(INIT_METHOD_NAME)) {
-                    continue;
+            RuntimeInvisibleAnnotations invisible = CustomAttributeHelper.linkRuntimeInvisibleAnnotations(attrs);
+            if (!name.equals(INIT_METHOD_NAME)) {
+                for (Iterator it = m_methodAttributes.iterator(); it.hasNext();) {
+                    MethodAttributeInfo struct = (MethodAttributeInfo) it.next();
+                    JavaMethod method = struct.method;
+                    String[] parameters = QDoxParser.getJavaMethodParametersAsStringArray(method);
+                    if (name.equals(method.getName()) && Arrays.equals(parameters, DescriptorUtil.getParameters(desc))) {
+                        invisible.annotations.add(CustomAttributeHelper.createCustomAnnotation(struct.attribute));
+                    }
                 }
-                String[] parameters = QDoxParser.getJavaMethodParametersAsStringArray(method);
-                if (name.equals(method.getName()) && Arrays.equals(parameters, DescriptorUtil.getParameters(desc))) {
-                    if (first == null) {
-                        first = new CustomAttribute(struct.attribute);
-                        current = first;
-                    } else {
-                        current.next = new CustomAttribute(struct.attribute);
-                        current = current.next;
+            } else {
+                for (Iterator it = m_constructorAttributes.iterator(); it.hasNext();) {
+                    MethodAttributeInfo struct = (MethodAttributeInfo) it.next();
+                    JavaMethod method = struct.method;
+                    String[] parameters = QDoxParser.getJavaMethodParametersAsStringArray(method);
+                    if (name.equals(INIT_METHOD_NAME) && Arrays.equals(parameters, DescriptorUtil.getParameters(desc))) {
+                        invisible.annotations.add(CustomAttributeHelper.createCustomAnnotation(struct.attribute));
                     }
                 }
             }
-            for (Iterator it = m_constructorAttributes.iterator(); it.hasNext();) {
-                MethodAttributeInfo struct = (MethodAttributeInfo) it.next();
-                JavaMethod method = struct.method;
-                String[] parameters = QDoxParser.getJavaMethodParametersAsStringArray(method);
-                if (name.equals(INIT_METHOD_NAME) && Arrays.equals(parameters, DescriptorUtil.getParameters(desc))) {
-                    if (first == null) {
-                        first = new CustomAttribute(struct.attribute);
-                        current = first;
-                    } else {
-                        current.next = new CustomAttribute(struct.attribute);
-                        current = current.next;
-                    }
-                }
+            if (invisible.annotations.size() == 0) {
+                invisible = null;
             }
-            return cv.visitMethod(access, name, desc, exceptions, first);
+            return cv.visitMethod(access, name, desc, exceptions, (attrs!=null)?attrs:invisible);
+        }
+
+        public void visitAttribute(Attribute attrs) {
+            classLevelAnnotationDone = true;
+            RuntimeInvisibleAnnotations invisible = CustomAttributeHelper.linkRuntimeInvisibleAnnotations(attrs);
+            for (Iterator it = m_classAttributes.iterator(); it.hasNext();) {
+                byte[] bytes = (byte[])it.next();
+                invisible.annotations.add(CustomAttributeHelper.createCustomAnnotation(bytes));
+            }
+            if (invisible.annotations.size() == 0) {
+                invisible = null;
+            }
+            super.visitAttribute((attrs!=null)?attrs:invisible);
+        }
+
+        public void visitEnd() {
+            if (!classLevelAnnotationDone) {
+                classLevelAnnotationDone = true;
+                RuntimeInvisibleAnnotations invisible = CustomAttributeHelper.linkRuntimeInvisibleAnnotations(null);
+                for (Iterator it = m_classAttributes.iterator(); it.hasNext();) {
+                    byte[] bytes = (byte[])it.next();
+                    invisible.annotations.add(CustomAttributeHelper.createCustomAnnotation(bytes));
+                }
+                if (invisible.annotations.size() > 0) {
+                    super.visitAttribute(invisible);
+                }
+                super.visitEnd();
+            }
         }
     }
 

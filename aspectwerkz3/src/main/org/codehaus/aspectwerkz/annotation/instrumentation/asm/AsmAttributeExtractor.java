@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.annotation.instrumentation.asm;
 
 import org.codehaus.aspectwerkz.UnbrokenObjectInputStream;
+import org.codehaus.aspectwerkz.util.Base64;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
@@ -30,247 +31,237 @@ import java.util.Iterator;
 /**
  * Extracts attributes from the class bytecode using the ASM library.
  *
+ * FIXME - remove
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
-public class AsmAttributeExtractor implements AttributeExtractor {
-    /**
-     * The class reader.
-     */
-    private ClassReader m_reader = null;
-
-    /**
-     * The class writer.
-     */
-    private ClassWriter m_writer = null;
-    private static final String INIT_METHOD_NAME = "<init>";
-
-    /**
-     * The attributes of interest.
-     */
-    public static final Attribute[] ATTRIBUTES = new Attribute[]{
-        new CustomAttribute(),
-        new AnnotationDefaultAttribute(),
-        new RuntimeInvisibleAnnotations(),
-        new RuntimeInvisibleParameterAnnotations(),
-        new RuntimeVisibleAnnotations(),
-        new RuntimeVisibleParameterAnnotations(),
-        new StackMapAttribute(),
-        new SourceDebugExtensionAttribute(),
-        new SignatureAttribute(),
-        new EnclosingMethodAttribute()
-    };
-
-
-    /**
-     * Open the classfile and parse it in to the ASM library.
-     *
-     * @param className the class name to load.
-     * @param loader    the classloader to use to get the inputstream of the .class file.
-     * @return true if correctly initialized
-     */
-    public boolean initialize(final String className, final ClassLoader loader) {
-        String classFileName = className.replace('.', '/') + ".class";
-        try {
-            InputStream classStream = loader.getResourceAsStream(classFileName);
-            if (classStream != null) {
-                m_reader = new ClassReader(classStream);
-                m_writer = AsmHelper.newClassWriter(false);
-            } else {
-                return false;
-            }
-        } catch (IOException e) {
-            throw new WrappedRuntimeException(e);
-        }
-        return true;
-    }
-
-    /**
-     * Returns the class attributes.
-     *
-     * @return the class attributes
-     */
-    public Object[] getClassAttributes() {
-        if (m_reader == null) {
-            throw new IllegalStateException("attribute extractor is not initialized");
-        }
-        final List classAttributes = new ArrayList();
-        m_reader.accept(
-                new ClassAdapter(m_writer) {
-                    public void visitAttribute(final Attribute attribute) {
-                        //TODO - waiting ASM feedback on that instead of several call to visitAtribute from ASM
-                        //Attribute current = attribute;
-                        //while (current != null) {
-                        if (attribute instanceof CustomAttribute) {
-                            CustomAttribute customAttribute = (CustomAttribute)attribute;
-                            byte[] bytes = customAttribute.getBytes();
-                            try {
-                                classAttributes.add(
-                                        new UnbrokenObjectInputStream(new ByteArrayInputStream(bytes)).readObject()
-                                );
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                //TODO AVAOSD jp index offlined deployed make it breaks
-                                // since Unkonw attr not wrapped in Attr
-                                // SKIP throw new WrappedRuntimeException(e);
-                            }
-                        } else if (attribute instanceof RuntimeVisibleAnnotations) {
-                            for (Iterator it = ((RuntimeVisibleAnnotations)attribute).annotations.iterator();
-                                 it.hasNext();) {
-                                Object a = it.next();
-                                System.out.println(a);
-//                            Annotation annotation = (Annotation)it.next();
-//                            // FIXME annotation is null
-//                            m_annotations.add(new AnnotationInfo(annotation.type, null));
-                            }
-                            RuntimeVisibleAnnotations runtimeVisibleAnnotation = (RuntimeVisibleAnnotations)attribute;
-                        }
-                        //    current = current.next;
-                        //}
-                    }
-                }, ATTRIBUTES, false
-        );
-        return classAttributes.toArray();
-    }
-
-    /**
-     * Return all the attributes associated with a method that have a particular method signature.
-     *
-     * @param methodName       The name of the method.
-     * @param methodParamTypes An array of parameter types as given by the reflection api.
-     * @return the method attributes.
-     */
-    public Object[] getMethodAttributes(final String methodName, final String[] methodParamTypes) {
-        if (m_reader == null) {
-            throw new IllegalStateException("attribute extractor is not initialized");
-        }
-        final List methodAttributes = new ArrayList();
-        m_reader.accept(
-                new ClassAdapter(m_writer) {
-                    public CodeVisitor visitMethod(
-                            final int access,
-                            final String name,
-                            final String desc,
-                            final String[] exceptions,
-                            final Attribute attribute) {
-                        if (name.equals(methodName) &&
-                            Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(desc))) {
-                            Attribute current = attribute;
-                            while (current != null) {
-                                if (current instanceof CustomAttribute) {
-                                    CustomAttribute customAttribute = (CustomAttribute)current;
-                                    byte[] bytes = customAttribute.getBytes();
-                                    try {
-                                        methodAttributes.add(
-                                                new UnbrokenObjectInputStream(new ByteArrayInputStream(bytes))
-                                                .readObject()
-                                        );
-                                    } catch (Exception e) {
-                                        throw new WrappedRuntimeException(e);
-                                    }
-                                } else if (attribute instanceof RuntimeVisibleAnnotations) {
-                                    for (Iterator it = ((RuntimeVisibleAnnotations)attribute).annotations.iterator();
-                                         it.hasNext();) {
-                                        Object a = it.next();
-
-                                    }
-                                    RuntimeVisibleAnnotations runtimeVisibleAnnotation = (RuntimeVisibleAnnotations)attribute;
-                                }
-                                current = current.next;
-                            }
-                        }
-                        return null;
-                    }
-                }, ATTRIBUTES, false
-        );
-        return methodAttributes.toArray();
-    }
-
-    /**
-     * Return all the attributes associated with a constructor that have a particular method signature.
-     *
-     * @param constructorParamTypes An array of parameter types as given by the reflection api.
-     * @return the constructor attributes.
-     */
-    public Object[] getConstructorAttributes(final String[] constructorParamTypes) {
-        if (m_reader == null) {
-            throw new IllegalStateException("attribute extractor is not initialized");
-        }
-        final List methodAttributes = new ArrayList();
-        m_reader.accept(
-                new ClassAdapter(m_writer) {
-                    public CodeVisitor visitMethod(
-                            final int access,
-                            final String name,
-                            final String desc,
-                            final String[] exceptions,
-                            final Attribute attribute) {
-                        if (name.equals(INIT_METHOD_NAME) &&
-                            Arrays.equals(constructorParamTypes, DescriptorUtil.getParameters(desc))) {
-                            Attribute current = attribute;
-                            while (current != null) {
-                                if (attribute instanceof CustomAttribute) {
-                                    CustomAttribute customAttribute = (CustomAttribute)attribute;
-                                    byte[] bytes = customAttribute.getBytes();
-                                    try {
-                                        methodAttributes.add(
-                                                new UnbrokenObjectInputStream(new ByteArrayInputStream(bytes))
-                                                .readObject()
-                                        );
-                                    } catch (Exception e) {
-                                        throw new WrappedRuntimeException(e);
-                                    }
-                                }
-                                current = current.next;
-                            }
-                        }
-                        return null;
-                    }
-                }, ATTRIBUTES, false
-        );
-        return methodAttributes.toArray();
-    }
-
-    /**
-     * Return all the attributes associated with a field.
-     *
-     * @param fieldName The name of the field.
-     * @return the field attributes.
-     */
-    public Object[] getFieldAttributes(final String fieldName) {
-        if (m_reader == null) {
-            throw new IllegalStateException("attribute extractor is not initialized");
-        }
-        final List fieldAttributes = new ArrayList();
-        m_reader.accept(
-                new ClassAdapter(m_writer) {
-                    public void visitField(
-                            final int access,
-                            final String name,
-                            final String desc,
-                            final Object value,
-                            final Attribute attribute) {
-                        if (name.equals(fieldName)) {
-                            Attribute current = attribute;
-                            while (current != null) {
-                                if (attribute instanceof CustomAttribute) {
-                                    CustomAttribute customAttribute = (CustomAttribute)attribute;
-                                    byte[] bytes = customAttribute.getBytes();
-                                    try {
-                                        fieldAttributes.add(
-                                                new UnbrokenObjectInputStream(new ByteArrayInputStream(bytes))
-                                                .readObject()
-                                        );
-                                    } catch (Exception e) {
-                                        throw new WrappedRuntimeException(e);
-                                    }
-                                }
-                                current = current.next;
-                            }
-                        }
-                    }
-                }, ATTRIBUTES, false
-        );
-        return fieldAttributes.toArray();
-    }
+public class AsmAttributeExtractor /*implements AttributeExtractor*/ {
+//    /**
+//     * The class reader.
+//     */
+//    private ClassReader m_reader = null;
+//
+//    /**
+//     * The class writer.
+//     */
+//    private ClassWriter m_writer = null;
+//    private static final String INIT_METHOD_NAME = "<init>";
+//
+//    /**
+//     * The attributes of interest.
+//     */
+//    public static final Attribute[] ATTRIBUTES = new Attribute[]{
+//        new AnnotationDefaultAttribute(),
+//        new RuntimeInvisibleAnnotations(),
+//        new RuntimeInvisibleParameterAnnotations(),
+//        new RuntimeVisibleAnnotations(),
+//        new RuntimeVisibleParameterAnnotations(),
+//        new StackMapAttribute(),
+//        new SourceDebugExtensionAttribute(),
+//        new SignatureAttribute(),
+//        new EnclosingMethodAttribute()
+//    };
+//
+//
+//    /**
+//     * Open the classfile and parse it in to the ASM library.
+//     *
+//     * @param className the class name to load.
+//     * @param loader    the classloader to use to get the inputstream of the .class file.
+//     * @return true if correctly initialized
+//     */
+//    public boolean initialize(final String className, final ClassLoader loader) {
+//        String classFileName = className.replace('.', '/') + ".class";
+//        try {
+//            InputStream classStream = loader.getResourceAsStream(classFileName);
+//            if (classStream != null) {
+//                m_reader = new ClassReader(classStream);
+//                m_writer = AsmHelper.newClassWriter(false);
+//            } else {
+//                return false;
+//            }
+//        } catch (IOException e) {
+//            throw new WrappedRuntimeException(e);
+//        }
+//        return true;
+//    }
+//
+//    /**
+//     * Returns the class attributes.
+//     *
+//     * @return the class attributes
+//     */
+//    public Object[] getClassAttributes() {
+//        if (m_reader == null) {
+//            throw new IllegalStateException("attribute extractor is not initialized");
+//        }
+//        final List classAttributes = new ArrayList();
+//        m_reader.accept(
+//                new ClassAdapter(m_writer) {
+//                    public void visitAttribute(final Attribute attribute) {
+//                        if (attribute instanceof RuntimeVisibleAnnotations) {
+//                            for (Iterator it = ((RuntimeVisibleAnnotations)attribute).annotations.iterator();
+//                                 it.hasNext();) {
+//                                Object a = it.next();
+//                                System.out.println(a);
+////                            Annotation annotation = (Annotation)it.next();
+////                            // FIXME annotation is null
+////                            m_annotations.add(new AnnotationInfo(annotation.type, null));
+//                            }
+//                            RuntimeVisibleAnnotations runtimeVisibleAnnotation = (RuntimeVisibleAnnotations)attribute;
+//                        } else if (attribute instanceof RuntimeInvisibleAnnotations) {
+//                            for (Iterator it = ((RuntimeInvisibleAnnotations)attribute).annotations.iterator();
+//                                 it.hasNext();) {
+//                                Annotation annotation = (Annotation)it.next();
+//                                if (CustomAttribute.TYPE.equals(annotation.type)) {
+//                                    classAttributes.add(CustomAttributeHelper.extractCustomAnnotation(annotation));
+//                                } else {
+//                                    //TODO
+//                                }
+//                            }
+//                        }
+//                    }
+//                }, ATTRIBUTES, false
+//        );
+//        return classAttributes.toArray();
+//    }
+//
+//    /**
+//     * Return all the attributes associated with a method that have a particular method signature.
+//     *
+//     * @param methodName       The name of the method.
+//     * @param methodParamTypes An array of parameter types as given by the reflection api.
+//     * @return the method attributes.
+//     */
+//    public Object[] getMethodAttributes(final String methodName, final String[] methodParamTypes) {
+//        if (m_reader == null) {
+//            throw new IllegalStateException("attribute extractor is not initialized");
+//        }
+//        final List methodAttributes = new ArrayList();
+//        m_reader.accept(
+//                new ClassAdapter(m_writer) {
+//                    public CodeVisitor visitMethod(
+//                            final int access,
+//                            final String name,
+//                            final String desc,
+//                            final String[] exceptions,
+//                            final Attribute attribute) {
+//                        if (name.equals(methodName) &&
+//                            Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(desc))) {
+//                            Attribute current = attribute;
+//                            while (current != null) {
+//                                if (attribute instanceof RuntimeVisibleAnnotations) {
+//                                    for (Iterator it = ((RuntimeVisibleAnnotations)attribute).annotations.iterator();
+//                                         it.hasNext();) {
+//                                        Object a = it.next();
+//
+//                                    }
+//                                    RuntimeVisibleAnnotations runtimeVisibleAnnotation = (RuntimeVisibleAnnotations)attribute;
+//                                } else if (attribute instanceof RuntimeInvisibleAnnotations) {
+//                                    for (Iterator it = ((RuntimeInvisibleAnnotations)attribute).annotations.iterator();
+//                                         it.hasNext();) {
+//                                        Annotation annotation = (Annotation)it.next();
+//                                        if (CustomAttribute.TYPE.equals(annotation.type)) {
+//                                            methodAttributes.add(CustomAttributeHelper.extractCustomAnnotation(annotation));
+//                                        } else {
+//                                            //TODO
+//                                        }
+//                                    }
+//                                }
+//                                current = current.next;
+//                            }
+//                        }
+//                        return null;
+//                    }
+//                }, ATTRIBUTES, false
+//        );
+//        return methodAttributes.toArray();
+//    }
+//
+//    /**
+//     * Return all the attributes associated with a constructor that have a particular method signature.
+//     *
+//     * @param constructorParamTypes An array of parameter types as given by the reflection api.
+//     * @return the constructor attributes.
+//     */
+//    public Object[] getConstructorAttributes(final String[] constructorParamTypes) {
+//        if (m_reader == null) {
+//            throw new IllegalStateException("attribute extractor is not initialized");
+//        }
+//        final List constructorAttributes = new ArrayList();
+//        m_reader.accept(
+//                new ClassAdapter(m_writer) {
+//                    public CodeVisitor visitMethod(
+//                            final int access,
+//                            final String name,
+//                            final String desc,
+//                            final String[] exceptions,
+//                            final Attribute attribute) {
+//                        if (name.equals(INIT_METHOD_NAME) &&
+//                            Arrays.equals(constructorParamTypes, DescriptorUtil.getParameters(desc))) {
+//                            Attribute current = attribute;
+//                            while (current != null) {
+//                                if (attribute instanceof RuntimeInvisibleAnnotations) {
+//                                    for (Iterator it = ((RuntimeInvisibleAnnotations)attribute).annotations.iterator();
+//                                         it.hasNext();) {
+//                                        Annotation annotation = (Annotation)it.next();
+//                                        if (CustomAttribute.TYPE.equals(annotation.type)) {
+//                                            constructorAttributes.add(CustomAttributeHelper.extractCustomAnnotation(annotation));
+//                                        } else {
+//                                            //TODO
+//                                        }
+//                                    }
+//                                }
+//                                current = current.next;
+//                            }
+//                        }
+//                        return null;
+//                    }
+//                }, ATTRIBUTES, false
+//        );
+//        return constructorAttributes.toArray();
+//    }
+//
+//    /**
+//     * Return all the attributes associated with a field.
+//     *
+//     * @param fieldName The name of the field.
+//     * @return the field attributes.
+//     */
+//    public Object[] getFieldAttributes(final String fieldName) {
+//        if (m_reader == null) {
+//            throw new IllegalStateException("attribute extractor is not initialized");
+//        }
+//        final List fieldAttributes = new ArrayList();
+//        m_reader.accept(
+//                new ClassAdapter(m_writer) {
+//                    public void visitField(
+//                            final int access,
+//                            final String name,
+//                            final String desc,
+//                            final Object value,
+//                            final Attribute attribute) {
+//                        if (name.equals(fieldName)) {
+//                            Attribute current = attribute;
+//                            while (current != null) {
+//                                if (attribute instanceof RuntimeInvisibleAnnotations) {
+//                                    for (Iterator it = ((RuntimeInvisibleAnnotations)attribute).annotations.iterator();
+//                                         it.hasNext();) {
+//                                        Annotation annotation = (Annotation)it.next();
+//                                        if (CustomAttribute.TYPE.equals(annotation.type)) {
+//                                            fieldAttributes.add(CustomAttributeHelper.extractCustomAnnotation(annotation));
+//                                        } else {
+//                                            //TODO
+//                                        }
+//                                    }
+//                                }
+//                                current = current.next;
+//                            }
+//                        }
+//                    }
+//                }, ATTRIBUTES, false
+//        );
+//        return fieldAttributes.toArray();
+//    }
 }

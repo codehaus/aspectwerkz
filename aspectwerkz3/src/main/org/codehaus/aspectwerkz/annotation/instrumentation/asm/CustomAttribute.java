@@ -15,79 +15,26 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 
 /**
- * Custom attribute wrapper class.
- * 
+ * Custom annotation wrapper annotation.
+ * This Java 1.5 style annotation is used to wrap user defined / 1.3 / 1.4 annotations instead of using a custom attribute.
+ * This allow to add user defined annotations as RuntimeInvisibleAnnotations and thus to support several annotations and
+ * annotations introduction.
+ * </br>
+ * See AW-234.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class CustomAttribute extends Attribute {
+public interface CustomAttribute {
+
+    public final static String TYPE = "Lorg/codehaus/aspectwerkz/annotation/instrumentation/asm/CustomAttribute;";
 
     /**
-     * The serialized atribute byte array.
-     */
-    private final byte[] m_bytes;
-
-    /**
-     * Creates a custom attribute prototype.
-     * 
-     * @param bytes
-     */
-    public CustomAttribute() {
-        super(AttributeEnhancer.CUSTOM_ATTRIBUTE);
-        m_bytes = new byte[] {};
-    }
-
-    /**
-     * Creates a custom attribute as the first one is a chain.
-     * 
-     * @param bytes
-     */
-    public CustomAttribute(final byte[] bytes) {
-        super(AttributeEnhancer.CUSTOM_ATTRIBUTE);
-        m_bytes = bytes;
-    }
-
-    /**
-     * Creates a custom attribute and attaches it to a chain.
-     * 
-     * @param bytes
-     * @param next
-     */
-    public CustomAttribute(final byte[] bytes, final Attribute next) {
-        super(AttributeEnhancer.CUSTOM_ATTRIBUTE);
-        m_bytes = bytes;
-        this.next = next;
-    }
-
-    /**
-     * Returns the serialized attribute.
-     * 
+     * Default value is a String, containing the BASE64 encoding of the serialized data of the user
+     * custom annotation (proxy instance).
+     *
      * @return
      */
-    public byte[] getBytes() {
-        return m_bytes;
-    }
+    public String value();
 
-    protected Attribute read(
-        final ClassReader cr,
-        final int off,
-        final int len,
-        final char[] buf,
-        final int codeOff,
-        final Label[] labels) {
-        byte[] bytes = new byte[len];
-        int index = off;
-        for (int i = 0; i < len; i++, index++) {
-            bytes[i] = cr.b[index];
-        }
-        return new CustomAttribute(bytes);
-    }
-
-    protected ByteVector write(
-        final ClassWriter cw,
-        final byte[] code,
-        final int len,
-        final int maxStack,
-        final int maxLocals) {
-        return new ByteVector().putByteArray(m_bytes, 0, m_bytes.length);
-    }
 }

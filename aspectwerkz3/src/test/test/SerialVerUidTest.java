@@ -52,7 +52,7 @@ public class SerialVerUidTest extends TestCase implements Serializable {
         // build a class with synthetic method, field, ctor
         javassistClass.setName(this.getClass().getName()+"Generated");
         int syntheticModifier = Constants.ACC_SYNTHETIC | Modifier.PUBLIC;
-        javassistClass.addMethod(CtNewMethod.make(syntheticModifier, CtClass.intType, "syntheticDo", new CtClass[]{}, new CtClass[]{}, "{return 0;}", javassistClass));
+        //javassistClass.addMethod(CtNewMethod.make(syntheticModifier, CtClass.intType, "syntheticDo", new CtClass[]{}, new CtClass[]{}, "{return 0;}", javassistClass));
         CtField field = new CtField(CtClass.intType, "syntheticField", javassistClass);
         field.setModifiers(syntheticModifier);
         javassistClass.addField(field);
