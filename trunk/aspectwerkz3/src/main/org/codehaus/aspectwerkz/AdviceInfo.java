@@ -28,11 +28,12 @@ public class AdviceInfo implements Serializable {
     public final static AdviceInfo[] EMPTY_ADVICE_INFO_ARRAY = new AdviceInfo[0];
 
     // -- some magic index used in the m_methodToArgIndexes[] so that we know what to bind except advised target args
-    public final static int JOINPOINT_ARG = -1;
-    public final static int STATIC_JOINPOINT_ARG = -2;
-    public final static int TARGET_ARG = -3;
-    public final static int THIS_ARG = -4;
-    public final static int VALID_NON_AW_AROUND_CLOSURE_TYPE = -5;
+    public final static int JOINPOINT_ARG = -0x1;
+    public final static int STATIC_JOINPOINT_ARG = -0x2;
+    public final static int TARGET_ARG = -0x3;
+    public final static int THIS_ARG = -0x4;
+    public final static int VALID_NON_AW_AROUND_CLOSURE_TYPE = -0x5;
+    public final static int SPECIAL_ARGUMENT = -0x6;
 
     /**
      * The method name.
@@ -78,9 +79,14 @@ public class AdviceInfo implements Serializable {
     private int[] m_methodToArgIndexes;
 
     /**
-     * The "special" argument for the advice.
+     * The "special" argument type desc for the advice.
      */
-    private String m_specialArgumentType;
+    private String m_specialArgumentTypeDesc;
+
+    /**
+     * The "special" argument type name for the advice.
+     */
+    private String m_specialArgumentTypeName;
 
     /**
      * The advice type.
@@ -146,7 +152,10 @@ public class AdviceInfo implements Serializable {
         m_methodSignature = methodSignature;
         m_methodParameterTypes = methodParameterTypes;
         m_type = type;
-        m_specialArgumentType = AsmHelper.convertReflectDescToTypeDesc(specialArgumentType);
+        if (specialArgumentType != null) {
+            m_specialArgumentTypeDesc = AsmHelper.convertReflectDescToTypeDesc(specialArgumentType);
+            m_specialArgumentTypeName = specialArgumentType.replace('.', '/');
+        }
         m_name = adviceName;
         m_targetWithRuntimeCheck = targetWithRuntimeCheck;
         m_expressionInfo = expressionInfo;
@@ -236,12 +245,21 @@ public class AdviceInfo implements Serializable {
     }
 
     /**
-     * Returns the special argument type.
+     * Returns the special argument type desc.
      *
      * @return
      */
-    public String getSpecialArgumentType() {
-        return m_specialArgumentType;
+    public String getSpecialArgumentTypeDesc() {
+        return m_specialArgumentTypeDesc;
+    }
+
+    /**
+     * Returns the special argument type name.
+     *
+     * @return
+     */
+    public String getSpecialArgumentTypeName() {
+        return m_specialArgumentTypeName;
     }
 
     /**
@@ -297,7 +315,7 @@ public class AdviceInfo implements Serializable {
         sb.append(m_methodName).append(',');
         sb.append(m_methodSignature).append(',');
         sb.append(m_methodParameterTypes).append(',');
-        sb.append(m_specialArgumentType).append(',');
+        sb.append(m_specialArgumentTypeDesc).append(',');
         sb.append(m_expressionInfo).append(',');
         sb.append(m_expressionContext).append(',');
         sb.append(m_targetWithRuntimeCheck).append(']');

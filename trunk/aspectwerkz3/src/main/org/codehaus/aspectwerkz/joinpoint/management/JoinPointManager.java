@@ -535,13 +535,18 @@ public class JoinPointManager {
                     }
                 } else {
                     AspectModel aspectModel = AspectModelManager.getModelFor(aspectDef.getAspectModel());
-                    String closureClassName = aspectModel.getAroundClosureClassInfo().getClassName();
-                    if (isValidAroundClosureType(adviceArgTypes[i], closureClassName)) {
+                    String closureTypeName = aspectModel.getAroundClosureClassInfo().getClassName();
+                    final Type argType = adviceArgTypes[i];
+                    if (isValidAroundClosureType(argType, closureTypeName)) {
                         adviceToTargetArgs[i] = AdviceInfo.VALID_NON_AW_AROUND_CLOSURE_TYPE;
+                    } else if (isSpecialArgumentType(argType, adviceInfo)) {
+                        adviceToTargetArgs[i] = AdviceInfo.SPECIAL_ARGUMENT;
                     } else {
                         throw new Error(
-                                "around closure type advice parameter is not a known type [" +
-                                closureClassName + "]"
+                                "advice parameter type is not a valid type [" + closureTypeName + "] for advice [" +
+                                adviceInfo.getAdviceDefinition().getName() +
+                                "] in aspect [" +
+                                adviceInfo.getAspectClassName() + "]"
                         );
                     }
                 }
@@ -551,10 +556,12 @@ public class JoinPointManager {
         adviceInfo.setMethodToArgIndexes(adviceToTargetArgs);
     }
 
-    private static boolean isValidAroundClosureType(final Type type, final String closureClassName) {
-        // FIXME Type.getType(..) throws exception
-//        return Type.getType(closureClassName).getDescriptor().equals(type.getDescriptor());
-        return true;
+    private static boolean isSpecialArgumentType(final Type argType, final AdviceInfo adviceInfo) {
+        return adviceInfo.getSpecialArgumentTypeDesc().equals(argType.getDescriptor());
+    }
+
+    private static boolean isValidAroundClosureType(final Type argType, final String closureTypeName) {
+        return closureTypeName.equals(argType.getInternalName());
     }
 
     private static boolean isJoinPoint(final Type type) {
