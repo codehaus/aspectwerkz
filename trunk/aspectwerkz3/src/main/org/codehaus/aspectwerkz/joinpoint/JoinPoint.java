@@ -14,19 +14,12 @@ package org.codehaus.aspectwerkz.joinpoint;
  */
 public interface JoinPoint {
     static final String METHOD_EXECUTION = "METHOD_EXECUTION";
-
     static final String METHOD_CALL = "METHOD_CALL";
-
     static final String CONSTRUCTOR_EXECUTION = "CONSTRUCTOR_EXECUTION";
-
     static final String CONSTRUCTOR_CALL = "CONSTRUCTOR_CALL";
-
     static final String FIELD_SET = "FIELD_SET";
-
     static final String FIELD_GET = "FIELD_GET";
-
     static final String HANDLER = "HANDLER";
-
     static final String STATIC_INITIALIZATION = "STATIC_INITIALIZATION";
 
     /**
