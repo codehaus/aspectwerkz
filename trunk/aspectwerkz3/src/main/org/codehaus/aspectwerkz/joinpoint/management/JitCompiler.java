@@ -1161,6 +1161,9 @@ public class JitCompiler {
         // invoke the target method (static or member) statically
         if (Modifier.isStatic(targetMethod.getModifiers())) {
             cv.visitMethodInsn(Constants.INVOKESTATIC, declaringClassName, methodName, methodDescriptor);
+        } else if (targetMethod.getDeclaringClass().isInterface()) {
+            //AW-253
+            cv.visitMethodInsn(Constants.INVOKEINTERFACE, declaringClassName, methodName, methodDescriptor);
         } else {
             cv.visitMethodInsn(Constants.INVOKEVIRTUAL, declaringClassName, methodName, methodDescriptor);
         }
