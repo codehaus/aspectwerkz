@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.definition.expression.visitor;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
+import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.definition.expression.ast.AndNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.BooleanLiteral;
 import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParserVisitor;
@@ -20,6 +21,7 @@ import org.codehaus.aspectwerkz.definition.expression.ast.NotNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.Anonymous;
 
 /**
  * Evaluate the expression, ignore the CFLOW sub-expressions<br/>
@@ -108,6 +110,55 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
         return Boolean.FALSE;
     }
 
+    public Object visit(Anonymous node, Object data) {
+        String expr = node.name;
+        if (expr.startsWith("cflow(")) {
+            return Boolean.TRUE;
+        } else {
+            Expression expression = null;
+            ExpressionContext ctx = (ExpressionContext)data;
+            ExpressionNamespace ns = ctx.getNamespace();
+            if (expr.startsWith("execution(")) {
+                expression = ns.createExecutionExpression(
+                        expr.substring(10, expr.length()-1),
+                        "",""
+                );
+            } else if (expr.startsWith("call(")) {
+                expression = ns.createCallExpression(
+                        expr.substring(5, expr.length()-1),
+                        "",""
+                );
+            } else if (expr.startsWith("set(")) {
+                expression = ns.createSetExpression(
+                        expr.substring(4, expr.length()-1),
+                        "",""
+                );
+            } else if (expr.startsWith("get(")) {
+                expression = ns.createGetExpression(
+                        expr.substring(4, expr.length()-1),
+                        "",""
+                );
+            } else if (expr.startsWith("class(")) {
+                expression = ns.createClassExpression(
+                        expr.substring(6, expr.length()-1),
+                        "",""
+                );
+            } else if (expr.startsWith("handler(")) {
+                expression = ns.createHandlerExpression(
+                        expr.substring(8, expr.length()-1),
+                        "",""
+                );
+            } else {
+                throw new RuntimeException("unknown anonymous: "+expr);
+            }
+            if (expression.match(
+                    ctx.getClassMetaData(), ctx.getMemberMetaData(), ctx.getExceptionType(), ctx.getPointcutType())) {
+                return Boolean.TRUE;
+            } else {
+                return Boolean.FALSE;
+            }
+        }
+    }
 
     //------------------------
 

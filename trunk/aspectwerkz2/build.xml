@@ -152,6 +152,7 @@
         <delete dir="${src.dir}/main/org/codehaus/aspectwerkz/definition/expression/ast/">
             <include name="*.java"/>
             <exclude name="Identifier.java"/>
+            <exclude name="Anonymous.java"/>
             <exclude name="CflowPattern.java"/>
         </delete>
         <delete dir="${src.dir}/main/org/codehaus/aspectwerkz/definition/expression/ast/" includes="*.jj"/>

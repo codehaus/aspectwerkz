@@ -10,9 +10,10 @@ public interface ExpressionParserTreeConstants
   public int JJTANDNODE = 3;
   public int JJTNOTNODE = 4;
   public int JJTIDENTIFIER = 5;
-  public int JJTBOOLEANLITERAL = 6;
-  public int JJTTRUENODE = 7;
-  public int JJTFALSENODE = 8;
+  public int JJTANONYMOUS = 6;
+  public int JJTBOOLEANLITERAL = 7;
+  public int JJTTRUENODE = 8;
+  public int JJTFALSENODE = 9;
 
 
   public String[] jjtNodeName = {
@@ -22,6 +23,7 @@ public interface ExpressionParserTreeConstants
     "AndNode",
     "NotNode",
     "Identifier",
+    "Anonymous",
     "BooleanLiteral",
     "TrueNode",
     "FalseNode",

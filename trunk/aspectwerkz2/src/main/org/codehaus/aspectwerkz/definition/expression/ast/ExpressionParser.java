@@ -166,6 +166,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     case 1:
     case 3:
     case 4:
+    case ANONYMOUS:
     case IDENTIFIER:
       PrimaryExpression();
       break;
@@ -184,6 +185,9 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
       break;
     case IDENTIFIER:
       Identifier();
+      break;
+    case ANONYMOUS:
+      Anonymous();
       break;
     case 1:
       jj_consume_token(1);
@@ -208,6 +212,26 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
    jjtree.openNodeScope(jjtn000);Token t;
     try {
       t = jj_consume_token(IDENTIFIER);
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+       jjtn000.name = t.image;
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+  }
+
+/**
+ * 
+ */
+  final public void Anonymous() throws ParseException {
+ /*@bgen(jjtree) Anonymous */
+   Anonymous jjtn000 = new Anonymous(this, JJTANONYMOUS);
+   boolean jjtc000 = true;
+   jjtree.openNodeScope(jjtn000);Token t;
+    try {
+      t = jj_consume_token(ANONYMOUS);
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
        jjtn000.name = t.image;
@@ -292,18 +316,23 @@ void CflowPattern() :
     return false;
   }
 
-  final private boolean jj_3R_10() {
+  final private boolean jj_3R_14() {
+    if (jj_scan_token(ANONYMOUS)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_11() {
     if (jj_scan_token(1)) return true;
     return false;
   }
 
-  final private boolean jj_3R_9() {
-    if (jj_3R_12()) return true;
+  final private boolean jj_3R_10() {
+    if (jj_3R_14()) return true;
     return false;
   }
 
-  final private boolean jj_3R_14() {
-    if (jj_scan_token(4)) return true;
+  final private boolean jj_3R_9() {
+    if (jj_3R_13()) return true;
     return false;
   }
 
@@ -314,34 +343,27 @@ void CflowPattern() :
     jj_scanpos = xsp;
     if (jj_3R_9()) {
     jj_scanpos = xsp;
-    if (jj_3R_10()) return true;
+    if (jj_3R_10()) {
+    jj_scanpos = xsp;
+    if (jj_3R_11()) return true;
+    }
     }
     }
     return false;
   }
 
   final private boolean jj_3R_8() {
-    if (jj_3R_11()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_13() {
-    if (jj_scan_token(3)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_11() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_13()) {
-    jj_scanpos = xsp;
-    if (jj_3R_14()) return true;
-    }
+    if (jj_3R_12()) return true;
     return false;
   }
 
   final private boolean jj_3R_6() {
     if (jj_3R_7()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_16() {
+    if (jj_scan_token(4)) return true;
     return false;
   }
 
@@ -360,8 +382,23 @@ void CflowPattern() :
     return false;
   }
 
-  final private boolean jj_3R_12() {
+  final private boolean jj_3R_15() {
+    if (jj_scan_token(3)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_13() {
     if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_12() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_15()) {
+    jj_scanpos = xsp;
+    if (jj_3R_16()) return true;
+    }
     return false;
   }
 
@@ -386,7 +423,7 @@ void CflowPattern() :
       jj_la1_0();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x800,0x301a,0x201a,0x18,};
+      jj_la1_0 = new int[] {0x800,0x701a,0x601a,0x18,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[1];
   private boolean jj_rescan = false;
@@ -560,8 +597,8 @@ void CflowPattern() :
 
   public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[16];
-    for (int i = 0; i < 16; i++) {
+    boolean[] la1tokens = new boolean[21];
+    for (int i = 0; i < 21; i++) {
       la1tokens[i] = false;
     }
     if (jj_kind >= 0) {
@@ -577,7 +614,7 @@ void CflowPattern() :
         }
       }
     }
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 21; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
