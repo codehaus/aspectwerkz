@@ -9,6 +9,7 @@ package test.attribdef.aspect;
 
 import java.io.Serializable;
 import org.codehaus.aspectwerkz.attribdef.aspect.Aspect;
+import org.codehaus.aspectwerkz.attribdef.Pointcut;
 import test.attribdef.Introductions;
 
 /**
@@ -24,10 +25,18 @@ public class IntroductionTestAspect extends Aspect {
     /**
      * @Implements test.attribdef.ToBeIntroduced
      */
-     Serializable serializable;
+    Serializable serializable;
 
     /**
-     * @Introduce test.attribdef.ToBeIntroduced
+     * @Class test.attribdef.ToBeIntroduced
+     */
+    Pointcut pc;
+
+    /**
+     * Here we use an expression
+     * We could have avoided to use a [AT]Class Pointcut and use an anoymous expression here as
+     * [AT]Introduce test.attribdef.ToBeIntroduced
+     * @Introduce pc
      */
     private class MyImpl implements Serializable, Introductions {
         //TODO: allow naming of mixin instead of innerClass FQN
