@@ -75,8 +75,6 @@ public class DefinitionParserHelper {
 
     /**
      * Creates and adds a prepared pointcut definition to virtual aspect definition.
-     * <p/>
-     * TODO do we need to treat the PPC like a regular one, store in namespace etc.??   w
      *
      * @param name
      * @param expression
@@ -91,38 +89,8 @@ public class DefinitionParserHelper {
         final PointcutDefinition pointcutDef = new PointcutDefinition(expression);
         aspectDef.addPointcutDefinition(pointcutDef);
 
-//        String pointcutName = name;
-//        String pointcutCallSignature = null;
-
-        // only support annotated fields for now
-//        if (name.indexOf("(") > 0) {
-//            pointcutName = name.substring(0, name.indexOf("("));
-//            pointcutCallSignature = name.substring(name.indexOf("(") + 1, name.lastIndexOf(")"));
-//        }
-
         final PreparedPointcut preparedPointcut = new PreparedPointcut(name, expression);
         systemDef.addPreparedPointcut(preparedPointcut);
-
-        // do a lookup first to avoid infinite recursion when:
-        // <pointcut name="pc" ...> [will be registered as pc]
-        // <advice bind-to="pc" ...> [will be registered as pc and should not override previous one !]
-//        ExpressionNamespace namespace = ExpressionNamespace.getNamespace(aspectDef.getQualifiedName());
-//        ExpressionInfo info = namespace.getExpressionInfoOrNull(pointcutName);
-//        if (info == null) {
-//            info = new ExpressionInfo(expression, aspectDef.getQualifiedName());
-//            // extract the pointcut signature map
-//            if (pointcutCallSignature != null) {
-//                String[] parameters = Strings.splitString(pointcutCallSignature, ",");
-//                for (int i = 0; i < parameters.length; i++) {
-//                    String[] parameterInfo = Strings.splitString(
-//                            Strings.replaceSubString(parameters[i].trim(), "  ", " "),
-//                            " "
-//                    );
-//                    info.addArgument(parameterInfo[1], parameterInfo[0]);
-//                }
-//            }
-//        }
-//        ExpressionNamespace.getNamespace(aspectDef.getQualifiedName()).addExpressionInfo(pointcutName, info);
     }
 
     /**

@@ -89,21 +89,18 @@ public class DocumentParser {
      * @param document    the defintion as a document
      * @param systemDef   the system definition
      * @param aspectClass the aspect class
-     * @param loader      the class loader - should be null if no annotation should be parsed
      * @return the definition
      */
     public static AspectDefinition parseAspectDefinition(final Document document,
                                                          final SystemDefinition systemDef,
-                                                         final Class aspectClass,
-                                                         final ClassLoader loader) {
+                                                         final Class aspectClass) {
 
         final Element aspect = document.getRootElement();
-        System.out.println("document.asXML() = " + document.asXML());
 
         if (!aspect.getName().equals("aspect")) {
             throw new DefinitionException("XML definition for aspect is not well-formed: " + document.asXML());
         }
-        String aspectName = null;
+        String specialAspectName = null;
         String className = null;
         String deploymentModel = null;
         String containerClassName = null;
@@ -116,48 +113,27 @@ public class DocumentParser {
             } else if (name.equalsIgnoreCase("deployment-model")) {
                 deploymentModel = value;
             } else if (name.equalsIgnoreCase("name")) {
-                aspectName = value;
+                specialAspectName = value;
             } else if (name.equalsIgnoreCase("container")) {
                 containerClassName = value;
             }
         }
-        String aspectClassName = className;
-        if (aspectName == null) {
-            aspectName = aspectClassName;
+        if (specialAspectName == null) {
+            specialAspectName = className;
         }
 
         // create the aspect definition
-        AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectClassName, systemDef);
+        final AspectDefinition aspectDef = new AspectDefinition(specialAspectName, className, systemDef);
+        aspectDef.setContainerClassName(containerClassName);
+        aspectDef.setDeploymentModel(deploymentModel);
 
         parsePointcutElements(aspect, aspectDef); //needed to support undefined named pointcut in Attributes AW-152
-
-        ClassInfo aspectClassInfo = null;
-        try {
-            aspectClassInfo = JavaClassInfo.getClassInfo(aspectClass);
-        } catch (Exception e) {
-            throw new DefinitionException(
-                    "Warning: could not load aspect "
-                    + aspectClassName
-                    + " from "
-                    + loader
-                    + "due to: "
-                    + e.toString()
-            );
-        }
-        if (loader != null) {
-            AspectAnnotationParser.parse(aspectClassInfo, aspectDef, loader);
-        }
-
-        // XML definition settings always overrides attribute definition settings
-        aspectDef.setDeploymentModel(deploymentModel);
-        aspectDef.setName(aspectName);
-        aspectDef.setContainerClassName(containerClassName);
 
         // parse the aspect info
         parseParameterElements(aspect, systemDef, aspectDef);
         parsePointcutElements(aspect, aspectDef); //reparse pc for XML override (AW-152)
-        parseAdviceElements(aspect, aspectDef, aspectClassInfo);
-        parseIntroductionElements(aspect, aspectDef, "", loader);
+        parseAdviceElements(aspect, aspectDef, JavaClassInfo.getClassInfo(aspectClass));
+        parseIntroductionElements(aspect, aspectDef, "", aspectClass.getClassLoader());
 
         // register introduction of aspect into the system
         for (Iterator mixins = aspectDef.getInterfaceIntroductionDefinitions().iterator(); mixins.hasNext();) {
@@ -530,14 +506,15 @@ public class DocumentParser {
                 }
 
                 // default name = FQN
+                final String fullClassName = packageName + klass;
                 if ((name == null) || (name.length() <= 0)) {
-                    name = packageName + klass;
+                    name = fullClassName;
                 }
 
                 // load the mixinClassInfo to determine if it is a pure interface introduction
                 ClassInfo mixinClassInfo;
                 try {
-                    mixinClassInfo = AsmClassInfo.getClassInfo(packageName + klass, loader);
+                    mixinClassInfo = AsmClassInfo.getClassInfo(fullClassName, loader);
                 } catch (Exception e) {
                     throw new DefinitionException(
                             "could not find mixinClassInfo implementation: "
@@ -551,8 +528,10 @@ public class DocumentParser {
                 // pure interface introduction
                 if (mixinClassInfo.isInterface()) {
                     DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
-                            bindTo, name, packageName
-                                          + klass, aspectDef
+                            bindTo,
+                            name,
+                            fullClassName,
+                            aspectDef
                     );
 
                     // handles nested "bind-to" elements
@@ -562,7 +541,7 @@ public class DocumentParser {
                         DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
                                 pointcut,
                                 name,
-                                packageName + klass,
+                                fullClassName,
                                 aspectDef
                         );
                     }
