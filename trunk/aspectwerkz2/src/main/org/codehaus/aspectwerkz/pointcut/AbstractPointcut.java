@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
 
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.NameIndexTuple;
@@ -104,6 +105,14 @@ public abstract class AbstractPointcut implements Serializable {
         if (advice == null || advice.trim().length() == 0) {
             throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
         }
+        // system reinitialization can lead to redundancy
+        // TODO: make the HotSwap with def slower
+        for (int i = 0; i < m_aroundAdviceNames.length; i++) {
+            if (advice.equals(m_aroundAdviceNames[i])) {
+                return;
+            }
+        }
+
         synchronized (m_aroundAdviceNames) {
             synchronized (m_aroundAdviceIndexes) {
                 final String[] tmp = new String[m_aroundAdviceNames.length + 1];

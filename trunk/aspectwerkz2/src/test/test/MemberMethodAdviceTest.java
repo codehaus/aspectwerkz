@@ -10,6 +10,7 @@ package test;
 import junit.framework.TestCase;
 
 import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.WeavedTestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>

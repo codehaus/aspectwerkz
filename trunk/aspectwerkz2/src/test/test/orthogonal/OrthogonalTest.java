@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.SystemLoader;
 import test.Loggable;
 import test.MemberMethodAdviceTest;
-import test.WeavedTestCase;
+import org.codehaus.aspectwerkz.WeavedTestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>

@@ -679,7 +679,8 @@ public class SystemDefinition {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
-        return true;
+        //return true;
+        return false;//TODO AVAOSD: FIX FOR AOSD
     }
 
     /**

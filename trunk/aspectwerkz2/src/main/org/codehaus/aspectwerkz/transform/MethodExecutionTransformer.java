@@ -330,11 +330,11 @@ public class MethodExecutionTransformer implements Transformer {
         if (!definition.inIncludePackage(className)) {
             return true;
         }
-//        if (definition.inPreparePackage(className) && !isActivatePhase) {
-//            return true; //TODO REMOVE
-//        }
         if (definition.hasExecutionPointcut(classMetaData)) {
             return false;
+        }
+        if (definition.inPreparePackage(className)) {
+            return false;//no early filtering for prepared Class to allow RuW
         }
         return true;
     }
@@ -428,6 +428,10 @@ class MethodSequenceTuple {
 
     public int getStatus() {
         return m_status;
+    }
+
+    public String toString() {
+        return m_method.getName() + " : " + m_status;
     }
 
 }

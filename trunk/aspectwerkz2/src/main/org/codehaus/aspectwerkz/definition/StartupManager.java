@@ -106,17 +106,19 @@ public class StartupManager {
      * @param definition the definition for the system
      */
     public static void reinitializeSystem(final String uuid, final SystemDefinition definition) {
-        if (uuid == null) {
-            throw new IllegalArgumentException("uuid can not be null");
-        }
-        if (definition == null) {
-            throw new IllegalArgumentException("definition can not be null");
-        }
+        if (! s_initialized) {
+            initializeSystem(uuid, definition);
+        } else {
+            if (uuid == null) {
+                throw new IllegalArgumentException("uuid can not be null");
+            }
+            if (definition == null) {
+                throw new IllegalArgumentException("definition can not be null");
+            }
 
-        s_initialized = true;
-
-        registerAspects(uuid, definition);
-        registerPointcuts(uuid, definition);
+            //registerAspects(uuid, definition);
+            registerPointcuts(uuid, definition);
+        }
     }
 
     /**
@@ -253,6 +255,7 @@ public class StartupManager {
                         pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
                         pointcutManager.addExecutionPointcut(pointcut);
                     }
+                    //TODO : redundancy
                     pointcut.addAroundAdvice(adviceDef.getName());
                 }
             }

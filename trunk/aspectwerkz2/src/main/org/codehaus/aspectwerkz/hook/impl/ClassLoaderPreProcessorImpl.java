@@ -57,6 +57,9 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
                 }
             };
             klass.instrument(defineClass0Pre);
+//
+//            pool.writeFile("java.lang.ClassLoader", "___");
+//            System.out.println("========DUMPED");
 
             return pool.write("java.lang.ClassLoader");
         }

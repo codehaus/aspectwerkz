@@ -48,6 +48,7 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
             Method method = methods[i];
             methodList.add(createMethodMetaData(method));
         }
+        classMetaData.setMethods(methodList);
 
         // get the constructors (<init> methods)
         List constructorList = new ArrayList();

@@ -138,7 +138,8 @@ Attributes:
 <!ELEMENT aspect (
     param*,
     pointcut*,
-    advice*
+    advice*,
+    introduction*
  )>
 <!ATTLIST aspect
 name CDATA #IMPLIED
@@ -194,4 +195,24 @@ Allow to bind an advice several times instead of using an OR expression
 <!ELEMENT bind-to EMPTY>
 <!ATTLIST bind-to
 pointcut CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+introduction
+*********************************************************************************************************************************
+Attributes:
+    class: mixin class, introduced interfaces are looked up from it, unless interface is specified
+    interface: if specified, introduce only this interface - if class is null, it is a interface only introduction
+	name: mixin name
+    bind-to: pointcut expression (only call(..) makes sense)
+NOTE: at least one of class / introduction should be specified
+******************************************************************************************************************************-->
+<!ELEMENT introduction (
+    bind-to*
+)>
+<!ATTLIST introduction
+class CDATA #IMPLIED
+interface CDATA #IMPLIED
+name CDATA #IMPLIED
+deployment-model (perJVM | perClass | perInstance | perThread) #IMPLIED
+bind-to CDATA #IMPLIED
 >

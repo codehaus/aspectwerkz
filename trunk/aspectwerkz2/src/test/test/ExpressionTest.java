@@ -243,8 +243,8 @@ public class ExpressionTest extends TestCase {
     public void testOneLevel_CALL_OR() {
         try {
             ExpressionNamespace space = ExpressionNamespace.getExpressionNamespace();
-            space.registerExpression("*->* test.ExpressionTest.set(..)", "", "pc1", PointcutType.CALL);
-            space.registerExpression("*->* test.ExpressionTest.get(..)", "", "pc2", PointcutType.CALL);
+            space.registerExpression("foo.Bla->* test.ExpressionTest.set(..)", "", "pc1", PointcutType.CALL);
+            space.registerExpression("foo.Bla->* test.ExpressionTest.get(..)", "", "pc2", PointcutType.CALL);
 
             Expression root = space.createExpression("pc1 || pc2");
             Expression rootAnonymous = space.createExpression("pc1 || call(*->* test.ExpressionTest.get(..))");
