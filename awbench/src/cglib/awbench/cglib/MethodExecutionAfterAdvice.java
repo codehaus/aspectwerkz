@@ -5,18 +5,21 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package awbench;
+package awbench.cglib;
+
+import java.lang.reflect.Method;
+
+import awbench.Run;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 
 /**
- * Interface for weaved class, to allow some warmup phase for JIT or aspectOf etc 
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface Measurement {
-
-    /**
-     * Some warm-up code
-     * Note: Might need to invoke it once per instance to warmup some perInstance based test
-     */
-    public void warmup();
+public class MethodExecutionAfterAdvice implements MethodInterceptor {
+    public Object intercept(Object target, Method m, Object[] args, MethodProxy proxy) throws Throwable {
+        Object result = proxy.invokeSuper(target, args);
+        Run.ADVICE_HIT++;
+        return result;
+    }
 }
