@@ -626,13 +626,20 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      * Creates the custom proceed methods.
      */
     private void createCustomProceedMethods() {
+        Set addedMethodSignatures = new HashSet();
         for (Iterator it = m_customProceedMethods.iterator(); it.hasNext();) {
             MethodInfo methodInfo = (MethodInfo) it.next();
+            final String desc = methodInfo.getSignature();
+
+            if (addedMethodSignatures.contains(desc)) {
+                continue;
+            }
+            addedMethodSignatures.add(desc);
 
             CodeVisitor cv = m_cw.visitMethod(
                     ACC_PUBLIC | ACC_FINAL,
                     PROCEED_METHOD_NAME,
-                    methodInfo.getSignature(),
+                    desc,
                     new String[]{
                         THROWABLE_CLASS_NAME
                     },
