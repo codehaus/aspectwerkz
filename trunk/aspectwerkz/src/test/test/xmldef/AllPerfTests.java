@@ -23,7 +23,8 @@ public class AllPerfTests extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("All perf tests");
 
-        suite.addTest(asLoadTest(test.xmldef.clapp.CustomClassLoaderTest.class, 2, 1));
+        suite.addTest(asLoadTest(test.xmldef.clapp.CustomClassLoaderTest.class, 2, 1));// concurent system initialization (see AW-98)
+        suite.addTest(asLoadTest(test.xmldef.clapp.CustomClassLoaderTest.class, 10, 10));// concurent system use (see AW-98 concurrent modification issue)
         return suite;
     }
 
