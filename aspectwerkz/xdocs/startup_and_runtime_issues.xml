@@ -57,7 +57,10 @@
                     command, <code>AspectWerkz</code> will intercept the normal
                     class loading mechanism and be able to transform classes
                     loaded by <b>any</b> class loader except the bootstrap class
-                    loader.
+                    loader.<br/>
+                    The command line tool is one of the several ways to enable on the fly weaving.
+                    For a complete description read the <a href="online.html">online architecture</a> section.<br/>
+                    The command line tool also allows for offline post-processing of classes.
                 </p>
                 <p>
                     The <code>aspectwerkz</code> program assumes that both the
@@ -77,19 +80,27 @@
                         </li><br/>
                         <li>
                             Post-process all class files in a specific directory
-                            (recursively):<br/>
-                            <code>aspectwerkz -offline &lt;definition file&gt; [-cp &lt;classpath&gt;]* &lt;classes to transform&gt;</code>
+                            (recursively), jar or zip file:<br/>
+                            <code>aspectwerkz -offline &lt;definition file&gt; [-verbose] [-verify] [-haltOnError] [-cp &lt;classpath&gt;]* &lt;target classes to transform&gt;+</code>
                             <p/>
                             The 'definition file' option is the path to the
                             definition file.
                             <p/>
+                            Turns on <code>-verbose</code> to follow each step of the processing.
+                            <p/>
+                            Turns on <code>-verify</code> to verify all weaved class according to the Java Class Format specification. Note that this can slow down the processing.
+                            <p/>
+                            When an error occurs, all classes of the current target are restored to their initilal state and
+                            the processing goes on with the next target unless -haltOnError was set.
+                            In this case the processing stops. Else a complete status about successfull and failed targets is printed at the end of all target processing.
+                            <p/>
                             The 'classpath' option is the classpath needed for
                             compilation but not to be transformed (eg
-                            <code>-cp myAspects.jar;servletAPI.jar</code>)
+                            <code>-cp myAspects.jar;servletAPI.jar</code>). It is possible to use several <code>-cp &lt;classpath&gt;</code> option instead of doing concatenation.
                             <p/>
-                            The 'classes to transform' option specifies the classes to transform.
-                            The class_path option is the path to the root
-                            directory of the classes you want to transform.
+                            The 'target classes to transform' option specifies the classes to transform.
+                            It must the path to the root directory of the classes you want to transform, or a jar file or a zip file.
+                            Several targets can be passed in one call (eg <code>toTransform.jar /classes otherToTransform.jar</code>).
                             <p/>
                             Note: when you then are running the application
                             (without using the <code>aspectwerkz</code> command)
@@ -106,8 +117,8 @@
                     any arguments to get a more detailed usage description.
                 </p>
                 <p>
-                    In all three cases you a way to feed the system with your
-                    definition (compiled or not). See the
+                    In all three cases you have to feed the system with your
+                    definition. See the
                     <a href="#Loading the definition">Loading the definition</a>
                     section for a detailed description on how to do this.
                 </p>
@@ -124,8 +135,9 @@
                 </p>
                 <p>
                     Please not that this Ant task uses <code>exec</code>
-                    and is a bit shaky. I have not had time to rewrite it
-                    yet.
+                    and is using <code>bin/aspectwerkz</code>. It is provided in 0.8 for
+                    backward compatibility with 0.7.x and will be refactored in the next release.
+                    It is possible to use directly the <i>main class</i> <code>org.codehaus.aspectwerkz.compiler.AspectWerkzC</code>.
                 </p>
                 <p>
                     In order to use the Ant task you have to first define the

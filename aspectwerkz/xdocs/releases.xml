@@ -11,11 +11,17 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 0.7.4.
+                    The latest official release is 0.8.
                 </p>
                 <p>
                     Download:
                     <ul>
+                        <li>
+                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.8.zip?download">0.8 in zip format.</a>
+                        </li>
+                        <li>
+                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.8.tar.gz?download">0.8 in tar.gz format.</a>
+                        </li>
                         <li>
                             <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.4.zip?download">0.7.4 in zip format.</a>
                         </li>
@@ -34,6 +40,27 @@
             </subsection>
 
             <section name="Release notes">
+
+                <subsection name="New features and changes in release 0.8.x">
+                    <ul>
+                        <li>
+                            java 1.3 support.
+                        </li>
+                        <li>
+                            New online architecture, with several options and java 1.3 support.
+                        </li>
+                        <li>
+                            Offline compiler refactored. Now support rollback on error facility. Note that the <code>bin/aspectwerkz -offline</code> must now
+                            be invocated with the definition file as first argument.
+                        </li>
+                        <li>
+                            Documentation updated and reorganized.
+                        </li>
+                        <li>
+                            Released under BSD license.
+                        </li>
+                    </ul>
+                </subsection>
 
                 <subsection name="New features and changes in release 0.7.x">
                     <ul>
