@@ -12,6 +12,10 @@ package test.thistarget;
  */
 public class Target {
 
+    public Target() {
+        TargetTest.log("Target");
+    }
+
     public void target() {
         TargetTest.log("Target");
     }

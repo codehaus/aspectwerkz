@@ -12,6 +12,11 @@ package test.thistarget;
  */
 public class TargetSuper extends SuperTarget {
 
+    public TargetSuper() {
+        super();
+        TargetTest.log("TargetSuper");
+    }
+
     public void targetAbstract() {
         TargetTest.log("TargetSuperA");
     }

@@ -525,6 +525,14 @@ public class SystemDefinition {
             for (Iterator it2 = aspectDef.getAdviceDefinitions().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 ExpressionVisitor expression = adviceDef.getExpressionInfo().getExpression();
+
+//                if (ctx.getReflectionInfo() instanceof ConstructorInfo) {
+//                    System.out.println("? match: " + expression.toString() + " @ " + aspectDef.getQualifiedName() + "/" + adviceDef.getName());
+//                    System.out.println("\tfor     " + ctx.getReflectionInfo().toString());
+//                    System.out.println("\twithin  " + ctx.getWithinReflectionInfo().toString());
+//                    System.out.println("\ttype    " + ctx.getPointcutType().toString());
+//                }
+
                 if (expression.match(ctx)) {
                     if (AspectWerkzPreProcessor.VERBOSE) {
                         System.out.println("match: " + expression.toString() + " @ " + aspectDef.getQualifiedName() + "/" + adviceDef.getName());

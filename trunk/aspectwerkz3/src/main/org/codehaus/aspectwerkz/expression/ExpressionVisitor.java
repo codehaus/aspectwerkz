@@ -301,10 +301,12 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
         ExpressionContext context = (ExpressionContext) data;
         ReflectionInfo info = context.getReflectionInfo();
-        if (info instanceof ConstructorInfo) {
-            // target(..) does not match for constructors
-            return Boolean.FALSE;
-        }
+
+//        //TODO - seems to be the case for AJ - not intuitive
+//        if (info instanceof ConstructorInfo) {
+//            // target(..) does not match for constructors
+//            return Boolean.FALSE;
+//        }
         if (info instanceof MemberInfo) {
             // if method/field is static, target(..) is evaluated to false
             if (Modifier.isStatic(((MemberInfo) info).getModifiers())) {
