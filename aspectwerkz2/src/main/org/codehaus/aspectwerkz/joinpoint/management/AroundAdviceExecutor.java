@@ -8,7 +8,7 @@
 package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.IndexTuple;
-import org.codehaus.aspectwerkz.System;
+import org.codehaus.aspectwerkz.RuntimeSystem;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 
 /**
@@ -33,7 +33,7 @@ public class AroundAdviceExecutor {
     /**
      * The aspect system.
      */
-    private final System m_system;
+    private final RuntimeSystem m_system;
 
     /**
      * The aspect manager.
@@ -54,7 +54,7 @@ public class AroundAdviceExecutor {
      */
     public AroundAdviceExecutor(
             final IndexTuple[] adviceIndexes,
-            final System system,
+            final RuntimeSystem system,
             final int joinPointType) {
         m_adviceIndexes = adviceIndexes;
         m_system = system;

@@ -20,7 +20,7 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.*;
-import org.codehaus.aspectwerkz.System;
+import org.codehaus.aspectwerkz.RuntimeSystem;
 
 /**
  * Manages the cflow pointcuts.
@@ -68,7 +68,7 @@ public class CFlowSystemAspect {
     /**
      * Reference to the system.
      */
-    private System m_system = null;
+    private RuntimeSystem m_system = null;
 
     static {
         // set the method flow indexes
