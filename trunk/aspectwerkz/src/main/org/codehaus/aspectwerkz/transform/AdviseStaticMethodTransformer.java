@@ -773,108 +773,139 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
 
             // cast the result and return it, if the return type is a
             // primitive type, retrieve it from the wrapped object first
+            // unless the return object is null (AW-100)
             if (returnType instanceof BasicType) {
-                if (returnType.equals(Type.LONG)) {
-                    il.append(factory.createCheckCast(
-                            new ObjectType("java.lang.Long")
-                    ));
-                    il.append(factory.createInvoke(
-                            "java.lang.Long",
-                            "longValue",
-                            Type.LONG,
-                            Type.NO_ARGS,
-                            Constants.INVOKEVIRTUAL
-                    ));
-                }
-                else if (returnType.equals(Type.INT)) {
-                    il.append(factory.createCheckCast(
-                            new ObjectType("java.lang.Integer")
-                    ));
-                    il.append(factory.createInvoke(
-                            "java.lang.Integer",
-                            "intValue",
-                            Type.INT,
-                            Type.NO_ARGS,
-                            Constants.INVOKEVIRTUAL
-                    ));
-                }
-                else if (returnType.equals(Type.SHORT)) {
-                    il.append(factory.createCheckCast(
-                            new ObjectType("java.lang.Short")
-                    ));
-                    il.append(factory.createInvoke(
-                            "java.lang.Short",
-                            "shortValue",
-                            Type.SHORT,
-                            Type.NO_ARGS,
-                            Constants.INVOKEVIRTUAL
-                    ));
-                }
-                else if (returnType.equals(Type.DOUBLE)) {
-                    il.append(factory.createCheckCast(
-                            new ObjectType("java.lang.Double")
-                    ));
-                    il.append(factory.createInvoke(
-                            "java.lang.Double",
-                            "doubleValue",
-                            Type.DOUBLE,
-                            Type.NO_ARGS,
-                            Constants.INVOKEVIRTUAL
-                    ));
-                }
-                else if (returnType.equals(Type.FLOAT)) {
-                    il.append(factory.createCheckCast(
-                            new ObjectType("java.lang.Float")
-                    ));
-                    il.append(factory.createInvoke(
-                            "java.lang.Float",
-                            "floatValue",
-                            Type.FLOAT,
-                            Type.NO_ARGS,
-                            Constants.INVOKEVIRTUAL
-                    ));
-                }
-                else if (returnType.equals(Type.CHAR)) {
-                    il.append(factory.createCheckCast(
-                            new ObjectType("java.lang.Character")
-                    ));
-                    il.append(factory.createInvoke(
-                            "java.lang.Character",
-                            "charValue",
-                            Type.CHAR,
-                            Type.NO_ARGS,
-                            Constants.INVOKEVIRTUAL
-                    ));
-                }
-                else if (returnType.equals(Type.BYTE)) {
-                    il.append(factory.createCheckCast(
-                            new ObjectType("java.lang.Byte")
-                    ));
-                    il.append(factory.createInvoke(
-                            "java.lang.Byte",
-                            "byteValue",
-                            Type.BYTE,
-                            Type.NO_ARGS,
-                            Constants.INVOKEVIRTUAL
-                    ));
-                }
-                else if (returnType.equals(Type.BOOLEAN)) {
-                    il.append(factory.createCheckCast(
-                            new ObjectType("java.lang.Boolean")
-                    ));
-                    il.append(factory.createInvoke(
-                            "java.lang.Boolean",
-                            "booleanValue",
-                            Type.BOOLEAN,
-                            Type.NO_ARGS,
-                            Constants.INVOKEVIRTUAL
-                    ));
-                }
-                else if (returnType.equals(Type.VOID)) {
-                    ;// skip
-                }
-                else {
-                    throw new RuntimeException("unknown return type: " + returnType);
+                if (returnType.equals(Type.VOID)) {
+                    ;//skip
+                } else {
+                    BranchInstruction ifNullBranch = factory.createBranchInstruction(Constants.IFNONNULL, null);
+                    InstructionHandle elseBranch = null;
+                    il.append(ifNullBranch);
+                    if (returnType.equals(Type.LONG)) {
+                        il.append(new PUSH(cp, 0L));
+                        il.append(factory.createReturn(returnType));
+                        elseBranch = il.append(factory.createLoad(Type.OBJECT, idxParam));
+                        il.append(factory.createCheckCast(
+                                new ObjectType("java.lang.Long")
+                        ));
+                        il.append(factory.createInvoke(
+                                "java.lang.Long",
+                                "longValue",
+                                Type.LONG,
+                                Type.NO_ARGS,
+                                Constants.INVOKEVIRTUAL
+                        ));
+                    }
+                    else if (returnType.equals(Type.INT)) {
+                        il.append(new PUSH(cp, 0));
+                        il.append(factory.createReturn(returnType));
+                        elseBranch = il.append(factory.createLoad(Type.OBJECT, idxParam));
+                        il.append(factory.createCheckCast(
+                                new ObjectType("java.lang.Integer")
+                        ));
+                        il.append(factory.createInvoke(
+                                "java.lang.Integer",
+                                "intValue",
+                                Type.INT,
+                                Type.NO_ARGS,
+                                Constants.INVOKEVIRTUAL
+                        ));
+                    }
+                    else if (returnType.equals(Type.SHORT)) {
+                        il.append(new PUSH(cp, (short)0));
+                        il.append(factory.createReturn(returnType));
+                        elseBranch = il.append(factory.createLoad(Type.OBJECT, idxParam));
+                        il.append(factory.createCheckCast(
+                                new ObjectType("java.lang.Short")
+                        ));
+                        il.append(factory.createInvoke(
+                                "java.lang.Short",
+                                "shortValue",
+                                Type.SHORT,
+                                Type.NO_ARGS,
+                                Constants.INVOKEVIRTUAL
+                        ));
+                    }
+                    else if (returnType.equals(Type.DOUBLE)) {
+                        il.append(new PUSH(cp, 0.0d));
+                        il.append(factory.createReturn(returnType));
+                        elseBranch = il.append(factory.createLoad(Type.OBJECT, idxParam));
+                        il.append(factory.createCheckCast(
+                                new ObjectType("java.lang.Double")
+                        ));
+                        il.append(factory.createInvoke(
+                                "java.lang.Double",
+                                "doubleValue",
+                                Type.DOUBLE,
+                                Type.NO_ARGS,
+                                Constants.INVOKEVIRTUAL
+                        ));
+                    }
+                    else if (returnType.equals(Type.FLOAT)) {
+                        il.append(new PUSH(cp, 0.0f));
+                        il.append(factory.createReturn(returnType));
+                        elseBranch = il.append(factory.createLoad(Type.OBJECT, idxParam));
+                        il.append(factory.createCheckCast(
+                                new ObjectType("java.lang.Float")
+                        ));
+                        il.append(factory.createInvoke(
+                                "java.lang.Float",
+                                "floatValue",
+                                Type.FLOAT,
+                                Type.NO_ARGS,
+                                Constants.INVOKEVIRTUAL
+                        ));
+                    }
+                    else if (returnType.equals(Type.CHAR)) {
+                        il.append(new PUSH(cp, '\u0000'));
+                        il.append(factory.createReturn(returnType));
+                        elseBranch = il.append(factory.createLoad(Type.OBJECT, idxParam));
+                        il.append(factory.createCheckCast(
+                                new ObjectType("java.lang.Character")
+                        ));
+                        il.append(factory.createInvoke(
+                                "java.lang.Character",
+                                "charValue",
+                                Type.CHAR,
+                                Type.NO_ARGS,
+                                Constants.INVOKEVIRTUAL
+                        ));
+                    }
+                    else if (returnType.equals(Type.BYTE)) {
+                        il.append(new PUSH(cp, (byte)0));
+                        il.append(factory.createReturn(returnType));
+                        elseBranch = il.append(factory.createLoad(Type.OBJECT, idxParam));
+                        il.append(factory.createCheckCast(
+                                new ObjectType("java.lang.Byte")
+                        ));
+                        il.append(factory.createInvoke(
+                                "java.lang.Byte",
+                                "byteValue",
+                                Type.BYTE,
+                                Type.NO_ARGS,
+                                Constants.INVOKEVIRTUAL
+                        ));
+                    }
+                    else if (returnType.equals(Type.BOOLEAN)) {
+                        il.append(new PUSH(cp, false));
+                        il.append(factory.createReturn(returnType));
+                        elseBranch = il.append(factory.createLoad(Type.OBJECT, idxParam));
+                        il.append(factory.createCheckCast(
+                                new ObjectType("java.lang.Boolean")
+                        ));
+                        il.append(factory.createInvoke(
+                                "java.lang.Boolean",
+                                "booleanValue",
+                                Type.BOOLEAN,
+                                Type.NO_ARGS,
+                                Constants.INVOKEVIRTUAL
+                        ));
+                    }
+                    else {
+                        throw new RuntimeException("unknown return type: " + returnType);
+                    }
+                    // return block in the else branch
+                    ifNullBranch.setTarget(elseBranch);
                 }
             }
             else {

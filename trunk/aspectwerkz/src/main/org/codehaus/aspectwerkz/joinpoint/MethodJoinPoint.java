@@ -317,50 +317,11 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * advice of the last pointcut has been invoked, the original method is
      * invoked. Is called recursively.
      *
-     * @TODO the null primitive solution is slow, since these checks occurs at every method invocation. needs to be impl. in another way. it makes each call around 2-3 times slower.
-     *
      * @return the result from the next invocation
      * @throws Throwable
      */
     public Object proceed() throws Throwable {
-        Object result = m_controller.proceed(this);
-
-        // if the result is null and the return type is a primitive set it to the
-        // default value for the primitive and wrap it in its the matching object type
-//        if (result != null) {
-//            return result;
-//        }
-//        Class returnType = getReturnType();
-//        if (Void.class.equals(returnType)) {
-//            return result;
-//        }
-//        if (returnType.isPrimitive()) {
-//            if (int.class.equals(returnType)) {
-//                return Util.INTEGER_DEFAULT_VALUE;
-//            }
-//            else if (float.class.equals(returnType)) {
-//                return Util.FLOAT_DEFAULT_VALUE;
-//            }
-//            else if (double.class.equals(returnType)) {
-//                return Util.DOUBLE_DEFAULT_VALUE;
-//            }
-//            else if (byte.class.equals(returnType)) {
-//                return Util.BYTE_DEFAULT_VALUE;
-//            }
-//            else if (long.class.equals(returnType)) {
-//                return Util.LONG_DEFAULT_VALUE;
-//            }
-//            else if (short.class.equals(returnType)) {
-//                return Util.SHORT_DEFAULT_VALUE;
-//            }
-//            else if (boolean.class.equals(returnType)) {
-//                return Util.BOOLEAN_DEFAULT_VALUE;
-//            }
-//            else if (char.class.equals(returnType)) {
-//                return Util.CHARACTER_DEFAULT_VALUE;
-//            }
-//        }
-        return result;
+        return m_controller.proceed(this);
     }
 
     /**
