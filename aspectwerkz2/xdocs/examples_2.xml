@@ -172,27 +172,27 @@ public class LoggingAspect extends AbstractLoggingAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Pattern execution(* examples.attribdef.logging.Target.toLog1(..))
+     * @Expression execution(* examples.attribdef.logging.Target.toLog1(..))
      */
     Pointcut methodsToLog1;
 
     /**
-     * @Pattern execution(* examples.attribdef.logging.Target.toLog2(..))
+     * @Expression execution(* examples.attribdef.logging.Target.toLog2(..))
      */
     Pointcut methodsToLog2;
 
     /**
-     * @Pattern execution(* examples.attribdef.logging.Target.toLog3(..))
+     * @Expression execution(* examples.attribdef.logging.Target.toLog3(..))
      */
     Pointcut methodsToLog3;
 
     /**
-     * @Pattern get(int examples.attribdef.logging.Target.m_*)
+     * @Expression get(int examples.attribdef.logging.Target.m_*)
      */
     Pointcut logGet;
 
     /**
-     * @Pattern set(int examples.attribdef.logging.Target.m_*)
+     * @Expression set(int examples.attribdef.logging.Target.m_*)
      */
     Pointcut logSet;
 }
@@ -231,7 +231,7 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
     /**
      * Here we have an anonymous pointcut instead of using [AT]Class metadata at Pointcut fields level.
      *
-     * @Introduce examples.introduction.Target deploymentModel=perInstance
+     * @Introduce class(examples.introduction.Target) deploymentModel=perInstance
      */
     public static class Mixin extends MyImpl implements Serializable {
         public String sayHello2() {
