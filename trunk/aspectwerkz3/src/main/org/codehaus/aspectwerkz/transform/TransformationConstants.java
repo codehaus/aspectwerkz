@@ -135,10 +135,9 @@ public interface TransformationConstants {
     public static final byte EMPTY_WRAPPER_ATTRIBUTE_VALUE_EMPTY = Byte.MIN_VALUE;
     public static final byte EMPTY_WRAPPER_ATTRIBUTE_VALUE_NOTEMPTY = Byte.MAX_VALUE;
 
-    // JoinPointCompiler stuff
-
-    public static final boolean STATIC_JOIN_POINT = true;
-    public static final boolean NON_STATIC_JOIN_POINT = false;
+    // optim flags
+    public static final boolean OPTIMIZED_JOIN_POINT = true;
+    public static final boolean NON_OPTIMIZED_JOIN_POINT = false;
 
     // static and member field names
     public static final String SIGNATURE_FIELD_NAME = "SIGNATURE";
