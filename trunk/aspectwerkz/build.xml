@@ -27,7 +27,7 @@
     <!-- =================================================== -->
     <target name="aspectwerkz:init">
         <property name="name" value="aspectwerkz"/>
-        <property name="version" value="0.8.1"/>
+        <property name="version" value="0.8"/>
         <property name="basedir" value="."/>
         <property name="src.dir" value="${basedir}/src"/>
         <property name="test.src.dir" value="${basedir}/src/test"/>
@@ -91,17 +91,10 @@
     <!-- ============================================================== -->
     <!-- compilation targets -->
     <!-- ============================================================== -->
-    <target name="aspectwerkz:compile" depends="aspectwerkz:init, java:compile">
-        <antcall target="aspectwerkz:jar"/>
-        <antcall target="aspectwerkz:extensions:compile"/>
-        <antcall target="aspectwerkz:samples:compile"/>
-        <antcall target="aspectwerkz:samples2:compile"/>
-    </target>
-
-    <target name="java:compile" depends="aspectwerkz:init">
+    <target name="aspectwerkz:compile" depends="aspectwerkz:init">
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${build.core.dir}"/>
-        <javac destdir="${build.core.dir}" debug="on">
+        <javac destdir="${build.core.dir}" debug="off">
             <src path="${src.dir}/main"/>
             <classpath>
                 <pathelement path="${java.class.path}"/>
@@ -110,23 +103,25 @@
                 </fileset>
             </classpath>
         </javac>
-        <mkdir dir="${build.test.dir}"/>
-        <javac destdir="${build.test.dir}" debug="off">
-            <src path="${test.src.dir}"/>
-            <classpath>
-                <pathelement path="${java.class.path}"/>
-                <pathelement path="${build.core.dir}"/>
-                <fileset dir="${lib.dir}">
-                    <include name="*.jar"/>
-                </fileset>
-            </classpath>
-        </javac>
+<!--        <mkdir dir="${build.test.dir}"/>-->
+<!--        <javac destdir="${build.test.dir}" debug="off">-->
+<!--            <src path="${test.src.dir}"/>-->
+<!--            <classpath>-->
+<!--                <pathelement path="${java.class.path}"/>-->
+<!--                <pathelement path="${build.core.dir}"/>-->
+<!--                <fileset dir="${lib.dir}">-->
+<!--                    <include name="*.jar"/>-->
+<!--                </fileset>-->
+<!--            </classpath>-->
+<!--        </javac>-->
+        <antcall target="aspectwerkz:extensions:compile"/>
+        <antcall target="aspectwerkz:samples:compile"/>
     </target>
 
     <!-- ============================================================== -->
     <!-- create distribution -->
     <!-- ============================================================== -->
-    <target name="aspectwerkz:jar" depends="java:compile">
+    <target name="aspectwerkz:jar" depends="aspectwerkz:compile">
         <mkdir dir="${dist.dir}"/>
         <copy file="${src.dir}/main/aspectwerkz.dtd" todir="${build.core.dir}"/>
         <jar destfile="${build.dir}/aspectwerkz-${version}.jar">
@@ -251,7 +246,7 @@
     <target name="aspectwerkz:test"
         depends="aspectwerkz:init, aspectwerkz:jar">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.xmldef.AllTests"/>
+            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.AllTests"/>
         </exec>
     </target>
 
@@ -261,7 +256,7 @@
     <target name="aspectwerkz:test:perf"
         depends="aspectwerkz:init, aspectwerkz:jar">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.xmldef.AllPerfTests"/>
+            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.AllPerfTests"/>
         </exec>
     </target>
 
@@ -273,7 +268,7 @@
     <target name="aspectwerkz:test:clapp"
         depends="aspectwerkz:init, aspectwerkz:compile">
         <!-- run the application in regular mode -->
-        <java classname="test.xmldef.clapp.CrazyClassLoaderApp" fork="true">
+        <java classname="test.clapp.CrazyClassLoaderApp" fork="true">
             <classpath>
                 <pathelement path="${test.classes}"/>
             </classpath>
@@ -281,7 +276,7 @@
         </java>
         <!-- run the application thru AspectWerkz -->
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -DDummyClass=${test.classes} test.xmldef.clapp.CrazyClassLoaderApp"/>
+            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -DDummyClass=${test.classes} test.clapp.CrazyClassLoaderApp"/>
         </exec>
     </target>
 
@@ -309,7 +304,7 @@
     <target name="aspectwerkz:samples:logging"
         depends="aspectwerkz:init, aspectwerkz:attributes:samples">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${basedir}/src/samples${pathseparator}${dist.dir}/samples.jar examples.xmldef.logging.Target"/>
+            <arg line="-cp ${basedir}/src/samples${pathseparator}${dist.dir}/samples.jar examples.logging.Target"/>
         </exec>
     </target>
 
@@ -319,7 +314,7 @@
     <target name="aspectwerkz:samples:caching"
         depends="aspectwerkz:init, aspectwerkz:attributes:samples">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.xmldef.caching.CacheTest"/>
+            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.caching.CacheTest"/>
         </exec>
     </target>
 
@@ -329,7 +324,7 @@
     <target name="aspectwerkz:samples:asynchronous"
         depends="aspectwerkz:init, aspectwerkz:attributes:samples">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.xmldef.asynchronous.Target"/>
+            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.asynchronous.Target"/>
         </exec>
     </target>
 
@@ -339,7 +334,7 @@
     <target name="aspectwerkz:samples:synchronization"
         depends="aspectwerkz:init, aspectwerkz:attributes:samples">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.xmldef.synchronization.Target"/>
+            <arg line="-cp ${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.synchronization.Target"/>
         </exec>
     </target>
 
@@ -349,7 +344,7 @@
     <target name="aspectwerkz:samples:cflow"
         depends="aspectwerkz:init, aspectwerkz:attributes:samples">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.xmldef.cflow.Target"/>
+            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.cflow.Target"/>
         </exec>
     </target>
 
@@ -359,7 +354,7 @@
     <target name="aspectwerkz:samples:transparentpersistence"
         depends="aspectwerkz:init, aspectwerkz:attributes:extensions">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/jisp-2.0.1.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml -Daspectwerkz.extension.persistence.definition.file=${basedir}/src/samples/persistence_definition.xml examples.xmldef.transparentpersistence.Client"/>
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/jisp-2.0.1.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml -Daspectwerkz.extension.persistence.definition.file=${basedir}/src/samples/persistence_definition.xml examples.transparentpersistence.Client"/>
         </exec>
     </target>
 
@@ -369,7 +364,7 @@
     <target name="aspectwerkz:samples:introduction"
         depends="aspectwerkz:init, aspectwerkz:attributes:samples">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.xmldef.introduction.Target"/>
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.introduction.Target"/>
         </exec>
     </target>
 
@@ -393,6 +388,39 @@
         </exec>
     </target>
 
+    <!-- compile the attributes into the codebase -->
+<!--    <target name="aspectwerkz:compile:attributes"-->
+<!--        depends="aspectwerkz:init">-->
+<!--        <attrib4jCompiler sourcepath="${src.dir}/samples"-->
+<!--            sourceclasspath="${target.dir}/classes${pathseparator}${lib.dir}/aspectwerkz-${version}.jar"-->
+<!--            destdir="${target.dir}/classes"-->
+<!--            attributepackages="org.codehaus.aspectwerkz.definition.attribute"-->
+<!--            attributeclasspath="${lib.dir}/aspectwerkz-${version}.jar">-->
+<!--            <fileset dir="${src.dir}/samples/examples/logging"/>-->
+<!--            <classpath>-->
+<!--                <pathelement location="${lib.dir}/aspectwerkz-${version}.jar"/>-->
+<!--                <pathelement location="${lib.dir}/attrib4j-0.8.9.jar"/>-->
+<!--                <pathelement location="${lib.dir}/bcel.jar"/>-->
+<!--            </classpath>-->
+<!--        </attrib4jCompiler>-->
+<!--    </target>-->
+    <target name="aspectwerkz:compile:attributes" depends="clean, aspectwerkz:compile">
+        <attrib4jCompiler sourcepath="${src.dir}/samples"
+            sourceclasspath="${target.dir}/samples-classes${pathseparator}${lib.dir}/aspectwerkz-${version}.jar"
+            destdir="${target.dir}/samples-classes"
+            attributepackages="org.codehaus.aspectwerkz.definition.attribute"
+            attributeclasspath="${lib.dir}/aspectwerkz-${version}.jar">
+            <fileset dir="${src.dir}/samples/examples/logging"/>
+            <classpath>
+                <pathelement location="${lib.dir}/aspectwerkz-${version}.jar"/>
+                <pathelement location="${lib.dir}/attrib4j-0.8.9.jar"/>
+                <pathelement location="${lib.dir}/bcel.jar"/>
+            </classpath>
+        </attrib4jCompiler>
+    </target>
+
+    <!-- include the custom task -->
+    <taskdef name="attrib4jCompiler" classname="attrib4j.ant.Attrib4jTask" classpathref="project.class.path"/>
 
 </project>
 
