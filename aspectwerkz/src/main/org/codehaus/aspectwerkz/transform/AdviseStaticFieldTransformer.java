@@ -101,8 +101,7 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
             final Set setFieldJoinPoints = new HashSet();
             final Set getFieldJoinPoints = new HashSet();
 
-            Method clInitMethod = null;
-            List newMethods = new ArrayList();
+            Method clInitMethod = null;//only used if noclinitMethod
             boolean isClassAdvised = false;
             boolean isMethodAdvised = false;
             for (int i = 0; i < methods.length; i++) {
@@ -149,12 +148,20 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
 
                                     addStaticJoinPointField(cpg, cg, fieldName, joinPointType);
 
-                                    if (noClInitMethod) {
+                                    if (noClInitMethod && clInitMethod==null) {
+                                        // were no clinit and first creation of clinit
                                         clInitMethod = createClInitMethodWithStaticJoinPointField(
                                                 cpg, cg, fieldName, signature, factory,
                                                 joinPointType, joinPointClass, uuid);
                                     }
+                                    else if (noClInitMethod) {
+                                        // we are modyfing the newly created clinit
+                                        clInitMethod = createStaticJoinPointField(
+                                                cpg, cg, clInitMethod, fieldName, signature,
+                                                factory, joinPointType, joinPointClass, uuid);
+                                    }
                                     else {
+                                        // the clinit method was existing
                                         methods[clinitIndex] = createStaticJoinPointField(
                                                 cpg, cg, methods[clinitIndex], fieldName, signature,
                                                 factory, joinPointType, joinPointClass, uuid);
@@ -194,10 +201,15 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
                                             fieldName,
                                             joinPointType);
 
-                                    if (noClInitMethod) {
+                                    if (noClInitMethod && clInitMethod == null) {
                                         clInitMethod = createClInitMethodWithStaticJoinPointField(
                                                 cpg, cg, fieldName, signature, factory,
                                                 joinPointType, joinPointClass, uuid);
+                                    }
+                                    else if (noClInitMethod) {
+                                        clInitMethod = createStaticJoinPointField(
+                                                cpg, cg, clInitMethod, fieldName, signature,
+                                                factory, joinPointType, joinPointClass, uuid);
                                     }
                                     else {
                                         methods[clinitIndex] = createStaticJoinPointField(
@@ -219,25 +231,21 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
             }
             if (isClassAdvised) {
                 // if we have transformed methods, create the static class field
-
-                if (noClInitMethod && clInitMethod != null) {
-                    addStaticClassField(cpg, cg);
+                addStaticClassField(cpg, cg);
+                if (noClInitMethod) {
+                    // clinitMethod was created during TF since isClassAdvise=true in this scope
                     clInitMethod = createStaticClassField(cpg, cg, clInitMethod, factory);
-                    newMethods.add(clInitMethod);
+                } else {
+                    methods[clinitIndex] = createStaticClassField(cpg, cg, methods[clinitIndex], factory);
                 }
-                else if (!noClInitMethod) {
-                    addStaticClassField(cpg, cg);
-                    methods[clinitIndex] =
-                            createStaticClassField(cpg, cg, methods[clinitIndex], factory);
-                }
-            }
-            // update the old methods
-            cg.setMethods(methods);
 
-            // add the new methods
-            for (Iterator it2 = newMethods.iterator(); it2.hasNext();) {
-                Method method = (Method)it2.next();
-                cg.addMethod(method);
+                // update the old methods
+                cg.setMethods(methods);
+
+                // did we had to create clinit method ?
+                if (noClInitMethod) {
+                    cg.addMethod(clInitMethod);
+                }
             }
         }
     }

@@ -10,7 +10,7 @@ package test.xmldef.staticfield;
 import junit.framework.TestCase;
 
 /**
- * Test case for AW-92
+ * Test case for AW-92 for static field
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class StaticFieldAdviceTest extends TestCase {
@@ -19,29 +19,53 @@ public class StaticFieldAdviceTest extends TestCase {
 
     public static int s_fieldB = 0;
 
+    public int m_fieldA = 0;
+
+    public int m_fieldB = 0;
+
     public void testStaticFieldAccessedOutsideStaticCtx() {
-        try {
-            assertEquals(0, accessFieldA());
-        } catch (Throwable t) {
-            fail(t.getMessage());
-        }
+        assertEquals(1, accessStaticFieldA());
     }
 
     public void testStaticFieldAccessedInsideStaticCtx() {
-        assertEquals(0, StaticFieldAdviceTest.accessFieldB());
+        assertEquals(1, StaticFieldAdviceTest.accessStaticFieldB());
+    }
+
+    public void testFieldAccessedOutsideStaticCtx() {
+        assertEquals(1, accessFieldA());
+    }
+
+    public void testFieldAccessedInsideStaticCtx() {
+        assertEquals(1, StaticFieldAdviceTest.accessFieldB(this));
     }
 
     // -- methods --
 
-    private int accessFieldA() {
+    private int accessStaticFieldA() {
         //static field access in member method
+        s_fieldA = 1;
         int value = s_fieldA;
         return value;
     }
 
-    private static int accessFieldB() {
+    private static int accessStaticFieldB() {
         //static field access in static method
+        s_fieldB = 1;
         int value = s_fieldB;
+        return value;
+    }
+
+    private int accessFieldA() {
+        //static field access in member method
+        m_fieldA = 1;
+        int value = m_fieldA;
+        return value;
+    }
+
+    private static int accessFieldB(StaticFieldAdviceTest myself) {
+        //field access in static method
+        myself.m_fieldB = 1;
+        int value = myself.m_fieldB;
         return value;
     }
 

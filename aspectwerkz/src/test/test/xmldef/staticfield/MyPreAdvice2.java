@@ -10,23 +10,23 @@ package test.xmldef.staticfield;
 import org.codehaus.aspectwerkz.xmldef.advice.PreAdvice;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.StaticFieldSetJoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.MemberFieldSetJoinPoint;
 
 /**
  * Test case for AW-92
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class MyPreAdvice1 extends PreAdvice {
+public class MyPreAdvice2 extends PreAdvice {
 
-    public MyPreAdvice1() {
+    public MyPreAdvice2() {
         super();
     }
 
     public void execute(final JoinPoint joinPoint) throws Throwable {
         FieldJoinPoint fjp = (FieldJoinPoint)joinPoint;
 
-        // if static field not handled correctly but handled as a member field
+        // if member field not handled correctly but handled as a static field
         // this will throw a class cast exception
-        StaticFieldSetJoinPoint sgfjp = (StaticFieldSetJoinPoint)fjp;
+        MemberFieldSetJoinPoint mfjp = (MemberFieldSetJoinPoint)fjp;
     }
 }
