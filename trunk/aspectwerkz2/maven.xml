@@ -209,6 +209,16 @@
     </goal>
 
     <!-- =================================================== -->
+    <!--  runs the runtime weaving logging test -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:samples:hotswaplogging">
+        <attainGoal name="aspectwerkz:samples:aspectc"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes} -cp ${lib.dir}/aspectwerkz-extensions-${pom.currentVersion}.jar -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.logging.HotSwapTarget"/>
+        </exec>
+    </goal>
+
+    <!-- =================================================== -->
     <!--  runs the caching test -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:caching">
