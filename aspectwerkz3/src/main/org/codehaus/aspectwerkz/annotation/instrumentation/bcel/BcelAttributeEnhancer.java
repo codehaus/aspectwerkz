@@ -169,6 +169,44 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
             }
         }
     }
+    
+
+    /**
+     * Inserts an attribute on constructor level.
+     *
+     * @param method    the QDox java method
+     * @param attribute the attribute
+     */
+    public void insertConstructorAttribute(final JavaMethod method, final Object attribute) {
+        if (m_classGen == null) {
+            throw new IllegalStateException("attribute enhancer is not initialized");
+        }
+        byte[] serializedAttribute = serialize(attribute);
+        String[] methodParamTypes = new String[method.getParameters().length];
+        for (int i = 0; i < methodParamTypes.length; i++) {
+            methodParamTypes[i] = TypeConverter.convertTypeToJava(method.getParameters()[i].getType());
+        }
+        Method[] classfileMethod = m_classGen.getMethods();
+        for (int i = 0; i < classfileMethod.length; i++) {
+            Method classFileMethod = classfileMethod[i];
+            if (classFileMethod.getName().equals("<init>")) {
+                if (Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(classFileMethod.getSignature()))) {
+                    MethodGen methodGen = new MethodGen(
+                            classFileMethod, m_javaClass.getClassName(),
+                            m_constantPoolGen
+                    );
+                    Attribute attr = new Unknown(
+                            m_constantPoolGen.addUtf8(AttributeEnhancer.CUSTOM_ATTRIBUTE),
+                            serializedAttribute.length, serializedAttribute,
+                            m_constantPoolGen.getConstantPool()
+                    );
+                    methodGen.addAttribute(attr);
+                    Method newMethod = methodGen.getMethod();
+                    m_classGen.replaceMethod(classFileMethod, newMethod);
+                }
+            }
+        }
+    }
 
     /**
      * Writes the enhanced class to file.

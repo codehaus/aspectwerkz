@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.javassist;
 
+import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
@@ -21,29 +22,27 @@ import javassist.NotFoundException;
 
 /**
  * Implementation of the ConstructorInfo interface for Javassist.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JavassistConstructorInfo extends JavassistCodeInfo implements ConstructorInfo {
     /**
      * Creates a new method meta data instance.
-     *
+     * 
      * @param constructor
      * @param declaringType
      * @param loader
      * @param attributeExtractor
      */
-    JavassistConstructorInfo(
-            final CtConstructor constructor, final JavassistClassInfo declaringType,
+    JavassistConstructorInfo(final CtConstructor constructor, final JavassistClassInfo declaringType,
             final ClassLoader loader, final AttributeExtractor attributeExtractor) {
         super(constructor, declaringType, loader, attributeExtractor);
-
-        //        addAnnotations();
+        addAnnotations();
     }
 
     /**
      * Returns the constructor info for the constructor specified.
-     *
+     * 
      * @param constructor the constructor
      * @return the constructor info
      */
@@ -59,7 +58,7 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
 
     /**
      * Calculates the constructor hash.
-     *
+     * 
      * @param constructor
      * @return the hash
      */
@@ -77,7 +76,7 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
 
     /**
      * Returns the attributes.
-     *
+     * 
      * @return the attributes
      * @TODO: fix constructor annotations
      */
@@ -92,7 +91,7 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
         if (!(o instanceof MethodInfo)) {
             return false;
         }
-        ConstructorInfo constructorInfo = (ConstructorInfo)o;
+        ConstructorInfo constructorInfo = (ConstructorInfo) o;
         if (!m_declaringType.getName().toString().equals(constructorInfo.getDeclaringType().getName().toString())) {
             return false;
         }
@@ -126,25 +125,24 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
 
     /**
      * Adds annotations to the method info.
-     *
-     * @TODO: implement
      */
     private void addAnnotations() {
-        //        if (m_parameterTypes == null) {
-        //            getParameterTypes();
-        //        }
-        //        String[] parameterNames = new String[m_parameterTypes.length];
-        //        for (int i = 0; i < m_parameterTypes.length; i++) {
-        //            parameterNames[i] = m_parameterTypes[i].getName();
-        //        }
-        //
-        //        Object[] attributes = m_attributeExtractor.getMethodAttributes(m_member.getName(), parameterNames);
-        //        m_annotations = new ArrayList();
-        //        for (int i = 0; i < attributes.length; i++) {
-        //            Object attribute = attributes[i];
-        //            if (attribute instanceof AnnotationInfo) {
-        //                m_annotations.add(attribute);
-        //            }
-        //        }
+        if (m_attributeExtractor == null) {
+            return;
+        }
+        if (m_parameterTypes == null) {
+            getParameterTypes();
+        }
+        String[] parameterNames = new String[m_parameterTypes.length];
+        for (int i = 0; i < m_parameterTypes.length; i++) {
+            parameterNames[i] = m_parameterTypes[i].getName();
+        }
+        Object[] attributes = m_attributeExtractor.getConstructorAttributes(parameterNames);
+        for (int i = 0; i < attributes.length; i++) {
+            Object attribute = attributes[i];
+            if (attribute instanceof AnnotationInfo) {
+                m_annotations.add(attribute);
+            }
+        }
     }
 }

@@ -197,7 +197,7 @@ public class JavaClassInfo implements ClassInfo {
      * @return the constructors info
      */
     public ConstructorInfo[] getConstructors() {
-        Object[] values = m_methods.getValues();
+        Object[] values = m_constructors.getValues();
         ConstructorInfo[] methodInfos = new ConstructorInfo[values.length];
         for (int i = 0; i < values.length; i++) {
             methodInfos[i] = (ConstructorInfo)values[i];

@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javassist.CtClass;
+import javassist.CtConstructor;
 import javassist.CtField;
 import javassist.CtMethod;
 import javassist.bytecode.AttributeInfo;
@@ -27,8 +28,8 @@ import javassist.bytecode.ClassFile;
 /**
  * Javassist implementation of the AttributeExtractor interface. Extracts attributes from the class file on class,
  * method and field level.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JavassistAttributeExtractor implements AttributeExtractor {
     /**
@@ -38,7 +39,7 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
 
     /**
      * Open the classfile and parse it in to the Javassist library.
-     *
+     * 
      * @param ctClass the class
      */
     public void initialize(final CtClass ctClass) {
@@ -50,7 +51,7 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
 
     /**
      * Returns the class attributes.
-     *
+     * 
      * @return the class attributes
      */
     public Object[] getClassAttributes() {
@@ -61,15 +62,15 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
         ClassFile classFile = m_ctClass.getClassFile();
         List attrs = classFile.getAttributes();
         for (Iterator it = attrs.iterator(); it.hasNext();) {
-            retrieveCustomAttributes((AttributeInfo)it.next(), attributes);
+            retrieveCustomAttributes((AttributeInfo) it.next(), attributes);
         }
         return attributes.toArray(new Object[attributes.size()]);
     }
 
     /**
      * Return all the attributes associated with a method that have a particular method signature.
-     *
-     * @param methodName       The name of the method.
+     * 
+     * @param methodName The name of the method.
      * @param methodParamTypes An array of parameter types as given by the reflection api.
      * @return the method attributes.
      */
@@ -84,7 +85,7 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
             if (method.getName().equals(methodName)) {
                 if (Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(methods[i].getSignature()))) {
                     for (Iterator it = method.getMethodInfo().getAttributes().iterator(); it.hasNext();) {
-                        retrieveCustomAttributes((AttributeInfo)it.next(), attributes);
+                        retrieveCustomAttributes((AttributeInfo) it.next(), attributes);
                     }
                 }
             }
@@ -93,8 +94,31 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
     }
 
     /**
+     * Return all the attributes associated with a constructor that have a particular method signature.
+     * 
+     * @param constructorParamTypes An array of parameter types as given by the reflection api.
+     * @return the constructor attributes.
+     */
+    public Object[] getConstructorAttributes(final String[] constructorParamTypes) {
+        if (m_ctClass.isPrimitive() || m_ctClass.isArray()) {
+            return EMPTY_OBJECT_ARRAY;
+        }
+        List attributes = new ArrayList();
+        CtConstructor[] constructors = m_ctClass.getDeclaredConstructors();
+        for (int i = 0; i < constructors.length; i++) {
+            CtConstructor constructor = constructors[i];
+            if (Arrays.equals(constructorParamTypes, DescriptorUtil.getParameters(constructors[i].getSignature()))) {
+                for (Iterator it = constructor.getMethodInfo().getAttributes().iterator(); it.hasNext();) {
+                    retrieveCustomAttributes((AttributeInfo) it.next(), attributes);
+                }
+            }
+        }
+        return attributes.toArray(new Object[attributes.size()]);
+    }
+
+    /**
      * Return all the attributes associated with a field.
-     *
+     * 
      * @param fieldName The name of the field.
      * @return the field attributes.
      */
@@ -108,7 +132,7 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
             if (fields[i].getName().equals(fieldName)) {
                 CtField field = fields[i];
                 for (Iterator it = field.getFieldInfo().getAttributes().iterator(); it.hasNext();) {
-                    retrieveCustomAttributes((AttributeInfo)it.next(), attributes);
+                    retrieveCustomAttributes((AttributeInfo) it.next(), attributes);
                 }
             }
         }
@@ -117,7 +141,7 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
 
     /**
      * Retrieves custom attributes and puts them in a list.
-     *
+     * 
      * @param attributeInfo
      * @param listToPutAttributesIn
      */
@@ -125,10 +149,8 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
         if (attributeInfo.getName().startsWith(AttributeEnhancer.CUSTOM_ATTRIBUTE)) {
             byte[] serializedAttribute = attributeInfo.get();
             try {
-                Object attribute = new ContextClassLoader.NotBrokenObjectInputStream(
-                        new ByteArrayInputStream(serializedAttribute)
-                )
-                        .readObject();
+                Object attribute = new ContextClassLoader.NotBrokenObjectInputStream(new ByteArrayInputStream(
+                        serializedAttribute)).readObject();
                 listToPutAttributesIn.add(attribute);
             } catch (Exception e) {
                 System.out.println("WARNING: could not retrieve annotation due to: " + e.toString());
