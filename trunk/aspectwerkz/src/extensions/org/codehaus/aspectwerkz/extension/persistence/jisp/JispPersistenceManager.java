@@ -59,7 +59,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * An implementation of the PersistenceManager interface using JISP.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: JispPersistenceManager.java,v 1.5 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: JispPersistenceManager.java,v 1.6 2003-07-22 14:03:17 jboner Exp $
  */
 public class JispPersistenceManager
         extends AbstractPersistenceManager implements Serializable {
@@ -692,7 +692,7 @@ public class JispPersistenceManager
      * @param type the index type
      * @return the JISP index type
      */
-    protected String getJispIndexType(final String type) {
+    protected static String getJispIndexType(final String type) {
         final String indexType;
         if (type.equals("java.lang.String")) {
             indexType = "com.coyotegulch.jisp.StringKey32";

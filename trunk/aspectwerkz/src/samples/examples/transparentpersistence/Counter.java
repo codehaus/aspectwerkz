@@ -22,14 +22,14 @@ import org.codehaus.aspectwerkz.extension.persistence.Persistable;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Counter.java,v 1.5 2003-07-03 13:15:52 jboner Exp $
+ * @version $Id: Counter.java,v 1.6 2003-07-22 14:03:18 jboner Exp $
  */
 public class Counter {
 
     /**
      * @aspectwerkz.advice.setfield persistent
      */
-    private int m_counter = 0;
+    private int m_counter;
 
     private static long serialVersionUID = 1L;
 

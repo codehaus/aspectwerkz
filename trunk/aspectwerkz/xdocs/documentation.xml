@@ -929,6 +929,35 @@ public class MyThrowsAdvice extends ThrowsAdvice {
 
             </subsection>
 
+            <subsection name="Subtype patterns">
+                <p>
+                    It is possible to pick out all subtypes of a type with the "+" wildcard.
+                    The "+" wildcard follows immediately a type name pattern. So, while
+                </p>
+                <p>
+                    <code>* foo.Bar.*(..)</code>
+                </p>
+                <p>
+                    picks out all method call join points where an instance of exactly type Foo is
+                    constructed,
+                </p>
+                <p>
+                    <code>* foo.Bar+.*(..)</code>
+                </p>
+                <p>
+                    picks out all method call join points where an instance of any subtype of
+                    Foo (including Foo itself) is constructed.
+                </p>
+            </subsection>
+
+            <subsection name="Array type patterns">
+                <p>
+                    A type name pattern or subtype pattern can be followed by one or more sets of
+                    square brackets to make array type patterns. So Object[] is an array type
+                    pattern, and so is foo.bar.*[][].
+                </p>
+            </subsection>
+
             <subsection name="Abbreviations">
                 <p>
                     When picking out the return and parameter types it is

@@ -35,7 +35,7 @@ import org.codehaus.aspectwerkz.util.Strings;
  * </pre>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ClassPattern.java,v 1.5 2003-07-19 20:36:16 jboner Exp $
+ * @version $Id: ClassPattern.java,v 1.6 2003-07-22 14:03:18 jboner Exp $
  */
 public class ClassPattern extends Pattern {
 
@@ -80,12 +80,12 @@ public class ClassPattern extends Pattern {
 
         try {
             if (className.equals(SINGLE_WILDCARD) || className.equals(MULTIPLE_WILDCARD)) {
-                className = ".*"; // TODO: should use a 'word boundry pattern' (like \b.*\b)
+                className = "[a-zA-Z0-9_$.]+";
             }
             else {
-                className = Strings.replaceSubString(className, "..", ".*");
+                className = Strings.replaceSubString(className, "..", "[a-zA-Z0-9_$.]+");
                 className = Strings.replaceSubString(className, ".", "\\.");
-                className = Strings.replaceSubString(className, "*", ".*");
+                className = Strings.replaceSubString(className, "*", "[a-zA-Z0-9_$]+");
             }
             m_classNamePattern = new com.karneim.util.collection.regex.Pattern(className);
         }

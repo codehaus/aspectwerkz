@@ -39,7 +39,7 @@ import org.codehaus.aspectwerkz.util.Strings;
  * </pre>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: FieldPattern.java,v 1.5 2003-07-19 20:36:16 jboner Exp $
+ * @version $Id: FieldPattern.java,v 1.6 2003-07-22 14:03:18 jboner Exp $
  */
 public class FieldPattern extends Pattern {
 
@@ -131,10 +131,10 @@ public class FieldPattern extends Pattern {
         final int startIndexFieldName = pattern.indexOf(' ') + 1;
         String fieldName = pattern.substring(startIndexFieldName, pattern.length());
         if (fieldName.equals(SINGLE_WILDCARD)) {
-            fieldName = ".*"; // TODO: should use a 'word boundry pattern' (like \b.*\b)
+            fieldName = "[a-zA-Z0-9_$]*";
         }
         else {
-            fieldName = Strings.replaceSubString(fieldName, "*", ".*");
+            fieldName = Strings.replaceSubString(fieldName, "*", "[a-zA-Z0-9_$]*");
         }
         m_fieldNamePattern = new com.karneim.util.collection.regex.Pattern(fieldName);
     }
@@ -151,11 +151,13 @@ public class FieldPattern extends Pattern {
             fieldType = (String)m_abbreviations.get(fieldType);
         }
         if (fieldType.equals(SINGLE_WILDCARD)) {
-            fieldType = ".*"; // TODO: should use a 'word boundry pattern' (like \b.*\b)
+            fieldType = "[a-zA-Z0-9_$.]+";
         }
         else {
             fieldType = Strings.replaceSubString(fieldType, ".", "\\.");
-            fieldType = Strings.replaceSubString(fieldType, "*", ".*");
+            fieldType = Strings.replaceSubString(fieldType, "[", "\\[");
+            fieldType = Strings.replaceSubString(fieldType, "]", "\\]");
+            fieldType = Strings.replaceSubString(fieldType, "*", "[a-zA-Z0-9_$]+");
         }
         m_fieldTypePattern = new com.karneim.util.collection.regex.Pattern(fieldType);
     }

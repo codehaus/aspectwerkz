@@ -58,7 +58,7 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
  * Transforms member methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberMethodTransformer.java,v 1.18 2003-07-19 20:36:16 jboner Exp $
+ * @version $Id: AdviseMemberMethodTransformer.java,v 1.19 2003-07-22 14:03:18 jboner Exp $
  */
 public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -87,6 +87,8 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
 
     /**
      * Makes the member method transformations.
+     *
+     * @todo remove all thread-safe stuff
      *
      * @param cs the class set.
      */
@@ -127,6 +129,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
             final List proxyMethods = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
 
+                // filter the methods
                 String uuid = methodFilter(classMetaData, methods[i]);
                 if (methods[i].isStatic() || uuid == null) {
                     continue;
@@ -136,8 +139,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
 
                 // take care of identification of overloaded methods by inserting a sequence number
                 if (methodSequences.containsKey(methods[i].getName())) {
-                    int sequence = ((Integer)methodSequences.
-                            get(methods[i].getName())).intValue();
+                    int sequence = ((Integer)methodSequences.get(methods[i].getName())).intValue();
                     methodSequences.remove(methods[i].getName());
                     sequence++;
                     methodSequences.put(methods[i].getName(), new Integer(sequence));
@@ -830,10 +832,12 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
      */
     private String methodFilter(final ClassMetaData classMetaData, final Method method) {
         String uuid = null;
-        if (method.getName().equals("<init>") || method.getName().equals("<clinit>") ||
+        if (method.getName().equals("<init>") ||
+                method.getName().equals("<clinit>") ||
                 method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
                 method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
                 method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
+                method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
                 method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             uuid = null;
         }

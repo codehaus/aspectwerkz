@@ -57,7 +57,7 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticFieldTransformer.java,v 1.13 2003-07-19 20:36:16 jboner Exp $
+ * @version $Id: AdviseStaticFieldTransformer.java,v 1.14 2003-07-22 14:03:18 jboner Exp $
  */
 public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -86,6 +86,8 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
 
     /**
      * Transforms the fields.
+     *
+     * @todo remove all thread-safe stuff
      *
      * @param cs the class set.
      */
@@ -123,14 +125,12 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
             List newMethods = new ArrayList();
             boolean isClassAdvised = false;
             for (int i = 0; i < methods.length; i++) {
+
                 if (methodFilter(methods[i])) {
                     continue;
                 }
 
-                MethodGen mg = new MethodGen(
-                        methods[i],
-                        className,
-                        cpg);
+                MethodGen mg = new MethodGen(methods[i], className, cpg);
 
                 InstructionList il = mg.getInstructionList();
                 InstructionHandle ih = il.getStart();
@@ -237,8 +237,10 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
                     ih = ih.getNext();
                 }
 
-                mg.setMaxStack();
-                methods[i] = mg.getMethod();
+                if (isClassAdvised) {
+                    mg.setMaxStack();
+                    methods[i] = mg.getMethod();
+                }
             }
             if (isClassAdvised) {
                 // if we have transformed methods, create the static class field

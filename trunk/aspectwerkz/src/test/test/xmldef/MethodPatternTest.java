@@ -12,12 +12,12 @@ import org.codehaus.aspectwerkz.regexp.Pattern;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodPatternTest.java,v 1.5 2003-07-19 20:36:17 jboner Exp $
+ * @version $Id: MethodPatternTest.java,v 1.6 2003-07-22 14:03:18 jboner Exp $
  */
 public class MethodPatternTest extends TestCase {
 
     public void testMatchMethodName1() {
-        MethodPattern methodPattern = Pattern.compileMethodPattern("* method()");
+        MethodPattern methodPattern = Pattern.compileMethodPattern("* method(String, int)");
         assertTrue(methodPattern.matchMethodName("method"));
         assertFalse(methodPattern.matchMethodName("methods"));
         assertFalse(methodPattern.matchMethodName("meth"));
@@ -25,7 +25,7 @@ public class MethodPatternTest extends TestCase {
     }
 
     public void testMatchMethodName2() {
-        MethodPattern methodPattern = Pattern.compileMethodPattern("* meth*()");
+        MethodPattern methodPattern = Pattern.compileMethodPattern("* meth*(..)");
         assertTrue(methodPattern.matchMethodName("method"));
         assertTrue(methodPattern.matchMethodName("methods"));
         assertFalse(methodPattern.matchMethodName("m"));
@@ -48,11 +48,27 @@ public class MethodPatternTest extends TestCase {
         assertFalse(methodPattern.matchMethodName(""));
     }
 
+    public void testMatchMethodName5() {
+        MethodPattern methodPattern = Pattern.compileMethodPattern("* A()");
+        assertTrue(methodPattern.matchMethodName("A"));
+        assertFalse(methodPattern.matchMethodName("a"));
+        assertFalse(methodPattern.matchMethodName("B"));
+        assertFalse(methodPattern.matchMethodName(""));
+    }
+
+    public void testMatchMethodName6() {
+        MethodPattern methodPattern = Pattern.compileMethodPattern("* m_method()");
+        assertTrue(methodPattern.matchMethodName("m_method"));
+        assertFalse(methodPattern.matchMethodName("m"));
+        assertFalse(methodPattern.matchMethodName("m_methods"));
+        assertFalse(methodPattern.matchMethodName(""));
+    }
+
     public void testMatchParameterTypes1() {
         MethodPattern methodPattern = Pattern.compileMethodPattern("* method(java.lang.String,..)");
         assertTrue(methodPattern.matchParameterTypes(
                 new String[]{"java.lang.String","java.lang.String", "int"}));
-        assertTrue(methodPattern.matchParameterTypes(
+        assertFalse(methodPattern.matchParameterTypes(
                 new String[]{"java.lang.String"}));
         assertFalse(methodPattern.matchParameterTypes(
                 new String[]{}));
@@ -124,7 +140,7 @@ public class MethodPatternTest extends TestCase {
                 new String[]{"java.lang.String","java.util.List"}));
         assertTrue(methodPattern.matchParameterTypes(
                 new String[]{"java.lang.String","java.util.List","int"}));
-        assertTrue (methodPattern.matchParameterTypes(
+        assertFalse(methodPattern.matchParameterTypes(
                 new String[]{"java.lang.String"}));
     }
 
@@ -133,9 +149,29 @@ public class MethodPatternTest extends TestCase {
         assertTrue(methodPattern.matchParameterTypes(
                 new String[]{"java.lang.String[]"}));
         assertFalse(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String[]","java.lang.String", "int"}));
+                new String[]{"java.lang.String"}));
         assertFalse(methodPattern.matchParameterTypes(
-                new String[]{}));
+                new String[]{"java.lang.String[][]"}));
+    }
+
+    public void testMatchParameterTypes10() {
+        MethodPattern methodPattern = Pattern.compileMethodPattern("* method(java.lang.String[][])");
+        assertTrue(methodPattern.matchParameterTypes(
+                new String[]{"java.lang.String[][]"}));
+        assertFalse(methodPattern.matchParameterTypes(
+                new String[]{"java.lang.String[]"}));
+        assertFalse(methodPattern.matchParameterTypes(
+                new String[]{"java.lang.String[][][]"}));
+    }
+
+    public void testMatchParameterTypes11() {
+        MethodPattern methodPattern = Pattern.compileMethodPattern("* method(java.*.*[])");
+        assertTrue(methodPattern.matchParameterTypes(
+                new String[]{"java.lang.String[]"}));
+        assertTrue(methodPattern.matchParameterTypes(
+                new String[]{"java.util.List[]"}));
+        assertFalse(methodPattern.matchParameterTypes(
+                new String[]{"java.util.List[][]"}));
     }
 
     public void testMatchReturnType1() {
