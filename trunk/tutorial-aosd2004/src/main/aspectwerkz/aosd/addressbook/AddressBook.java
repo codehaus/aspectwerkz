@@ -10,31 +10,34 @@ package aspectwerkz.aosd.addressbook;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.HashSet;
+import java.io.Serializable;
 
 /**
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AddressBook {
+public class AddressBook implements Serializable {
 
-    private final List m_entries = new ArrayList();
+    private final Set m_contacts = new HashSet();
 
-    public void addEntry(final Entry entry) {
-        m_entries.add(entry);
+    public void addContact(final Contact contact) {
+        m_contacts.add(contact);
     }
 
-    public List getEntries() {
-        return m_entries;
+    public Set getContacts() {
+        return m_contacts;
     }
 
-    public Entry findEntryForContact(final String firstName, final String lastName) {
-        for (Iterator it = m_entries.iterator(); it.hasNext();) {
-            Entry entry = (Entry)it.next();
-            if (entry.getFirstName().equalsIgnoreCase(firstName)
-                    && entry.getLastName().equalsIgnoreCase(lastName)) {
-                return entry;
+    public Contact findContact(final String firstName, final String lastName) {
+        for (Iterator it = m_contacts.iterator(); it.hasNext();) {
+            Contact contact = (Contact)it.next();
+            if (contact.getFirstName().equalsIgnoreCase(firstName)
+                    && contact.getLastName().equalsIgnoreCase(lastName)) {
+                return contact;
             }
         }
-        return Entry.NULL;
+        return Contact.NULL;
     }
 }
