@@ -108,7 +108,10 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             }
         }
         catch (NotFoundException e) {
-            throw new WrappedRuntimeException(e);
+            System.err.println("AspectWerkz - <WARN> unable to build metadata for "
+                    + javaClass.getName()+" interfaces/superclasses"
+            );
+            //throw new WrappedRuntimeException(e);
         }
 
         synchronized (s_classMetaDataCache) {
@@ -123,7 +126,8 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * @param javaClass is the <code>JavaClass</code> object to extract details from.
      * @return a <code>InterfaceMetaData</code> instance.
      */
-    private static InterfaceMetaData createInterfaceMetaData(final CtClass javaClass) {
+    private static InterfaceMetaData createInterfaceMetaData(final CtClass javaClass)
+    throws NotFoundException {
         if (javaClass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
@@ -141,7 +145,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
 //            addAttribute(interfaceMetaData, ((AttributeInfo)attrs.next()));
 //        }
 
-        try {
+        //try {
             List interfaceList = new ArrayList();
             CtClass[] interfaces = javaClass.getInterfaces();
             for (int i = 0; i < interfaces.length; i++) {
@@ -149,10 +153,10 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
                 interfaceList.add(createInterfaceMetaData(anInterface));
             }
             interfaceMetaData.setInterfaces(interfaceList);
-        }
-        catch (NotFoundException e) {
-            throw new WrappedRuntimeException(e);
-        }
+        //}
+        //catch (NotFoundException e) {
+        //    throw new WrappedRuntimeException(e);
+        //}
 
         synchronized (s_interfaceMetaDataCache) {
             s_interfaceMetaDataCache.put(interfaceMetaData.getName(), interfaceMetaData);
@@ -171,10 +175,13 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             throw new IllegalArgumentException("method can not be null");
         }
 
-        try {
-            MethodMetaData methodMetaData = new MethodMetaData();
-            methodMetaData.setName(method.getName());
+        MethodMetaData methodMetaData = new MethodMetaData();
+        methodMetaData.setName(method.getName());
 
+        //Javassist modifier is the same as java modifier used in ReflectionMetaDataMaker
+        methodMetaData.setModifiers(method.getModifiers());
+
+        try {
             // return type
             methodMetaData.setReturnType(method.getReturnType().getName());
 
@@ -194,9 +201,6 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             }
             methodMetaData.setExceptionTypes(exceptions);
 
-            //Javassist modifier is the same as java modifier used in ReflectionMetaDataMaker
-            methodMetaData.setModifiers(method.getModifiers());
-
             // attributes
             for (Iterator attrs = method.getMethodInfo().getAttributes().iterator(); attrs.hasNext();) {
                 addAttribute(methodMetaData, ((AttributeInfo)attrs.next()));
@@ -205,7 +209,16 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             return methodMetaData;
         }
         catch (NotFoundException e) {
-            throw new WrappedRuntimeException(e);
+            // might happen if one parameter type is not in classpath
+            // fake the returned metadata
+            methodMetaData.setReturnType("void");
+            methodMetaData.setParameterTypes(new String[]{});
+            methodMetaData.setExceptionTypes(new String[]{});
+            System.err.println("AspectWerkz - <WARN> unable to build metadata for "
+                    + method.getDeclaringClass().getName()+"."+method.getName()+"(..)"
+            );
+            return methodMetaData;
+            //throw new WrappedRuntimeException(e);
         }
     }
 
@@ -220,11 +233,11 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             throw new IllegalArgumentException("field can not be null");
         }
 
+        FieldMetaData fieldMetaData = new FieldMetaData();
+        fieldMetaData.setName(field.getName());
+        fieldMetaData.setModifiers(field.getModifiers());
         try {
-            FieldMetaData fieldMetaData = new FieldMetaData();
-            fieldMetaData.setName(field.getName());
             fieldMetaData.setType(field.getType().getName());
-            fieldMetaData.setModifiers(field.getModifiers());
 
 //            // attributes
 //            for (Iterator attrs = field.getFieldInfo().getAttributes().iterator(); attrs.hasNext();) {
@@ -234,7 +247,14 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             return fieldMetaData;
         }
         catch (NotFoundException e) {
-            throw new WrappedRuntimeException(e);
+            // might happen if field type is not in classpath
+            // fake the returned metadata
+            fieldMetaData.setType(TypeConverter.convertTypeToJava(Object.class));
+            System.err.println("AspectWerkz - <WARN> unable to build metadata for "
+                    + field.getDeclaringClass().getName()+"."+field.getName()
+            );
+            return fieldMetaData;
+            //throw new WrappedRuntimeException(e);
         }
     }
 
@@ -249,10 +269,13 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             throw new IllegalArgumentException("constructor can not be null");
         }
 
-        try {
-            ConstructorMetaData constructorMetaData = new ConstructorMetaData();
-            constructorMetaData.setName(CONSTRUCTOR_NAME);
+        ConstructorMetaData constructorMetaData = new ConstructorMetaData();
+        constructorMetaData.setName(CONSTRUCTOR_NAME);
 
+        //Javassist modifier is the same as java modifier used in ReflectionMetaDataMaker
+        constructorMetaData.setModifiers(constructor.getModifiers());
+
+        try {
             // parameters
             CtClass[] javaParameters = constructor.getParameterTypes();
             String[] parameterTypes = new String[javaParameters.length];
@@ -269,9 +292,6 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             }
             constructorMetaData.setExceptionTypes(exceptions);
 
-            //Javassist modifier is the same as java modifier used in ReflectionMetaDataMaker
-            constructorMetaData.setModifiers(constructor.getModifiers());
-
             // TODO not supported by Javassist ??
 //            // attributes
 //            for (Iterator attrs =constructor.getMethodInfo().getAttributes().iterator(); attrs.hasNext();) {
@@ -281,7 +301,15 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             return constructorMetaData;
         }
         catch (NotFoundException e) {
-            throw new WrappedRuntimeException(e);
+            // might happen if one parameter type is not in classpath
+            // fake the returned metadata
+            constructorMetaData.setParameterTypes(new String[]{});
+            constructorMetaData.setExceptionTypes(new String[]{});
+            System.err.println("AspectWerkz - <WARN> unable to build metadata for "
+                    + constructor.getDeclaringClass().getName()+".<init>"
+            );
+            return constructorMetaData;
+            //throw new WrappedRuntimeException(e);
         }
     }
 

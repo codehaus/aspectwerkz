@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.pointcut;
+package org.codehaus.aspectwerkz.aspect.management;
 
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -20,14 +20,16 @@ import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.NameIndexTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 
 /**
+ * Implementation of the pointcut concept. I.e. an abstraction of a well defined point of execution in the program.<br/>
+ * Could matches one or many as long at it is well defined.<br/>
+ * Stores the advices for the specific pointcut.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @TODO: refactor to only use ONE single pointcut but with a type field??? Abstract implementation of the pointcut
- * concept. I.e. an abstraction of a well defined point of execution in the program.<br/> Could matches one or many as
- * long at it is well defined.<br/> Stores the advices for the specific pointcut.
  */
-public abstract class AbstractPointcut implements Serializable {
+public class Pointcut implements Serializable {
 
     /**
      * The expression for the pointcut.
@@ -38,11 +40,6 @@ public abstract class AbstractPointcut implements Serializable {
      * The cflow pointcut expression.
      */
     protected String m_cflowExpression;
-
-    /**
-     * The pointcut definitions referenced in the m_expression. Mapped to the name of the pointcut definition.
-     */
-    protected Map m_pointcutPatterns = new HashMap();
 
     /**
      * The names of the around advices.
@@ -85,7 +82,7 @@ public abstract class AbstractPointcut implements Serializable {
      * @param uuid       the UUID for the AspectWerkz system
      * @param expression the pattern for the pointcut
      */
-    public AbstractPointcut(final String uuid, final Expression expression) {
+    public Pointcut(final String uuid, final Expression expression) {
         if (uuid == null) {
             throw new IllegalArgumentException("uuid can not be null");
         }
@@ -615,7 +612,6 @@ public abstract class AbstractPointcut implements Serializable {
         ObjectInputStream.GetField fields = stream.readFields();
 
         m_expression = (Expression)fields.get("m_expression", null);
-        m_pointcutPatterns = (Map)fields.get("m_pointcutPatterns", null);
         m_aroundAdviceNames = (String[])fields.get("m_aroundAdviceNames", null);
         m_aroundAdviceIndexes = (IndexTuple[])fields.get("m_aroundAdviceIndexes", null);
         m_beforeAdviceNames = (String[])fields.get("m_beforeAdviceNames", null);

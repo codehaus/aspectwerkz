@@ -10,13 +10,13 @@ package test;
 import java.util.List;
 
 import junit.framework.TestCase;
-import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.NameIndexTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.aspect.management.Pointcut;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -37,10 +37,10 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
 
         // get the pointcut by name (can also be retrieved by method meta-data)
-        ExecutionPointcut pointcut = SystemLoader.getSystem("tests").
+        Pointcut pointcut = SystemLoader.getSystem("tests").
                 getAspectManager().
                 getPointcutManager(ASPECT_NAME).
-                getExecutionPointcut("pc1 || pc2 || pc3");
+                getPointcut("pc1 || pc2 || pc3");
 
         // get the advices
         List advices = pointcut.getAroundAdviceIndexTuples();
@@ -66,7 +66,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         methodMetaData.setReturnType("void");
         methodMetaData.setExceptionTypes(new String[]{});
 
-        ExecutionPointcut methodPointcut = (ExecutionPointcut)SystemLoader.getSystem("tests").
+        Pointcut methodPointcut = (Pointcut)SystemLoader.getSystem("tests").
                 getAspectManager().
                 getPointcutManager(ASPECT_NAME).
                 getExecutionPointcuts(m_classMetaData, methodMetaData).get(0);
@@ -92,7 +92,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         methodMetaData.setReturnType("void");
         methodMetaData.setExceptionTypes(new String[]{});
 
-        ExecutionPointcut methodPointcut = (ExecutionPointcut)SystemLoader.getSystem("tests").
+        Pointcut methodPointcut = (Pointcut)SystemLoader.getSystem("tests").
                 getAspectManager().
                 getPointcutManager(ASPECT_NAME).
                 getExecutionPointcuts(m_classMetaData, methodMetaData).get(0);
@@ -156,7 +156,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
             methodMetaData.setExceptionTypes(new String[]{});
 
             // get an existing pointcut
-            ExecutionPointcut methodPointcut = (ExecutionPointcut)SystemLoader.getSystem("tests").
+            Pointcut methodPointcut = (Pointcut)SystemLoader.getSystem("tests").
                     getAspectManager().
                     getPointcutManager(ASPECT_NAME).
                     getExecutionPointcuts(m_classMetaData, methodMetaData).

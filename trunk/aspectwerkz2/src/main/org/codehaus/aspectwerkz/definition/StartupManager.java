@@ -24,12 +24,8 @@ import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.pointcut.CallPointcut;
-import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
-import org.codehaus.aspectwerkz.pointcut.GetPointcut;
-import org.codehaus.aspectwerkz.pointcut.PointcutManager;
-import org.codehaus.aspectwerkz.pointcut.SetPointcut;
-import org.codehaus.aspectwerkz.pointcut.HandlerPointcut;
+import org.codehaus.aspectwerkz.aspect.management.PointcutManager;
+import org.codehaus.aspectwerkz.aspect.management.Pointcut;
 
 /**
  * Manages the startup procedure, walks through the definition and instantiates the
@@ -218,27 +214,7 @@ public class StartupManager {
      * @param uuid       the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
      */
-    private static void registerPointcuts(
-            final String uuid,
-            final SystemDefinition definition) {
-        registerCFlowPointcuts(uuid, definition);
-        registerExecutionPointcuts(uuid, definition);
-        registerCallPointcuts(uuid, definition);
-        registerSetPointcuts(uuid, definition);
-        registerGetPointcuts(uuid, definition);
-        registerHandlerPointcuts(uuid, definition);
-    }
-
-    /**
-     * Registers the execution pointcuts.
-     *
-     * @param uuid       the UUID for the AspectWerkz system to use
-     * @param definition the AspectWerkz definition
-     * @TODO: is it possible to merge some of the pointcut handling methods, VERY similar and A LOT of redundant code
-     */
-    private static void registerExecutionPointcuts(
-            final String uuid,
-            final SystemDefinition definition) {
+    private static void registerPointcuts(final String uuid, final SystemDefinition definition) {
         for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
 
@@ -247,237 +223,44 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().isOfType(PointcutType.EXECUTION)) {
-                    ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(
-                            adviceDef.getExpression().getExpression()
-                    );
-                    if (pointcut == null) {
-                        pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
-                        pointcutManager.addExecutionPointcut(pointcut);
-                    }
-                    //TODO : redundancy
-                    pointcut.addAroundAdvice(adviceDef.getName());
+                Pointcut pointcut = pointcutManager.getPointcut(
+                        adviceDef.getExpression().getExpression()
+                );
+                if (pointcut == null) {
+                    pointcut = new Pointcut(uuid, adviceDef.getExpression());
+                    pointcutManager.addPointcut(pointcut);
                 }
+                pointcut.addAroundAdvice(adviceDef.getName());
             }
 
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().isOfType(PointcutType.EXECUTION)) {
-                    ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(
-                            adviceDef.getExpression().getExpression()
-                    );
-                    if (pointcut == null) {
-                        pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
-                        pointcutManager.addExecutionPointcut(pointcut);
-                    }
-                    pointcut.addBeforeAdvice(adviceDef.getName());
+                Pointcut pointcut = pointcutManager.getPointcut(
+                        adviceDef.getExpression().getExpression()
+                );
+                if (pointcut == null) {
+                    pointcut = new Pointcut(uuid, adviceDef.getExpression());
+                    pointcutManager.addPointcut(pointcut);
                 }
+                pointcut.addBeforeAdvice(adviceDef.getName());
+                //TODO - check me: Handler PC supports only beforeAdvice
+                //TODO - .. this is not explicit here
             }
 
             for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().isOfType(PointcutType.EXECUTION)) {
-                    ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(
-                            adviceDef.getExpression().getExpression()
-                    );
-                    if (pointcut == null) {
-                        pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
-                        pointcutManager.addExecutionPointcut(pointcut);
-                    }
-                    pointcut.addAfterAdvice(adviceDef.getName());
+                Pointcut pointcut = pointcutManager.getPointcut(
+                        adviceDef.getExpression().getExpression()
+                );
+                if (pointcut == null) {
+                    pointcut = new Pointcut(uuid, adviceDef.getExpression());
+                    pointcutManager.addPointcut(pointcut);
                 }
+                pointcut.addAfterAdvice(adviceDef.getName());
             }
         }
-    }
 
-    /**
-     * Registers the call pointcuts.
-     *
-     * @param uuid       the UUID for the AspectWerkz system to use
-     * @param definition the AspectWerkz definition
-     */
-    private static void registerCallPointcuts(
-            final String uuid,
-            final SystemDefinition definition) {
-        // get all aspects definitions
-        for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it1.next();
-            PointcutManager pointcutManager = SystemLoader.getSystem(uuid).getAspectManager().
-                    getPointcutManager(aspectDef.getName());
-
-            for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().isOfType(PointcutType.CALL)) {
-                    CallPointcut pointcut = pointcutManager.getCallPointcut(adviceDef.getExpression().getExpression());
-                    if (pointcut == null) {
-                        pointcut = new CallPointcut(uuid, adviceDef.getExpression());
-                        pointcutManager.addCallPointcut(pointcut);
-                    }
-                    pointcut.addAroundAdvice(adviceDef.getName());
-                }
-            }
-
-            for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().isOfType(PointcutType.CALL)) {
-                    CallPointcut pointcut = pointcutManager.getCallPointcut(adviceDef.getExpression().getExpression());
-                    if (pointcut == null) {
-                        pointcut = new CallPointcut(uuid, adviceDef.getExpression());
-                        pointcutManager.addCallPointcut(pointcut);
-                    }
-                    pointcut.addBeforeAdvice(adviceDef.getName());
-                }
-            }
-
-            for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().isOfType(PointcutType.CALL)) {
-                    CallPointcut pointcut = pointcutManager.getCallPointcut(adviceDef.getExpression().getExpression());
-                    if (pointcut == null) {
-                        pointcut = new CallPointcut(uuid, adviceDef.getExpression());
-                        pointcutManager.addCallPointcut(pointcut);
-                    }
-                    pointcut.addAfterAdvice(adviceDef.getName());
-                }
-            }
-        }
-    }
-
-    /**
-     * Registers the set pointcuts.
-     *
-     * @param uuid       the UUID for the AspectWerkz system to use
-     * @param definition the AspectWerkz definition
-     */
-    private static void registerSetPointcuts(
-            final String uuid,
-            final SystemDefinition definition) {
-        for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
-
-            PointcutManager pointcutManager = SystemLoader.getSystem(uuid).getAspectManager().
-                    getPointcutManager(aspectDef.getName());
-
-            for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().isOfType(PointcutType.SET)) {
-                    SetPointcut pointcut = pointcutManager.getSetPointcut(adviceDef.getExpression().getExpression());
-                    if (pointcut == null) {
-                        pointcut = new SetPointcut(uuid, adviceDef.getExpression());
-                        pointcutManager.addSetPointcut(pointcut);
-                    }
-                    pointcut.addAroundAdvice(adviceDef.getName());
-                }
-            }
-
-            for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().isOfType(PointcutType.SET)) {
-                    SetPointcut pointcut = pointcutManager.getSetPointcut(adviceDef.getExpression().getExpression());
-                    if (pointcut == null) {
-                        pointcut = new SetPointcut(uuid, adviceDef.getExpression());
-                        pointcutManager.addSetPointcut(pointcut);
-                    }
-                    pointcut.addBeforeAdvice(adviceDef.getName());
-                }
-            }
-
-            for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().isOfType(PointcutType.SET)) {
-                    SetPointcut pointcut = pointcutManager.getSetPointcut(adviceDef.getExpression().getExpression());
-                    if (pointcut == null) {
-                        pointcut = new SetPointcut(uuid, adviceDef.getExpression());
-                        pointcutManager.addSetPointcut(pointcut);
-                    }
-                    pointcut.addAfterAdvice(adviceDef.getName());
-                }
-            }
-        }
-    }
-
-    /**
-     * Registers the get pointcuts.
-     *
-     * @param uuid       the UUID for the AspectWerkz system to use
-     * @param definition the AspectWerkz definition
-     */
-    private static void registerGetPointcuts(
-            final String uuid,
-            final SystemDefinition definition) {
-        for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
-
-            PointcutManager pointcutManager = SystemLoader.getSystem(uuid).getAspectManager().
-                    getPointcutManager(aspectDef.getName());
-
-            for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().isOfType(PointcutType.GET)) {
-                    GetPointcut pointcut = pointcutManager.getGetPointcut(adviceDef.getExpression().getExpression());
-                    if (pointcut == null) {
-                        pointcut = new GetPointcut(uuid, adviceDef.getExpression());
-                        pointcutManager.addGetPointcut(pointcut);
-                    }
-                    pointcut.addAroundAdvice(adviceDef.getName());
-                }
-            }
-
-            for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().isOfType(PointcutType.GET)) {
-                    GetPointcut pointcut = pointcutManager.getGetPointcut(adviceDef.getExpression().getExpression());
-                    if (pointcut == null) {
-                        pointcut = new GetPointcut(uuid, adviceDef.getExpression());
-                        pointcutManager.addGetPointcut(pointcut);
-                    }
-                    pointcut.addBeforeAdvice(adviceDef.getName());
-                }
-            }
-
-            for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().isOfType(PointcutType.GET)) {
-                    GetPointcut pointcut = pointcutManager.getGetPointcut(adviceDef.getExpression().getExpression());
-                    if (pointcut == null) {
-                        pointcut = new GetPointcut(uuid, adviceDef.getExpression());
-                        pointcutManager.addGetPointcut(pointcut);
-                    }
-                    pointcut.addAfterAdvice(adviceDef.getName());
-                }
-            }
-        }
-    }
-
-    /**
-     * Registers the handler pointcuts.
-     *
-     * @param uuid       the UUID for the AspectWerkz system to use
-     * @param definition the AspectWerkz definition
-     */
-    private static void registerHandlerPointcuts(
-            final String uuid,
-            final SystemDefinition definition) {
-        for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
-
-            PointcutManager pointcutManager = SystemLoader.getSystem(uuid).getAspectManager().
-                    getPointcutManager(aspectDef.getName());
-
-            for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().isOfType(PointcutType.HANDLER)) {
-                    HandlerPointcut pointcut = pointcutManager.getHandlerPointcut(
-                            adviceDef.getExpression().getExpression()
-                    );
-                    if (pointcut == null) {
-                        pointcut = new HandlerPointcut(uuid, adviceDef.getExpression());
-                        pointcutManager.addHandlerPointcut(pointcut);
-                    }
-                    pointcut.addBeforeAdvice(adviceDef.getName());
-                }
-            }
-        }
+        registerCFlowPointcuts(uuid, definition);
     }
 
     /**
@@ -517,6 +300,7 @@ public class StartupManager {
 
                         // if null, it is an anonymous cflow like in "execution(..) AND cflow(...)"
                         // create a new PoincutDef lately to bind it
+                        // TODO check me - not needed since anonymous are autonamed ?
                         if (cflowPointcutDef == null) {
                             cflowPointcutDef = new PointcutDefinition();
                             cflowPointcutDef.setName(value.getName());
@@ -525,7 +309,7 @@ public class StartupManager {
                         }
 
                         // create call pointcut
-                        CallPointcut pointcut = new CallPointcut(uuid, value);
+                        Pointcut pointcut = new Pointcut(uuid, value);
 
                         // register the cflow advices in the system and create the cflow system aspect
                         // (if it does not already exist)
@@ -582,21 +366,12 @@ public class StartupManager {
                             registerAspect(uuid, cflowAspect, new HashMap());
                         }
 
-                        // add the pointcut definition to the method pointcut
-                        pointcut.addPointcutDef(cflowPointcutDef);
-
                         // add references to the cflow advices to the cflow pointcut
                         pointcut.addBeforeAdvice(CFlowSystemAspect.PRE_ADVICE);
                         pointcut.addAfterAdvice(CFlowSystemAspect.POST_ADVICE);
 
-                        // add the method pointcut
-                        aspect.addCallPointcut(pointcut);
-
-
-
-                        //TODO ALEX USELESS - does not support NOT IN
-                        // impl a visitor
-                        aspect.addMethodToCflowExpressionMap(expression, value);
+                        // add the call pointcut
+                        aspect.addPointcut(pointcut);
                     }
                 }
                 //TODO ALEX - is this commented code needed?

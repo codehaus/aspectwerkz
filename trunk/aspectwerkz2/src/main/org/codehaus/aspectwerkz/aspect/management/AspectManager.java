@@ -29,7 +29,6 @@ import org.codehaus.aspectwerkz.definition.attribute.AttributeParser;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
-import org.codehaus.aspectwerkz.pointcut.PointcutManager;
 import org.codehaus.aspectwerkz.util.Util;
 
 /**
