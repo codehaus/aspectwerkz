@@ -148,7 +148,7 @@
     <target name="samples:trace" depends="dist, compile:samples">
         <java fork="true" classname="samples.tracing.Trace">
             <!-- Note: this option is OPTIONAL if you place the aop.xml in a META-INF entry instead. -->
-            <jvmarg line="-Daspectwerkz.definition.file=${samples.src.dir}/aop.xml"/>
+            <jvmarg line="-Daspectwerkz.definition.file=${samples.src.dir}/aop.xml -Daspectwerkz.transform.dump=*,before"/>
             <classpath>
                 <pathelement path="${src.dir}/samples"/>
                 <pathelement path="${build.dir}/${name}-${version}.jar"/>

@@ -14,6 +14,7 @@ import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.CodeAdapter;
+import org.objectweb.asm.Label;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.transform.Context;
@@ -151,9 +152,10 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
                                        final int access,
                                        final String desc) {
         // load "this"
-        ctorProxy.visitVarInsn(ALOAD, 0);
+        ctorProxy.visitVarInsn(ALOAD, 0);// is too simple f.e. when DUP was used
         // load args
         AsmHelper.loadArgumentTypes(ctorProxy, Type.getArgumentTypes(desc), false);
+
         // caller = callee
         ctorProxy.visitVarInsn(ALOAD, 0);
 
@@ -214,6 +216,20 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
         return true;
     }
 
+    /**
+     * A class that dispatch the ctor body instruction to any other given code visitor
+     * </p>
+     * The behavior is like this:
+     * 1/ as long as the INVOKESPECIAL for the object initialization has not been reached, every bytecode
+     * instruction is dispatched in the ctor code visitor. [note 1]
+     * 2/ when this one is reached, it is only added in the ctor code visitor and a JP invoke is added
+     * 3/ after that, only the other code visitor receives the instructions
+     * </p>
+     * [note 1] To support schemes like http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.html#9839
+     * where the stack is like ALOAD_0 + DUP, we handle a special case.
+     * f.e. CGlib proxy ctor are like that..
+     * Don't know if some other info can be left on the stack (f.e. ILOAD 1, DUP ...)
+     */
     private class DispatchCtorBodyCodeAdapter extends CodeAdapter {
         private CodeVisitor m_ctorBodyMethodCodeVisitor;
         private CodeVisitor m_proxyCtorCodeVisitor;
@@ -221,6 +237,10 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
         private final String m_constructorDesc;
 
         private int m_newCount = 0;
+
+        private boolean m_proxyCtorCodeDone = false;
+        private boolean m_isALOADDUPHeuristic = false;
+        private int m_index = -1;
 
         public DispatchCtorBodyCodeAdapter(CodeVisitor proxyCtor, CodeVisitor ctorBodyMethod, final int access,
                                            final String desc) {
@@ -231,6 +251,44 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
             m_constructorDesc = desc;
         }
 
+        public void visitInsn(int opcode) {
+            super.visitInsn(opcode);
+            if (!m_proxyCtorCodeDone && opcode == DUP && m_index == 0) {
+                // heuristic for ALOAD_0 + DUP confirmed
+                m_isALOADDUPHeuristic = true;
+                m_index++;
+            }
+        }
+
+        public void visitIntInsn(int i, int i1) {
+            super.visitIntInsn(i, i1);
+        }
+
+        public void visitVarInsn(int opcode, int i1) {
+            super.visitVarInsn(opcode, i1);
+            if (!m_proxyCtorCodeDone) {
+                if (opcode == ALOAD && i1 == 0) {
+                    m_index++;
+                }
+            }
+        }
+
+        public void visitFieldInsn(int i, String s, String s1, String s2) {
+            super.visitFieldInsn(i, s, s1, s2);
+        }
+
+        public void visitLdcInsn(Object o) {
+            super.visitLdcInsn(o);
+        }
+
+        public void visitIincInsn(int i, int i1) {
+            super.visitIincInsn(i, i1);
+        }
+
+        public void visitMultiANewArrayInsn(String s, int i) {
+            super.visitMultiANewArrayInsn(s, i);
+        }
+
         /**
          * Visit NEW type to ignore corresponding INVOKESPECIAL for those
          *
@@ -238,7 +296,7 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
          * @param name
          */
         public void visitTypeInsn(int opcode, String name) {
-            cv.visitTypeInsn(opcode, name);
+            super.visitTypeInsn(opcode, name);
             if (opcode == NEW) {
                 m_newCount++;
             }
@@ -248,7 +306,7 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
                                     String owner,
                                     String name,
                                     String desc) {
-            if (m_proxyCtorCodeVisitor != null) {
+            if (!m_proxyCtorCodeDone) {
                 if (opcode == INVOKESPECIAL) {
                     if (m_newCount == 0) {
                         // first INVOKESPECIAL encountered to <init> for a NON new XXX()
@@ -258,7 +316,12 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
                         m_proxyCtorCodeVisitor.visitInsn(RETURN);
                         m_proxyCtorCodeVisitor.visitMaxs(0, 0);
                         m_proxyCtorCodeVisitor = null;
+                        m_proxyCtorCodeDone = true;
                         cv = m_ctorBodyMethodCodeVisitor;
+                        // load ALOAD 0 if under heuristic
+                        if (m_isALOADDUPHeuristic) {
+                            m_ctorBodyMethodCodeVisitor.visitVarInsn(ALOAD, 0);
+                        }
                     } else {
                         m_newCount--;
                         cv.visitMethodInsn(opcode, owner, name, desc);
@@ -270,5 +333,6 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
                 cv.visitMethodInsn(opcode, owner, name, desc);
             }
         }
+
     }
 }
