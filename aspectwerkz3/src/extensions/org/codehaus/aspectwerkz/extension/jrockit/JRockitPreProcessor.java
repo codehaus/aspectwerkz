@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.extension.jrockit;
 
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
+import org.apache.xml.utils.WrappedRuntimeException;
 import com.bea.jvm.JVMFactory;
 import com.jrockit.management.rmp.RmpSocketListener;
 
@@ -55,7 +56,7 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
             //(ClassPreProcessor)ClassLoader.getSystemClassLoader().loadClass(clpp).newInstance();
             //s_preProcessor.initialize(null);
         } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
+            throw new WrappedRuntimeException(e);
         }
     }
 
@@ -79,7 +80,6 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
      * @return bytecode weaved
      */
     public byte[] preProcess(ClassLoader caller, String name, byte[] bytecode) {
-//        System.out.println(name + " [" + caller + "]");
         if (caller == null || caller.getParent() == null) {
             return bytecode;
         } else {
@@ -94,8 +94,6 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
         // uncomment this lines to programmaticaly configure at runtime the CLPP
         JRockitPreProcessor pp = new JRockitPreProcessor();//self registration
         Class loadedCP = Class.forName("java.math.BigDecimal");
-
-        //System.out.println(org.codehaus.aspectwerkz.Pointcut.class.getClassLoader());
 
         while (true) {
             System.out.print(".");
