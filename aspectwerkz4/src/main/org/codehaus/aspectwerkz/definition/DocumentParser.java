@@ -481,7 +481,7 @@ public class DocumentParser {
                 final String value = attribute.getValue().trim();
                 if (name.equalsIgnoreCase("class")) {
                     className = value;
-                } else if (name.equalsIgnoreCase("deployment-model") && value!=null) {
+                } else if (name.equalsIgnoreCase("deployment-model") && value != null) {
                     deploymentModelAsString = value;
                 } else if (name.equalsIgnoreCase("transient")) {
                     if (value != null && value.equalsIgnoreCase("true")) {
@@ -514,8 +514,8 @@ public class DocumentParser {
             }
 
             final DeploymentModel deploymentModel =
-                    (deploymentModelAsString!=null)?DeploymentModel.getDeploymentModelFor(deploymentModelAsString)
-                                                   :DeploymentModel.PER_INSTANCE;
+                    (deploymentModelAsString != null) ? DeploymentModel.getDeploymentModelFor(deploymentModelAsString)
+                    : DeploymentModel.PER_INSTANCE;
 
             final MixinDefinition mixinDefinition =
                     DefinitionParserHelper.createAndAddMixinDefToSystemDef(
@@ -1129,7 +1129,7 @@ public class DocumentParser {
                 } else if (token.trim().equalsIgnoreCase("get")) {
                     hasGetPointcut = true;
                 } else if (token.trim().equalsIgnoreCase("handler")) {
-                    hasHandlerPointcut = true;
+                    throw new DefinitionException("handler pointcut for advisable class is not supported");
                 }
             }
         }
@@ -1152,7 +1152,7 @@ public class DocumentParser {
             DefinitionParserHelper.createAndAddAdvisableDef(
                     "(set(!static * *.*) && " + withinPointcut + ')',
                                                             // TODO might cause problem with fields in ctor, but grammar has bug so can't filter out ctors
-//                    "(set(!static * *.*) && !withincode(*.new(..)) && " + withinPointcut + ')',
+//                    "(set(!static * *.*) && !withincode(*.new(..)) && " + pointcut + ')',
                     definition
             );
         }
@@ -1164,6 +1164,13 @@ public class DocumentParser {
                     definition
             );
         }
-        //TODO handler
+//        if (hasAllPointcuts || hasHandlerPointcut) {
+//            DefinitionParserHelper.createAndAddAdvisableDef(
+//                    "(handler(java.lang.IllegalArgumentException) && " + withinPointcut + ')',
+////                    "(handler(*..*) && " + withinPointcut + ')',
+////                    "(handler(*..*) && !withincode(static * *.*(..)) && " + withinPointcut + ')',
+//                    definition
+//            );
+//        }
     }
 }

@@ -67,6 +67,8 @@ public class MyAspect {
     }
 
     /**
+     * Around execution(* test.customproceed.CustomProceedTest.setMisc1(..)) && args(l, s)
+     *
      * @Around execution(* test.customproceed.CustomProceedTest.setMisc1(long, String)) && args(l, s)
      */
     public Object around4(ProceedWithMiscArgs1 jp, long l, String s) {

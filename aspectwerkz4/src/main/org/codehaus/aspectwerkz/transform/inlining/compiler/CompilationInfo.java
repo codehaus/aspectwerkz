@@ -95,17 +95,17 @@ public final class CompilationInfo {
 
         public Model(final EmittedJoinPoint emittedJoinPoint,
                      final AdviceInfoContainer adviceInfoContainer,
-                     final ClassInfo calleeClassInfo) {
+                     final ClassInfo thisClassInfo) {
             m_emittedJoinPoint = emittedJoinPoint;
             m_adviceInfoContainer = adviceInfoContainer;
             m_joinPointClassName = m_emittedJoinPoint.getJoinPointClassName();
-            m_thisClassInfo = calleeClassInfo;
+            m_thisClassInfo = thisClassInfo;
         }
 
         public Model(final EmittedJoinPoint emittedJoinPoint,
                      final AdviceInfoContainer adviceInfoContainer,
                      final int redefinitionCounter,
-                     final ClassInfo calleeClassInfo) {
+                     final ClassInfo thisClassInfo) {
             m_emittedJoinPoint = emittedJoinPoint;
             m_adviceInfoContainer = adviceInfoContainer;
             m_joinPointClassName = Strings.replaceSubString(
@@ -114,7 +114,7 @@ public final class CompilationInfo {
                     new StringBuffer().append('_').append(redefinitionCounter).
                     append(TransformationConstants.JOIN_POINT_CLASS_SUFFIX).toString()
             );
-            m_thisClassInfo = calleeClassInfo;
+            m_thisClassInfo = thisClassInfo;
         }
 
         public String getJoinPointClassName() {

@@ -51,5 +51,4 @@ public interface JoinPoint extends StaticJoinPoint {
      * @return the Rtti
      */
     Rtti getRtti();
-
 }

@@ -27,7 +27,6 @@ import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
-import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -38,9 +37,10 @@ import java.util.HashMap;
 import java.lang.reflect.Modifier;
 
 /**
- * Advises catch clauses by inserting a call to the join point as the first thing in the catch block.
- *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @TODO clean up commented code and javadoc
+ * <p/>
+ * Advises catch clauses by inserting a call to the join point as the first thing in the catch block.
  */
 public class HandlerVisitor extends ClassAdapter implements TransformationConstants {
 
@@ -79,7 +79,8 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
          * @param ctx
          * @param catchLabels
          */
-        public LookaheadCatchLabelsClassAdapter(ClassVisitor cv, ClassLoader loader, ClassInfo callerClassInfo, Context ctx, List catchLabels) {
+        public LookaheadCatchLabelsClassAdapter(ClassVisitor cv, ClassLoader loader, ClassInfo callerClassInfo,
+                                                Context ctx, List catchLabels) {
             super(cv);
             m_catchLabels = catchLabels;
             m_loader = loader;
@@ -110,7 +111,9 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
             }
 
             CodeVisitor mv = cv.visitMethod(access, callerMethodName, callerMethodDesc, exceptions, attrs);
-            if (mv == null) return mv;
+            if (mv == null) {
+                return mv;
+            }
 
             final MemberInfo callerMemberInfo;
             if (INIT_METHOD_NAME.equals(callerMethodName)) {
@@ -142,22 +145,28 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
                     super.visitLabel(label);
                 }
 
-                public void visitTryCatchBlock(Label startLabel, Label endLabel, Label handlerLabel, String exceptionTypeName) {
+                public void visitTryCatchBlock(Label startLabel, Label endLabel, Label handlerLabel,
+                                               String exceptionTypeName) {
                     if (exceptionTypeName == null) {
                         // finally block
                         super.visitTryCatchBlock(startLabel, endLabel, handlerLabel, exceptionTypeName);
                         return;
                     }
                     final ClassInfo exceptionClassInfo = AsmClassInfo.getClassInfo(exceptionTypeName, m_loader);
-                    final ExpressionContext ctx = new ExpressionContext(PointcutType.HANDLER, exceptionClassInfo, callerMemberInfo);
+                    final ExpressionContext ctx = new ExpressionContext(
+                            PointcutType.HANDLER, exceptionClassInfo, callerMemberInfo
+                    );
                     if (!handlerFilter(m_ctx.getDefinitions(), ctx)) {
                         // remember its index and the exception exceptionClassInfo
-                        Integer index = (Integer)m_labelIndexes.get(handlerLabel);
+                        Integer index = (Integer) m_labelIndexes.get(handlerLabel);
                         if (index != null) {
-                            m_catchLabels.add(new CatchLabelStruct(index.intValue(),
-                                                                   exceptionClassInfo,
-                                                                   m_callerClassInfo,
-                                                                   callerMemberInfo)
+                            m_catchLabels.add(
+                                    new CatchLabelStruct(
+                                            index.intValue(),
+                                            exceptionClassInfo,
+                                            m_callerClassInfo,
+                                            callerMemberInfo
+                                    )
                             );
                         }
                     }
@@ -225,9 +234,7 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
         }
 
         CodeVisitor mv = cv.visitMethod(access, name, desc, exceptions, attrs);
-        return mv == null ? null : new CatchClauseCodeAdapter(
-                mv
-        );
+        return mv == null ? null : new CatchClauseCodeAdapter(mv);
     }
 
     /**
@@ -305,9 +312,7 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
             //? check in AJ RTTI
             cv.visitMethodInsn(
                     INVOKESTATIC, joinPointClassName, INVOKE_METHOD_NAME,
-                    TransformationUtil.getInvokeSignatureForHandlerJoinPoints(
-                            callerTypeName, exceptionTypeName
-                    )
+                    TransformationUtil.getInvokeSignatureForHandlerJoinPoints(callerTypeName, exceptionTypeName)
             );
 
             // emit the joinpoint
@@ -321,7 +326,7 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
                             exceptionTypeName,
                             "",
                             exceptionTypeDesc,
-                            0,// a bit meaningless but must not be static
+                            0, // a bit meaningless but must not be static
                             joinPointHash,
                             joinPointClassName,
                             m_lineNumber

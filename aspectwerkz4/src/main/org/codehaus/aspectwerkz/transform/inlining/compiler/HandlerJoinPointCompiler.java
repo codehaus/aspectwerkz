@@ -10,16 +10,11 @@ package org.codehaus.aspectwerkz.transform.inlining.compiler;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Type;
 
-import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
-
-import java.lang.reflect.Modifier;
-
 /**
  * A compiler that compiles/generates a class that represents a specific join point, a class which invokes the advices
  * and the target join point statically.
- *
+ * <p/>
  * In this case, CALLEE is the catched exception instance itself.
- *
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur </a>
@@ -58,15 +53,12 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
 
     /**
      * Creates the signature for the join point.
-     * <p/>
-     * FIXME signature field should NOT be of type Signature but of the specific type (update all refs as well)
      *
      * @param cv
      */
     protected void createSignature(final CodeVisitor cv) {
         cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
         cv.visitLdcInsn(new Integer(m_joinPointHash));
-
 
         cv.visitMethodInsn(
                 INVOKESTATIC,
@@ -110,9 +102,10 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      * @param cv
      * @param argStartIndex index on stack of first target method arg (0 or 1, depends of static target or not)
      */
-    protected void createInlinedJoinPointInvocation(final CodeVisitor cv, final boolean isOptimizedJoinPoint,
-                                                    final int argStartIndex, final int joinPointIndex) {
-
+    protected void createInlinedJoinPointInvocation(final CodeVisitor cv,
+                                                    final boolean isOptimizedJoinPoint,
+                                                    final int argStartIndex,
+                                                    final int joinPointIndex) {
         // load the exception
         cv.visitVarInsn(ALOAD, 0);//TODO if changed perhaps load CALLEE instead that host the exception ?
 //        // load the target exception (arg0 else not available for static target)
@@ -130,14 +123,11 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      * @param cv
      */
     protected void createJoinPointInvocation(final CodeVisitor cv) {
-        //cv.visitInsn();
-//        // load the target instance member field unless calleeMember is static
+        // load the target instance member field unless calleeMember is static
 //        if (!Modifier.isStatic(m_calleeMemberModifiers)) {
 //            cv.visitVarInsn(ALOAD, 0);
 //            cv.visitFieldInsn(GETFIELD, m_joinPointClassName, CALLEE_INSTANCE_FIELD_NAME, m_calleeClassSignature);
 //        }
-//        throw new UnsupportedOperationException("join point type is not supported: HANDLER");
-          throw new UnsupportedOperationException("Should not happen - join point type is not supported: HANDLER");
     }
 
 //    /**
