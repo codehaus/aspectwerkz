@@ -57,7 +57,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms member methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberMethodTransformer.java,v 1.16 2003-07-14 15:02:48 jboner Exp $
+ * @version $Id: AdviseMemberMethodTransformer.java,v 1.17 2003-07-15 08:26:17 jboner Exp $
  */
 public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -808,7 +808,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                 cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.PostAdvice")) {
             return true;
         }
-        else if (m_weaveModel.isAdvised(cg.getClassName())) {
+        else if (m_weaveModel.inTransformationScope(cg.getClassName())) {
             return false;
         }
         else {

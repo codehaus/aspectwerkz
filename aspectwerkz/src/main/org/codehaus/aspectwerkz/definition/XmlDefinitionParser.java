@@ -36,7 +36,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Parses the XML definition file using <tt>dom4j</tt>.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: XmlDefinitionParser.java,v 1.11 2003-07-14 19:09:08 jboner Exp $
+ * @version $Id: XmlDefinitionParser.java,v 1.12 2003-07-15 08:26:16 jboner Exp $
  */
 public class XmlDefinitionParser {
 
@@ -158,18 +158,59 @@ public class XmlDefinitionParser {
     private static AspectWerkzDefinition parseDocument(final Document document) {
         final AspectWerkzDefinition definition = new AspectWerkzDefinition();
         final Element root = document.getRootElement();
+
+        // get the base package
         final String basePackage = getBasePackage(root);
 
-        // parse without packages
+        // parse the transformation scopes
+        parseTransformationScopes(root, definition, basePackage);
+
+        // parse without package elements
         parseIntroductionElements(root, definition, basePackage);
         parseAdviceElements(root, definition, basePackage);
         parseAdviceStackElements(root, definition, basePackage);
         parseAspectElements(root, definition, basePackage);
 
-        // parse with packages
+        // parse with package elements
         parsePackageElements(root, definition, basePackage);
 
         return definition;
+    }
+
+    /**
+     * Parses the <tt>transformation-scope</tt> elements.
+     *
+     * @param root the root element
+     * @param definition the definition object
+     * @param packageName the package name
+     */
+    private static void parseTransformationScopes(final Element root,
+                                                  final AspectWerkzDefinition definition,
+                                                  final String packageName) {
+        for (Iterator it1 = root.elementIterator("transformation-scope"); it1.hasNext();) {
+            String transformationScope = "";
+            Element scope = (Element)it1.next();
+            for (Iterator it2 = scope.attributeIterator(); it2.hasNext();) {
+                Attribute attribute = (Attribute)it2.next();
+                if (attribute.getName().trim().equals("package")) {
+                    transformationScope = attribute.getValue().trim();
+                    if (packageName.endsWith(".*")) {
+                        transformationScope = packageName.substring(0, packageName.length() - 2);
+                    }
+                    else if (packageName.endsWith(".")) {
+                        transformationScope = packageName.substring(0, packageName.length() - 1);
+                    }
+                    transformationScope = packageName + transformationScope;
+                    break;
+                }
+                else {
+                    continue;
+                }
+            }
+            if (transformationScope.length() != 0) {
+                definition.addTransformationScope(transformationScope);
+            }
+        }
     }
 
     /**
@@ -806,6 +847,7 @@ public class XmlDefinitionParser {
                 else {
                     basePackage += ".";
                 }
+                break;
             }
             else {
                 continue;
@@ -835,6 +877,7 @@ public class XmlDefinitionParser {
                 else {
                     packageName += ".";
                 }
+                break;
             }
             else {
                 continue;

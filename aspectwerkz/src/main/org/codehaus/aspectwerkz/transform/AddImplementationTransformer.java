@@ -50,7 +50,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an Introductions to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddImplementationTransformer.java,v 1.15 2003-07-11 10:45:19 jboner Exp $
+ * @version $Id: AddImplementationTransformer.java,v 1.16 2003-07-15 08:26:17 jboner Exp $
  */
 public class AddImplementationTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -523,7 +523,7 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
         if (cg.isInterface()) {
             return true;
         }
-        if (m_weaveModel.isAdvised(cg.getClassName()) &&
+        if (m_weaveModel.inTransformationScope(cg.getClassName()) &&
                 m_weaveModel.hasIntroductions(cg.getClassName())) {
             return false;
         }
