@@ -85,7 +85,7 @@ import java.util.StringTokenizer;
 public class ProcessStarter {
 
     /** option for classloader preprocessor target */
-    private final static String CL_PRE_PROCESSOR_CLASSNAME_PROPERTY = "aspectwerkz.classloader.clpreprocessor";
+    final static String CL_PRE_PROCESSOR_CLASSNAME_PROPERTY = "aspectwerkz.classloader.clpreprocessor";
     /** default dir when -Xbootclasspath is forced or used (java 1.3) */
     private final static String CL_BOOTCLASSPATH_FORCE_DEFAULT = "."+File.separatorChar+"boot";
     /** option for target dir when -Xbootclasspath is forced or used (java 1.3) */
@@ -107,7 +107,7 @@ public class ProcessStarter {
     /**
      * Test if current java installation supports HotSwap
      */
-    private boolean hasCanRedefineClass() {
+    private static boolean hasCanRedefineClass() {
         try {
             Method canM = VirtualMachine.class.getMethod("canRedefineClasses", new Class[]{});
             return true;
