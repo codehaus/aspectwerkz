@@ -14,10 +14,11 @@ public abstract class BaseCallable {
     public String m_logString = "";
 
     public void debug() {
-        //        System.out.println("CallablePrototype.debug");
-        //        System.out.println(" this.getClass().getName() = " + this.getClass().getName());
-        //        System.out.println(" this.getClass().getClassLoader() = " +
-        // this.getClass().getClassLoader());
+//        System.out.println("CallablePrototype.debug");
+//        System.out.println(" this.getClass().getName() = " + this.getClass().getName());
+//        System.out.println(" this.getClass().getClassLoader() = " +
+//                this.getClass().getClassLoader());
+//        System.out.println("logString = " + getLogString());
     }
 
     public String getLogString() {

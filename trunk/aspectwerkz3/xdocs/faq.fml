@@ -216,6 +216,28 @@
             </answer>
         </faq>
     </part>
+    <part id="BEA integration">
+        <title>BEA integration</title>
+        <faq id="bea/jrockit">
+            <question>
+                Does AspectWerkz support BEA JRockit?
+            </question>
+            <answer>
+                AspectWerkz supports BEA JRockit thru a dedicated module wich relies on a low level BEA API.
+                It makes AOP integration on BEA JRockit much easier than for HotSpot. <a href="online.html#BEA_JRockit">Read more</a>.
+            </answer>
+        </faq>
+        <faq id="bea/wls81">
+            <question>
+                I am having troubles with WebLogic Server / Integration when using AspectWerkz, with a "getEncoding" error !
+            </question>
+            <answer>
+                This is a known conflict between <i>piccolo.jar</i> that ships with AspectWerkz and the WebLogic 8.1 product line.
+                Rename the <i>lib/piccolo.jar</i> in <i>lib/piccolo.jar.IGNORE</i> in the AspectWerkz distribution.
+            </answer>
+        </faq>
+    </part>
+
     <part id="Other">
         <title>Other</title>
         <faq id="other/ibm">

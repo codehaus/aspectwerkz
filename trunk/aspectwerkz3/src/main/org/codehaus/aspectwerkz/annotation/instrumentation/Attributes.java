@@ -218,10 +218,10 @@ public class Attributes {
     }
 
     /**
-     * Return the list (possibly empty) of custom attributes associated with the class.
+     * Return the attribute extractor associated with the class.
      * 
      * @param klass the Class object to find the attributes on.
-     * @return the possibly 0-length array of attributes
+     * @return the attribute extractor or null if the class bytecode could not be found
      */
     public static synchronized AttributeExtractor getAttributeExtractor(final Class klass) {
         if (klass.isPrimitive() || klass.isArray() || klass.getName().startsWith("java.")) {
@@ -234,13 +234,19 @@ public class Attributes {
                 ClassLoader loader = klass.getClassLoader();
                 if (loader != null) {
                     extractor = new AsmAttributeExtractor();
-                    extractor.initialize(className, klass.getClassLoader());
-                    s_extractorCache.put(klass, extractor);
+                    if (extractor.initialize(className, klass.getClassLoader())) {
+                        s_extractorCache.put(klass, extractor);
+                    } else {
+                        return null;
+                    }
                 } else {
                     // bootstrap classloader
                     extractor = new AsmAttributeExtractor();
-                    extractor.initialize(className, ClassLoader.getSystemClassLoader());
-                    s_extractorCache.put(klass, extractor);
+                    if (extractor.initialize(className, ClassLoader.getSystemClassLoader())) {
+                        s_extractorCache.put(klass, extractor);
+                    } else {
+                        return null;
+                    }
                 }
             } catch (Exception e) {
                 throw new WrappedRuntimeException(e);

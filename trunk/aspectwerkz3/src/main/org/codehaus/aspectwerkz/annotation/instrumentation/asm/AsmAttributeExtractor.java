@@ -42,20 +42,26 @@ public class AsmAttributeExtractor implements AttributeExtractor {
     private ClassWriter m_writer = null;
 
     /**
-     * Open the classfile and parse it in to the BCEL library.
+     * Open the classfile and parse it in to the ASM library.
      * 
      * @param className the class name to load.
      * @param loader the classloader to use to get the inputstream of the .class file.
+     * @return true if correctly initialized
      */
-    public void initialize(final String className, final ClassLoader loader) {
+    public boolean initialize(final String className, final ClassLoader loader) {
         String classFileName = className.replace('.', '/') + ".class";
         try {
             InputStream classStream = loader.getResourceAsStream(classFileName);
-            m_reader = new ClassReader(classStream);
-            m_writer = new ClassWriter(false);
+            if (classStream != null) {
+                m_reader = new ClassReader(classStream);
+                m_writer = new ClassWriter(false);
+            } else {
+                return false;
+            }
         } catch (IOException e) {
             throw new WrappedRuntimeException(e);
         }
+        return true;
     }
 
     /**

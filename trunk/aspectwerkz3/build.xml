@@ -123,7 +123,7 @@
 	<target name="compile:test" depends="init">
 		<mkdir dir="${build.dir}" />
 		<mkdir dir="${build.test.dir}" />
-		<javac destdir="${build.test.dir}" debug="off">
+		<javac destdir="${build.test.dir}" debug="on">
 			<src path="${test.src.dir}" />
 			<classpath>
 				<pathelement path="${java.class.path}" />
@@ -341,7 +341,7 @@
 	<!-- =================================================== -->
 	<target name="test" depends="clean, jars, test:annotationc">
 		<exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-			<arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests" />
+			<arg line="-cp ${test.src.dir}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests" />
 		</exec>
 	</target>
 
