@@ -25,4 +25,12 @@ public interface HasInstanceLevelAspect {
      * @return the aspect instance
      */
     Object aw$getAspect(String aspectClassName, String qualifiedAspectName, String containerClassName);
+    
+    /**
+     * Cheks if the instance level aspect with the specific name was initialized.
+     * 
+     * @param qualifiedAspectName
+     * @return true in case the aspect was registers, false otherwise
+     */
+    boolean aw$hasAspect(String qualifiedAspectName);
 }
