@@ -21,25 +21,26 @@ public class FieldAdviceTest extends TestCase {
     private int m_setFieldPreAdviced = 0;
     private int m_setFieldPostAdviced = 0;
     private int m_setFieldPrePostAdviced = 0;
-    private int m_getFieldAroundAdviced = 0;
-    private int m_getFieldPreAdviced = 0;
-    private int m_getFieldPostAdviced = 0;
-    private int m_getFieldPrePostAdviced = 0;
+    private int m_getFieldAroundAdviced = 1;
+    private int m_getFieldPreAdviced = 1;
+    private int m_getFieldPostAdviced = 1;
+    private int m_getFieldPrePostAdviced = 1;
 
     private static int s_setStaticFieldAroundAdviced = 0;
     private static int s_setStaticFieldPreAdviced = 0;
     private static int s_setStaticFieldPostAdviced = 0;
     private static int s_setStaticFieldPrePostAdviced = 0;
-    private static int s_getStaticFieldAroundAdviced = 0;
-    private static int s_getStaticFieldPreAdviced = 0;
-    private static int s_getStaticFieldPostAdviced = 0;
-    private static int s_getStaticFieldPrePostAdviced = 0;
+    private static int s_getStaticFieldAroundAdviced = 1;
+    private static int s_getStaticFieldPreAdviced = 1;
+    private static int s_getStaticFieldPostAdviced = 1;
+    private static int s_getStaticFieldPrePostAdviced = 1;
 
     public void testSetMemberFieldAroundAdviced() {
         s_logString = "";
         try {
             setFieldAroundAdviced();
             assertEquals("before after ", s_logString);
+            assertEquals(187, m_setFieldAroundAdviced);
         }
         catch (Exception e) {
             fail();
@@ -49,8 +50,9 @@ public class FieldAdviceTest extends TestCase {
     public void testGetMemberFieldAroundAdviced() {
         s_logString = "";
         try {
-            getFieldAroundAdviced();
+            int i = getFieldAroundAdviced();
             assertEquals("before after ", s_logString);
+            assertEquals(1, i);
         }
         catch (Exception e) {
             fail();
@@ -129,6 +131,7 @@ public class FieldAdviceTest extends TestCase {
         try {
             setStaticFieldAroundAdviced();
             assertEquals("before after ", s_logString);
+            assertEquals(3, s_setStaticFieldAroundAdviced);
         }
         catch (Exception e) {
             fail();
@@ -138,8 +141,9 @@ public class FieldAdviceTest extends TestCase {
     public void testGetStaticFieldAroundAdviced() {
         s_logString = "";
         try {
-            getStaticFieldAroundAdviced();
+            int i = getStaticFieldAroundAdviced();
             assertEquals("before after ", s_logString);
+            assertEquals(1, i);
         }
         catch (Exception e) {
             fail();
