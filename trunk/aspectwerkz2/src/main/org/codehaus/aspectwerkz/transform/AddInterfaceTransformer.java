@@ -10,12 +10,10 @@ package org.codehaus.aspectwerkz.transform;
 import java.util.Iterator;
 
 import javassist.CtClass;
-
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
  * Adds an interfaces to classes.

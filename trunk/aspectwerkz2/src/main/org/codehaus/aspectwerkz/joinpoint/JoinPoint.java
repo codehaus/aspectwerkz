@@ -18,7 +18,7 @@ public interface JoinPoint {
     static final String CONSTRUCTOR_CALL = "CONSTRUCTOR_CALL";
     static final String FIELD_SET = "FIELD_SET";
     static final String FIELD_GET = "FIELD_GET";
-    static final String CATCH_CLAUSE = "CATCH_CLAUSE";
+    static final String CATCH_CLAUSE = "HANDLER";
     static final String STATIC_INITALIZATION = "STATIC_INITALIZATION";
     static final String THROWS = "THROWS";
 

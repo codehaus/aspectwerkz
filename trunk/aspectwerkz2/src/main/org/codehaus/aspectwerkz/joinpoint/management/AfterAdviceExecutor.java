@@ -7,8 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.System;
@@ -19,7 +19,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AfterAdviceExecutor implements AdviceExecutor {
+public class AfterAdviceExecutor {
 
     /**
      * The advices indexes.
@@ -104,7 +104,7 @@ public class AfterAdviceExecutor implements AdviceExecutor {
      *
      * @return a deep copy of the intance
      */
-    public AdviceExecutor newInstance() {
+    public AfterAdviceExecutor newInstance() {
         return new AfterAdviceExecutor(m_adviceIndexes, m_cflowExpressions, m_system);
     }
 }

@@ -7,34 +7,32 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute.bcel;
 
-import java.util.Arrays;
-import java.net.URLClassLoader;
-import java.net.URL;
-import java.io.File;
-import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.IOException;
-import java.io.FileOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectOutputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Arrays;
 
-import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaField;
-
+import com.thoughtworks.qdox.model.JavaMethod;
 import org.apache.bcel.classfile.Attribute;
-import org.apache.bcel.classfile.Unknown;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.ClassParser;
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.generic.FieldGen;
-import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Unknown;
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ConstantPoolGen;
-
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.definition.attribute.AttributeEnhancer;
+import org.apache.bcel.generic.FieldGen;
+import org.apache.bcel.generic.MethodGen;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
+import org.codehaus.aspectwerkz.definition.attribute.AttributeEnhancer;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.metadata.TypeConverter;
 
 /**

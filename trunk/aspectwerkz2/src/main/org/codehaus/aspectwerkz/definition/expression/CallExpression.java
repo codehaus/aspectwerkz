@@ -8,17 +8,17 @@
 package org.codehaus.aspectwerkz.definition.expression;
 
 import java.io.ObjectInputStream;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
+import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
 
 /**
  * @todo document
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */

@@ -1,9 +1,9 @@
 package org.codehaus.aspectwerkz.util;
 
 /*
- * $Header: /home/projects/aspectwerkz/scm-cvs/aspectwerkz2/src/main/org/codehaus/aspectwerkz/util/SequencedHashMap.java,v 1.4 2004-02-17 08:37:45 jboner Exp $
- * $Revision: 1.4 $
- * $Date: 2004-02-17 08:37:45 $
+ * $Header: /home/projects/aspectwerkz/scm-cvs/aspectwerkz2/src/main/org/codehaus/aspectwerkz/util/SequencedHashMap.java,v 1.5 2004-02-20 07:44:46 jboner Exp $
+ * $Revision: 1.5 $
+ * $Date: 2004-02-20 07:44:46 $
  *
  * ====================================================================
  *
@@ -62,22 +62,21 @@ package org.codehaus.aspectwerkz.util;
  */
 
 import java.io.Externalizable;
+import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.io.IOException;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.AbstractCollection;
 import java.util.AbstractSet;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.ConcurrentModificationException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.NoSuchElementException;
-import java.util.ConcurrentModificationException;
+import java.util.Set;
 
 /**
  * A map of objects whose mapping entries are sequenced based on the order in which they were added.  This data

@@ -7,8 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.compiler;
 
-import java.io.PrintWriter;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 
 /**
  * An exception occured during compilation

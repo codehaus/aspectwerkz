@@ -27,7 +27,7 @@ public class ExecutionAttribute implements Attribute {
      * @param expression the expression
      */
     public ExecutionAttribute(final String expression) {
-        if (expression == null) throw new IllegalArgumentException("expression is not valid for execution pointcut");
+        if (expression == null || expression.equals("")) throw new IllegalArgumentException("expression is not valid for execution pointcut");
         m_expression = expression;
     }
 

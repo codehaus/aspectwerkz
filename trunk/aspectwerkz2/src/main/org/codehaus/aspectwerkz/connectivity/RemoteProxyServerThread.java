@@ -7,10 +7,10 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.connectivity;
 
-import java.net.Socket;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.IOException;
+import java.net.Socket;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 

@@ -7,8 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
-import java.net.URL;
 import java.io.InputStream;
+import java.net.URL;
 
 /**
  * Methods to deal with the context class loader. Fail-over is provided to the default class loader.

@@ -7,18 +7,18 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
+import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.List;
+
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
-import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
-import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
-
-import java.util.List;
-import java.util.Iterator;
-import java.lang.reflect.Method;
 
 /**
  * Manages the cflow pointcuts.

@@ -7,13 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
-import java.util.Comparator;
 import java.lang.reflect.Method;
+import java.util.Comparator;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.TypeConverter;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.util.Strings;
 
 /**

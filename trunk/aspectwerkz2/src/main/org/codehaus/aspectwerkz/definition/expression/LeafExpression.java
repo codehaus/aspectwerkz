@@ -7,19 +7,19 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.expression;
 
-import org.codehaus.aspectwerkz.regexp.ClassPattern;
-import org.codehaus.aspectwerkz.regexp.Pattern;
-import org.codehaus.aspectwerkz.regexp.PatternTuple;
-import org.codehaus.aspectwerkz.exception.ExpressionException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.codehaus.aspectwerkz.definition.PatternFactory;
+import org.codehaus.aspectwerkz.exception.ExpressionException;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
-
-import java.util.List;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.Map;
+import org.codehaus.aspectwerkz.regexp.ClassPattern;
+import org.codehaus.aspectwerkz.regexp.Pattern;
+import org.codehaus.aspectwerkz.regexp.PatternTuple;
 
 /**
  * Base class for leaf expression (pattern)
@@ -126,6 +126,11 @@ public abstract class LeafExpression extends Expression {
                 tuple = PatternFactory.createCallPatternTuple(Pattern.METHOD, m_expression, m_package);
                 m_memberPattern = Pattern.compileCallerSidePattern(Pattern.METHOD, tuple.getMemberPattern());
             }
+            m_isHierarchical = tuple.isHierarchical();
+            m_classPattern = Pattern.compileClassPattern(tuple.getCalleeClassPattern());
+        }
+        else if (m_type.equals(PointcutType.HANDLER)) {
+            tuple = PatternFactory.createClassPatternTuple(m_expression, m_package);
             m_isHierarchical = tuple.isHierarchical();
             m_classPattern = Pattern.compileClassPattern(tuple.getCalleeClassPattern());
         }

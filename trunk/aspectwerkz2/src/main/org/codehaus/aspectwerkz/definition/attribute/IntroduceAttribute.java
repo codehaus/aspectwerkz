@@ -46,7 +46,7 @@ public class IntroduceAttribute implements Attribute {
      * @param deploymentModel the deployment model for the aspect
      */
     public IntroduceAttribute(final String expression, final String innerClassName, final String[] interfaceNames, final String deploymentModel) {
-        if (expression == null) throw new IllegalArgumentException("expression is not valid for introduction");
+        if (expression == null || expression.equals("")) throw new IllegalArgumentException("expression is not valid for introduction");
         m_expression = expression;
         m_innerClassName = innerClassName;
         m_introducedInterfaceNames = interfaceNames;

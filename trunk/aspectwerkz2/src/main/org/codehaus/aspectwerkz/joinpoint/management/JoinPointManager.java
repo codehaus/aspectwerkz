@@ -7,38 +7,37 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import gnu.trove.TLongObjectHashMap;
 import gnu.trove.TLongLongHashMap;
-
-import org.codehaus.aspectwerkz.SystemLoader;
-import org.codehaus.aspectwerkz.System;
+import gnu.trove.TLongObjectHashMap;
+import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
-import org.codehaus.aspectwerkz.ConstructorTuple;
+import org.codehaus.aspectwerkz.System;
+import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.Signature;
-import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature;
 import org.codehaus.aspectwerkz.joinpoint.CodeSignature;
-import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
-import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
-import org.codehaus.aspectwerkz.joinpoint.impl.MethodJoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorJoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.impl.FieldJoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseJoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorJoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.FieldJoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.JoinPointBase;
+import org.codehaus.aspectwerkz.joinpoint.impl.MethodJoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 
 /**
  * Manages the join points, invokes the correct advice chains, handles redeployment, JIT compilation etc. One instance
@@ -79,7 +78,7 @@ public class JoinPointManager {
     private final System m_system;
     private final String m_uuid;
     private final Class m_targetClass;
-    private final long m_classHash;
+    private final int m_classHash;
     private final ClassMetaData m_targetClassMetaData;
 
     private final TLongObjectHashMap m_joinPoints = new TLongObjectHashMap();
@@ -165,7 +164,6 @@ public class JoinPointManager {
                                                 final Object targetInstance,
                                                 final int joinPointType,
                                                 final String methodSignature) throws Throwable {
-
         ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(methodHash);
 
         if (threadLocal == null) {
@@ -434,47 +432,46 @@ public class JoinPointManager {
      * <p/>
      * Example of bytecode needed to be generated to invoke the method:
      * <pre>
-     *        ___AW_joinPointManager.proceedWithCatchClauseJoinPoint(
-     *            joinPointHash, exceptionInstance, this,
-     *            JoinPointType.FIELD_SET, joinPointSignature
+     *        ___AW_joinPointManager.proceedWithHandlerJoinPoint(
+     *            joinPointHash, exceptionInstance, this, joinPointSignature
      *       );
      * </pre>
      *
-     * @param catchClauseHash
+     * @param handlerHash
      * @param exceptionInstance
      * @param targetInstance
      * @param handlerSignature
      * @throws Throwable
      */
-    public void proceedWithCatchClauseJoinPoint(final int catchClauseHash,
-                                                final Object exceptionInstance,
-                                                final Object targetInstance,
-                                                final String handlerSignature) throws Throwable {
+    public void proceedWithHandlerJoinPoint(final int handlerHash,
+                                            final Object exceptionInstance,
+                                            final Object targetInstance,
+                                            final String handlerSignature) throws Throwable {
 
-        ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(catchClauseHash);
+        ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(handlerHash);
 
         if (threadLocal == null) {
-            registerJoinPoint(JoinPointType.CATCH_CLAUSE, catchClauseHash, handlerSignature,
-                              m_targetClass, m_targetClassMetaData);
+            ClassMetaData exceptionMetaData = ReflectionMetaDataMaker.createClassMetaData(exceptionInstance.getClass());
+            registerJoinPoint(JoinPointType.HANDLER, handlerHash, handlerSignature, m_targetClass, exceptionMetaData);
             threadLocal = new ThreadLocal();
             threadLocal.set(new JoinPointTuple());
-            m_joinPoints.put(catchClauseHash, threadLocal);
+            m_joinPoints.put(handlerHash, threadLocal);
         }
 
         JoinPointTuple joinPointTuple = (JoinPointTuple)threadLocal.get();
         JoinPoint joinPoint = joinPointTuple.joinPoint;
 
         if (ENABLE_JIT_COMPILATION) {
-            joinPoint = handleJitCompilation(catchClauseHash, joinPointTuple.state);
+            joinPoint = handleJitCompilation(handlerHash, joinPointTuple.state);
         }
 
         // if null or redefined -> create a new join point and cache it
         if (joinPoint == null) {
-            m_invocations.put(catchClauseHash, 0L);
-            Map pointcutTypeToAdvicesMap = s_registry.getAdvicesForJoinPoint(m_classHash, catchClauseHash);
+            m_invocations.put(handlerHash, 0L);
+            Map pointcutTypeToAdvicesMap = s_registry.getAdvicesForJoinPoint(m_classHash, handlerHash);
 
-            AdviceContainer[] adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.CATCH_CLAUSE);
-            joinPoint = createCatchClauseJoinPoint(handlerSignature, m_targetClass, adviceIndexes);
+            AdviceContainer[] adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.HANDLER);
+            joinPoint = createCatchClauseJoinPoint(exceptionInstance.getClass(), m_targetClass, handlerSignature, adviceIndexes);
 
             // set the join point
             joinPointTuple.joinPoint = joinPoint;
@@ -629,22 +626,24 @@ public class JoinPointManager {
     /**
      * Create a catch clause join point.
      *
-     * @param catchClauseSignature
+     * @param exceptionClass
      * @param declaringClass
+     * @param catchClauseSignature
      * @param adviceIndexes
      * @return
      */
-    private JoinPoint createCatchClauseJoinPoint(final String catchClauseSignature,
+    private JoinPoint createCatchClauseJoinPoint(final Class exceptionClass,
                                                  final Class declaringClass,
+                                                 final String catchClauseSignature,
                                                  final AdviceContainer[] adviceIndexes) {
-        Signature signature = new CatchClauseSignatureImpl(declaringClass, catchClauseSignature);
+        Signature signature = new CatchClauseSignatureImpl(exceptionClass, declaringClass, catchClauseSignature);
         // TODO: enable cflow for catch clauses
 //        List cflowExpressions = m_system.getAspectManager().getCFlowExpressions(
 //                ReflectionMetaDataMaker.createClassMetaData(declaringClass),
 //                ReflectionMetaDataMaker.createCatchClauseMetaData(signature)
 //        );
         return new CatchClauseJoinPoint(m_uuid, m_targetClass, signature,
-                                        createAroundAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST, JoinPointType.CATCH_CLAUSE),
+                                        createAroundAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST, JoinPointType.HANDLER),
                                         createBeforeAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST),
                                         createAfterAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST));
     }
@@ -657,7 +656,7 @@ public class JoinPointManager {
      * @param joinPointType
      * @return the advice executor
      */
-    private AdviceExecutor createAroundAdviceExecutor(final AdviceContainer[] adviceIndexes,
+    private AroundAdviceExecutor createAroundAdviceExecutor(final AdviceContainer[] adviceIndexes,
                                                       final List cflowExpressions,
                                                       final int joinPointType) {
         int i, j;
@@ -684,7 +683,7 @@ public class JoinPointManager {
      * @param cflowExpressions
      * @return the advice executor
      */
-    private AdviceExecutor createBeforeAdviceExecutor(final AdviceContainer[] adviceIndexes,
+    private BeforeAdviceExecutor createBeforeAdviceExecutor(final AdviceContainer[] adviceIndexes,
                                                       final List cflowExpressions) {
         int i, j;
         List beforeAdviceList = new ArrayList();
@@ -710,7 +709,7 @@ public class JoinPointManager {
      * @param cflowExpressions
      * @return the advice executor
      */
-    private AdviceExecutor createAfterAdviceExecutor(final AdviceContainer[] adviceIndexes,
+    private AfterAdviceExecutor createAfterAdviceExecutor(final AdviceContainer[] adviceIndexes,
                                                      final List cflowExpressions) {
         int i, j;
         List afterAdviceList = new ArrayList();

@@ -7,26 +7,25 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import javassist.CannotCompileException;
+import javassist.CtClass;
+import javassist.CtField;
+import javassist.CtMethod;
+import javassist.CtNewMethod;
+import javassist.Modifier;
+import javassist.NotFoundException;
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
-import javassist.CtClass;
-import javassist.NotFoundException;
-import javassist.CtMethod;
-import javassist.Modifier;
-import javassist.CtField;
-import javassist.CannotCompileException;
-import javassist.CtNewMethod;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
  * Transforms class for preparation state Class granularity TODO runtime weaving and class preparation to HotSwap

@@ -7,19 +7,18 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.pointcut;
 
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
 
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.MemberMetaData;
-import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
-import org.codehaus.aspectwerkz.util.SequencedHashMap;
-import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.MemberMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.util.SequencedHashMap;
 
 /**
  * Manages pointcuts and introductions defined by a specfic aspect.
@@ -48,6 +47,11 @@ public class PointcutManager {
      * Holds references to all the the set pointcuts.
      */
     protected final List m_setPointcuts = new ArrayList();
+
+    /**
+     * Holds references to all the the handler pointcuts.
+     */
+    protected final List m_handlerPointcuts = new ArrayList();
 
     /**
      * Maps the method to all the cflow method it should care about.
@@ -198,6 +202,17 @@ public class PointcutManager {
     }
 
     /**
+     * Adds a new handler pointcut to the class.
+     *
+     * @param pointcut the pointcut to add
+     */
+    public void addHandlerPointcut(final HandlerPointcut pointcut) {
+        synchronized (m_handlerPointcuts) {
+            m_handlerPointcuts.add(pointcut);
+        }
+    }
+
+    /**
      * Adds a new call pointcut to the class.
      *
      * @param pointcut the pointcut to add
@@ -281,20 +296,11 @@ public class PointcutManager {
                                       final MemberMetaData memberMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (memberMetaData == null) throw new IllegalArgumentException("member meta-data can not be null");
-
-//        System.out.println("classMetaData.getName() = " + classMetaData.getName());
-//        ConstructorMetaData cmd = (ConstructorMetaData)memberMetaData;
-//        System.out.println("cmd.getName() = " + cmd.getName());
 //
         List pointcutList = new ArrayList();
         for (Iterator it = m_executionPointcuts.iterator(); it.hasNext();) {
             ExecutionPointcut pointcut = (ExecutionPointcut)it.next();
-            Expression expression = pointcut.getExpression();
-//            System.out.println("expression = " + expression.getType());
-//            System.out.println("expression.getClass().toString() = " + expression.getClass().toString());
-//            System.out.println("expression.getExpression() = " + expression.getExpression());
-            if (expression.match(classMetaData, memberMetaData)) {
-//                System.out.println("   MATCH");
+            if (pointcut.getExpression().match(classMetaData, memberMetaData)) {
                 pointcutList.add(pointcut);
             }
         }
@@ -372,6 +378,41 @@ public class PointcutManager {
             final SetPointcut pointcut = (SetPointcut)it.next();
             boolean flag = pointcut.getExpression().match(classMetaData, fieldMetaData);
             if (flag) {
+                pointcutList.add(pointcut);
+            }
+        }
+        return pointcutList;
+    }
+
+    /**
+     * Returns the handler pointcut for a specific uuid and expression.
+     *
+     * @param expression the expression
+     * @return the handler pointcut
+     */
+    public HandlerPointcut getHandlerPointcut(final String expression) {
+        for (Iterator it = m_handlerPointcuts.iterator(); it.hasNext();) {
+            HandlerPointcut pointcut = (HandlerPointcut)it.next();
+            if (pointcut.getExpression().getExpression().equals(expression)) {
+                return pointcut;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns all the pointcuts for the method join point specified.
+     *
+     * @param classMetaData the meta-data for the class
+     * @return the pointcuts
+     */
+    public List getHandlerPointcuts(final ClassMetaData classMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+
+        List pointcutList = new ArrayList();
+        for (Iterator it = m_handlerPointcuts.iterator(); it.hasNext();) {
+            final HandlerPointcut pointcut = (HandlerPointcut)it.next();
+            if (pointcut.getExpression().match(classMetaData)) {
                 pointcutList.add(pointcut);
             }
         }
@@ -488,6 +529,7 @@ public class PointcutManager {
                 + ',' + m_getPointcuts
                 + ',' + m_setPointcuts
                 + ',' + m_callPointcuts
+                + ',' + m_handlerPointcuts
                 + ',' + m_methodToCFlowMethodsMap
                 + ']';
     }
@@ -501,6 +543,7 @@ public class PointcutManager {
         result = 37 * result + hashCodeOrZeroIfNull(m_executionPointcuts);
         result = 37 * result + hashCodeOrZeroIfNull(m_getPointcuts);
         result = 37 * result + hashCodeOrZeroIfNull(m_setPointcuts);
+        result = 37 * result + hashCodeOrZeroIfNull(m_handlerPointcuts);
         result = 37 * result + hashCodeOrZeroIfNull(m_callPointcuts);
         result = 37 * result + hashCodeOrZeroIfNull(m_methodToCFlowMethodsMap);
         return result;
@@ -522,6 +565,7 @@ public class PointcutManager {
                 && areEqualsOrBothNull(obj.m_executionPointcuts, this.m_executionPointcuts)
                 && areEqualsOrBothNull(obj.m_getPointcuts, this.m_getPointcuts)
                 && areEqualsOrBothNull(obj.m_setPointcuts, this.m_setPointcuts)
+                && areEqualsOrBothNull(obj.m_handlerPointcuts, this.m_handlerPointcuts)
                 && areEqualsOrBothNull(obj.m_callPointcuts, this.m_callPointcuts)
                 && areEqualsOrBothNull(obj.m_methodToCFlowMethodsMap, this.m_methodToCFlowMethodsMap);
     }

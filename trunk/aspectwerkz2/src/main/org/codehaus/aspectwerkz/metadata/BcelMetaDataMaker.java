@@ -7,17 +7,17 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.bcel.classfile.ExceptionTable;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.Type;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.ExceptionTable;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**

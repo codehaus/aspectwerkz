@@ -7,24 +7,22 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
-import javassist.CtClass;
-import javassist.Modifier;
 import javassist.CannotCompileException;
 import javassist.CtBehavior;
-import javassist.NotFoundException;
+import javassist.CtClass;
 import javassist.CtField;
+import javassist.Modifier;
+import javassist.NotFoundException;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
-
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 
 /**
  * Advises SET and GET join points.

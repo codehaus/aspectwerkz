@@ -7,11 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.hook;
 
-import com.sun.jdi.VirtualMachine;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.StringTokenizer;
+
+import com.sun.jdi.VirtualMachine;
 
 /**
  * ProcessStarter uses JPDA JDI api to start a VM with a runtime modified java.lang.ClassLoader, or transparently use a

@@ -9,8 +9,8 @@ package org.codehaus.aspectwerkz.regexp;
 
 import java.io.ObjectInputStream;
 
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.util.Strings;
 
 /**

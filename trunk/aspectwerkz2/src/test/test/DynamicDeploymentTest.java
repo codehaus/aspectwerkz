@@ -39,7 +39,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         // get the pointcut by name (can also be retrieved by method meta-data)
         ExecutionPointcut pointcut = SystemLoader.getSystem("tests").
                 getAspectManager().
-                getAspectMetaData(ASPECT_NAME).
+                getPointcutManager(ASPECT_NAME).
                 getExecutionPointcut("pc1 || pc2 || pc3");
 
         // get the advices
@@ -68,7 +68,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 
         ExecutionPointcut methodPointcut = (ExecutionPointcut)SystemLoader.getSystem("tests").
                 getAspectManager().
-                getAspectMetaData(ASPECT_NAME).
+                getPointcutManager(ASPECT_NAME).
                 getExecutionPointcuts(m_classMetaData, methodMetaData).get(0);
 
         methodPointcut.addAroundAdvice("test.aspect.DynamicDeploymentTestAspect.advice2");
@@ -94,7 +94,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 
         ExecutionPointcut methodPointcut = (ExecutionPointcut)SystemLoader.getSystem("tests").
                 getAspectManager().
-                getAspectMetaData(ASPECT_NAME).
+                getPointcutManager(ASPECT_NAME).
                 getExecutionPointcuts(m_classMetaData, methodMetaData).get(0);
 
         List advices = methodPointcut.getAroundAdviceIndexTuples();
@@ -126,18 +126,18 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 
             // test the some stuff for the aspect
             assertNotNull(SystemLoader.getSystem("tests").
-                          getAspectManager().getAspectMetaData(NEW_ASPECT_NAME));
+                          getAspectManager().getPointcutManager(NEW_ASPECT_NAME));
 
             assertEquals(DeploymentModel.PER_INSTANCE,
                          SystemLoader.getSystem("tests").
                          getAspectManager().
-                         getAspectMetaData(NEW_ASPECT_NAME).
+                         getPointcutManager(NEW_ASPECT_NAME).
                          getDeploymentModel());
 
             assertEquals(NEW_ASPECT_NAME,
                          SystemLoader.getSystem("tests").
                          getAspectManager().
-                         getAspectMetaData(NEW_ASPECT_NAME).
+                         getPointcutManager(NEW_ASPECT_NAME).
                          getName());
 
             // test an advice from the aspect in action
@@ -150,7 +150,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
             // get an existing pointcut
             ExecutionPointcut methodPointcut = (ExecutionPointcut)SystemLoader.getSystem("tests").
                     getAspectManager().
-                    getAspectMetaData(ASPECT_NAME).
+                    getPointcutManager(ASPECT_NAME).
                     getExecutionPointcuts(m_classMetaData, methodMetaData).
                     get(0);
 

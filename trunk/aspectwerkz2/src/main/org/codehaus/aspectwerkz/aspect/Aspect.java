@@ -7,20 +7,20 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-import java.io.Serializable;
 import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.definition.StartupManager;
-import org.codehaus.aspectwerkz.definition.AspectDefinition;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.ContainerType;
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.System;
+import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.definition.StartupManager;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * Abstract base class that all Aspect implementations must extend.

@@ -27,7 +27,7 @@ public class ClassAttribute implements Attribute {
      * @param expression the expression
      */
     public ClassAttribute(final String expression) {
-        if (expression == null) throw new IllegalArgumentException("expression is not valid for class pointcut");
+        if (expression == null || expression.equals("")) throw new IllegalArgumentException("expression is not valid for class pointcut");
         m_expression = expression;
     }
 

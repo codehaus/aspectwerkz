@@ -7,17 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.expression;
 
-import java.io.ObjectInputStream;
 
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.MemberMetaData;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
-import org.codehaus.aspectwerkz.exception.ExpressionException;
-import org.codehaus.aspectwerkz.regexp.MethodPattern;
-import org.codehaus.aspectwerkz.regexp.FieldPattern;
-import org.codehaus.aspectwerkz.regexp.ClassPattern;
-import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>

@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.hook;
 
-import java.util.StringTokenizer;
+
 
 /**
  * Starts a target process adding a dir in -Xbootclasspath/p: option

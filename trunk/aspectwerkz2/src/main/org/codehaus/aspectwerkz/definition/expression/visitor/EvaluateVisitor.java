@@ -7,22 +7,20 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.expression.visitor;
 
-import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParserVisitor;
-import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
-import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionScript;
-import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
-import org.codehaus.aspectwerkz.definition.expression.ast.InNode;
-import org.codehaus.aspectwerkz.definition.expression.ast.NotInNode;
-import org.codehaus.aspectwerkz.definition.expression.ast.AndNode;
-import org.codehaus.aspectwerkz.definition.expression.ast.NotNode;
-import org.codehaus.aspectwerkz.definition.expression.ast.Identifier;
-import org.codehaus.aspectwerkz.definition.expression.ast.BooleanLiteral;
-import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
-import org.codehaus.aspectwerkz.definition.expression.ast.FalseNode;
-import org.codehaus.aspectwerkz.definition.expression.PointcutType;
-import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionContext;
+import org.codehaus.aspectwerkz.definition.expression.ast.AndNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.BooleanLiteral;
+import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParserVisitor;
+import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionScript;
+import org.codehaus.aspectwerkz.definition.expression.ast.FalseNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.Identifier;
+import org.codehaus.aspectwerkz.definition.expression.ast.InNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.NotInNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.NotNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
 
 /**
  * Evaluate the expression, ignore the IN and NOT IN sub-expressions Resulting Boolean is returned Visit' data is

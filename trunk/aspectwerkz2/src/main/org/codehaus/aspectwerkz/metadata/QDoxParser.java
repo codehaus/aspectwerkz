@@ -8,15 +8,14 @@
 package org.codehaus.aspectwerkz.metadata;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.ArrayList;
 
 import com.thoughtworks.qdox.JavaDocBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
-import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaField;
-
+import com.thoughtworks.qdox.model.JavaMethod;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**

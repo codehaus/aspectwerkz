@@ -7,8 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
-import java.util.Collection;
 import java.io.Serializable;
+import java.util.Collection;
 
 /**
  * A list of all the possible target classes.

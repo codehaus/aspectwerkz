@@ -7,18 +7,17 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Iterator;
-import java.net.URL;
-import java.io.InputStream;
 import java.io.File;
-
-import org.dom4j.Document;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.dom4j.Document;
 
 /**
  * Handles the loading of the definition in various ways and formats.

@@ -7,17 +7,17 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.expression;
 
-import org.codehaus.aspectwerkz.exception.ExpressionException;
-
+import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.HashMap;
+
+import org.codehaus.aspectwerkz.exception.ExpressionException;
 
 /**
- * Expression Namespace. A namespace is usually defined by the Aspect name. TODO: enhance for multiple system and
- * freeing
+ * Expression Namespace. A namespace is usually defined by the Aspect name.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @TODO: ALEX enhance for multiple system and freeing
  */
 public class ExpressionNamespace {
 
@@ -32,7 +32,9 @@ public class ExpressionNamespace {
     private static Map s_namespaces = new WeakHashMap();
 
     /**
-     * Namespace. TODO: never used?
+     * Namespace.
+     *
+     * @TODO: ALEX never used?
      */
     private String m_namespace;
 
@@ -134,6 +136,9 @@ public class ExpressionNamespace {
         else if (type.equals(PointcutType.CFLOW)) {
             expr = createCflowExpression(expression, packageNamespace, name);
         }
+        else if (type.equals(PointcutType.HANDLER)) {
+            expr = createHandlerExpression(expression, packageNamespace, name);
+        }
         else if (type.equals(PointcutType.CLASS)) {
             expr = createClassExpression(expression, packageNamespace, name);
         }
@@ -214,6 +219,20 @@ public class ExpressionNamespace {
     }
 
     /**
+     * Create new handler expression.
+     *
+     * @param expression       the expression string
+     * @param packageNamespace the package namespace that the expression is living in
+     * @param name             the name of the pointcut
+     * @return the expression
+     */
+    public HandlerExpression createHandlerExpression(final String expression,
+                                                     final String packageNamespace,
+                                                     final String name) {
+        return new HandlerExpression(this, expression, packageNamespace, name);
+    }
+
+    /**
      * Create new class expression.
      *
      * @param expression       the expression string
@@ -236,7 +255,7 @@ public class ExpressionNamespace {
     public Expression registerExpression(final Expression expression) {
         //System.out.println("reg = " + expression.getName());
         //synchronized (m_expressions) {
-        //todo getName never null ??
+        //@TODO: ALEX  getName never null ??
         m_expressions.put(expression.getName(), expression);
         expression.m_namespace = this;//namespace swapping
         //}
@@ -256,8 +275,7 @@ public class ExpressionNamespace {
                                          final String packageNamespace,
                                          final String name,
                                          final PointcutType type) {
-        Expression expr = createExpression(expression, packageNamespace, name, type);
-        return registerExpression(expr);
+        return registerExpression(createExpression(expression, packageNamespace, name, type));
     }
 
     /**
@@ -286,8 +304,6 @@ public class ExpressionNamespace {
      * @return true of false
      */
     private static boolean looksLikeLeaf(String expression) {
-        return (expression.indexOf(".") > 0
-                || expression.indexOf("->") > 0
-                || expression.indexOf("#") > 0);
+        return (expression.indexOf(".") > 0 || expression.indexOf("->") > 0 || expression.indexOf("#") > 0);
     }
 }

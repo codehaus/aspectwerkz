@@ -8,11 +8,11 @@
 package org.codehaus.aspectwerkz.task;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.File;
+import java.io.InputStreamReader;
 
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Task;
 
 /**
  * <code>OfflineTransformationTask</code> is an Ant Task that transforms the a class directory structure recursivly

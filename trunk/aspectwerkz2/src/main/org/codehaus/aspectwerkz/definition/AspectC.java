@@ -12,26 +12,25 @@ import java.util.List;
 
 import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaClass;
-import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaField;
-
-import org.codehaus.aspectwerkz.metadata.QDoxParser;
-import org.codehaus.aspectwerkz.definition.attribute.AttributeEnhancer;
-import org.codehaus.aspectwerkz.definition.attribute.AspectAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.AroundAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.BeforeAttribute;
+import com.thoughtworks.qdox.model.JavaMethod;
 import org.codehaus.aspectwerkz.definition.attribute.AfterAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.IntroduceAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.ImplementsAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.ExecutionAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.AroundAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.AspectAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.AttributeEnhancer;
+import org.codehaus.aspectwerkz.definition.attribute.BeforeAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.CFlowAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.CallAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.ClassAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.SetAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.GetAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.ThrowsAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.CFlowAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.ExecutionAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.GetAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.HandlerAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.ImplementsAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.IntroduceAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.SetAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.bcel.BcelAttributeEnhancer;
+import org.codehaus.aspectwerkz.metadata.QDoxParser;
 
 /**
  * Compiles attributes for the aspects. Can be called from the command line.
@@ -48,7 +47,7 @@ public class AspectC {
     public static final String ATTR_CLASS = "Class";
     public static final String ATTR_SET = "Set";
     public static final String ATTR_GET = "Get";
-    public static final String ATTR_THROWS = "Throws";
+    public static final String ATTR_HANDLER = "Handler";
     public static final String ATTR_CFLOW = "CFlow";
     public static final String ATTR_AROUND = "Around";
     public static final String ATTR_BEFORE = "Before";
@@ -145,7 +144,7 @@ public class AspectC {
             parseClassPointcut(javaField, enhancer);
             parseSetPointcut(javaField, enhancer);
             parseGetPointcut(javaField, enhancer);
-            parseThrowsPointcut(javaField, enhancer);
+            parseHandlerPointcut(javaField, enhancer);
             parseCFlowPointcut(javaField, enhancer);
             parseImplementsPointcut(javaField, enhancer);
         }
@@ -365,14 +364,14 @@ public class AspectC {
      * @param javaField the java field
      * @param enhancer  the attribute enhancer
      */
-    private void parseThrowsPointcut(final JavaField javaField,
+    private void parseHandlerPointcut(final JavaField javaField,
                                      final AttributeEnhancer enhancer) {
-        DocletTag pointcutTag = javaField.getTagByName(ATTR_THROWS);
+        DocletTag pointcutTag = javaField.getTagByName(ATTR_HANDLER);
         if (pointcutTag == null) return;
         String expression = pointcutTag.getValue();
         enhancer.insertFieldAttribute(javaField,
-                                      new ThrowsAttribute(expression));
-        log("\tthrows pointcut [" + javaField.getName() + "::" + expression + ']');
+                                      new HandlerAttribute(expression));
+        log("\thandler pointcut [" + javaField.getName() + "::" + expression + ']');
     }
 
     /**

@@ -7,19 +7,19 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
-import org.codehaus.aspectwerkz.DeploymentModel;
-
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
-import java.util.WeakHashMap;
-import java.util.Map;
+import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
  * Container for Introductions.

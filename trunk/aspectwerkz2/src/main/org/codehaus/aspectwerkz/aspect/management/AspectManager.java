@@ -7,31 +7,30 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect.management;
 
-import org.codehaus.aspectwerkz.aspect.Aspect;
-import org.codehaus.aspectwerkz.pointcut.PointcutManager;
-import org.codehaus.aspectwerkz.IndexTuple;
-import org.codehaus.aspectwerkz.Mixin;
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
-import org.codehaus.aspectwerkz.ConstructorTuple;
-import org.codehaus.aspectwerkz.util.Util;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
-import org.codehaus.aspectwerkz.metadata.MemberMetaData;
+import org.codehaus.aspectwerkz.Mixin;
+import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.definition.attribute.AttributeParser;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
-
-import java.util.List;
-import java.util.Collection;
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
+import org.codehaus.aspectwerkz.definition.attribute.AttributeParser;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.MemberMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.pointcut.PointcutManager;
+import org.codehaus.aspectwerkz.util.Util;
 
 /**
  * Manages the aspects. Meaning f.e. deployment, redeployment, management, configuration or redefinition of the
@@ -90,12 +89,12 @@ public final class AspectManager {
     private final Map m_setPointcutCache = new WeakHashMap();
 
     /**
-     * Cache for the throws pointcuts.
+     * Cache for the handler pointcuts.
      *
      * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being
      * invalidated.
      */
-    private final Map m_throwsPointcutCache = new WeakHashMap();
+    private final Map m_handlerPointcutCache = new WeakHashMap();
 
     /**
      * Cache for the call pointcuts.
@@ -272,21 +271,21 @@ public final class AspectManager {
     }
 
     /**
-     * Returns the aspect meta-data for the name specified.
+     * Returns the pointcut manager for the name specified.
      *
      * @param name the name of the aspect
-     * @return the aspect
+     * @return thepointcut manager
      */
-    public PointcutManager getAspectMetaData(final String name) {
+    public PointcutManager getPointcutManager(final String name) {
         return m_aspectRegistry.getPointcutManager(name);
     }
 
     /**
-     * Returns a list with all the aspects meta-data.
+     * Returns a list with all the pointcut managers.
      *
-     * @return the aspects
+     * @return thepointcut managers
      */
-    public Collection getAspectsMetaData() {
+    public Collection getPointcutManagers() {
         return m_aspectRegistry.getPointcutManagers();
     }
 
@@ -385,6 +384,34 @@ public final class AspectManager {
 
         synchronized (m_setPointcutCache) {
             m_setPointcutCache.put(hashKey, pointcuts);
+        }
+
+        return pointcuts;
+    }
+
+    /**
+     * Returns the handler pointcut list for the class and field specified. <p/>Caches the list, needed since the actual
+     * method call is expensive and is made each time a new instance of an advised class is created.
+     *
+     * @param classMetaData the meta-data for the class
+     * @return the pointcuts for this join point
+     */
+    public List getHandlerPointcuts(final ClassMetaData classMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+
+        initialize();
+
+        Integer hashKey = new Integer(classMetaData.getName().hashCode());
+
+        // if cached; return the cached list
+        if (m_handlerPointcutCache.containsKey(hashKey)) {
+            return (List)m_handlerPointcutCache.get(hashKey);
+        }
+
+        List pointcuts = m_aspectRegistry.getHandlerPointcuts(classMetaData);
+
+        synchronized (m_handlerPointcutCache) {
+            m_handlerPointcutCache.put(hashKey, pointcuts);
         }
 
         return pointcuts;

@@ -7,40 +7,39 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect.management;
 
-import org.codehaus.aspectwerkz.aspect.Aspect;
-import org.codehaus.aspectwerkz.aspect.Introduction;
-import org.codehaus.aspectwerkz.aspect.DefaultIntroductionContainerStrategy;
-import org.codehaus.aspectwerkz.pointcut.PointcutManager;
-import org.codehaus.aspectwerkz.IndexTuple;
-import org.codehaus.aspectwerkz.Mixin;
-import org.codehaus.aspectwerkz.MethodTuple;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import gnu.trove.TIntObjectHashMap;
+import gnu.trove.TObjectIntHashMap;
 import org.codehaus.aspectwerkz.ConstructorTuple;
-import org.codehaus.aspectwerkz.util.SequencedHashMap;
-import org.codehaus.aspectwerkz.util.Strings;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
-import org.codehaus.aspectwerkz.metadata.MemberMetaData;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.MethodTuple;
+import org.codehaus.aspectwerkz.Mixin;
+import org.codehaus.aspectwerkz.aspect.Aspect;
+import org.codehaus.aspectwerkz.aspect.DefaultIntroductionContainerStrategy;
+import org.codehaus.aspectwerkz.aspect.Introduction;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
-
-import java.util.List;
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.lang.reflect.Method;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-
-import gnu.trove.TObjectIntHashMap;
-import gnu.trove.TIntObjectHashMap;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.MemberMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.pointcut.PointcutManager;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.util.SequencedHashMap;
+import org.codehaus.aspectwerkz.util.Strings;
 
 /**
  * Stores the aspects, advices, pointcuts etc. Manages the method, advice and aspect indexing.
@@ -48,7 +47,8 @@ import gnu.trove.TIntObjectHashMap;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @TODO Use hashes, aspect=>hashcode for class advice=>hashcode for method signature
  * @TODO Store references to all join points that uses advices from a certain aspect [aspectKey=>joinPoints]
- * @TODO Map all aspects to a key, meaning have a key that maps to a data structure that contains full info about the aspect and all its advice methods. [aspectKey=>aspectDataStructure].
+ * @TODO Map all aspects to a key, meaning have a key that maps to a data structure that contains full info about the
+ * aspect and all its advice methods. [aspectKey=>aspectDataStructure].
  */
 public class AspectRegistry {
 
@@ -403,6 +403,22 @@ public class AspectRegistry {
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager aspect = (PointcutManager)it.next();
             pointcuts.addAll(aspect.getSetPointcuts(classMetaData, fieldMetaData));
+        }
+        return pointcuts;
+    }
+
+    /**
+     * Returns the handler pointcut list for the class and field specified.
+     *
+     * @param classMetaData the meta-data for the class
+     * @return the pointcuts for this join point
+     */
+    public List getHandlerPointcuts(final ClassMetaData classMetaData) {
+        List pointcuts = new ArrayList();
+        for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
+            PointcutManager aspect = (PointcutManager)it.next();
+            List handlerPointcuts = aspect.getHandlerPointcuts(classMetaData);
+            pointcuts.addAll(handlerPointcuts);
         }
         return pointcuts;
     }

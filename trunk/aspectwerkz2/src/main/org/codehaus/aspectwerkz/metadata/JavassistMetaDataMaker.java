@@ -7,15 +7,15 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import javassist.CtClass;
-import javassist.CtMethod;
-import javassist.CtField;
-import javassist.NotFoundException;
 import javassist.CtConstructor;
+import javassist.CtField;
+import javassist.CtMethod;
+import javassist.NotFoundException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * Convenience methods to construct <code>MetaData</code> instances from Javassist classes.

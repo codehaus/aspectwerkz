@@ -7,21 +7,27 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.hook;
 
-import com.sun.jdi.VirtualMachine;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.ConnectException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import com.sun.jdi.Bootstrap;
 import com.sun.jdi.ReferenceType;
+import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.connect.AttachingConnector;
-import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import com.sun.jdi.connect.Connector;
-
-import java.io.*;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.List;
-import java.util.HashMap;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import java.net.ConnectException;
+import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 
 /**
  * Utility methods to manipulate class redefinition of java.lang.ClassLoader in xxxStarter
