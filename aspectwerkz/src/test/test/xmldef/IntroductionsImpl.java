@@ -10,7 +10,7 @@ package test;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class IntroductionsImpl implements Introductions {
+public class IntroductionsImpl extends java.util.ArrayList implements Introductions {
 
     public void method() throws RuntimeException {
     }
