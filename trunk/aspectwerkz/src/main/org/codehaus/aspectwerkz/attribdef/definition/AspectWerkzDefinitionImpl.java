@@ -807,23 +807,6 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
      */
     public void buildMixinMetaDataRepository(final Set repository, final ClassLoader loader) {
         loadAspects(loader);
-
-        // not needed for inner class mixins
-        // todo check me
-//        Set definedAspects = getAspectsToUse();
-//
-//        for (Iterator it = definedAspects.iterator(); it.hasNext();) {
-//
-//            String className = (String)it.next();
-//            try {
-//                Class mixin = loader.loadClass(className);
-//                ClassMetaData metaData = ReflectionMetaDataMaker.createClassMetaData(mixin);
-//                repository.add(metaData);
-//            }
-//            catch (ClassNotFoundException e) {
-//                ;// ignore
-//            }
-//        }
     }
 
     /**

@@ -28,7 +28,6 @@ import org.codehaus.aspectwerkz.attribdef.definition.attribute.GetAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.ThrowsAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.CFlowAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.bcel.BcelAttributeEnhancer;
-import org.codehaus.aspectwerkz.Alex;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -233,13 +233,6 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                             aspectClassName, method, methodIndex, aspectDef
                     );
                 }
-//                else if (methodAttr instanceof IntroduceAttribute) {
-//                    String expression = ((IntroduceAttribute)methodAttr).getExpression();
-//                    createAndAddIntroductionDefToAspectDef(
-//                            expression, adviceName, aspectName,
-//                            aspectClassName, method, methodIndex, aspectDef
-//                    );
-//                }
             }
         }
     }
