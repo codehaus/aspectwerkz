@@ -166,7 +166,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                         controllerClassName
                 ));
 
-                methods[i] = addPrefixToMethod(mg, methods[i], methodSequence);
+                methods[i] = addPrefixToMethod(mg, methods[i], methodSequence, uuid);
 
                 mg.setMaxStack();
             }
@@ -195,16 +195,16 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                                    final MethodGen mg,
                                    final int methodSequence) {
 
-        final StringBuffer joinPoint = getJoinPointName(mg.getMethod(), methodSequence);
+        final String joinPoint = getJoinPointName(mg.getMethod(), methodSequence);
 
-        if (cg.containsField(joinPoint.toString()) != null) {
+        if (cg.containsField(joinPoint) != null) {
             return;
         }
 
         final FieldGen field = new FieldGen(
                 Constants.ACC_PRIVATE | Constants.ACC_FINAL,
                 new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
-                joinPoint.toString(),
+                joinPoint,
                 cp
         );
         cg.addField(field.getField());
@@ -242,7 +242,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
             }
         }
 
-        final StringBuffer joinPoint = getJoinPointName(method, methodSequence);
+        final String joinPoint = getJoinPointName(method, methodSequence);
 
         final InstructionHandle ihPost;
         ihPost = il.insert(ih, factory.createLoad(Type.OBJECT, 0));
@@ -260,7 +260,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
 
         il.insert(ih, factory.createFieldAccess(
                 cg.getClassName(),
-                joinPoint.toString(),
+                joinPoint,
                 new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
                 Constants.PUTFIELD
         ));
@@ -268,6 +268,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
 
         mg.setMaxStack();
         mg.setMaxLocals();
+
         return mg;
     }
 
@@ -278,11 +279,13 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      * @param mg the MethodGen
      * @param method the current method
      * @param methodSequence the methods sequence number
+     * @param uuid the definition UUID
      * @return the modified method
      */
     private Method addPrefixToMethod(final MethodGen mg,
                                      final Method method,
-                                     final int methodSequence) {
+                                     final int methodSequence,
+                                     final String uuid) {
 
         // change the method access flags (should always be set to protected)
         int accessFlags = mg.getAccessFlags();
@@ -299,10 +302,13 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
             accessFlags &= ~Constants.ACC_PUBLIC;
         }
 
-        mg.setName(getPrefixedMethodName(method, methodSequence, mg.getClassName()).toString());
+        mg.setName(getPrefixedMethodName(method, methodSequence, mg.getClassName(), uuid));
+
         mg.setAccessFlags(accessFlags);
+
         mg.setMaxStack();
         mg.setMaxLocals();
+
         return mg.getMethod();
     }
 
@@ -337,7 +343,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
 
         InstructionList il = new InstructionList();
 
-        StringBuffer joinPoint = getJoinPointName(originalMethod.getMethod(), methodSequence);
+        String joinPoint = getJoinPointName(originalMethod.getMethod(), methodSequence);
 
         final MethodGen method = new MethodGen(
                 accessFlags,
@@ -364,7 +370,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
         il.append(factory.createLoad(Type.OBJECT, 0));
         il.append(factory.createFieldAccess(
                 cg.getClassName(),
-                joinPoint.toString(),
+                joinPoint,
                 new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
                 Constants.GETFIELD)
         );
@@ -779,14 +785,13 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      * @param methodSequence the method sequence
      * @return the name of the join point
      */
-    private static StringBuffer getJoinPointName(final Method method,
-                                                 final int methodSequence) {
+    private static String getJoinPointName(final Method method, final int methodSequence) {
         final StringBuffer joinPoint = new StringBuffer();
         joinPoint.append(TransformationUtil.MEMBER_METHOD_JOIN_POINT_PREFIX);
         joinPoint.append(method.getName());
         joinPoint.append(TransformationUtil.DELIMITER);
         joinPoint.append(methodSequence);
-        return joinPoint;
+        return joinPoint.toString();
     }
 
     /**
@@ -794,10 +799,14 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      *
      * @param method the method
      * @param methodSequence the method sequence
+     * @param className the class name
+     * @param uuid the definition UUID
      * @return the name of the join point
      */
-    private StringBuffer getPrefixedMethodName(final Method method,
-                                               final int methodSequence, final String className) {
+    private String getPrefixedMethodName(final Method method,
+                                         final int methodSequence,
+                                         final String className,
+                                         final String uuid) {
         final StringBuffer methodName = new StringBuffer();
         methodName.append(TransformationUtil.ORIGINAL_METHOD_PREFIX);
         methodName.append(method.getName());
@@ -805,7 +814,8 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
         methodName.append(methodSequence);
         methodName.append(TransformationUtil.DELIMITER);
         methodName.append(className.replace('.', '_'));
-        return methodName;
+        methodName.append(TransformationUtil.DELIMITER);
+        methodName.append(uuid);
+        return methodName.toString();
     }
-///CLOVER:ON
 }

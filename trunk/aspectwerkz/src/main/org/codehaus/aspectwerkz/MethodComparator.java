@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz;
 
 import java.util.Comparator;
-import java.util.StringTokenizer;
 import java.lang.reflect.Method;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
