@@ -791,6 +791,7 @@ public class JoinPointManager {
         public JoinPoint joinPoint = null;
         public int state = JoinPointState.NOT_ADVISED;
     }
+
 }
 
 

@@ -19,6 +19,9 @@ public class FieldAdviceTest extends WeavedTestCase {
     private static String s_logString = "";
     private int m_setFieldAroundAdviced = 0;
     private int m_setFieldAroundAdvicedWithNullAdvice = 0;
+    private String m_setFieldAroundAdvicedObjectWithNullAdvice = new String("0");
+    private String m_setFieldAroundAdvicedObjectWithAPI = new String("0");
+    private int m_setFieldAroundAdvicedWithAPI = 0;
     private int m_setFieldPreAdviced = 0;
     private int m_setFieldPostAdviced = 0;
     private int m_setFieldPrePostAdviced = 0;
@@ -54,7 +57,49 @@ public class FieldAdviceTest extends WeavedTestCase {
         try {
             setFieldAroundAdvicedWithNullAdvice();
             assertEquals("before after ", s_logString);
-            assertEquals(0, m_setFieldAroundAdvicedWithNullAdvice);//int default value
+            //CAUTION: null advice for @Set leave the assigned value
+            //The advice return value is ignored
+            assertEquals(187, m_setFieldAroundAdvicedWithNullAdvice);
+        }
+        catch (Exception e) {
+            fail();
+        }
+    }
+
+    public void testSetMemberFieldAroundAdvicedObjectWithNullAdvice() {
+        s_logString = "";
+        try {
+            setFieldAroundAdvicedObjectWithNullAdvice();
+            assertEquals("before after ", s_logString);
+            //CAUTION: null advice for @Set leave the assigned value
+            //The advice return value is ignored
+            assertEquals("1", m_setFieldAroundAdvicedObjectWithNullAdvice);
+        }
+        catch (Exception e) {
+            fail();
+        }
+    }
+
+    public void testSetMemberFieldAroundAdvicedObjectWithAPI() {
+        s_logString = "";
+        try {
+            setFieldAroundAdvicedObjectWithAPI();
+            assertEquals("before after ", s_logString);
+            //The advice is using the Signature API to alter the assigned value
+            assertEquals("byAdvice", m_setFieldAroundAdvicedObjectWithAPI);
+        }
+        catch (Exception e) {
+            fail();
+        }
+    }
+
+    public void testSetMemberFieldAroundAdvicedWithAPI() {
+        s_logString = "";
+        try {
+            setFieldAroundAdvicedWithAPI();
+            assertEquals("before after ", s_logString);
+            //The advice is using the Signature API to alter the assigned value
+            assertEquals(3, m_setFieldAroundAdvicedWithAPI);
         }
         catch (Exception e) {
             fail();
@@ -270,6 +315,18 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void setFieldAroundAdvicedWithNullAdvice() {
         m_setFieldAroundAdvicedWithNullAdvice = 3 + 23 * 8;
+    }
+
+    public void setFieldAroundAdvicedObjectWithNullAdvice() {
+        m_setFieldAroundAdvicedObjectWithNullAdvice = new String("1");
+    }
+
+    public void setFieldAroundAdvicedObjectWithAPI() {
+        m_setFieldAroundAdvicedObjectWithAPI = new String("original");
+    }
+
+    public void setFieldAroundAdvicedWithAPI() {
+        m_setFieldAroundAdvicedWithAPI = 2;
     }
 
     public void setFieldPreAdviced() {

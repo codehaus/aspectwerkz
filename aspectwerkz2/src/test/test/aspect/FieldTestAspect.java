@@ -10,6 +10,7 @@ package test.aspect;
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import test.FieldAdviceTest;
 
 /**
@@ -110,13 +111,22 @@ public class FieldTestAspect extends Aspect {
     Pointcut pc21;
 
     /**
-     * @Set * test.FieldAdviceTest.m_setFieldAroundAdvicedWithNullAdvice
+     * @Set * test.FieldAdviceTest.m_setFieldAroundAdviced*WithNullAdvice
      */
     Pointcut pc22;
     /**
      * @Get * test.FieldAdviceTest.m_getFieldAroundAdvicedWithNullAdvice
      */
     Pointcut pc23;
+
+    /**
+     * @Set * test.FieldAdviceTest.m_setFieldAroundAdvicedObjectWithAPI
+     */
+    Pointcut pc24;
+    /**
+     * @Set * test.FieldAdviceTest.m_setFieldAroundAdvicedWithAPI
+     */
+    Pointcut pc25;
 
     // ============ Advices ============
 
@@ -170,6 +180,30 @@ public class FieldTestAspect extends Aspect {
     public Object aroundNullAdvice(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
         final Object result = joinPoint.proceed();
+        FieldAdviceTest.log("after ");
+        return null;
+    }
+
+    /**
+     * @Around pc24
+     */
+    public Object aroundAdviceAltering(final JoinPoint joinPoint) throws Throwable {
+        FieldAdviceTest.log("before ");
+        FieldSignature signature = (FieldSignature)joinPoint.getSignature();
+        signature.setFieldValue(new String("byAdvice"));
+        joinPoint.proceed();
+        FieldAdviceTest.log("after ");
+        return null;
+    }
+
+    /**
+     * @Around pc25
+     */
+    public Object aroundAdviceAlteringPrimitive(final JoinPoint joinPoint) throws Throwable {
+        FieldAdviceTest.log("before ");
+        FieldSignature signature = (FieldSignature)joinPoint.getSignature();
+        signature.setFieldValue(new Integer(3));
+        joinPoint.proceed();
         FieldAdviceTest.log("after ");
         return null;
     }
