@@ -1,4 +1,4 @@
-package test.clapp;
+package test.xmldef.clapp;
 
 public class Target {
 

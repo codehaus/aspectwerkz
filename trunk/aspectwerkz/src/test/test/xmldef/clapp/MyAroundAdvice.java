@@ -1,4 +1,4 @@
-package test.clapp;
+package test.xmldef.clapp;
 
 import org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice;
 import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
