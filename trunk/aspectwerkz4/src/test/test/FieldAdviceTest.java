@@ -9,6 +9,8 @@ package test;
 
 import junit.framework.TestCase;
 
+import java.io.PrintStream;
+
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -298,7 +300,8 @@ public class FieldAdviceTest extends TestCase {
 
     public void testPublicFieldOutOfWeaverScope() {
         s_logString = "";
-        System.out.print("");//field get(* java.lang.System) && withincode ..
+        PrintStream out = System.out;//field get(* java.lang.System) && withincode ..
+        PrintStream err = System.err;        
         assertEquals("adviceOnPublicField ", s_logString);
     }
 

@@ -867,8 +867,8 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         int calleeIndex = INDEX_NOTAVAILABLE;
         int argStartIndex = 0;
         if (!Modifier.isStatic(m_calleeMemberModifiers) &&
-            m_joinPointType != JoinPointType.CONSTRUCTOR_CALL &&
-            m_joinPointType != JoinPointType.HANDLER) {
+            m_joinPointType != JoinPointType.CONSTRUCTOR_CALL_INT &&
+            m_joinPointType != JoinPointType.HANDLER_INT) {
             calleeIndex = 0;
             argStartIndex++;
         } else {
@@ -877,7 +877,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         int callerIndex = argStartIndex + AsmHelper.getRegisterDepth(m_argumentTypes);
 
         // custom logic overrides for handler jp
-        if (m_joinPointType == JoinPointType.HANDLER) {
+        if (m_joinPointType == JoinPointType.HANDLER_INT) {
             calleeIndex = 0;
             callerIndex = 2;
             argStartIndex = 1;
@@ -1452,7 +1452,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         createJoinPointInvocation(cv);
 
         Type m_returnType = null;
-        if (m_joinPointType != JoinPointType.CONSTRUCTOR_CALL) {
+        if (m_joinPointType != JoinPointType.CONSTRUCTOR_CALL_INT) {
             m_returnType = Type.getReturnType(m_calleeMemberDesc);
         } else {
             m_returnType = Type.getType(m_calleeClassSignature);
@@ -1464,7 +1464,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         addReturnedValueToJoinPoint(cv, 1, 0, true);
 
         // set it as the CALLEE instance for ctor call - TODO refactor somewhere else
-        if (m_joinPointType == JoinPointType.CONSTRUCTOR_CALL) {
+        if (m_joinPointType == JoinPointType.CONSTRUCTOR_CALL_INT) {
             cv.visitVarInsn(ALOAD, 0);
             cv.visitVarInsn(ALOAD, 1);
             cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, CALLEE_INSTANCE_FIELD_NAME, m_calleeClassSignature);
@@ -1777,9 +1777,9 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                                                final int joinPointInstanceIndex,
                                                final boolean unwrap) {
         if (m_requiresJoinPoint && m_returnType.getSort() != Type.VOID) {
-            if (m_joinPointType == JoinPointType.METHOD_EXECUTION
-                || m_joinPointType == JoinPointType.METHOD_CALL
-                || m_joinPointType == JoinPointType.CONSTRUCTOR_CALL) {
+            if (m_joinPointType == JoinPointType.METHOD_EXECUTION_INT
+                || m_joinPointType == JoinPointType.METHOD_CALL_INT
+                || m_joinPointType == JoinPointType.CONSTRUCTOR_CALL_INT) {
                 //TODO should we do something for field get / set
                 loadJoinPointInstance(cv, NON_OPTIMIZED_JOIN_POINT, joinPointInstanceIndex);
                 if (unwrap && AsmHelper.isPrimitive(m_returnType)) {
@@ -2018,10 +2018,9 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
 
         // getType
         {
-            // FIXME should return Enum (type-safe pattern in 1.4 and enum in 1.5)
-            // FIXME should delegate to Signature.getType()
             cv = m_cw.visitMethod(ACC_PUBLIC, GET_TYPE_METHOD_NAME, GET_TYPE_METHOD_SIGNATURE, null, null);
-            cv.visitInsn(ACONST_NULL);
+            AsmHelper.loadIntegerConstant(cv, m_joinPointType);
+            cv.visitMethodInsn(INVOKESTATIC, Type.getType(JoinPointType.class).getInternalName(), "fromInt", "(I)"+Type.getType(JoinPointType.class).getDescriptor());
             cv.visitInsn(ARETURN);
             cv.visitMaxs(0, 0);
         }
@@ -2171,7 +2170,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
     protected String buildInvokeMethodSignature() {
         StringBuffer invokeDescBuf = new StringBuffer();
         invokeDescBuf.append('(');
-        if (m_joinPointType != JoinPointType.CONSTRUCTOR_CALL) {
+        if (m_joinPointType != JoinPointType.CONSTRUCTOR_CALL_INT) {
             if (!Modifier.isStatic(m_calleeMemberModifiers)) {
                 // callee
                 invokeDescBuf.append(m_calleeClassSignature);

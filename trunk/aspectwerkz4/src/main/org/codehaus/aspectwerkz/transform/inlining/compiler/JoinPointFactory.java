@@ -69,19 +69,19 @@ public class JoinPointFactory {
      */
     public static byte[] compileJoinPoint(final CompilationInfo.Model model) {
         switch (model.getEmittedJoinPoint().getJoinPointType()) {
-            case JoinPointType.METHOD_EXECUTION:
+            case JoinPointType.METHOD_EXECUTION_INT:
                 return new MethodExecutionJoinPointCompiler(model).compile();
-            case JoinPointType.METHOD_CALL:
+            case JoinPointType.METHOD_CALL_INT:
                 return new MethodCallJoinPointCompiler(model).compile();
-            case JoinPointType.CONSTRUCTOR_EXECUTION:
+            case JoinPointType.CONSTRUCTOR_EXECUTION_INT:
                 return new ConstructorExecutionJoinPointCompiler(model).compile();
-            case JoinPointType.CONSTRUCTOR_CALL:
+            case JoinPointType.CONSTRUCTOR_CALL_INT:
                 return new ConstructorCallJoinPointCompiler(model).compile();
-            case JoinPointType.FIELD_SET:
+            case JoinPointType.FIELD_SET_INT:
                 return new FieldSetJoinPointCompiler(model).compile();
-            case JoinPointType.FIELD_GET:
+            case JoinPointType.FIELD_GET_INT:
                 return new FieldGetJoinPointCompiler(model).compile();
-            case JoinPointType.HANDLER:
+            case JoinPointType.HANDLER_INT:
                 return new HandlerJoinPointCompiler(model).compile();
             default:
                 throw new UnsupportedOperationException(
@@ -98,19 +98,19 @@ public class JoinPointFactory {
      */
     public static byte[] redefineJoinPoint(final CompilationInfo compilationInfo) {
         switch (compilationInfo.getInitialModel().getEmittedJoinPoint().getJoinPointType()) {
-            case JoinPointType.METHOD_EXECUTION:
+            case JoinPointType.METHOD_EXECUTION_INT:
                 return new MethodExecutionJoinPointRedefiner(compilationInfo).compile();
-            case JoinPointType.METHOD_CALL:
+            case JoinPointType.METHOD_CALL_INT:
                 return new MethodCallJoinPointRedefiner(compilationInfo).compile();
-            case JoinPointType.CONSTRUCTOR_EXECUTION:
+            case JoinPointType.CONSTRUCTOR_EXECUTION_INT:
                 return new ConstructorExecutionJoinPointRedefiner(compilationInfo).compile();
-            case JoinPointType.CONSTRUCTOR_CALL:
+            case JoinPointType.CONSTRUCTOR_CALL_INT:
                 return new ConstructorCallJoinPointRedefiner(compilationInfo).compile();
-            case JoinPointType.FIELD_SET:
+            case JoinPointType.FIELD_SET_INT:
                 return new FieldSetJoinPointRedefiner(compilationInfo).compile();
-            case JoinPointType.FIELD_GET:
+            case JoinPointType.FIELD_GET_INT:
                 return new FieldGetJoinPointRedefiner(compilationInfo).compile();
-            case JoinPointType.HANDLER:
+            case JoinPointType.HANDLER_INT:
                 return new HandlerJoinPointRedefiner(compilationInfo).compile();
             default:
                 throw new UnsupportedOperationException(
@@ -146,56 +146,56 @@ public class JoinPointFactory {
 
             ExpressionContext ctx = null;
             switch (joinPoint.getJoinPointType()) {
-                case JoinPointType.METHOD_EXECUTION:
+                case JoinPointType.METHOD_EXECUTION_INT:
                     ctx = new ExpressionContext(
                             PointcutType.EXECUTION,
                             calleeClassInfo.getMethod(joinPoint.getJoinPointHash()),
                             callerMethodInfo
                     );
                     break;
-                case JoinPointType.METHOD_CALL:
+                case JoinPointType.METHOD_CALL_INT:
                     ctx = new ExpressionContext(
                             PointcutType.CALL,
                             calleeClassInfo.getMethod(joinPoint.getJoinPointHash()),
                             callerMethodInfo
                     );
                     break;
-                case JoinPointType.CONSTRUCTOR_EXECUTION:
+                case JoinPointType.CONSTRUCTOR_EXECUTION_INT:
                     ctx = new ExpressionContext(
                             PointcutType.EXECUTION,
                             calleeClassInfo.getConstructor(joinPoint.getJoinPointHash()),
                             callerMethodInfo
                     );
                     break;
-                case JoinPointType.CONSTRUCTOR_CALL:
+                case JoinPointType.CONSTRUCTOR_CALL_INT:
                     ctx = new ExpressionContext(
                             PointcutType.CALL,
                             calleeClassInfo.getConstructor(joinPoint.getJoinPointHash()),
                             callerMethodInfo
                     );
                     break;
-                case JoinPointType.FIELD_SET:
+                case JoinPointType.FIELD_SET_INT:
                     ctx = new ExpressionContext(
                             PointcutType.SET,
                             calleeClassInfo.getField(joinPoint.getJoinPointHash()),
                             callerMethodInfo
                     );
                     break;
-                case JoinPointType.FIELD_GET:
+                case JoinPointType.FIELD_GET_INT:
                     ctx = new ExpressionContext(
                             PointcutType.GET,
                             calleeClassInfo.getField(joinPoint.getJoinPointHash()),
                             callerMethodInfo
                     );
                     break;
-                case JoinPointType.HANDLER:
+                case JoinPointType.HANDLER_INT:
                     ctx = new ExpressionContext(
                             PointcutType.HANDLER,
                             AsmClassInfo.getClassInfo(joinPoint.getCalleeClassName(), loader),
                             callerMethodInfo
                     );
                     break;
-                case JoinPointType.STATIC_INITALIZATION:
+                case JoinPointType.STATIC_INITALIZATION_INT:
                     throw new UnsupportedOperationException("static initialization is not implemented");
             }
             if (expression.getExpression().match(ctx)) {

@@ -22,24 +22,15 @@ import java.util.List;
 public class MethodSignatureImpl implements MethodSignature {
     private final Class m_declaringType;
 
-    private final MethodTuple m_methodTuple;
+    private final Method m_method;
 
     /**
      * @param declaringType
-     * @param methodTuple
+     * @param method
      */
-    public MethodSignatureImpl(final Class declaringType, final MethodTuple methodTuple) {
+    public MethodSignatureImpl(final Class declaringType, final Method method) {
         m_declaringType = declaringType;
-        m_methodTuple = methodTuple;
-    }
-
-    /**
-     * Returns the method tuple.
-     *
-     * @return the method tuple
-     */
-    public MethodTuple getMethodTuple() {
-        return m_methodTuple;
+        m_method = method;
     }
 
     /**
@@ -48,7 +39,7 @@ public class MethodSignatureImpl implements MethodSignature {
      * @return the method
      */
     public Method getMethod() {
-        return m_methodTuple.getOriginalMethod();
+        return m_method;
     }
 
     /**
@@ -70,7 +61,7 @@ public class MethodSignatureImpl implements MethodSignature {
      * @return the mofifiers
      */
     public int getModifiers() {
-        return m_methodTuple.getOriginalMethod().getModifiers();
+        return m_method.getModifiers();
     }
 
     /**
@@ -79,7 +70,7 @@ public class MethodSignatureImpl implements MethodSignature {
      * @return
      */
     public String getName() {
-        return m_methodTuple.getName();
+        return m_method.getName();
     }
 
     /**
@@ -88,7 +79,7 @@ public class MethodSignatureImpl implements MethodSignature {
      * @return the exception types
      */
     public Class[] getExceptionTypes() {
-        return m_methodTuple.getOriginalMethod().getExceptionTypes();
+        return m_method.getExceptionTypes();
     }
 
     /**
@@ -97,7 +88,7 @@ public class MethodSignatureImpl implements MethodSignature {
      * @return the parameter types
      */
     public Class[] getParameterTypes() {
-        return m_methodTuple.getOriginalMethod().getParameterTypes();
+        return m_method.getParameterTypes();
     }
 
     /**
@@ -106,7 +97,7 @@ public class MethodSignatureImpl implements MethodSignature {
      * @return the return type
      */
     public Class getReturnType() {
-        return m_methodTuple.getOriginalMethod().getReturnType();
+        return m_method.getReturnType();
     }
 
     /**
@@ -116,7 +107,7 @@ public class MethodSignatureImpl implements MethodSignature {
      * @return the annotation or null
      */
     public Annotation getAnnotation(final String annotationName) {
-        return Annotations.getAnnotation(annotationName, m_methodTuple.getWrapperMethod());
+        return Annotations.getAnnotation(annotationName, m_method);
     }
 
     /**
@@ -126,7 +117,7 @@ public class MethodSignatureImpl implements MethodSignature {
      * @return the annotations in a list (can be empty)
      */
     public List getAnnotations(final String annotationName) {
-        return Annotations.getAnnotations(annotationName, m_methodTuple.getWrapperMethod());
+        return Annotations.getAnnotations(annotationName, m_method);
     }
 
     /**
@@ -136,18 +127,23 @@ public class MethodSignatureImpl implements MethodSignature {
      * @return a list with the annotations
      */
     public List getAnnotationInfos() {
-        return Annotations.getAnnotationInfos(m_methodTuple.getWrapperMethod());
+        return Annotations.getAnnotationInfos(m_method);
     }
 
     /**
      * Returns a string representation of the signature.
      *
      * @return a string representation
-     * @TODO: implement toString to something meaningful
      */
     public String toString() {
         StringBuffer signature = new StringBuffer();
-        signature.append(getReturnType().getName()).append(" ");
+        if (getReturnType()!= null) {
+            signature.append(getReturnType().getName());
+        } else {
+            signature.append("void");
+        }
+        signature.append(" ");
+        signature.append(getDeclaringType().getName()).append(".");
         signature.append(getName()).append("(");
         Class[] params = getParameterTypes();
         for (int i = 0; i < params.length; i++) {

@@ -230,7 +230,11 @@ public class JavaClassInfo implements ClassInfo {
      * @return
      */
     public ConstructorInfo getConstructor(final int hash) {
-        return (ConstructorInfo) m_constructors.get(hash);
+        ConstructorInfo constructor = (ConstructorInfo) m_constructors.get(hash);
+        if (constructor == null && getSuperclass() != null) {
+            constructor = getSuperclass().getConstructor(hash);
+        }
+        return constructor;
     }
 
     /**
@@ -254,7 +258,19 @@ public class JavaClassInfo implements ClassInfo {
      * @return
      */
     public MethodInfo getMethod(final int hash) {
-        return (MethodInfo) m_methods.get(hash);
+        MethodInfo method = (MethodInfo) m_methods.get(hash);
+        if (method == null) {
+            for (int i = 0; i < getInterfaces().length; i++) {
+                method = getInterfaces()[i].getMethod(hash);
+                if (method != null) {
+                    break;
+                }
+            }
+        }
+        if (method == null && getSuperclass() != null) {
+            method = getSuperclass().getMethod(hash);
+        }
+        return method;
     }
 
     /**
@@ -278,7 +294,11 @@ public class JavaClassInfo implements ClassInfo {
      * @return
      */
     public FieldInfo getField(final int hash) {
-        return (FieldInfo) m_fields.get(hash);
+        FieldInfo field = (FieldInfo) m_fields.get(hash);
+        if (field == null && getSuperclass() != null) {
+            field = getSuperclass().getField(hash);
+        }
+        return field;
     }
 
     /**

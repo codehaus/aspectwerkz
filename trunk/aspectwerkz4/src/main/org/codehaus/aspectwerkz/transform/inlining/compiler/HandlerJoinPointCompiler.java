@@ -58,7 +58,6 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      */
     protected void createSignature(final CodeVisitor cv) {
         cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
-        cv.visitLdcInsn(new Integer(m_joinPointHash));
 
         cv.visitMethodInsn(
                 INVOKESTATIC,
@@ -95,6 +94,7 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      * @param cv
      */
     protected void createJoinPointInvocation(final CodeVisitor cv) {
+        cv.visitInsn(ACONST_NULL);
     }
 
     /**

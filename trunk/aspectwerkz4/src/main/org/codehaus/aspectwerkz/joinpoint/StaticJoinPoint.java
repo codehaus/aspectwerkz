@@ -7,6 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint;
 
+import org.codehaus.aspectwerkz.joinpoint.management.JoinPointType;
+
 /**
  * Implements the join point concept, e.g. defines a well defined point in the program flow.
  * <p/>
@@ -82,7 +84,6 @@ public interface StaticJoinPoint {
      * Returns the join point type.
      *
      * @return the type
-     * @TODO: should return an Enum and not an untyped string
      */
-    String getType();
+    JoinPointType getType();
 }

@@ -16,6 +16,7 @@ import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodTuple;
+import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
 
 import java.lang.reflect.Field;
@@ -44,9 +45,27 @@ public final class SignatureFactory {
      * @return
      */
     public static final MethodSignatureImpl newMethodSignature(final Class declaringClass, final int joinPointHash) {
-        createMethodRepository(declaringClass);
-        MethodTuple tuple = (MethodTuple) ((TIntObjectHashMap) s_methods.get(declaringClass)).get(joinPointHash);
-        return new MethodSignatureImpl(declaringClass, tuple);
+        Method[] methods = declaringClass.getDeclaredMethods();
+        for (int i = 0; i < methods.length; i++) {
+            Method method = methods[i];
+            if (ReflectHelper.calculateHash(method) == joinPointHash) {
+                return new MethodSignatureImpl(declaringClass, method);
+            }
+        }
+        // lookup in the hierarchy
+        MethodSignatureImpl signature = null;
+        for (int i = 0; i < declaringClass.getInterfaces().length; i++) {
+            signature = newMethodSignature(declaringClass.getInterfaces()[i], joinPointHash);
+            if (signature != null) {
+                return signature;
+            }
+        }
+        if (declaringClass.getSuperclass() != null) {
+            signature = newMethodSignature(declaringClass.getSuperclass(), joinPointHash);
+        } else {
+            return null;
+        }
+        return signature;
     }
 
     /**
@@ -62,9 +81,12 @@ public final class SignatureFactory {
                 return new FieldSignatureImpl(declaringClass, field);
             }
         }
-        throw new Error(
-                "field with hash [" + joinPointHash + "] could not be found in class [" + declaringClass.getName()
-        );
+        // lookup in the hierarchy
+        if (declaringClass.getSuperclass() != null) {
+            return newFieldSignature(declaringClass.getSuperclass(), joinPointHash);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -78,16 +100,19 @@ public final class SignatureFactory {
         for (int i = 0; i < declaringClass.getDeclaredConstructors().length; i++) {
             Constructor c = declaringClass.getDeclaredConstructors()[i];
             if (ReflectHelper.calculateHash(c) == joinPointHash) {
-                constructor = c;
-                break;
+                return new ConstructorSignatureImpl(declaringClass, c);
             }
         }
-        return new ConstructorSignatureImpl(declaringClass, constructor);
+        // lookup in the hierarchy
+        if (declaringClass.getSuperclass() != null) {
+            return newConstructorSignature(declaringClass.getSuperclass(), joinPointHash);
+        } else {
+            return null;
+        }
     }
 
-    public static final CatchClauseSignatureImpl newCatchClauseSignature(final Class declaringClass,
-                                                                         final int joinPointHash) {
-        return new CatchClauseSignatureImpl(declaringClass, declaringClass, "");
+    public static final CatchClauseSignatureImpl newCatchClauseSignature(final Class exceptionClass) {
+        return new CatchClauseSignatureImpl(exceptionClass);
     }
 
     /**

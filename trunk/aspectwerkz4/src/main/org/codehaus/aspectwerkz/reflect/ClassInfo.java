@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public interface ClassInfo extends ReflectionInfo {
     /**
      * Returns a constructor info by its hash.
+     * Looks up in the hierarchy
      *
      * @param hash
      * @return
@@ -26,6 +27,7 @@ public interface ClassInfo extends ReflectionInfo {
 
     /**
      * Returns the constructors info.
+     * Does not looks up in the hierarchy
      *
      * @return the constructors info
      */
@@ -33,6 +35,7 @@ public interface ClassInfo extends ReflectionInfo {
 
     /**
      * Returns a method info by its hash.
+     * Looks up in the hierarchy
      *
      * @param hash
      * @return
@@ -41,6 +44,7 @@ public interface ClassInfo extends ReflectionInfo {
 
     /**
      * Returns the methods info.
+     * Does not looks up in the hierarchy
      *
      * @return the methods info
      */
@@ -48,6 +52,7 @@ public interface ClassInfo extends ReflectionInfo {
 
     /**
      * Returns a field info by its hash.
+     * Looks up in the hierarchy
      *
      * @param hash
      * @return
@@ -56,6 +61,7 @@ public interface ClassInfo extends ReflectionInfo {
 
     /**
      * Returns the fields info.
+     * Does not looks up in the hierarchy
      *
      * @return the fields info
      */

@@ -141,7 +141,7 @@ public interface TransformationConstants extends Constants {
     public static final String NEW_METHOD_SIGNATURE_METHOD_SIGNATURE = "(Ljava/lang/Class;I)Lorg/codehaus/aspectwerkz/joinpoint/impl/MethodSignatureImpl;";
     public static final String NEW_CONSTRUCTOR_SIGNATURE_METHOD_SIGNATURE = "(Ljava/lang/Class;I)Lorg/codehaus/aspectwerkz/joinpoint/impl/ConstructorSignatureImpl;";
     public static final String NEW_FIELD_SIGNATURE_METHOD_SIGNATURE = "(Ljava/lang/Class;I)Lorg/codehaus/aspectwerkz/joinpoint/impl/FieldSignatureImpl;";
-    public static final String NEW_HANDLER_SIGNATURE_METHOD_SIGNATURE = "(Ljava/lang/Class;I)Lorg/codehaus/aspectwerkz/joinpoint/impl/CatchClauseSignatureImpl;";
+    public static final String NEW_HANDLER_SIGNATURE_METHOD_SIGNATURE = "(Ljava/lang/Class;)Lorg/codehaus/aspectwerkz/joinpoint/impl/CatchClauseSignatureImpl;";
     public static final String SIGNATURE_FACTORY_CLASS = "org/codehaus/aspectwerkz/joinpoint/management/SignatureFactory";
     public static final String ASPECTS_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/management/Aspects";
     public static final String ASPECT_OF_METHOD_NAME = "aspectOf";
@@ -185,7 +185,7 @@ public interface TransformationConstants extends Constants {
     public static final String GET_TARGET_CLASS_METHOD_NAME = "getTargetClass";
     public static final String GET_TARGET_CLASS_METHOD_SIGNATURE = "()Ljava/lang/Class;";
     public static final String GET_TYPE_METHOD_NAME = "getType";
-    public static final String GET_TYPE_METHOD_SIGNATURE = "()Ljava/lang/String;";
+    public static final String GET_TYPE_METHOD_SIGNATURE = "()Lorg/codehaus/aspectwerkz/joinpoint/management/JoinPointType;";
     public static final String RESET_METHOD_NAME = "reset";
     public static final String RUNTIME_EXCEPTION_CLASS_NAME = "java/lang/RuntimeException";
     public static final String RUNTIME_EXCEPTION_INIT_METHOD_SIGNATURE = "(Ljava/lang/String;)V";

@@ -238,7 +238,7 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
                         m_callerMethodName,
                         m_callerMethodDesc,
                         calleeClassName,
-                        JoinPointType.METHOD_CALL,
+                        JoinPointType.METHOD_CALL_INT,
                         joinPointHash
                 );
 
@@ -269,7 +269,7 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
                 }
                 m_ctx.addEmittedJoinPoint(
                         new EmittedJoinPoint(
-                                JoinPointType.METHOD_CALL,
+                                JoinPointType.METHOD_CALL_INT,
                                 m_callerClassName,
                                 m_callerMethodName,
                                 m_callerMethodDesc,

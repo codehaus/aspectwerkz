@@ -112,11 +112,11 @@ public class JoinPointManager {
         ReflectionInfo reflectionInfo = null;
 
         switch (joinPointType) {
-            case JoinPointType.METHOD_EXECUTION:
+            case JoinPointType.METHOD_EXECUTION_INT:
                 reflectionInfo = calleeClassInfo.getMethod(joinPointHash);
                 doLoadJoinPoint(
                         joinPointClassName,
-                        JoinPointType.METHOD_EXECUTION,
+                        JoinPointType.METHOD_EXECUTION_INT,
                         PointcutType.EXECUTION,
                         callerClass,
                         callerMethodName,
@@ -132,11 +132,11 @@ public class JoinPointManager {
                 );
                 break;
 
-            case JoinPointType.METHOD_CALL:
+            case JoinPointType.METHOD_CALL_INT:
                 reflectionInfo = calleeClassInfo.getMethod(joinPointHash);
                 doLoadJoinPoint(
                         joinPointClassName,
-                        JoinPointType.METHOD_CALL,
+                        JoinPointType.METHOD_CALL_INT,
                         PointcutType.CALL,
                         callerClass,
                         callerMethodName,
@@ -151,11 +151,11 @@ public class JoinPointManager {
                         calleeClassInfo
                 );
                 break;
-            case JoinPointType.FIELD_GET:
+            case JoinPointType.FIELD_GET_INT:
                 reflectionInfo = calleeClassInfo.getField(joinPointHash);
                 doLoadJoinPoint(
                         joinPointClassName,
-                        JoinPointType.FIELD_GET,
+                        JoinPointType.FIELD_GET_INT,
                         PointcutType.GET,
                         callerClass,
                         callerMethodName,
@@ -171,11 +171,11 @@ public class JoinPointManager {
                 );
                 break;
 
-            case JoinPointType.FIELD_SET:
+            case JoinPointType.FIELD_SET_INT:
                 reflectionInfo = calleeClassInfo.getField(joinPointHash);
                 doLoadJoinPoint(
                         joinPointClassName,
-                        JoinPointType.FIELD_SET,
+                        JoinPointType.FIELD_SET_INT,
                         PointcutType.SET,
                         callerClass,
                         callerMethodName,
@@ -191,11 +191,11 @@ public class JoinPointManager {
                 );
                 break;
 
-            case JoinPointType.CONSTRUCTOR_EXECUTION:
+            case JoinPointType.CONSTRUCTOR_EXECUTION_INT:
                 reflectionInfo = calleeClassInfo.getConstructor(joinPointHash);
                 doLoadJoinPoint(
                         joinPointClassName,
-                        JoinPointType.CONSTRUCTOR_EXECUTION,
+                        JoinPointType.CONSTRUCTOR_EXECUTION_INT,
                         PointcutType.EXECUTION,
                         callerClass,
                         callerMethodName,
@@ -211,11 +211,11 @@ public class JoinPointManager {
                 );
                 break;
 
-            case JoinPointType.CONSTRUCTOR_CALL:
+            case JoinPointType.CONSTRUCTOR_CALL_INT:
                 reflectionInfo = calleeClassInfo.getConstructor(joinPointHash);
                 doLoadJoinPoint(
                         joinPointClassName,
-                        JoinPointType.CONSTRUCTOR_CALL,
+                        JoinPointType.CONSTRUCTOR_CALL_INT,
                         PointcutType.CALL,
                         callerClass,
                         callerMethodName,
@@ -231,11 +231,11 @@ public class JoinPointManager {
                 );
                 break;
 
-            case JoinPointType.HANDLER:
+            case JoinPointType.HANDLER_INT:
                 reflectionInfo = calleeClassInfo;
                 doLoadJoinPoint(
                         joinPointClassName,
-                        JoinPointType.HANDLER,
+                        JoinPointType.HANDLER_INT,
                         PointcutType.HANDLER,
                         callerClass,
                         callerMethodName,
@@ -251,7 +251,7 @@ public class JoinPointManager {
                 );
                 break;
 
-            case JoinPointType.STATIC_INITALIZATION:
+            case JoinPointType.STATIC_INITALIZATION_INT:
                 throw new UnsupportedOperationException(
                         "join point type handling is not implemented: " + joinPointType
                 );
@@ -311,7 +311,7 @@ public class JoinPointManager {
         // FIXME: refactor getMethodInfo in INFO so that we can apply it on "<init>" and that it delegates to ctor
         // instead of checking things here.
         switch (joinPointType) {
-            case JoinPointType.CONSTRUCTOR_EXECUTION:
+            case JoinPointType.CONSTRUCTOR_EXECUTION_INT:
                 withinInfo = callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(callerMethodDesc));
                 break;
             default:

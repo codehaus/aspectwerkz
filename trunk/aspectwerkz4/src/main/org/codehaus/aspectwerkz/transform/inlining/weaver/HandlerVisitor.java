@@ -293,7 +293,7 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
                     catchLabel.callerMember.getName(),
                     catchLabel.callerMember.getSignature(),
                     exceptionTypeName,
-                    JoinPointType.HANDLER,
+                    JoinPointType.HANDLER_INT,
                     joinPointHash
             );
 
@@ -318,7 +318,7 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
             // emit the joinpoint
             m_ctx.addEmittedJoinPoint(
                     new EmittedJoinPoint(
-                            JoinPointType.HANDLER,
+                            JoinPointType.HANDLER_INT,
                             callerTypeName,
                             catchLabel.callerMember.getName(),
                             catchLabel.callerMember.getSignature(),
