@@ -224,7 +224,16 @@ public class StartupManager {
                     pointcut = new Pointcut(aspectManager, adviceDef.getExpressionInfo());
                     pointcutManager.addPointcut(pointcut);
                 }
-                pointcut.addAfterAdvice(aspectDef.getName() + '/' + adviceDef.getName());
+                if (adviceDef.getType().equals(AdviceType.AFTER) ||
+                    adviceDef.getType().equals(AdviceType.AFTER_FINALLY)) {
+                    pointcut.addAfterFinallyAdvices(aspectDef.getName() + '/' + adviceDef.getName());
+                }
+                if (adviceDef.getType().equals(AdviceType.AFTER_RETURNING)) {
+                    pointcut.addAfterReturningAdvices(aspectDef.getName() + '/' + adviceDef.getName());
+                }
+                if (adviceDef.getType().equals(AdviceType.AFTER_THROWING)) {
+                    pointcut.addAfterThrowingAdvices(aspectDef.getName() + '/' + adviceDef.getName());
+                }
             }
         }
     }
@@ -290,7 +299,7 @@ public class StartupManager {
                     registerAspect(aspectManager, cflowAspectDef, new HashMap());
                 }
                 cflowPointcut.addBeforeAdvice(CFlowSystemAspect.NAME + '/' + CFlowSystemAspect.PRE_ADVICE);
-                cflowPointcut.addAfterAdvice(CFlowSystemAspect.NAME + '/' + CFlowSystemAspect.POST_ADVICE);
+                cflowPointcut.addAfterFinallyAdvices(CFlowSystemAspect.NAME + '/' + CFlowSystemAspect.POST_ADVICE);
             }
         }
     }

@@ -332,9 +332,9 @@ public class JitCompiler {
             if (pointcutType.equals(PointcutType.HANDLER)) { // TODO: fix handler pointcuts
                 return null;
             }
-            AdviceInfo[] aroundAdvice = JoinPointManager.extractAroundAdvice(advice);
-            AdviceInfo[] beforeAdvice = JoinPointManager.extractBeforeAdvice(advice);
-            AdviceInfo[] afterAdvice = JoinPointManager.extractAfterAdvice(advice);
+            AdviceInfo[] aroundAdvice = JoinPointManager.extractAroundAdvices(advice);
+            AdviceInfo[] beforeAdvice = JoinPointManager.extractBeforeAdvices(advice);
+            AdviceInfo[] afterAdvice = JoinPointManager.extractAfterFinallyAdvices(advice);
             if ((aroundAdvice.length == 0) && (beforeAdvice.length == 0) && (afterAdvice.length == 0)) {
                 return null; // no advice => bail out
             }

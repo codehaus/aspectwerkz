@@ -46,7 +46,7 @@ public abstract class AbstractLoggingAspect {
     }
 
     /**
-     * @Before logSet
+     * Before logSet
      */
     public void logEntry(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
@@ -57,11 +57,23 @@ public abstract class AbstractLoggingAspect {
     }
 
     /**
-     * @After returning(int) methodsToLog
+     * After returning(java.lang.String) methodsToLog
+     * After throwing(java.lang.RuntimeException) methodsToLog
      */
-    public void logExit(final JoinPoint joinPoint) throws Throwable {
+    public void logAfterThrowing(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
-        System.out.println("EXIT: "
+        System.out.println("AFTER THROWING: "
+            + joinPoint.getTargetClass().getName()
+            + "::"
+            + signature.getName());
+    }
+
+    /**
+     * After methodsToLog
+     */
+    public void logAfterFinally(final JoinPoint joinPoint) throws Throwable {
+        MemberSignature signature = (MemberSignature) joinPoint.getSignature();
+        System.out.println("AFTER FINALLY: "
             + joinPoint.getTargetClass().getName()
             + "::"
             + signature.getName());

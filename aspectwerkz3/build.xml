@@ -391,7 +391,7 @@
 	<!-- =================================================== -->
 	<target name="samples:logging" depends="clean, jars, samples:annotationc">
 		<exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-			<arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.logging.Target" />
+			<arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.weaving.strategy=inlining examples.logging.Target" />
 		</exec>
 	</target>
 
