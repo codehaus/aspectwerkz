@@ -190,7 +190,7 @@ public class MethodPattern extends Pattern {
             methodNamePattern = "[a-zA-Z0-9_$.]+";
         }
         else {
-            methodNamePattern = Strings.replaceSubString(methodNamePattern, "*", "[a-zA-Z0-9_$]+");
+            methodNamePattern = Strings.replaceSubString(methodNamePattern, "*", "[a-zA-Z0-9_$]*");
         }
         m_methodNamePattern = new com.karneim.util.collection.regex.Pattern(methodNamePattern);
     }

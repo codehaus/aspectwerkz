@@ -22,6 +22,7 @@ import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.regexp.MethodPattern;
+import org.codehaus.aspectwerkz.util.SequencedHashMap;
 
 /**
  * Implements the Aspect concept. Manages pointcuts and introductions for a
@@ -34,7 +35,7 @@ public class Aspect {
     /**
      * Holds references to all the the method pointcuts in the system.
      */
-    protected final Map m_methodPointcuts = new HashMap();
+    protected final Map m_methodPointcuts = new SequencedHashMap();
 
     /**
      * Holds references to all the the getField pointcuts in the system.

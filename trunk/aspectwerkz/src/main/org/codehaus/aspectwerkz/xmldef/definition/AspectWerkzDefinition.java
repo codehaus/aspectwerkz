@@ -28,6 +28,7 @@ import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.AspectWerkz;
+import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.dom4j.Document;
 
 /**
@@ -84,7 +85,7 @@ public class AspectWerkzDefinition implements Serializable {
     /**
      * Maps the aspects to it's name.
      */
-    private final Map m_aspectMap = new HashMap();
+    private final Map m_aspectMap = new SequencedHashMap();
 
     /**
      * The abstract advice definitions.
