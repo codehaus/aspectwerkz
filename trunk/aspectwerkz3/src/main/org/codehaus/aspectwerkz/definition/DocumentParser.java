@@ -13,6 +13,7 @@ import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -301,6 +302,8 @@ public class DocumentParser {
     private static Class loadAspectClass(final ClassLoader loader, final String aspectClassName) {
         Class aspectClass;
         try {
+            System.out.println("loader = " + loader);
+            System.out.println("aspectClassName = " + aspectClassName);
             aspectClass = loader.loadClass(aspectClassName);
         } catch (Exception e) {
             e.printStackTrace();
@@ -382,7 +385,7 @@ public class DocumentParser {
                 }
                 if (method == null) {
                     throw new DefinitionException(
-                            "Could not find advice method " + name + " in " + aspectClass.getName()
+                            "Could not find advice method [" + name + "] in [" + aspectClass.getName() + "]"
                     );
                 }
                 createAndAddAdviceDefsToAspectDef(type, bindTo, adviceName, method, methodIndex, aspectDef);
@@ -796,6 +799,10 @@ public class DocumentParser {
             if (signatureElements.length == 1
                 && method.getParameterTypes().length == 1
                 && method.getParameterTypes()[0].getName().equals(JoinPoint.class.getName())) {
+                return true;
+            } else if (signatureElements.length == 1
+                   && method.getParameterTypes().length == 1
+                   && method.getParameterTypes()[0].getName().equals(StaticJoinPoint.class.getName())) {
                 return true;
             } else {
                 return false;
