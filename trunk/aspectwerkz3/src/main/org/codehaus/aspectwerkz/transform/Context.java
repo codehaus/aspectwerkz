@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.transform;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Interface for the different transformation context implementations. FIXME crap: abstract method on an interface.
@@ -59,7 +60,7 @@ public interface Context {
      *
      * @return
      */
-    public abstract List getDefinitions();
+    public abstract Set getDefinitions();
 
     /**
      * Marks the class being transformed as advised. The marker can at most be set once per class per transformer

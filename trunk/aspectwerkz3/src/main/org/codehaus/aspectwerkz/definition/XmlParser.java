@@ -24,6 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Parses the XML definition file using <tt>dom4j</tt>.
@@ -49,7 +50,7 @@ public class XmlParser {
     /**
      * The AspectWerkz definitions.
      */
-    private static List s_definitions = null;
+    private static Set s_definitions = null;
 
     /**
      * Returns the aspect class names defined in the XML file.
@@ -112,7 +113,7 @@ public class XmlParser {
      * @param isDirty        flag to mark the the definition as updated or not
      * @return the definitions
      */
-    public static List parse(final ClassLoader loader, final File definitionFile, boolean isDirty) {
+    public static Set parse(final ClassLoader loader, final File definitionFile, boolean isDirty) {
         if (definitionFile == null) {
             throw new IllegalArgumentException("definition file can not be null");
         }
@@ -147,7 +148,7 @@ public class XmlParser {
      * @param stream the input stream containing the document
      * @return the definitions
      */
-    public static List parse(final ClassLoader loader, final InputStream stream) {
+    public static Set parse(final ClassLoader loader, final InputStream stream) {
         try {
             Document document = createDocument(stream);
             s_definitions = DocumentParser.parse(loader, document);
@@ -164,7 +165,7 @@ public class XmlParser {
      * @param url    the URL to the definition file
      * @return the definition object
      */
-    public static List parseNoCache(final ClassLoader loader, final URL url) {
+    public static Set parseNoCache(final ClassLoader loader, final URL url) {
         try {
             Document document = createDocument(url);
             s_definitions = DocumentParser.parse(loader, document);

@@ -27,6 +27,8 @@ import org.dom4j.Element;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Parses the XML definition using <tt>dom4j</tt>.
@@ -154,7 +156,7 @@ public class DocumentParser {
      * @param document the defintion as a document
      * @return the definitions
      */
-    public static List parse(final ClassLoader loader, final Document document) {
+    public static Set parse(final ClassLoader loader, final Document document) {
         final Element root = document.getRootElement();
 
         // parse the transformation scopes
@@ -167,8 +169,8 @@ public class DocumentParser {
      * @param loader the current class loader
      * @param root   the root element
      */
-    private static List parseSystemElements(final ClassLoader loader, final Element root) {
-        final List systemDefs = new ArrayList();
+    private static Set parseSystemElements(final ClassLoader loader, final Element root) {
+        final Set systemDefs = new HashSet();
         for (Iterator it1 = root.elementIterator("system"); it1.hasNext();) {
             Element system = (Element) it1.next();
             SystemDefinition definition = parseSystemElement(loader, system, getBasePackage(system));

@@ -562,13 +562,13 @@ public class AspectWerkzC {
         // turn off -Daspectwerkz.definition.file registration and register it at the
         // compilationLoader level instead
         SystemDefinitionContainer.disableSystemWideDefinition();
-        SystemDefinitionContainer.deploySystemDefinitions(
+        SystemDefinitionContainer.deployDefinitions(
                 compiler.compilationLoader,
                 DefinitionLoader.getDefaultDefinition(compiler.compilationLoader)
         );
 
         String preprocessorFqn = preProcessor == null ? PRE_PROCESSOR_CLASSNAME_DEFAULT
-                : preProcessor;
+                                 : preProcessor;
 
         try {
             compiler.setPreprocessor(preprocessorFqn);

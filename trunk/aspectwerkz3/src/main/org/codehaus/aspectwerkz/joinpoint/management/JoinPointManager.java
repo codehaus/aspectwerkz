@@ -23,6 +23,7 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.codehaus.aspectwerkz.definition.Virtual;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.expression.PointcutType;
@@ -39,6 +40,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collection;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Manages the join point compilation, loading and instantiation for the target classes.
@@ -362,13 +365,16 @@ public class JoinPointManager {
         final List afterReturningAdvices = new ArrayList();
         final List afterThrowingAdvices = new ArrayList();
 
-        final List systemDefinitions = SystemDefinitionContainer.getHierarchicalDefs(loader);
+        final Set systemDefinitions = SystemDefinitionContainer.getRegularAndVirtualDefinitionsFor(loader);
+
         for (Iterator iterator = systemDefinitions.iterator(); iterator.hasNext();) {
             SystemDefinition systemDefinition = (SystemDefinition) iterator.next();
-
             Collection aspects = systemDefinition.getAspectDefinitions();
             for (Iterator iterator1 = aspects.iterator(); iterator1.hasNext();) {
                 AspectDefinition aspectDefinition = (AspectDefinition) iterator1.next();
+                if (aspectDefinition.getName().equals(Virtual.class.getName())) {
+                    continue;
+                }
 
                 //TODO - do we care about non bounded pointcut ?
                 for (Iterator iterator2 = aspectDefinition.getAdviceDefinitions().iterator(); iterator2.hasNext();) {
@@ -386,7 +392,7 @@ public class JoinPointManager {
                                 expressionContext,
                                 loader
                         );
-                        // Note that the exprCtx dynamic information updated here should only be used
+                        // Note that the expressionContext dynamic information updated here should only be used
                         // in the scope of this code block, since at the next iteration, the data will be
                         // updated for another advice binding
                         // [hence see setMethodArgumentIndexes below]
@@ -560,8 +566,5 @@ public class JoinPointManager {
     private static boolean isRtti(Type type, final ClassLoader loader) {
         //TODO support subclassing ? impacts some in ExpressionInfo which is not classloader aware
         return Type.getType(Rtti.class).getDescriptor().equals(type.getDescriptor());
-//        return ClassInfoHelper.instanceOf(AsmClassInfo.getClassInfo(type.getClassName().replace('/','.'), loader),
-//                                          Rtti.class.getName().replace('/','.'));
     }
-
 }

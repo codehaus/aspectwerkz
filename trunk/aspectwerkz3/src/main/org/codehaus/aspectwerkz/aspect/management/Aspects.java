@@ -133,10 +133,9 @@ public class Aspects {
      * @param aspectClass the aspect class
      */
     private static AspectContainer createAspectContainer(final Class aspectClass) {
-        // lookup for this aspect definition
         AspectDefinition aspectDefinition = null;
 
-        List definitions = SystemDefinitionContainer.getHierarchicalDefs(aspectClass.getClassLoader());
+        Set definitions = SystemDefinitionContainer.getRegularAndVirtualDefinitionsFor(aspectClass.getClassLoader());
         for (Iterator iterator = definitions.iterator(); iterator.hasNext() && aspectDefinition == null;) {
             SystemDefinition systemDefinition = (SystemDefinition) iterator.next();
             for (Iterator iterator1 = systemDefinition.getAspectDefinitions().iterator(); iterator1.hasNext();) {
@@ -169,7 +168,7 @@ public class Aspects {
                     aspectDefinition,
                     aspectDefinition.getParameters()
             );
-            AspectContainer container = (AspectContainer) constructor.newInstance(new Object[]{aspectContext});
+            final AspectContainer container = (AspectContainer) constructor.newInstance(new Object[]{aspectContext});
             aspectContext.setContainer(container);
             return container;
         } catch (InvocationTargetException e) {
@@ -193,19 +192,22 @@ public class Aspects {
     }
 
     /**
-     * Class is non-instantiable.
+     * Looks up the aspect class name, based on the qualified name of the aspect.
+     *
+     * @param loader
+     * @param qualifiedName
+     * @return
      */
-    private Aspects() {
-    }
-
-    private static String lookupAspectClassName(ClassLoader loader, String qualifiedName) {
+    private static String lookupAspectClassName(final ClassLoader loader, final String qualifiedName) {
         if (qualifiedName.indexOf('/') <= 0) {
             // no uuid
             return null;
         }
 
-        List definitionsBottomUp = SystemDefinitionContainer.getHierarchicalDefs(loader);
-        Collections.reverse(definitionsBottomUp);
+        final Set definitionsBottomUp = SystemDefinitionContainer.getRegularAndVirtualDefinitionsFor(loader);
+        // TODO: bottom up is broken now
+        //Collections.reverse(definitionsBottomUp);
+
         for (Iterator iterator = definitionsBottomUp.iterator(); iterator.hasNext();) {
             SystemDefinition definition = (SystemDefinition) iterator.next();
             for (Iterator iterator1 = definition.getAspectDefinitions().iterator(); iterator1.hasNext();) {
@@ -216,5 +218,11 @@ public class Aspects {
             }
         }
         return null;
+    }
+
+    /**
+     * Class is non-instantiable.
+     */
+    private Aspects() {
     }
 }

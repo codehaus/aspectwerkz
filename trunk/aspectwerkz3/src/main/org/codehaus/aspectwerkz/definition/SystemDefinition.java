@@ -89,6 +89,39 @@ public class SystemDefinition {
     private final Map m_preparedPointcuts = new HashMap();
 
     /**
+     * Returns the system definition with a specific id in a specific class loader.
+     *
+     * @param loader the class loader that the definition lives in
+     * @param id     the id of the definition
+     * @return the system definition
+     */
+    public static SystemDefinition getDefinitionFor(final ClassLoader loader, final String id) {
+        return SystemDefinitionContainer.getDefinitionFor(loader, id);
+    }
+
+    /**
+     * Returns the system definitions in a specific class loader.
+     *
+     * @param loader the class loader that the definition lives in
+     * @return a set with the system definitions
+     */
+    public static Set getDefinitionsFor(final ClassLoader loader) {
+        return SystemDefinitionContainer.getDefinitionsFor(loader);
+    }
+
+    /**
+     * Returns the "virtual" system definitions in a specific class loader, e.g. the system that houses
+     * the hot deployed aspects that has not been explicitly bound to a system.
+     *
+     * @param loader the class loader that the definition lives in
+     * @return the system definition
+     */
+    // TODO expose or not?
+//    public static SystemDefinition getVirtualDefinitionFor(final ClassLoader loader) {
+//        return SystemDefinitionContainer.getVirtualDefinitionFor(loader);
+//    }
+
+    /**
      * Creates a new instance, creates and sets the system cflow aspect.
      */
     public SystemDefinition(final String uuid) {
@@ -474,8 +507,10 @@ public class SystemDefinition {
 
                 if (expression.match(ctx)) {
                     if (AspectWerkzPreProcessor.VERBOSE) {
-                        System.out.println("[TRACE - match: " + expression.toString() + " @ "
-                                + aspectDef.getQualifiedName() + "/" + adviceDef.getName()
+                        System.out.println(
+                                "[TRACE - match: " + expression.toString() + " @ "
+                                + aspectDef.getQualifiedName() + "/" +
+                                adviceDef.getName()
                         );
                         System.out.println("[       for     " + ctx.getReflectionInfo().toString());
                         System.out.println("[       within  " + ctx.getWithinReflectionInfo().toString());
@@ -538,8 +573,10 @@ public class SystemDefinition {
                     if (expressionInfo.getAdvisedClassFilterExpression().match(ctx) ||
                         expressionInfo.getAdvisedCflowClassFilterExpression().match(ctx)) {
                         if (AspectWerkzPreProcessor.VERBOSE) {
-                            System.out.println("[TRACE - earlymatch: " + expressionInfo.toString() + " @ "
-                                    + aspectDef.getQualifiedName() + "/" + adviceDef.getName()
+                            System.out.println(
+                                    "[TRACE - earlymatch: " + expressionInfo.toString() + " @ "
+                                    + aspectDef.getQualifiedName() + "/" +
+                                    adviceDef.getName()
                             );
                             System.out.println("[       for          " + ctx.getReflectionInfo().toString());
                             System.out.println("[       within       " + ctx.getWithinReflectionInfo().toString());
@@ -712,5 +749,13 @@ public class SystemDefinition {
      */
     public void addPreparedPointcut(final PreparedPointcut preparedPointcut) {
         m_preparedPointcuts.put(preparedPointcut.getName(), preparedPointcut);
+    }
+
+    public boolean equals(Object o) {
+        return ((SystemDefinition) o).m_uuid.equals(m_uuid);
+    }
+
+    public int hashCode() {
+        return m_uuid.hashCode();
     }
 }

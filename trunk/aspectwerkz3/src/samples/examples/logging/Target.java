@@ -12,6 +12,7 @@ import org.codehaus.aspectwerkz.transform.inlining.deployer.DeploymentHandle;
 import org.codehaus.aspectwerkz.definition.PreparedPointcut;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 /**
  * serializable
@@ -77,7 +78,7 @@ public class Target {
         System.out.println("-----------------------------------------------------------------------------------");
 
         run();
-        SystemDefinition def = DefinitionLoader.getDefinition(
+        SystemDefinition def = SystemDefinitionContainer.getDefinitionFor(
                 Thread.currentThread().getContextClassLoader(), "samples"
         );
         PreparedPointcut preparedPointcut = def.getPreparedPointcut("prepareMethodsToLog");
