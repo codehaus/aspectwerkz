@@ -26,8 +26,9 @@ public class ArgLoggingTarget {
         return null;
     }
 
-    public void toLog_3(int typeMatch, String[] sarr) {
+    public int toLog_3(int typeMatch, String[] sarr) {
         System.out.println("== toLog_3 " + typeMatch + ", " + sarr);
+        return 0;
     }
 
     public static void main(String args[]) throws Throwable {
@@ -37,8 +38,8 @@ public class ArgLoggingTarget {
         me.log();
     }
 
-    private void log() {
-        toLog_3(0, new String[] {"c"});
+    private int log() {
+        return toLog_3(0, new String[] {"c"});
     }
 
 }

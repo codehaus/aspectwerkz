@@ -130,7 +130,7 @@ public class ConstructorExecutionTransformer implements Transformer {
     //            final int methodSequence) throws NotFoundException,
     // CannotCompileException {
     //
-    //        String prefixedMethodName = TransformationUtil.getPrefixedMethodName(
+    //        String prefixedMethodName = TransformationUtil.getPrefixedOriginalMethodName(
     //                constructor.getName(), methodSequence, ctClass.getName()
     //        );
     //

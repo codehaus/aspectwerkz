@@ -18,7 +18,6 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
