@@ -259,7 +259,6 @@ public class Aspects {
             SystemDefinition definition = (SystemDefinition) iterator.next();
             for (Iterator iterator1 = definition.getAspectDefinitions().iterator(); iterator1.hasNext();) {
                 AspectDefinition aspectDefinition = (AspectDefinition) iterator1.next();
-                System.out.println("-- check for " + aspectDefinition.getQualifiedName());
                 if (qualifiedName.equals(aspectDefinition.getQualifiedName())) {
                     return aspectDefinition.getClassName();
                 }
