@@ -582,6 +582,15 @@ public class Pointcut implements Serializable {
     }
 
     /**
+     * Returns the after advice name at the given index
+     *
+     * @return the advice name
+     */
+     public String getAfterAdviceName(int index) {
+         return m_afterAdviceNames[index];
+     }
+
+    /**
      * Returns a list with the names for the advices for the pointcut.
      * 
      * @return the advices
