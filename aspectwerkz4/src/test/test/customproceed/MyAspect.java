@@ -52,7 +52,7 @@ public class MyAspect {
     }
 
     /**
-     * @Around("execution(* test.customproceed.CustomProceedTest.setString(s)) && args(String s)")
+     * @Around("execution(* test.customproceed.CustomProceedTest.setString(String)) && args(String s)")
      */
     public Object around3(ProceedWithStringArg jp, String s) {
         CustomProceedTest.log("around3 ");
@@ -61,9 +61,12 @@ public class MyAspect {
         return jp.proceed("gnitset");
     }
 
-    public Object around4(ProceedWithMiscArgs jp, long i, String s, int[][] matrix) {
+    /**
+     * @Around("execution(* test.customproceed.CustomProceedTest.setMisc(..)) && args(lont l, String s, int[][] matrixs)")
+     */
+    public Object around4(ProceedWithMiscArgs jp, long l, String s, int[][] matrix) {
         CustomProceedTest.log("around4 ");
-        CustomProceedTest.log(new Long(i).toString());
+        CustomProceedTest.log(new Long(l).toString());
         CustomProceedTest.log(" ");
         CustomProceedTest.log(s);
         CustomProceedTest.log(" ");
