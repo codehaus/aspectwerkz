@@ -427,6 +427,14 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         return true;
     }
 
+    public String toString() {
+        StringBuffer sb = new StringBuffer(30);
+        sb.append(getJoinPointTypeAsString(m_type));
+        sb.append(":").append(m_targetClass.getName());
+        sb.append(".").append(getSignature().getName());
+        return sb.toString();
+    }
+
     /**
      * Provides custom deserialization.
      *

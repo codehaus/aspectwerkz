@@ -34,7 +34,7 @@ public class ConstructorExecutionTransformer implements Transformer {
     /**
      * The join point index.
      */
-    private int m_joinPointIndex;
+    //AXprivate int m_joinPointIndex;
 
     /**
      * Makes the member method transformations.
@@ -44,7 +44,7 @@ public class ConstructorExecutionTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws Exception {
         List definitions = context.getDefinitions();
-        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO thread safe and reentrant
+        //AXm_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO thread safe and reentrant
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
             final CtClass ctClass = klass.getCtClass();
@@ -64,11 +64,12 @@ public class ConstructorExecutionTransformer implements Transformer {
                 if (addPrefixToConstructor(ctClass, constructor)) {
                     context.markAsAdvised();
                     int constructorHash = TransformationUtil.calculateHash(constructor);
-                    createWrapperConstructor(constructor, constructorHash);
+                    createWrapperConstructor(constructor, constructorHash, klass);
                 }
             }
         }
-        TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
+        //AXTransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
+        klass.flushJoinPointIndex();
     }
 
     /**
@@ -79,7 +80,7 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param originalConstructor the original constructor
      * @param constructorHash     the constructor hash
      */
-    private void createWrapperConstructor(final CtConstructor originalConstructor, final int constructorHash)
+    private void createWrapperConstructor(final CtConstructor originalConstructor, final int constructorHash, final Klass klass)
                                    throws CannotCompileException, NotFoundException {
         StringBuffer body = new StringBuffer();
         body.append('{');
@@ -96,12 +97,12 @@ public class ConstructorExecutionTransformer implements Transformer {
         body.append('(');
         body.append(constructorHash);
         body.append(',');
-        body.append(m_joinPointIndex);
+        body.append(klass.getJoinPointIndex());
         body.append(',');
         body.append("args, this,");
         body.append(TransformationUtil.JOIN_POINT_TYPE_CONSTRUCTOR_EXECUTION);
         body.append("); }");
-        m_joinPointIndex++;
+        klass.incrementJoinPointIndex();
         originalConstructor.setBody(body.toString());
     }
 

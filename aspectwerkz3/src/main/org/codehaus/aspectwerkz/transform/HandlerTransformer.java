@@ -36,7 +36,7 @@ public class HandlerTransformer implements Transformer {
     /**
      * The join point index.
      */
-    private int m_joinPointIndex;
+    //AXprivate int m_joinPointIndex;
 
     /**
      * Transforms the call side pointcuts.
@@ -46,13 +46,13 @@ public class HandlerTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
-        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO thread safe reentrant
+        //AXm_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO thread safe reentrant
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
             if (classFilter(definition, new ExpressionContext(PointcutType.HANDLER, classInfo, classInfo), ctClass)) {
-                return;
+                continue;
             }
             ctClass.instrument(new ExprEditor() {
                     public void edit(Handler handlerExpr) throws CannotCompileException {
@@ -92,7 +92,7 @@ public class HandlerTransformer implements Transformer {
                                 // TODO: unique hash is needed, based on: executing class, executing method, catch clause (and sequence number?)
                                 body.append(TransformationUtil.calculateHash(exceptionClass));
                                 body.append(',');
-                                body.append(m_joinPointIndex);
+                                body.append(klass.getJoinPointIndex());
                                 if (Modifier.isStatic(where.getModifiers())) {
                                     body.append(", $1, (Object)null, \"");
                                 } else {
@@ -104,7 +104,7 @@ public class HandlerTransformer implements Transformer {
                                 body.append("\");");
                                 handlerExpr.insertBefore(body.toString());
                                 context.markAsAdvised();
-                                m_joinPointIndex++;
+                                klass.incrementJoinPointIndex();
                             }
                         } catch (NotFoundException nfe) {
                             nfe.printStackTrace();
@@ -112,7 +112,8 @@ public class HandlerTransformer implements Transformer {
                     }
                 });
         }
-        TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
+        //TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
+        klass.flushJoinPointIndex();
     }
 
     /**

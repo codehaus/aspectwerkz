@@ -47,6 +47,8 @@ public class Klass {
      */
     private final byte[] m_initialBytecode;
 
+    private int m_joinPointIndex = -1;
+
     /**
      * Creates a new class.
      *
@@ -119,6 +121,26 @@ public class Klass {
             return cp.get(name);
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
+        }
+    }
+
+    public int getJoinPointIndex() {
+        if (m_joinPointIndex != -1) {
+            return m_joinPointIndex;
+        } else {
+            m_joinPointIndex = TransformationUtil.getJoinPointIndex(getCtClass());
+            return m_joinPointIndex;
+        }
+    }
+
+    public void incrementJoinPointIndex() {
+        getJoinPointIndex();
+        m_joinPointIndex++;
+    }
+
+    public void flushJoinPointIndex() {
+        if (m_joinPointIndex != -1) {
+            TransformationUtil.setJoinPointIndex(getCtClass(), m_joinPointIndex);
         }
     }
 }
