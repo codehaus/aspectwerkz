@@ -43,7 +43,7 @@ public class ClassLoaderPatcher {
     /**
       * Gets the bytecode of the modified java.lang.ClassLoader using given ClassLoaderPreProcessor class name
       */
-     private static byte[] getPatchedClassLoader(String preProcessorName) {
+     static byte[] getPatchedClassLoader(String preProcessorName) {
          byte[] abyte = null;
          try {
              InputStream is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream("java/lang/ClassLoader.class");
