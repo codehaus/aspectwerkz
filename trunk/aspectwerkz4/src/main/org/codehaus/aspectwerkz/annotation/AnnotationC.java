@@ -79,7 +79,7 @@ public class AnnotationC {
      * The custom annotations.
      */
     private static Map s_customAnnotations = new HashMap();
-    private static final String FILE_SEPARATOR = ",";//FIXME why not using System default ? Is it for Ant task ??
+    private static final String FILE_SEPARATOR = File.separator;
 
     /**
      * Runs the compiler from the command line.
