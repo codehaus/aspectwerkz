@@ -356,9 +356,10 @@
                 <p>
                     It is possible to combine patterns selection together using algebraic expressions. The following operators are supported:
                     <ul>
-                        <li>AND or &amp;&amp;</li>
-                        <li>OR or ||</li>
-                        <li>NOT or !</li>
+                        <li><code>AND</code> or <code>&amp;&amp;</code></li>
+                        <li><code>OR</code> or <code>||</code></li>
+                        <li><code>NOT</code> or <code>!</code></li>
+                        <li><code>IN</code> (use for cflow expressions, e.g. <code>executionPointcut IN cflowPointcut</code></li>
                         <li>parenthesis for grouping</li>
                     </ul>
                     For model 1 deployed aspects, since the expression is defined in an XML file, the operator AND is more convient (else &amp; should be escaped).
