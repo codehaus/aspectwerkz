@@ -114,7 +114,7 @@ public class SystemDefinitionContainer {
                     Enumeration webres = loader.getResources(AOP_WEB_INF_XML_FILE);
                     while (webres.hasMoreElements()) {
                         URL def = (URL) webres.nextElement();
-                        if (isDefinedBy(loader.getParent(), def)) {
+                        if (isDefinedBy(loader, def)) {
                             ;
                         } else {
                             defs.addAll(XmlParser.parseNoCache(loader, def));
@@ -125,7 +125,7 @@ public class SystemDefinitionContainer {
                 Enumeration res = loader.getResources(AOP_META_INF_XML_FILE);
                 while (res.hasMoreElements()) {
                     URL def = (URL) res.nextElement();
-                    if (isDefinedBy(loader.getParent(), def)) {
+                    if (isDefinedBy(loader, def)) {
                         ;
                     } else {
                         defs.addAll(XmlParser.parseNoCache(loader, def));

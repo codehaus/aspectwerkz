@@ -161,18 +161,18 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
             return false;
         }
         ConstructorInfo constructorInfo = (ConstructorInfo) o;
-        if (!m_declaringTypeName.equals(constructorInfo.getDeclaringType().getName().toString())) {
+        if (!m_declaringTypeName.equals(constructorInfo.getDeclaringType().getName())) {
             return false;
         }
-        if (!m_member.name.equals(constructorInfo.getName().toString())) {
+        if (!m_member.name.equals(constructorInfo.getName())) {
             return false;
         }
         ClassInfo[] parameterTypes = constructorInfo.getParameterTypes();
-        if (m_parameterTypes.length != parameterTypes.length) {
+        if (m_parameterTypeNames.length != parameterTypes.length) {//check on names length for lazyness optim
             return false;
         }
-        for (int i = 0; i < m_parameterTypes.length; i++) {
-            if (!m_parameterTypes[i].getName().toString().equals(parameterTypes[i].getName().toString())) {
+        for (int i = 0; i < m_parameterTypeNames.length; i++) {
+            if (!m_parameterTypeNames[i].equals(parameterTypes[i].getName())) {
                 return false;
             }
         }
@@ -183,12 +183,16 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
         int result = 29;
         result = (29 * result) + m_declaringTypeName.hashCode();
         result = (29 * result) + m_member.name.hashCode();
-        if (m_parameterTypes == null) {
-            getParameterTypes();
-        }
-        for (int i = 0; i < m_parameterTypes.length; i++) {
-            result = (29 * result) + m_parameterTypes[i].getName().toString().hashCode();
+        for (int i = 0; i < m_parameterTypeNames.length; i++) {
+            result = (29 * result) + m_parameterTypeNames[i].hashCode();
         }
         return result;
+    }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer(m_declaringTypeName);
+        sb.append('.').append(m_member.name);
+        sb.append(m_member.desc);
+        return sb.toString();
     }
 }
