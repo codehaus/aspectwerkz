@@ -12,7 +12,7 @@
                 <b>Implementation issues</b>
             </p>
             <p>
-                This section documents the programming model for Aspects, Advices and Mixins
+                This section documents the programming model for Aspects, Advice and Mixins
                 in AspectWerkz.
             </p>
             <p>
@@ -22,6 +22,9 @@
                     </li>
                     <li>
                         <a href="#Advice">Advice</a>
+                    </li>
+                    <li>
+                        <a href="#Richer After advice semantics">Richer After advice semantics</a>
                     </li>
                     <li>
                         <a href="#JoinPoint instance">JoinPoint instance</a>
@@ -134,8 +137,12 @@
                     <br/>
                     <li>
                             For
-                        <code>Before</code> and
-                        <code>After</code> advice:
+                        <code>Before</code>,
+                        <code>After</code>,
+                        <code>After Finally</code>,
+                        <code>After Returning (TYPE)</code> and
+                        <code>After Throwing (TYPE)</code>
+                        advice:
                         <br/>
                         <code>public void &lt;name of method&gt;()</code> signature.
                         <br/>
@@ -151,8 +158,6 @@
             <p>
                 Using StaticJoinPoint, JoinPoint or no JoinPoint at all is discussed in
                 <a href="#StaticJoinPoint vs. JoinPoint">this section</a>.
-            </p>
-            <p>
             </p>
             <p>
                     Here is a simple example of an
@@ -215,6 +220,157 @@ public Object myAroundAdvice(String adviceArg, JoinPoint joinPoint) {... joinPoi
 public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
                 ]]></source>
             </p>
+        </section>
+
+        <section name="Richer After advice semantics">
+            <p>
+                In previous releases of <code>AspectWerkz</code> we only supported one single type of
+                <i>after advice</i>. The sematics of this type was that it was always executed, regardless
+                of wheter an exception had been throw or if the method returned successfully.
+            </p>
+            <p>
+                In the new 2.x architecture we have enhanced the semantics for this type of advice and have
+                borrow the semantics from <code>AspectJ</code>. So now we support three different types
+                of <i>after advice</i>:
+                <ul>
+                    <li>
+                        <code>@AfterFinally</code> (same as <code>@After</code>)
+                    </li>
+                    <li>
+                        <code>@AfterReturning [TYPE]</code> -
+                        <code>@AfterReturing(pointcut)</code> or
+                        <code>@AfterReturning(type=onReturnedType, pointcut=pointcut)</code>
+                    </li>
+                    <li>
+                        <code>@AfterThrowing [TYPE]</code> -
+                        <code>@AfterThrowing(pointcut)</code> or
+                        <code>@AfterThrowing(type=onThrownedType, pointcut=pointcut))</code>
+                    </li>
+                </ul>
+            </p>
+            <subsection name="after finally (after)">
+                <p>
+                    An <code>after finally</code> advice declaration has the same semantics as an
+                    <code>after</code> advice declaration, you can use any syntax you like.
+                </p>
+                <p>
+                    <code>after finally</code> advice are always executed, they work the same as a finally block.
+                    Meaning that they will be invoked regardless of wheter an exception has been thrown or if the
+                    method has returned successfully.
+                </p>
+                <p>
+                    <b>Java 5 annotation definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+@AfterFinally("execution(@TxRequired * *.*(..))")
+public void logTxMethods(StaticJoinPoint joinPoint) {..}
+                    ]]></source>
+                </p>
+                <p>
+                    <b>JavaDoc annotation definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+/**
+ * @AfterFinally("execution(@TxRequired * *.*(..))")
+ */
+public void logTxMethods(StaticJoinPoint joinPoint) {..}
+                    ]]></source>
+                </p>
+                <p>
+                    <b>XML definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+<advice type="after finally"
+        bind-to="execution(@TxRequired * *.*(..))"
+        name="logTxMethods"/>
+                    ]]></source>
+                </p>
+            </subsection>
+            <subsection name="after returning [TYPE]">
+                <p>
+                    <code>after returning [TYPE]</code> advice are executed if the method returns normally (without
+                    throwing an exception) <b>and</b> the actual type that is returned is of the type that is specified
+                    in the advice declaration.
+                </p>
+                <p>
+                    If no return type is specified then it applies to all invocations that returns normally, e.g. not
+                    when throwing an exception.
+                </p>
+                <p>
+                    <b>Java 5 annotation definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+@AfterReturning(type="@Service *..*", pointcut="execution(@TxRequired * *.*(..)")
+public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
+                    ]]></source>
+                </p>
+                <p>
+                    <b>JavaDoc annotation definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+/**
+ * @AfterReturning(type="@Service *..*", pointcut="execution(@TxRequired * *.*(..)")
+ */
+public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
+                    ]]></source>
+                </p>
+                <p>
+                    <b>XML definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+<advice type="after returning(@Service *..*)"
+        bind-to="execution(@TxRequired * *.*(..))"
+        name="txCommitReturningService"/>
+                    ]]></source>
+                </p>
+            </subsection>
+            <subsection name="after throwing [TYPE]">
+                <p>
+                    <code>after throwing [TYPE]</code> advice are executed if the returns with an exception
+                    <b>and</b> the actual type of the exception that is thrown is of the type that is specified
+                    in the advice declaration.
+                </p>
+                <p>
+                    If no exception type is specified then it applies to all invocations that returns with
+                    an exception.
+                </p>
+                <p>
+                    <b>Java 5 annotation definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+@AfterThrowing(type="RuntimeException+", pointcut="execution(@TxRequired * *.*(..)")
+public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
+                    ]]></source>
+                </p>
+                <p>
+                    <b>JavaDoc annotation definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+/**
+ * @AfterThrowing(type="RuntimeException+", pointcut="execution(@TxRequired * *.*(..)")
+ */
+public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
+                    ]]></source>
+                </p>
+                <p>
+                    <b>XML definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+<advice type="after throwing(SecurityException+)"
+        bind-to="execution(@TxRequired * *.*(..))"
+        name="txRollbackOnRuntimeException"/>
+                    ]]></source>
+                </p>
+            </subsection>
         </section>
 
         <section name="JoinPoint instance">
