@@ -32,8 +32,6 @@ public class MyAspect {
     }
 
     /**
-     * Around("execution(* test.customproceed.CustomProceedTest.setInt(int)) && args(i)")
-     *
      * @Around execution(* test.customproceed.CustomProceedTest.setInt(int)) && args(i)
      */
     public Object around1(ProceedWithIntArg jp, int i) {
@@ -43,9 +41,8 @@ public class MyAspect {
         return jp.proceed(1);
     }
 
+
     /**
-     * Around("execution(* test.customproceed.CustomProceedTest.setLong(long)) && args(l)")
-     *
      * @Around execution(* test.customproceed.CustomProceedTest.setLong(long)) && args(l)
      */
     public Object around2(ProceedWithLongArg jp, long l) {
@@ -56,8 +53,6 @@ public class MyAspect {
     }
 
     /**
-     * Around("execution(* test.customproceed.CustomProceedTest.setString(String)) && args(s)")
-     *
      * @Around execution(* test.customproceed.CustomProceedTest.setString(String)) && args(s)
      */
     public Object around3(ProceedWithStringArg jp, String s) {
@@ -68,8 +63,6 @@ public class MyAspect {
     }
 
     /**
-     * Around("execution(* test.customproceed.CustomProceedTest.setMisc(..)) && args(l, s, matrix)")
-     *
      * @Around execution(* test.customproceed.CustomProceedTest.setMisc(..)) && args(l, s, matrix)
      */
     public Object around4(ProceedWithMiscArgs jp, long l, String s, int[][] matrix) {
