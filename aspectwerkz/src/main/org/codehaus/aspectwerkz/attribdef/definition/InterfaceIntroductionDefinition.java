@@ -10,30 +10,26 @@ package org.codehaus.aspectwerkz.attribdef.definition;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.codehaus.aspectwerkz.xmldef.definition.BindIntroductionRule;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 
 /**
  * Holds the meta-data for the interface introductions.
- * This definition holds only pure interface introduction.
- *
- * It is extended in IntroductionDefinition for interface+implementation introductions
+ * <p/>This definition holds only pure interface introduction.
+ * <p/>It is extended in IntroductionDefinition for interface+implementation introductions
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class InterfaceIntroductionDefinition {
 
+    /**
+     * The name of the interface introduction.
+     */
     protected final String m_name;
 
     /**
      * The introduction expression.
      */
     protected final Expression m_expression;
-
-    /**
-     * The bind-introduction rule.
-     */
-    protected BindIntroductionRule m_bindIntroductionRule;
 
     /**
      * The attribute for the introduction.
@@ -56,8 +52,8 @@ public class InterfaceIntroductionDefinition {
                                            final Expression expression,
                                            final String interfaceClassName) {
         if (name == null) throw new IllegalArgumentException("name can not be null");
-        if (interfaceClassName == null) throw new IllegalArgumentException("interface class name can not be null");
         if (expression == null) throw new IllegalArgumentException("expression can not be null");
+        if (interfaceClassName == null) throw new IllegalArgumentException("interface class name can not be null");
 
         m_name = name;
         m_interfaceClassNames.add(interfaceClassName);
@@ -98,24 +94,6 @@ public class InterfaceIntroductionDefinition {
      */
     public List getInterfaceClassNames() {
         return m_interfaceClassNames;
-    }
-
-    /**
-     * Returns the bind-introduction rule.
-     *
-     * @return the bind-introduction  rule
-     */
-    public BindIntroductionRule getBindIntroductionRule() {
-        return m_bindIntroductionRule;
-    }
-
-    /**
-     * Sets the bind-introduction rule.
-     *
-     * @param bindIntroductionRule the bind-introduction rule
-     */
-    public void setBindIntroductionRule(final BindIntroductionRule bindIntroductionRule) {
-        m_bindIntroductionRule = bindIntroductionRule;
     }
 
     /**

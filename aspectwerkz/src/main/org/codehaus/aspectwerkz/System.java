@@ -65,14 +65,6 @@ public interface System {
     AspectMetaData getAspectMetaData(String name);
 
     /**
-     * Returns the aspect for the class pattern specified.
-     *
-     * @param classPattern the class pattern
-     * @return the aspect
-     */
-    AspectMetaData getAspectMetaData(ClassPattern classPattern);
-
-    /**
      * Returns a list with all the aspects.
      *
      * @return the aspects
@@ -107,7 +99,7 @@ public interface System {
      * and is made each time a new instance of an advised class is created.
      *
      * @param classMetaData the meta-data for the class
-     * @param methodMetaData meta-data for the method
+     * @param fieldMetaData meta-data for the field
      * @return the pointcuts for this join point
      */
     List getGetPointcuts(ClassMetaData classMetaData, FieldMetaData fieldMetaData);
@@ -118,7 +110,7 @@ public interface System {
      * and is made each time a new instance of an advised class is created.
      *
      * @param classMetaData the meta-data for the class
-     * @param methodMetaData meta-data for the method
+     * @param fieldMetaData meta-data for the field
      * @return the pointcuts for this join point
      */
     List getSetPointcuts(ClassMetaData classMetaData, FieldMetaData fieldMetaData);

@@ -286,6 +286,6 @@ public interface AspectWerkzDefinition extends Serializable {
      *
      * @param loader the class loader to use to load the aspects
      */
-    void loadAspects(final ClassLoader loader);
+    void loadAspects(ClassLoader loader);
 }
 

@@ -226,8 +226,6 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     /**
      * Returns a specific aspect definition.
      *
-     * TODO: needed??
-     *
      * @param name the name of the aspect definition
      * @return the aspect definition
      */
@@ -238,8 +236,6 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
 
     /**
      * Returns a specific advice definition.
-     *
-     * TODO: needed??
      *
      * @param name the name of the advice definition
      * @return the advice definition
@@ -277,7 +273,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
         final List introDefs = new ArrayList();
         for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
             IntroductionDefinition introDef = (IntroductionDefinition)it.next();
-            if (introDef.getBindIntroductionRule().getExpression().match(classMetaData)) {
+            if (introDef.getExpression().match(classMetaData)) {
                 introDefs.add(introDef);
             }
         }
@@ -310,18 +306,6 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
         int index = m_introductionIndexes.get(mixinName);
         if (index < 1) throw new RuntimeException("mixin [" + mixinName + "] does not exist, failed in retrieving mixin index");
         return index;
-    }
-
-    /**
-     * Returns the indexes for the introductions.
-     *
-     * TODO: needed??
-     *
-     * @return the indexes
-     */
-    public TObjectIntHashMap getAspectIndexes() {
-        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
-        return m_aspectIndexes;
     }
 
     /**
@@ -387,7 +371,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     public void addIntroductionDefinition(final IntroductionDefinition introDef) {
         if (introDef == null) throw new IllegalArgumentException("introduction definition can not be null");
         if (m_introductionIndexes.containsKey(introDef.getName())) {
-            if (true) throw new RuntimeException("warning here - doublon in name");
+//            if (true) throw new RuntimeException("warning here - doublon in name");
             return;
         }
         synchronized (m_introductionMap) {
@@ -521,9 +505,8 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
 
         for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
             IntroductionDefinition introDef = (IntroductionDefinition)it.next();
-            Expression expression = introDef.getBindIntroductionRule().getExpression();
-            if (expression.getType().equals(PointcutType.CLASS)
-                    && expression.match(classMetaData)) {
+            Expression expression = introDef.getExpression();
+            if (expression.getType().equals(PointcutType.CLASS) && expression.match(classMetaData)) {
                 return true;
             }
         }
@@ -803,23 +786,12 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
         if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
-
-//<<<<<<< AspectWerkzDefinitionImpl.java
-//        List introductionDefs = new ArrayList();
-//        for (Iterator it = m_mixinMap.values().iterator(); it.hasNext();) {
-//            IntroductionDefinition introDef = (IntroductionDefinition)it.next();
-//            Expression expression = introDef.getExpression();
-//            if (expression.getType().equals(PointcutType.CLASS)
-//                    && introDef.getMethodIntroductions().isEmpty()
-//                    && expression.match(classMetaData)) {
-//                introductionDefs.add(introDef);
-//=======
         List interfaceIntroductionDefs = new ArrayList();
         for (Iterator it = m_interfaceIntroductionMap.values().iterator(); it.hasNext();) {
             InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition)it.next();
-            if (introDef.getBindIntroductionRule().getExpression().match(classMetaData)) {
+            Expression expression = introDef.getExpression();
+            if (expression.getType().equals(PointcutType.CLASS) && expression.match(classMetaData)) {
                 interfaceIntroductionDefs.add(introDef);
-//>>>>>>> 1.9
             }
         }
         // add introduction definitions as well
@@ -838,7 +810,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
-     * Loads and parser the aspect.
+     * Loads, parses and stores the aspect.
      *
      * @param aspectClassName the class name of the aspect
      * @param loader the class loader to use
@@ -848,18 +820,12 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
             Class klass = loader.loadClass(aspectClassName);
             AspectDefinition aspectDef = m_attributeParser.parse(klass);
             addAspect(aspectDef);
+
             for (Iterator mixins = aspectDef.getInterfaceIntroductions().iterator(); mixins.hasNext();) {
-//<<<<<<< AspectWerkzDefinitionImpl.java
-//                IntroductionDefinition introDef = (IntroductionDefinition)mixins.next();
-//                if (!introDef.getMethodIntroductions().isEmpty()) {
-//                    addMixin(introDef);
-//                }
-//=======
                 addInterfaceIntroductionDefinition((InterfaceIntroductionDefinition)mixins.next());
             }
             for (Iterator mixins = aspectDef.getIntroductions().iterator(); mixins.hasNext();) {
                 addIntroductionDefinition((IntroductionDefinition)mixins.next());
-//>>>>>>> 1.9
             }
         }
         catch (ClassNotFoundException e) {

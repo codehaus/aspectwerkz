@@ -58,14 +58,10 @@ import org.codehaus.aspectwerkz.connectivity.RemoteProxy;
 
 /**
  * Manages the aspects in the AspectWerkz system.
- * <p/>
- * Handles the initialization and configuration of the system.
- * <p/>
- * Stores and indexes the aspects defined in the system.
- * <p/>
- * Stores and indexes the advised methods.
- * <p/>
- * Stores and indexes the introduced methods.
+ * <p/>Handles the initialization and configuration of the system.
+ * <p/>Stores and indexes the aspects defined in the system.
+ * <p/>Stores and indexes the advised methods.
+ * <p/>Stores and indexes the introduced methods.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -550,31 +546,6 @@ public final class AttribDefSystem implements System {
             }
             else {
                 throw new DefinitionException("aspect " + name + " is not properly defined");
-            }
-        }
-    }
-
-    /**
-     * Returns the aspect meta-data for the class pattern specified.
-     *
-     * TODO: needed?
-     *
-     * @param classPattern the class pattern
-     * @return the aspect
-     */
-    public AspectMetaData getAspectMetaData(final ClassPattern classPattern) {
-        if (classPattern == null) throw new IllegalArgumentException("class pattern can not be null");
-
-        if (m_aspectMetaDataMap.containsKey(classPattern)) {
-            return (AspectMetaData)m_aspectMetaDataMap.get(classPattern);
-        }
-        else {
-            initialize();
-            if (m_aspectMetaDataMap.containsKey(classPattern)) {
-                return (AspectMetaData)m_aspectMetaDataMap.get(classPattern);
-            }
-            else {
-                throw new DefinitionException(classPattern.getPattern() + " does not have any aspects defined");
             }
         }
     }

@@ -73,7 +73,10 @@ public class Introduction implements Mixin {
      * @param aspect which defines this mixin
      * @param definition
      */
-    public Introduction(String name, Class implClass, Aspect aspect, IntroductionDefinition definition) {
+    public Introduction(final String name,
+                        final Class implClass,
+                        final Aspect aspect,
+                        final IntroductionDefinition definition) {
         m_name = name;
         m_aspect = aspect;
         m_definition = definition;
@@ -85,35 +88,39 @@ public class Introduction implements Mixin {
                 Constructor constructor = m_mixinImplClass.getConstructors()[0];
                 constructor.setAccessible(true);
                 m_mixinImpl = constructor.newInstance(new Object[]{aspect});
-            } else {
+            }
+            else {
                 m_mixinImpl = m_mixinImplClass.newInstance();
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new RuntimeException("could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " + e.getMessage());
         }
     }
 
     /**
-     * Clone the prototype Introduction
+     * Clone the prototype Introduction.
+     *
      * @param prototype introduction
      * @param aspect related aspect (not prototype)
      * @return new introduction instance
      */
-    public static Introduction newInstance(Introduction prototype, Aspect aspect) {
-        Introduction clone = new Introduction(
+    public static Introduction newInstance(final Introduction prototype, final Aspect aspect) {
+        return new Introduction(
                 prototype.m_name,
                 prototype.m_mixinImplClass,
                 aspect,
-                prototype.m_definition);
-        return clone;
+                prototype.m_definition
+        );
     }
 
     /**
-     * Set the container
-     * @param m_container
+     * Set the container.
+     *
+     * @param container
      */
-    public void setContainer(IntroductionContainer m_container) {
-        this.m_container = m_container;
+    public void setContainer(final IntroductionContainer container) {
+        m_container = container;
     }
 
     /**
@@ -236,11 +243,13 @@ public class Introduction implements Mixin {
     }
 
     /**
-     * Swap implementation
-     * TODO called by container - should not be public
+     * Swap the implementation of the mixin represented by this Introduction wrapper.
+     *
+     * @TODO called by container - should not be public
+     *
      * @param newImplClass
      */
-    public void swapImplementation(Class newImplClass) {
+    public void swapImplementation(final Class newImplClass) {
         try {
             m_mixinImplClass = newImplClass;
             if (isInnerClassOf(m_mixinImplClass, m_aspect.___AW_getAspectClass())) {
@@ -248,21 +257,24 @@ public class Introduction implements Mixin {
                 Constructor constructor = newImplClass.getConstructors()[0];
                 constructor.setAccessible(true);
                 m_mixinImpl = constructor.newInstance(new Object[]{m_aspect});
-            } else {
+            }
+            else {
                 m_mixinImpl = m_mixinImplClass.newInstance();
             }
-         } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new RuntimeException("could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " + e.getMessage());
         }
     }
 
     /**
-     * Check if klazz is an inner class of containingClass
+     * Check if klazz is an inner class of containingClass.
+     *
      * @param klazz
      * @param containingClass
      * @return true if is an inner class
      */
-    private static boolean isInnerClassOf(Class klazz, Class containingClass) {
+    private static boolean isInnerClassOf(final Class klazz, final Class containingClass) {
         return Arrays.asList(containingClass.getClasses()).contains(klazz);
     }
 }
