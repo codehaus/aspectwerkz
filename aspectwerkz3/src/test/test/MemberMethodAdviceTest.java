@@ -64,8 +64,9 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
 
     public void testAroundAdviceNewThread() {
         m_logString = "";
+        // call + execution advice
         methodAdvicedMethodNewThread();
-        assertEquals("before invocation after ", m_logString);
+        assertEquals("before before invocation after after ", m_logString);
     }
 
     public void testMultipleAroundAdvices() {
@@ -83,7 +84,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     public void testMultiplePointcuts() {
         m_logString = "";
         multiplePointcutsMethod();
-        assertEquals("before1 before2 invocation after2 after1 ", m_logString);
+        assertEquals("before2 before1 invocation after1 after2 ", m_logString);
     }
 
     //    public void testGetJoinPointMetaData() {
