@@ -15,20 +15,14 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
 import org.objectweb.asm.attrs.Annotation;
 import org.objectweb.asm.attrs.RuntimeVisibleAnnotations;
+import org.objectweb.asm.attrs.AnnotationDefaultAttribute;
+import org.objectweb.asm.attrs.Attributes;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
-import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.annotation.AnnotationDefault;
+import org.codehaus.aspectwerkz.annotation.Java5AnnotationInvocationHandler;
 
 import java.util.List;
 import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.ref.WeakReference;
 
 /**
  * Helper visitor to extract Annotations.
@@ -40,10 +34,7 @@ public class AsmAnnotationHelper {
 
     private final static String INIT_METHOD_NAME = "<init>";
 
-    public static final Attribute[] ANNOTATIONS_ATTRIBUTES = new Attribute[]{
-        new RuntimeInvisibleAnnotations(),
-        new RuntimeVisibleAnnotations()
-    };
+    public static final Attribute[] ANNOTATIONS_ATTRIBUTES = Attributes.getDefaultAttributes();
 
     /**
      * Generic extractor
@@ -281,220 +272,39 @@ public class AsmAnnotationHelper {
                     if (CustomAttribute.TYPE.equals(annotation.type)) {
                         annotations.add(CustomAttributeHelper.extractCustomAnnotation(annotation));
                     } else {
-                        AnnotationInfo annotationInfo = AsmClassInfo.getAnnotationInfo(
-                                annotation,
-                                loader
-                        );
+                        AnnotationInfo annotationInfo = getAnnotationInfo(annotation, loader);
                         annotations.add(annotationInfo);
                     }
                 }
             } else if (current instanceof RuntimeVisibleAnnotations) {
                 for (Iterator it = ((RuntimeVisibleAnnotations) current).annotations.iterator(); it.hasNext();) {
                     Annotation annotation = (Annotation) it.next();
-                    AnnotationInfo annotationInfo = AsmClassInfo.getAnnotationInfo(
-                            annotation,
-                            loader
-                    );
+                    AnnotationInfo annotationInfo = getAnnotationInfo(annotation, loader);
                     annotations.add(annotationInfo);
                 }
+            } else if (current instanceof AnnotationDefaultAttribute) {
+                AnnotationDefaultAttribute defaultAttribute = (AnnotationDefaultAttribute) current;
+                AnnotationInfo annotationInfo = new AnnotationInfo(
+                        AnnotationDefault.NAME,
+                        new AnnotationDefault.AnnotationDefaultImpl(defaultAttribute.defaultValue)
+                );
+                annotations.add(annotationInfo);
             }
         }
         return annotations;
     }
 
     /**
-     * Build and return a dynamic proxy representing the given ASM Annotation.
-     * The proxy implements the AspectWerkz Annotation interface, as well as the user type Annotation.
-     * Each elements of the annotation is proxied if needed or agressively created unless Class types to not trigger
-     * any nested loading.
+     * Creates and returns a new annotation info build up from the Java5 annotation.
      *
-     * Note: JSR-175 does not support Annotation value of N-dimensional array. At most 1 dimension is supported.
-     *
-     * @param annotation
-     * @param loader
-     * @return
+     * @param annotation the ASM annotation abstraction
+     * @param loader     the class loader that has loaded the proxy class to use
+     * @return the annotation info
      */
-    public static org.codehaus.aspectwerkz.annotation.Annotation getAnnotationProxy(Annotation annotation, ClassLoader loader) {
-        String annotationClassName = Type.getType(annotation.type).getClassName();
-        List elementValues = annotation.elementValues;
-        List annotationValues = new ArrayList(elementValues.size());
-        for (int i = 0; i < elementValues.size(); i++) {
-            Object[] element = (Object[]) elementValues.get(i);
-            String name = (String) element[0];
-            Object valueHolder = getAnnotationValueHolder(element[1], loader);
-            annotationValues.add(new AnnotationElement(name, valueHolder));
-        }
-
-        try {
-            Class typeClass = Class.forName(annotationClassName, false, loader);
-            Object proxy = Proxy.newProxyInstance(
-                    loader,
-                    new Class[]{org.codehaus.aspectwerkz.annotation.Annotation.class, typeClass},
-                    new Java5AnnotationInvocationHandler(annotationClassName, annotationValues)
-            );
-            return (org.codehaus.aspectwerkz.annotation.Annotation) proxy;
-        } catch (ClassNotFoundException e) {
-            throw new WrappedRuntimeException(e);
-        }
+    public static AnnotationInfo getAnnotationInfo(final Annotation annotation, final ClassLoader loader) {
+        String annotationName = Type.getType(annotation.type).getClassName();
+        return new AnnotationInfo(annotationName,
+                                  Java5AnnotationInvocationHandler.getAnnotationProxy(annotation, loader)
+        );
     }
-
-    /**
-     * Turn an ASM Annotation value into a concrete Java value holder, unless the value is of type
-     * Class, in which case we wrap it behind a LazyClass() object so that actual loading of the class
-     * will be done lazily
-     *
-     * @param value
-     * @param loader
-     * @return
-     */
-    private static Object getAnnotationValueHolder(Object value, ClassLoader loader) {
-        if (value instanceof Annotation.EnumConstValue) {
-            Annotation.EnumConstValue enumAsmValue = (Annotation.EnumConstValue) value;
-            try {
-                Class enumClass = Class.forName(Type.getType(enumAsmValue.typeName).getClassName(), false, loader);
-                Field enumConstValue = enumClass.getField(enumAsmValue.constName);
-                return enumConstValue.get(null);
-            } catch (Exception e) {
-                throw new WrappedRuntimeException(e);
-            }
-        } else if (value instanceof Type) {
-            // TODO may require additional filtering ?
-            return new LazyClass(((Type) value).getClassName());
-        } else if (value instanceof Annotation) {
-            return getAnnotationProxy(((Annotation) value), loader);
-        } else if (value instanceof Object[]) {
-            Object[] values = (Object[]) value;
-            Object[] holders = new Object[values.length];
-            for (int i = 0; i < values.length; i++) {
-                holders[i] = getAnnotationValueHolder(values[i], loader);
-            }
-            return holders;
-        }
-        return value;
-    }
-
-    /**
-     * Dynamic proxy handler for ASM Annotations we extract
-     * The handler resolve the LazyClass to a concrete Class
-     * <p/>
-     * Based on ASM article on ONJava TODO http blabla
-     *
-     * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
-     */
-    private static class Java5AnnotationInvocationHandler implements InvocationHandler {
-
-        private final String m_annotationClassName;
-
-        private final List m_annotationElements;
-
-        public Java5AnnotationInvocationHandler(String type, List annotationElements) {
-            this.m_annotationClassName = type;
-            this.m_annotationElements = annotationElements;
-        }
-
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            String name = method.getName();
-
-            if ("toString".equals(name)) {
-                //TODO implement toString as per JSR-175 spec
-                StringBuffer sb = new StringBuffer(m_annotationClassName);
-                sb.append("[");
-                String sep = "";
-                for (Iterator iterator = m_annotationElements.iterator(); iterator.hasNext();) {
-                    AnnotationElement annotationElement = (AnnotationElement) iterator.next();
-                    sb.append(sep).append(annotationElement.name + "=" + annotationElement.valueHolder.toString());
-                    sep = "; ";
-                }
-                sb.append("]");
-                return sb.toString();
-            } else if ("annotationType".equals(name)) {
-                // funny, may explain why 1.5 Annotation intf has annotationType + getClass
-                // since a dynamic proxy handler cannot hijack getClass() ..
-                return Class.forName(m_annotationClassName, false, proxy.getClass().getClassLoader());
-            } else if ("value".equals(name)) {
-                if (m_annotationElements.isEmpty()) {
-                    return null;
-                } else {
-                    // we could check that we don't have more than one element
-                    return ((AnnotationElement) m_annotationElements.get(0)).resolveValueHolderFrom(
-                            proxy.getClass().getClassLoader()
-                    );
-                }
-            } else {
-                for (Iterator iterator = m_annotationElements.iterator(); iterator.hasNext();) {
-                    AnnotationElement annotationElement = (AnnotationElement) iterator.next();
-                    if (name.equals(annotationElement.name)) {
-                        return annotationElement.resolveValueHolderFrom(proxy.getClass().getClassLoader());
-                    }
-                }
-                // element not found for such a name
-                throw new RuntimeException("Invalid element on Annotation @" + m_annotationClassName + " : " + name);
-            }
-        }
-    }
-
-    /**
-     * A wrapper for a className, that will allow late loading of the actual Class object of an annotation value
-     *
-     * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
-     */
-    private static class LazyClass {
-        LazyClass(String className) {
-            this.className = className;
-        }
-
-        String className;
-
-        public String toString() {
-            return className + ".class";
-        }
-
-        Class getActualClassFrom(ClassLoader loader) {
-            try {
-                return Class.forName(className, false, loader);
-            } catch (ClassNotFoundException e) {
-                throw new WrappedRuntimeException(e);
-            }
-        }
-
-    }
-
-    /**
-     * A structure for an Annotation element
-     */
-    private static class AnnotationElement {
-        String name;
-        Object valueHolder;
-        private boolean isLazyClass = false;
-        private boolean isLazyClassArray = false;
-
-        AnnotationElement(String name, Object valueHolder) {
-            this.name = name;
-            this.valueHolder = valueHolder;
-            if (valueHolder instanceof LazyClass) {
-                isLazyClass = true;
-            } else if (valueHolder instanceof Object[]) {
-                if (((Object[])valueHolder).getClass().getComponentType().isAssignableFrom(LazyClass.class)) {
-                    isLazyClassArray = true;
-                }
-            }
-        }
-
-        Object resolveValueHolderFrom(ClassLoader loader) {
-            if (isLazyClass) {
-                return ((LazyClass) valueHolder).getActualClassFrom(loader);
-            } else if (isLazyClassArray) {
-                Object[] annotationValueHolderArray = (Object[]) valueHolder;
-                Class[] resolved = new Class[annotationValueHolderArray.length];
-                for (int i = 0; i < annotationValueHolderArray.length; i++) {
-                    resolved[i] = ((LazyClass)annotationValueHolderArray[i]).getActualClassFrom(loader);
-                }
-                return resolved;
-                //TODO support N dimension array needed ?
-            } else {
-                return valueHolder;
-            }
-        }
-    }
-
 }
