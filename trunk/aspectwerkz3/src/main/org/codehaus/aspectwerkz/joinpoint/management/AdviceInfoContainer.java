@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.joinpoint.management;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.codehaus.aspectwerkz.AdviceInfo;
 
@@ -18,6 +19,14 @@ import org.codehaus.aspectwerkz.AdviceInfo;
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class AdviceInfoContainer {
+
+    public static final AdviceInfoContainer NULL;
+
+    static {
+        NULL = new AdviceInfoContainer(
+                new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList()
+        );
+    }
 
     private final AdviceInfo[] m_aroundAdvices;
     private final AdviceInfo[] m_beforeAdvices;

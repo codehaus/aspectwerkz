@@ -41,9 +41,9 @@ public class HotSwapClient {
      * @param klazz
      * @param newBytes
      */
-    public static void hotswap(Class klazz, byte[] newBytes) {
+    public static void hotswap(final Class klazz, final byte[] newBytes) {
         int code = hotswap(klazz.getName(), klazz, newBytes, newBytes.length);
-        //System.out.println("hotswap " + klazz.getName());
+        System.out.println("redefining class: " + klazz.getName());
         if (code != 0) {
             throw new RuntimeException("HotSwap failed for " + klazz.getName() + ": " + code);
         }
@@ -55,9 +55,9 @@ public class HotSwapClient {
      *
      * @param klazz
      */
-    public static void hotswap(Class klazz) {
-        if ((ClassPreProcessorHelper.class.getClassLoader() != ClassPreProcessorHelper
-                .getClassPreProcessor().getClass().getClassLoader())
+    public static void hotswap(final Class klazz) {
+        if ((ClassPreProcessorHelper.class.getClassLoader() !=
+             ClassPreProcessorHelper.getClassPreProcessor().getClass().getClassLoader())
             && (ClassPreProcessorHelper.class.getClassLoader() != null)) {
             throw new RuntimeException(
                     "AspectWerkz is misconfigured for HotSwap cache to work: "
@@ -71,12 +71,6 @@ public class HotSwapClient {
             RuntimeClassProcessor runtimeProcessor = (RuntimeClassProcessor) ClassPreProcessorHelper
                     .getClassPreProcessor();
             hotswap(klazz, runtimeProcessor.preProcessActivate(klazz));
-
-            // trash the join points
-            //JoinPointManager joinPointManager = JoinPointManager.getJoinPointManager(klazz,
-            // "N/A/notneeded");
-            //joinPointManager.reset();
-//            JoinPointManager.reset(klazz);
         } catch (Throwable t) {
             throw new WrappedRuntimeException(t);
         }

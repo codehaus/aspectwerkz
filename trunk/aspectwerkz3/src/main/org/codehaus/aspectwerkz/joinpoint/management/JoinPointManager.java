@@ -342,11 +342,11 @@ public class JoinPointManager {
     /**
      * Retrieves the advice info wrapped up in a struct.
      *
-     * @param exprCtx
+     * @param expressionContext
      * @param loader
      * @return the advice info
      */
-    public static AdviceInfoContainer getAdviceInfosForJoinPoint(final ExpressionContext exprCtx,
+    public static AdviceInfoContainer getAdviceInfosForJoinPoint(final ExpressionContext expressionContext,
                                                                  final ClassLoader loader) {
 
         // FIXME XXX handle cflow
@@ -368,13 +368,17 @@ public class JoinPointManager {
                 //TODO - do we care about non bounded pointcut ?
                 for (Iterator iterator2 = aspectDefinition.getAdviceDefinitions().iterator(); iterator2.hasNext();) {
                     AdviceDefinition adviceDefinition = (AdviceDefinition) iterator2.next();
-                    if (adviceDefinition.getExpressionInfo().getExpression().match(exprCtx)) {
+                    final ExpressionInfo expressionInfo = adviceDefinition.getExpressionInfo();
+                    if (expressionInfo == null) {
+                        continue;
+                    }
+                    if (expressionInfo.getExpression().match(expressionContext)) {
                         // compute the target method to advice method arguments map, and grab information about this
                         // and target bindings
-                        exprCtx.resetRuntimeState();
+                        expressionContext.resetRuntimeState();
                         ArgsIndexVisitor.updateContextForRuntimeInformation(
                                 adviceDefinition.getExpressionInfo(),
-                                exprCtx, loader
+                                expressionContext, loader
                         );
                         // Note that the exprCtx dynamic information updated here should only be used
                         // in the scope of this code block, since at the next iteration, the data will be
@@ -393,12 +397,12 @@ public class JoinPointManager {
                                 adviceDefinition.getType(),
                                 adviceDefinition.getSpecialArgumentType(),
                                 adviceDefinition.getName(),
-                                exprCtx.m_targetWithRuntimeCheck,
+                                expressionContext.m_targetWithRuntimeCheck,
                                 adviceDefinition.getExpressionInfo(),
-                                exprCtx
+                                expressionContext
                         );
 
-                        setMethodArgumentIndexes(adviceDefinition.getExpressionInfo(), exprCtx, info);
+                        setMethodArgumentIndexes(adviceDefinition.getExpressionInfo(), expressionContext, info);
 
                         if (AdviceType.BEFORE.equals(adviceDefinition.getType())) {
                             beforeAdvices.add(info);
