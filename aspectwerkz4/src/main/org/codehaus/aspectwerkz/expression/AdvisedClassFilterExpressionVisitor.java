@@ -115,9 +115,14 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
         boolean checkPattern = !(patternNode instanceof ASTAttribute);
         
         if(checkPattern) {
-            // for execution evaluation, we always have the reflection info available
             if (context.hasWithinPointcut() || context.hasExecutionPointcut()) {
+                if (context.hasExecutionPointcut()) {
+                    // reflectionInfo was given
                     return patternNode.jjtAccept(this, context.getReflectionInfo());
+                } else {
+                    // only withinInfo was given
+                    return patternNode.jjtAccept(this, context.getWithinReflectionInfo()); 
+                }
             } else {
                 return Boolean.FALSE;
             }

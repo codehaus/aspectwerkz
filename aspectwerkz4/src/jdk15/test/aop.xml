@@ -12,12 +12,15 @@
         <aspect class="test.CustomProceedChangeTargetTest$Aspect"/>
         <aspect class="test.PerInstanceSerializationTest$TestAspect"/>
 
-        <aspect name="Aspect_1" class="test.QNameTest$Aspect">
+        <aspect name="Aspect_1" class="test.QNameTest$TestAspect">
             <param name="p" value="1"/>
         </aspect>
-        <aspect name="Aspect_2" class="test.QNameTest$Aspect">
+        <aspect name="Aspect_2" class="test.QNameTest$TestAspect">
             <param name="p" value="2"/>
         </aspect>
+        <aspect class="test.QNameTest$AspectJVM"/>
+        <aspect class="test.QNameTest$AspectClass"/>
+        <aspect class="test.QNameTest$AspectInstance"/>
 
     </system>
 </aspectwerkz>

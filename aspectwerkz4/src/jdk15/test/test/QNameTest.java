@@ -11,6 +11,9 @@ import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.AspectContext;
 import org.codehaus.aspectwerkz.aspect.management.Aspects;
 import org.codehaus.aspectwerkz.annotation.Before;
+import org.codehaus.aspectwerkz.annotation.Aspect;
+
+import java.io.PrintStream;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
@@ -26,26 +29,59 @@ public class QNameTest extends TestCase {
         log("doStuff");
     }
 
+    void doPerJVM() {
+        log("doPerJVM");
+        PrintStream fieldGet = System.out;
+    }
+
+    void doPerClass() {
+        log("doPerClass");
+        PrintStream fieldGet = System.out;
+    }
+
+    void doPerInstance() {
+        log("doPerInstance");
+        PrintStream fieldGet = System.out;
+    }
+
     public void testQNames() {
         doStuff();
         // note: aspect instantiation happens first due to perJVM and JP clinit
         assertEquals("1 jdk5test/Aspect_1 2 jdk5test/Aspect_2 before-1 before-2 doStuff ", s_log.toString());
 
-        Aspect a = (Aspect)Aspects.aspectOf("jdk5test/Aspect_1");
+        TestAspect a = (TestAspect)Aspects.aspectOf("jdk5test/Aspect_1");
         assertEquals("1", a.p);
 
-        Aspect b = (Aspect)Aspects.aspectOf("jdk5test/Aspect_2");
+        TestAspect b = (TestAspect)Aspects.aspectOf("jdk5test/Aspect_2");
         assertEquals("2", b.p);
 
         // in that case there is several aspects for Aspect.class
         // so fails
         try {
-            Aspect c = (Aspect)Aspects.aspectOf(Aspect.class);
+            TestAspect c = (TestAspect)Aspects.aspectOf(Aspect.class);
             fail("should fail");
         } catch (Error e) {
             ;
         }
     }
+
+    public void testPerX() {
+        s_log = new StringBuffer();
+        doPerJVM();
+        assertEquals("doPerJVM before ", s_log.toString());
+
+        s_log = new StringBuffer();
+        doPerClass();
+        assertEquals("doPerClass before ", s_log.toString());
+
+        s_log = new StringBuffer();
+        doPerInstance();
+        assertEquals("doPerInstance before ", s_log.toString());
+    }
+
+
+
+
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
@@ -55,11 +91,11 @@ public class QNameTest extends TestCase {
         return new junit.framework.TestSuite(QNameTest.class);
     }
 
-    public static class Aspect {
+    public static class TestAspect {
 
         String p;
 
-        public Aspect(AspectContext ctx) {
+        public TestAspect(AspectContext ctx) {
             p = ctx.getParameter("p");
             log(p);
             log(ctx.getAspectDefinition().getQualifiedName());
@@ -69,7 +105,29 @@ public class QNameTest extends TestCase {
         public void before() {
             log("before-"+p);
         }
+    }
 
+    public static class AspectJVM {
+        @Before("withincode(* test.QNameTest.doPerJVM()) && get(* java.lang.System.out)")
+        public void before() {
+            log("before");
+        }
+    }
+
+    @Aspect("perClass")
+    public static class AspectClass {
+        @Before("withincode(* test.QNameTest.doPerClass()) && get(* java.lang.System.out)")
+        public void before() {
+            log("before");
+        }
+    }
+
+    @Aspect("perInstance")
+    public static class AspectInstance {
+        @Before("withincode(* test.QNameTest.doPerInstance()) && get(* java.lang.System.out)")
+        public void before() {
+            log("before");
+        }
     }
 
 }

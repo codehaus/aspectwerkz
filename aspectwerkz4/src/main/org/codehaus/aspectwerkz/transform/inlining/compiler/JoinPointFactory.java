@@ -214,7 +214,7 @@ public class JoinPointFactory {
                 	ctx = new ExpressionContext(
                 	        PointcutType.STATIC_INITIALIZATION,
                 	        calleeClassInfo.staticInitializer(),
-                	        calleeClassInfo.staticInitializer()
+                	        calleeClassInfo
                 	);
             }
             if (expression.getExpression().match(ctx)) {

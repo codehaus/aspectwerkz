@@ -94,8 +94,9 @@ public class ExpressionContext {
         if (withinReflectionInfo != null) {
             m_withinReflectionInfo = withinReflectionInfo;
         } else {
-            if (PointcutType.EXECUTION.equals(pointcutType) 
-            		|| PointcutType.STATIC_INITIALIZATION.equals(pointcutType)) {
+            if (PointcutType.EXECUTION.equals(pointcutType)
+                || PointcutType.STATIC_INITIALIZATION.equals(pointcutType)
+                || PointcutType.WITHIN.equals(pointcutType)) {
                 m_withinReflectionInfo = m_matchingReflectionInfo;
             } else {
                 m_withinReflectionInfo = null;

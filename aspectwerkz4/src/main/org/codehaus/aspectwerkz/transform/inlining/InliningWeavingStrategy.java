@@ -73,13 +73,14 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                 return;
             }
 
+            //TODO: match on (within, null, classInfo) should be equivalent to those ones. 
             final Set definitions = context.getDefinitions();
             final ExpressionContext[] ctxs = new ExpressionContext[]{
                 new ExpressionContext(PointcutType.EXECUTION, classInfo, classInfo),
                 new ExpressionContext(PointcutType.CALL, null, classInfo),
-                new ExpressionContext(PointcutType.GET, classInfo, classInfo),
-                new ExpressionContext(PointcutType.SET, classInfo, classInfo),
-                new ExpressionContext(PointcutType.HANDLER, classInfo, classInfo),
+                new ExpressionContext(PointcutType.GET, null, classInfo),
+                new ExpressionContext(PointcutType.SET, null, classInfo),
+                new ExpressionContext(PointcutType.HANDLER, null, classInfo),
                 new ExpressionContext(PointcutType.STATIC_INITIALIZATION, classInfo, classInfo),
                 new ExpressionContext(PointcutType.WITHIN, classInfo, classInfo)
             };
@@ -101,8 +102,8 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             );//FIXME - within make match all
             final boolean filterForGetSet = classFilterFor(
                     definitions, new ExpressionContext[]{
-                        new ExpressionContext(PointcutType.GET, classInfo, classInfo),
-                        new ExpressionContext(PointcutType.SET, classInfo, classInfo),
+                        new ExpressionContext(PointcutType.GET, null, classInfo),
+                        new ExpressionContext(PointcutType.SET, null, classInfo),
                         new ExpressionContext(PointcutType.WITHIN, classInfo, classInfo)
                     }
             );//FIXME - within make match all
@@ -118,14 +119,15 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             	||  classFilterFor(definitions, new ExpressionContext[] {
     					new ExpressionContext(PointcutType.STATIC_INITIALIZATION,
     					                      classInfo.staticInitializer(),
-    					                      classInfo.staticInitializer())
+    					                      classInfo)
     			  		}
             		);
             if (!filterForStaticinitialization) {
-                filterForStaticinitialization = !hasPointcut(definitions, new ExpressionContext(PointcutType.STATIC_INITIALIZATION,
-                                                  classInfo.staticInitializer(),
-                                                  classInfo.staticInitializer())
-                            );
+                filterForStaticinitialization = !hasPointcut(definitions, new ExpressionContext(
+                        PointcutType.STATIC_INITIALIZATION,
+                        classInfo.staticInitializer(),
+                        classInfo
+                ));
             }
 
             // prepare ctor call jp
