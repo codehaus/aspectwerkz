@@ -9,7 +9,8 @@ package org.codehaus.aspectwerkz;
 
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
-import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.transform.AsmHelper;
+import org.codehaus.aspectwerkz.transform.AsmHelper;
 
 import java.io.ObjectInputStream;
 import java.io.Serializable;
