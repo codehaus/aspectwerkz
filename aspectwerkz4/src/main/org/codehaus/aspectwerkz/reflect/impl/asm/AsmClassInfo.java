@@ -64,7 +64,7 @@ public class AsmClassInfo implements ClassInfo {
     private final WeakReference m_loaderRef;
 
     /**
-     * The name of the class.
+     * The name of the class (with dots and not slashes)
      */
     private String m_name;
 

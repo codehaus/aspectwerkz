@@ -69,6 +69,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.annotation.AnnotationCopyTest.class);
         suite.addTestSuite(test.mixin.perinstance.IntroductionTest.class);
         suite.addTestSuite(test.mixin.perclass.IntroductionTest.class);
+        suite.addTestSuite(test.mixin.perjvm.IntroductionTest.class);
         suite.addTestSuite(test.adviseonintroducedinterface.Test.class);
         suite.addTestSuite(test.advisetostringbug.Test.class);//mixin
         suite.addTestSuite(test.implementsbug.ImplementsTest.class);

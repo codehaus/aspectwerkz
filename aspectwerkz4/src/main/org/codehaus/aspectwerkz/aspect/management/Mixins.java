@@ -61,6 +61,33 @@ public class Mixins {
     }
 
     /**
+     * Returns the per JVM mixin instance for the mixin with the given name
+     *
+     * @param name        the name of the mixin
+     * @param loader    target class classloader
+     * @return the per jvm mixin instance
+     */
+    public static Object mixinOf(final String name, ClassLoader loader) {
+        try {
+            Class mixinClass = Class.forName(name, false, loader);
+            return mixinOf(mixinClass);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("could not load mixin " + name + " from " + loader);
+        }
+    }
+
+    /**
+     * Returns the per jvm mixin instance for the mixin with the given implementation class
+     * deployed using the perJVM model.
+     *
+     * @param mixinClass  the name of the mixin
+     * @return the per jvm mixin instance
+     */
+    public static Object mixinOf(final Class mixinClass) {
+        return getFactory(mixinClass, mixinClass.getClassLoader()).mixinOf();
+    }
+
+    /**
      * Returns the per class mixin instance for the mixin with the given name for the perClass model
      *
      * @param name        the name of the mixin

@@ -237,13 +237,15 @@ Attributes:
     deployment-model: mixin life cycle, defaults to perInstance
     transient: true | false, defaults to false, to control mixin persistence alongside target instances
     factory: FQN of MixinFactory, implements org.codehaus.aspectwerkz.aspect.MixinFactory, defaults to regular DefaultMixinFactory
-    TODO nested pc + nested param + package support ??
+    TODO nested pc + package support ??
+Elements:
+    param: name value pairs
 ******************************************************************************************************************************-->
-<!ELEMENT mixin EMPTY>
+<!ELEMENT mixin (param*)>
 <!ATTLIST mixin
 class CDATA #REQUIRED
 bind-to CDATA #IMPLIED
-deployment-model (perClass | perInstance) #IMPLIED
+deployment-model (perClass | perInstance | perJVM) #IMPLIED
 transient (false | true) #IMPLIED
 factory CDATA #IMPLIED
 >

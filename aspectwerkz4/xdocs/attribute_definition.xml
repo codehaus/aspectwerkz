@@ -135,7 +135,7 @@
 @Aspect("perInstance")
 public class MyAspect {
 
-    @Introduce("com.mypackage.*")
+    @Introduce("within(com.mypackage.*)")
     MarkerInterface anIntroduction;
 
     @Expression("execution(* com.mypackage.Target.*(..))")
@@ -173,7 +173,7 @@ public class MyAspect {
 public class MyAspect {
 
     /**
-     * @Introduce("com.mypackage.*")
+     * @Introduce("within(com.mypackage.*)")
      */
     MarkerInterface anIntroduction;
 
@@ -489,7 +489,7 @@ public class MyAspect {
                         <br/>
                         Fields are marked with the annotation
                         <code>@Introduce &lt;pointcut&gt;</code>, where pointcut is composed
-                        with within, hasField, hasMethod.
+                        with within, hasfield, hasmethod.
                     </li>
                     <br/>
                     <li>Public inner class of the aspect class.
@@ -586,7 +586,7 @@ public class MyAspect {
                         <td>@Introduce</td>
                         <td>field</td>
                         <td>Interface Introduction</td>
-                        <td>&lt;within/hasxxx pointcut&gt;</td>
+                        <td>&lt;within/hasfield/hasmethod pointcut (and composition of those)&gt;</td>
                         <td></td>
                     </tr>
                     <tr>

@@ -39,6 +39,8 @@ public abstract class AbstractMixinFactory implements MixinFactory {
                 m_perClassConstructor = m_mixinClass.getConstructor(new Class[]{Class.class});
             } else if (m_deploymentModel.equals(DeploymentModel.PER_INSTANCE)) {
                 m_perInstanceConstructor = m_mixinClass.getConstructor(new Class[]{Object.class});
+            } else if (m_deploymentModel.equals(DeploymentModel.PER_JVM)) {
+                m_defaultConstructor = m_mixinClass.getConstructor(new Class[]{});
             } else {
                 throw new DefinitionException(
                         "deployment model for [" + m_mixinClass.getName() + "] is not supported [" +
@@ -56,6 +58,13 @@ public abstract class AbstractMixinFactory implements MixinFactory {
             }
         }
     }
+
+    /**
+     * Creates a new perJVM mixin instance.
+     *
+     * @return the mixin instance
+     */
+    public abstract Object mixinOf();
 
     /**
      * Creates a new perClass mixin instance.

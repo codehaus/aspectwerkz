@@ -203,18 +203,39 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
      */
     private void initializeStaticMixinField(final CodeVisitor mv, final MixinFieldInfo fieldInfo) {
         mv.visitLdcInsn(fieldInfo.mixinClassInfo.getName().replace('/', '.'));
-        mv.visitFieldInsn(
-                GETSTATIC,
-                m_declaringTypeName,
-                TARGET_CLASS_FIELD_NAME,
-                CLASS_CLASS_SIGNATURE
-        );
-        mv.visitMethodInsn(
-                INVOKESTATIC,
-                MIXINS_CLASS_NAME,
-                MIXIN_OF_METHOD_NAME,
-                MIXIN_OF_METHOD_PER_CLASS_SIGNATURE
-        );
+        if (fieldInfo.isPerJVM) {
+            mv.visitFieldInsn(
+                    GETSTATIC,
+                    m_declaringTypeName,
+                    TARGET_CLASS_FIELD_NAME,
+                    CLASS_CLASS_SIGNATURE
+            );
+            mv.visitMethodInsn(
+                    INVOKEVIRTUAL,
+                    CLASS_CLASS,
+                    GETCLASSLOADER_METHOD_NAME,
+                    CLASS_CLASS_GETCLASSLOADER_METHOD_SIGNATURE
+            );
+            mv.visitMethodInsn(
+                    INVOKESTATIC,
+                    MIXINS_CLASS_NAME,
+                    MIXIN_OF_METHOD_NAME,
+                    MIXIN_OF_METHOD_PER_JVM_SIGNATURE
+            );
+        } else {
+            mv.visitFieldInsn(
+                    GETSTATIC,
+                    m_declaringTypeName,
+                    TARGET_CLASS_FIELD_NAME,
+                    CLASS_CLASS_SIGNATURE
+            );
+            mv.visitMethodInsn(
+                    INVOKESTATIC,
+                    MIXINS_CLASS_NAME,
+                    MIXIN_OF_METHOD_NAME,
+                    MIXIN_OF_METHOD_PER_CLASS_SIGNATURE
+            );
+        }
         mv.visitTypeInsn(CHECKCAST, fieldInfo.mixinClassInfo.getName().replace('.', '/'));
         mv.visitFieldInsn(
                 PUTSTATIC,
@@ -261,8 +282,9 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
                                final MixinDefinition mixinDef) {
         final String signature = fieldInfo.mixinClassInfo.getSignature();
         int modifiers = 0;
-        if (deploymentModel.equals(DeploymentModel.PER_CLASS)) {
+        if (deploymentModel.equals(DeploymentModel.PER_CLASS) || deploymentModel.equals(DeploymentModel.PER_JVM)) {
             fieldInfo.isStatic = true;
+            fieldInfo.isPerJVM = deploymentModel.equals(DeploymentModel.PER_JVM);
             modifiers = ACC_PRIVATE + ACC_FINAL + ACC_STATIC + ACC_SYNTHETIC;
         } else if (deploymentModel.equals(DeploymentModel.PER_INSTANCE)) {
             fieldInfo.isStatic = false;
@@ -409,5 +431,6 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
         private String fieldName;
         private ClassInfo mixinClassInfo;
         private boolean isStatic;
+        private boolean isPerJVM = false;
     }
 }

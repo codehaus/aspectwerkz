@@ -21,6 +21,8 @@ import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.lang.ref.WeakReference;
 
 /**
@@ -80,6 +82,11 @@ public class MixinDefinition {
      * The system definition.
      */
     private SystemDefinition m_systemDefinition;
+
+    /**
+     * The parameters passed to the mixin at definition time.
+     */
+    private Map m_parameters = new HashMap();
 
     /**
      * Construct a new definition for mixin.
@@ -297,4 +304,24 @@ public class MixinDefinition {
     private boolean isSystemMixin(final ClassInfo mixinClass) {
         return mixinClass.getName().equals(AdvisableImpl.class.getName());
     }
+
+    /**
+     * Adds a new parameter to the mixin.
+     *
+     * @param name  the name of the parameter
+     * @param value the value for the parameter
+     */
+    public void addParameter(final String name, final String value) {
+        m_parameters.put(name, value);
+    }
+
+    /**
+     * Returns the parameters as a Map.
+     *
+     * @return the parameters
+     */
+    public Map getParameters() {
+        return m_parameters;
+    }
+
 }
