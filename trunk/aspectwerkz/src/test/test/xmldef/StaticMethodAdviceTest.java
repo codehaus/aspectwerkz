@@ -6,7 +6,7 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticMethodAdviceTest.java,v 1.3 2003-07-03 13:10:51 jboner Exp $
+ * @version $Id: StaticMethodAdviceTest.java,v 1.4 2003-07-04 08:45:27 jboner Exp $
  */
 public class StaticMethodAdviceTest extends TestCase {
 
@@ -40,7 +40,7 @@ public class StaticMethodAdviceTest extends TestCase {
         String param = "parameter";
         assertEquals(
                 getClass().getName() +
-                "___originalMethod$joinPointMetaData$1" +
+                "___AW_originalMethod$joinPointMetaData$1" +
                 param +
                 param.getClass().getName() +
                 "java.lang.String" +

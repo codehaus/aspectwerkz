@@ -3,11 +3,10 @@ package test;
 import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.Identifiable;
-import org.codehaus.aspectwerkz.introduction.Introduction;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: IntroductionTest.java,v 1.6 2003-07-03 21:59:54 jboner Exp $
+ * @version $Id: IntroductionTest.java,v 1.7 2003-07-04 08:45:27 jboner Exp $
  */
 public class IntroductionTest extends TestCase implements Identifiable {
 
@@ -193,7 +192,7 @@ public class IntroductionTest extends TestCase implements Identifiable {
         AspectWerkz.getSystem("tests").initialize();
     }
 
-    public String ___hidden$getUuid() {
+    public String ___AW_getUuid() {
         return "ZZZZZZZZZZZZZZZZZZZZZZZZZZ";
     }
 }

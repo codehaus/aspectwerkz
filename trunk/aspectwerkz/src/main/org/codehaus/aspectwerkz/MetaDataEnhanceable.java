@@ -24,7 +24,7 @@ package org.codehaus.aspectwerkz;
  * classes when loaded.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MetaDataEnhanceable.java,v 1.3 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: MetaDataEnhanceable.java,v 1.4 2003-07-04 08:45:27 jboner Exp $
  */
 public interface MetaDataEnhanceable {
 
@@ -34,7 +34,7 @@ public interface MetaDataEnhanceable {
      * @param key the key for the meta-data
      * @return the meta-data itself
      */
-    Object ___hidden$getMetaData(final Object key);
+    Object ___AW_getMetaData(final Object key);
 
     /**
      * Adds new meta-data to the implemeting class.
@@ -42,5 +42,5 @@ public interface MetaDataEnhanceable {
      * @param key the key for the meta-data
      * @param value the meta-data itself
      */
-    void ___hidden$addMetaData(final Object key, final Object value);
+    void ___AW_addMetaData(final Object key, final Object value);
 }

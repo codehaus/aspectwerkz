@@ -26,7 +26,7 @@ package org.codehaus.aspectwerkz;
  * @see org.codehaus.aspectwerkz.transform.AddUuidTransformer
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Identifiable.java,v 1.4 2003-07-03 21:59:54 jboner Exp $
+ * @version $Id: Identifiable.java,v 1.5 2003-07-04 08:45:27 jboner Exp $
  */
 public interface Identifiable {
 
@@ -35,5 +35,5 @@ public interface Identifiable {
      *
      * @return the UUID
      */
-    String ___hidden$getUuid();
+    String ___AW_getUuid();
 }
