@@ -9,6 +9,7 @@
         <use-aspect class="introduction.IntroductionAspect"/>
         <use-aspect class="caching.CachingAspect"/>
         <use-aspect class="cflow.CFlowAspect"/>
+        <use-aspect class="exception.ExceptionHandlingAspect"/>
     </package>
 
 </aspectwerkz>

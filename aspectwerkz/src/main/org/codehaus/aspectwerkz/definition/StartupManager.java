@@ -27,6 +27,7 @@ import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
 import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
 import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
+import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
@@ -236,7 +237,7 @@ public class StartupManager {
         registerMethodPointcuts(uuid, definition);
         registerSetFieldPointcuts(uuid, definition);
         registerGetFieldPointcuts(uuid, definition);
-//        registerThrowsPointcuts(uuid, definition);
+        registerThrowsPointcuts(uuid, definition);
         registerCallerSidePointcuts(uuid, definition);
     }
 
@@ -262,7 +263,7 @@ public class StartupManager {
 
                     MethodPointcut methodPointcut = new MethodPointcut(
                             uuid,
-                            adviceDef.getWeavingRule().getExpression()
+                            adviceDef.getExpression()
                     );
                     methodPointcut.setCFlowExpression(adviceDef.getWeavingRule().getCFlowExpression());
 
@@ -636,11 +637,50 @@ public class StartupManager {
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
      */
-//    private static void registerThrowsPointcuts(
-//            final String uuid,
-//            final AspectWerkzDefinition definition) {
-//
-//        // get all aspects definitions
+    private static void registerThrowsPointcuts(
+            final String uuid,
+            final AspectWerkzDefinition definition) {
+
+        for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+
+            AspectMetaData aspectMetaData =
+                    AspectWerkz.getSystem(uuid).getAspectMetaData(aspectDef.getName());
+
+            List aroundAdvices = aspectDef.getAroundAdvices();
+            for (Iterator it2 = aroundAdvices.iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+
+                if (adviceDef.getWeavingRule().getPointcutType().equals(PointcutDefinition.THROWS)) {
+
+                    ThrowsPointcut throwsPointcut = new ThrowsPointcut(
+                            uuid,
+                            adviceDef.getExpression()
+                    );
+//                    throwsPointcut.setCFlowExpression(adviceDef.getWeavingRule().getCFlowExpression());
+
+                    boolean hasPointcut = false;
+                    List pointcutRefs = adviceDef.getPointcutRefs();
+                    for (Iterator it3 = pointcutRefs.iterator(); it3.hasNext();) {
+                        String pointcutName = (String)it3.next();
+                        PointcutDefinition pointcutDef = aspectDef.getPointcutDef(pointcutName);
+                        if (pointcutDef != null && pointcutDef.getType().
+                                equalsIgnoreCase(PointcutDefinition.THROWS)) {
+                            throwsPointcut.addPointcutDef(pointcutDef);
+                            hasPointcut = true;
+                        }
+                    }
+                    // check if the weaving rule had a method pointcut, if not continue
+                    if (!hasPointcut) {
+                        continue;
+                    }
+                    throwsPointcut.addAdvice(adviceDef.getName());
+                    aspectMetaData.addThrowsPointcut(throwsPointcut);
+                }
+            }
+        }
+
+        // get all aspects definitions
 //        for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
 //            AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
 //            AspectMetaData aspect = AspectWerkz.getSystem(uuid).getAspect(aspectDefinition.getName());
@@ -702,7 +742,7 @@ public class StartupManager {
 //                throw new WrappedRuntimeException(e);
 //            }
 //        }
-//    }
+    }
 
     /**
      * Private constructor to prevent instantiability.

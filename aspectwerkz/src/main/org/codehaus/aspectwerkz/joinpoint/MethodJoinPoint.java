@@ -351,7 +351,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
             m_result = m_originalMethod.invoke(getTargetInstance(), m_parameters);
         }
         catch (InvocationTargetException e) {
-            handleException(e);
+            m_result = handleException(e);
         }
         return m_result;
     }
@@ -391,7 +391,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * @param e the wrapped exception
      * @throws Throwable the original exception
      */
-    protected void handleException(final InvocationTargetException e) throws Throwable {
+    protected Object handleException(final InvocationTargetException e) throws Throwable {
 
         final Throwable cause = e.getTargetException();
 
@@ -418,18 +418,21 @@ public abstract class MethodJoinPoint implements JoinPoint {
                 break;
             }
         }
+
+        Object result = null;
         if (hasThrowsPointcut) {
             // create a new join point A put it in the cache
             synchronized (m_throwsJoinPointCache) {
                 joinPoint = new ThrowsJoinPoint(m_uuid, this, cause);
                 m_throwsJoinPointCache.put(hash, joinPoint);
             }
-            joinPoint.proceed();
+            result = joinPoint.proceed();
         }
         else {
             AspectWerkz.fakeStackTrace(cause, getTargetClass().getName());
             throw cause;
         }
+        return result;
     }
 
     /**

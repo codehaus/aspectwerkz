@@ -243,7 +243,7 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
             }
         }
         if (aspectAttr == null) {
-            throw new DefinitionException("aspect [" + klass.getName() + "] is not properly defined. (Is the aspect compiled?)");
+            throw new DefinitionException("aspect [" + klass.getName() + "] is not properly defined. (Is the aspect compiled with AspectC?)");
         }
         return aspectAttr;
     }
