@@ -66,11 +66,11 @@ public class IntroductionDefinition {
         m_expressionInfos = new ExpressionInfo[]{
             expressionInfo
         };
-        List sortedMethodList = ReflectHelper.createSortedMethodList(mixinClass);
+        List interfaceDeclaredMethods = collectInterfaces(mixinClass);
+        List sortedMethodList = ReflectHelper.createInterfaceDefinedSortedMethodList(mixinClass, interfaceDeclaredMethods);
         for (Iterator iterator = sortedMethodList.iterator(); iterator.hasNext();) {
             m_methodsToIntroduce.add(JavaMethodInfo.getMethodInfo((Method) iterator.next()));
         }
-        collectInterfaces(mixinClass);
         m_deploymentModel = deploymentModel;
     }
 
@@ -173,18 +173,22 @@ public class IntroductionDefinition {
     }
 
     /**
-     * Collects the interfaces from all the base class mixins.
+     * Collects the interfaces from all the base class mixins and the methods in the mixin interfaces
      *
      * @param mixinClass
+     * @return list of methods declared in given class interfaces
      */
-    private void collectInterfaces(final Class mixinClass) {
+    private List collectInterfaces(final Class mixinClass) {
+        List interfaceDeclaredMethods = new ArrayList();
         Class[] interfaces = mixinClass.getInterfaces();
         for (int i = 0; i < interfaces.length; i++) {
             m_interfaceClassNames.add(interfaces[i].getName());
+            interfaceDeclaredMethods.addAll(ReflectHelper.createSortedMethodList(interfaces[i]));
         }
         Class superClass = mixinClass.getSuperclass();
         if (superClass != null) {
-            collectInterfaces(superClass);
+            interfaceDeclaredMethods.addAll(collectInterfaces(superClass));
         }
+        return interfaceDeclaredMethods;
     }
 }

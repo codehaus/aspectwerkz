@@ -28,6 +28,9 @@
                         <a href="#Handler pointcuts">Handler pointcuts (catch clauses)</a>
                     </li>
                     <li>
+                        <a href="#Annotation driven AOP">Annotation driven AOP (matching on Annotations)</a>
+                    </li>
+                    <li>
                         <a href="#XML definition file for the examples">XML definition file for the examples</a>
                     </li>
                 </ol>
@@ -364,6 +367,121 @@ public class ExceptionHandler {
                 ]]></source>
             </p>
         </section>
+        <section name="Annotation driven AOP">
+            <p>
+                This examples shows Annotation driven AOP - that is matching on Annotations.
+                The current samples relies on the provided Java 1.4 strongly typed annotations framework but the same
+                concepts can easily be applied for Java 5 Annotations (as supported in AspectWerkz 2.0).
+            </p>
+            <p>
+                To run the example type:
+                <code>and samples:annotation</code> or <code>ant samples:offline:annotation</code> to see it running using
+                post compilation (offline weaving instead of load time weaving).
+            </p>
+            <p>
+                <b>What do we want to achieve ?</b><br/>
+                We want to apply advices on method not based on their name or signature but based on the annotations. Given the
+                following sample class, we would like to apply an advice for all methods annotated with <code>@examples.annotation.AnnotationA</code>
+                and another advice for all methods annotated with bot <code>@examples.annotation.AnnotationA</code> and <code>@examples.annotation.AnnotationB</code>:
+                <source><![CDATA[
+public class Target {
+
+    /**
+     * @examples.annotation.AnnotationA
+     * @examples.annotation.AnnotationB
+     */
+    public void targetAB() {
+        System.out.println("Target.target AB ");
+    }
+
+    /**
+     * @examples.annotation.AnnotationA
+     */
+    public void targetA() {
+        System.out.println("Target.target A");
+    }
+
+    public void target() {
+        System.out.println("Target.target");
+    }
+}
+               ]]></source>
+            </p>
+            <p>
+                <b>Annotation handling for Java 1.4</b><br/>
+                Since we are using Java 1.4 in this sample, the annotations appears in JavaDoc. Nevertheless, AspectWerkz provides a
+                way to treat those annotation as in Java 5 and have runtime access to them thru a strongly typed API
+                (read <a href="annotations.html">here</a>).
+                In this sample, the annotations do not have any particular values. We will then use untyped annotations.
+                We first need to run the <code>AnnotationC</code> compiler so that those Annotations gets self-embedded in
+                the compiled class <code>.class</code> file. Before doing so, we need to write our property file to say to the
+                system what are the annotations used (and distinguished those from <code>@author</code> for example, that we don't
+                want at runtime (similar to the <i>retention policy</i> in Java 5).
+                <source><![CDATA[
+#
+# annotation.properties file
+#
+
+# examples.annotation are untyped, we don't need a proxy
+
+examples.annotation.AnnotationA
+examples.annotation.AnnotationB
+                ]]></source>
+                Invoke AnnotationC with Ant or programmatically at your convenience. Notice the <code>-custom ...annotation.properties</code>
+                argument to point to the annotation properties file.
+                <source><![CDATA[
+<target name="samples:annotationc">
+    <java fork="true" classname="org.codehaus.aspectwerkz.annotation.AnnotationC">
+        <classpath>
+            <path refid="project.class.path"/>
+            <pathelement path="${samples.classes}"/>
+        </classpath>
+        <arg line="-verbose -src ${basedir}/src/samples -classes ${basedir}/target/samples-classes -custom ${basedir}/src/samples/annotation.properties"/>
+    </java>
+</target>
+                ]]></source>
+            </p>
+            <p>
+                <b>Aspect that match on those annotations</b>
+                Now we need to write our pointcuts and advice that match on those annotations. The syntax is straightforward:
+                <source><![CDATA[
+public static class AnnotationMatchAspect {
+
+    /**
+     * @Before execution(@examples.annotation.AnnotationA * examples.annotation.Target.*(..))
+     * @param jp
+     */
+    public void beforeA(JoinPoint jp) {
+        System.out.println("Target$AnnotationMatchAspect.beforeA");
+    }
+
+    /**
+     * @Before execution(@examples.annotation.AnnotationB * examples.annotation.Target.*(..))
+     * @param jp
+     */
+    public void beforeB(JoinPoint jp) {
+        System.out.println("Target$AnnotationMatchAspect.beforeB");
+    }
+}
+                ]]></source>
+            </p>
+            <p>
+                <b>Running the sample</b><br/>
+                Since we are using an annotation defined aspect, we need to run <code>AnnotationC</code> on the aspect class
+                itself to take care of the <code>@Before</code> and alike AspectWerkz provided annotations.<br/>
+                It is possible to run AnnotationC once on both the aspect(s) and the target application classes.
+                Then we need to write our little <code>aop.xml</code> file to tell the framework which aspect to use. We could redefine or define
+                new pointcuts in this XML as well (see <a href="xml_definition.html">here</a>)<br/>
+                For your convenience, everything is wrapped thru an ant target.<br/>
+                Run <code>ant samples:annotation</code>
+            </p>
+            <p>
+                <b>What about offline mode ?</b><br/>
+                If we wanted to use offline mode, the process would be the same: AnnotationC on both the aspect(s) [if needed] and the
+                target application classes, then invoke the <code>AspectWerkzC</code> post compiler, and then run your class as usual, passing the aop.xml file.<br/>
+                Run <code>ant samples:offline:annotation</code>
+            </p>
+        </section>
         <section name="XML definition file for the examples">
             <p>
                 Here is the XML deployment descriptor file for the aspect examples above.
@@ -383,6 +501,7 @@ public class ExceptionHandler {
             <aspect class="introduction.IntroductionAspect"/>
             <aspect class="cflow.CFlowAspect"/>
             <aspect class="exception.ExceptionHandlingAspect"/>
+            <aspect class="annotation.Target$AnnotationMatchAspect"/>
         </package>
     </system>
 </aspectwerkz>
@@ -390,4 +509,3 @@ public class ExceptionHandler {
         </section>
     </body>
 </document>
-
