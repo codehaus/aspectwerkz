@@ -1315,7 +1315,7 @@ public class JitCompiler {
             FIELD_RTTI_IMPL_CLASS_NAME,
             GET_PARAMETER_VALUES_METHOD_NAME,
             GET_PARAMETER_VALUES_METHOD_SIGNATURE);
-        AsmHelper.loadConstant(cv, 0);
+        AsmHelper.loadIntegerConstant(cv, 0);
         cv.visitInsn(Constants.AALOAD);
         //cv.visitInsn(Constants.ALOAD, 1);
 
@@ -1478,7 +1478,7 @@ public class JitCompiler {
                         if (argIndex != -1) {
                             Type argumentType = adviceArgTypes[j];
                             cv.visitVarInsn(Constants.ALOAD, 2);//the param array
-                            AsmHelper.loadConstant(cv, argIndex);//index
+                            AsmHelper.loadIntegerConstant(cv, argIndex);//index
                             cv.visitInsn(Constants.AALOAD);
                             unwrapParameter(argumentType, cv);//unwrap
                         } else {
@@ -1528,7 +1528,7 @@ public class JitCompiler {
                         if (argIndex != -1) {
                             Type argumentType = adviceArgTypes[j];
                             cv.visitVarInsn(Constants.ALOAD, 2);//the param array
-                            AsmHelper.loadConstant(cv, argIndex);//index
+                            AsmHelper.loadIntegerConstant(cv, argIndex);//index
                             cv.visitInsn(Constants.AALOAD);
                             unwrapParameter(argumentType, cv);//unwrap
                         } else {
@@ -1605,7 +1605,7 @@ public class JitCompiler {
                     if (argIndex != -1) {
                         Type argumentType = adviceArgTypes[a];
                         cv.visitVarInsn(Constants.ALOAD, 2);//the param array
-                        AsmHelper.loadConstant(cv, argIndex);//index
+                        AsmHelper.loadIntegerConstant(cv, argIndex);//index
                         cv.visitInsn(Constants.AALOAD);
                         unwrapParameter(argumentType, cv);//unwrap
                     } else {
@@ -1698,7 +1698,7 @@ public class JitCompiler {
         // unwrap the parameters
         for (int f = 0; f < argTypes.length; f++) {
             cv.visitVarInsn(Constants.ALOAD, 2);
-            AsmHelper.loadConstant(cv, f);
+            AsmHelper.loadIntegerConstant(cv, f);
             cv.visitInsn(Constants.AALOAD);
             Type argType = argTypes[f];
             unwrapParameter(argType, cv);

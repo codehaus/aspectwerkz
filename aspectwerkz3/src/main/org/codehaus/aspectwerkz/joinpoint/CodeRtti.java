@@ -35,8 +35,10 @@ public interface CodeRtti extends MemberRtti {
     Object[] getParameterValues();
 
     /**
-     * Sets the values of the parameters.
+     * @TODO remove in 2.0
      * 
+     * Sets the values of the parameters.
+     *
      * @param parameterValues
      */
     void setParameterValues(Object[] parameterValues);

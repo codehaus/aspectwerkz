@@ -9,7 +9,9 @@ package org.codehaus.aspectwerkz.joinpoint;
 
 /**
  * Interface for the catch clause RTTI (Runtime Type Information).
- * 
+ *
+ * @TODO rename to HandlerRtti
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface CatchClauseRtti extends Rtti {
@@ -28,8 +30,10 @@ public interface CatchClauseRtti extends Rtti {
     Object getParameterValue();
 
     /**
-     * Sets the value of the parameter.
+     * @TODO remove in 2.0
      * 
+     * Sets the value of the parameter.
+     *
      * @param parameterValue the value of the parameter
      */
     void setParameterValue(Object parameterValue);
