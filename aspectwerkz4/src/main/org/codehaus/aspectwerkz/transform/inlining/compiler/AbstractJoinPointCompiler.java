@@ -22,6 +22,7 @@ import org.codehaus.aspectwerkz.aspect.AdviceInfo;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.transform.Compiler;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
@@ -62,14 +63,15 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
     protected static final String THIS_CLASS_FIELD_NAME	  = "THIS_CLASS";
 
     // FIXME define these two using VM option - if dump dir specified then dump
-    public static final boolean DUMP_JIT_CLASSES = true;
-    protected static final String DUMP_DIR = "_dump";
+    public static final boolean DUMP_JIT_CLASSES = AspectWerkzPreProcessor.DUMP_AFTER;
+    protected static final String DUMP_DIR = AspectWerkzPreProcessor.DUMP_BEFORE ? "_dump/after" : "_dump";
 
     protected final String m_callerClassName;
     protected final String m_calleeClassName;
     protected final String m_callerClassSignature;
     protected final String m_calleeClassSignature;
     protected final String m_joinPointClassName;
+    private final String m_joinPointFqn;
     protected final int m_joinPointType;
     protected final int m_joinPointHash;
     protected final String m_callerMethodName;
@@ -105,7 +107,8 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
      */
     public AbstractJoinPointCompiler(final CompilationInfo.Model model) {
         m_joinPointClassName = model.getJoinPointClassName();
-
+        m_joinPointFqn = m_joinPointClassName.replace('/', '.');
+        
         final EmittedJoinPoint emittedJoinPoint = model.getEmittedJoinPoint();
 
         m_joinPointHash = emittedJoinPoint.getJoinPointHash();
@@ -447,7 +450,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
             createCustomProceedMethods();
             m_cw.visitEnd();
 
-            if (DUMP_JIT_CLASSES) {
+            if (DUMP_JIT_CLASSES && AspectWerkzPreProcessor.DUMP_PATTERN.matches(m_joinPointFqn)) {
                 AsmHelper.dumpClass(DUMP_DIR, m_joinPointClassName, m_cw);
             }
             return m_cw.toByteArray();

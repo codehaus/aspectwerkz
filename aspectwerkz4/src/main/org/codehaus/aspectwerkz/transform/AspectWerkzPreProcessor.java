@@ -54,13 +54,13 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     private final static String AW_TRANSFORM_DUMP = "aspectwerkz.transform.dump";
 
-    private final static TypePattern DUMP_PATTERN;
+    public final static TypePattern DUMP_PATTERN;
 
     private final static boolean NOFILTER; // TODO: not used, remove?
 
-    private final static boolean DUMP_BEFORE;
+    public final static boolean DUMP_BEFORE;
 
-    private final static boolean DUMP_AFTER;
+    public final static boolean DUMP_AFTER;
 
     public final static boolean VERBOSE;
 
