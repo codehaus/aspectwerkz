@@ -3,7 +3,7 @@
 <!-- ============================================================== -->
 <!-- Ant build file for the AspectWerkz AOSD 2004 tutorial project -->
 <!-- ============================================================== -->
-<project name="AspectWerkz AOSD 2004" default="aspectwerkz:test" basedir=".">
+<project name="AspectWerkz AOSD Tutorial 2004" default="aspectwerkz:test" basedir=".">
 
     <!-- =================================================== -->
     <!--  initializes parameters  -->
@@ -100,7 +100,7 @@
     <!-- =================================================== -->
     <target name="aspectwerkz:aspectc"
         depends="aspectwerkz:init, aspectwerkz:compile">
-        <java classname="org.codehaus.aspectwerkz.attribdef.definition.AspectC" fork="true">
+        <java classname="org.codehaus.aspectwerkz.definition.AspectC" fork="true">
             <classpath refid="project.class.path"/>
 <!--            <arg value="-verbose"/>-->
             <arg value="${src.main.dir}"/>
@@ -114,7 +114,7 @@
     <target name="aspectwerkz:test:aspectc"
         depends="aspectwerkz:init, aspectwerkz:compile, aspectwerkz:aspectc">
 <!--        TODO: detail how test:aspectc depends of aspectc in AspectC phase -->
-        <java classname="org.codehaus.aspectwerkz.attribdef.definition.AspectC" fork="true">
+        <java classname="org.codehaus.aspectwerkz.definition.AspectC" fork="true">
             <classpath refid="project.class.path"/>
             <classpath>
                 <pathelement path="${build.main.dir}"/>
@@ -176,37 +176,6 @@
 <!--        TODO : CLI is a pain for jvm options -->
         <exec executable="${env.ASPECTWERKZ_HOME}/bin/aspectwerkz${executableSuffix}">
             <arg line="-Djava.security.auth.login.config=${src.test.dir}/jaas.config -Djava.security.policy=${config.dir}/aosd2004.policy -cp ${build.test.dir}${pathseparator}${build.main.dir}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/jta.jar${pathseparator}${lib.dir}/tagish-1.0.2.jar -Daspectwerkz.definition.file=${src.test.dir}/all-test.xml aspectwerkz.aosd.test.AllTests"/>
-        </exec>
-    </target>
-
-
-
-
-
-
-
-
-
-
-
-
-    <!-- =================================================== -->
-    <!--  compiles attributes for the samples, merges w/ the samples.xml -->
-    <!-- =================================================== -->
-    <target name="aspectwerkz:attributes:samples"
-        depends="aspectwerkz:init">
-        <exec executable="java">
-            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.AttributeC ${basedir}/src/samples ${basedir}/src/samples/aspectwerkz.xml -m ${basedir}/src/samples/samples.xml -u samples"/>
-        </exec>
-    </target>
-
-    <!-- =================================================== -->
-    <!--  compiles attributes for the samples, merges w/ the extension_samples.xml -->
-    <!-- =================================================== -->
-    <target name="aspectwerkz:attributes:extensions"
-        depends="aspectwerkz:init">
-        <exec executable="java">
-            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.AttributeC ${basedir}/src/samples ${basedir}/src/samples/aspectwerkz.xml -m ${basedir}/src/samples/samples.xml -u samples"/>
         </exec>
     </target>
 

@@ -12,7 +12,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import aspectwerkz.aosd.definition.JispDefinition;
-import aspectwerkz.aosd.User;
+import aspectwerkz.aosd.user.User;
 import aspectwerkz.aosd.addressbook.AddressBook;
 import aspectwerkz.aosd.addressbook.Contact;
 import aspectwerkz.aosd.persistence.jisp.JispPersistenceManager;

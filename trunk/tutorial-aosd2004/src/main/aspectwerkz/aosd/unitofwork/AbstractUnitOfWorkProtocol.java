@@ -155,8 +155,7 @@ public abstract class AbstractUnitOfWorkProtocol extends Aspect {
                 TransactionManagerFactory.getInstance(TransactionManagerType.JTA);
 
         /**
-         * The name of the mixin (needed to lookup the target instance
-         * for this mixin).
+         * The name of the mixin (needed to lookup the target instance for this mixin).
          */
         private final String m_name = this.getClass().getName();
 
