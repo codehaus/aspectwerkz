@@ -35,7 +35,7 @@ public class WeavedTarget {
     public static int toLog1(int i)
     {
         try {//ignore the try catch - it is some compiler glue
-        return InlinedJoinPoint.invoke(i, null);
+        return InlinedJoinPoint.invoke(i, null, null);
         } catch (Throwable t) {t.printStackTrace(); return 0;}//ignore the try catch - it is some compiler glue
     }
 

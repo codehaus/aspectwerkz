@@ -227,6 +227,13 @@ public final class TransformationUtil {
                                               final int methodSequence,
                                               final String className) {
         final StringBuffer buf = new StringBuffer();
+        //FIXME: double check me
+        // we use the javaC convention for hidden synthetic method
+        // is the methodSequence enough ?
+        // [ Alex: looks like it will change between each RW since tied to ctx match ]
+        buf.append("access$");
+        buf.append(methodSequence);
+        buf.append("$");
         buf.append(WRAPPER_METHOD_PREFIX);
         buf.append(methodName);
         buf.append(DELIMITER);
