@@ -36,7 +36,7 @@ public class SystemDefinitionContainer {
     /**
      * Map of SystemDefinition[List] per ClassLoader, with the hierarchy structure
      */
-    public static Map s_classLoaderHierarchicalSystemDefinitions = new HashMap();//note: null key is supported
+    public static Map s_classLoaderHierarchicalSystemDefinitions = new WeakHashMap();//note: null key is supported
 
     /**
      * Map of SystemDefinition location (as String[List]) per ClassLoader
@@ -66,11 +66,6 @@ public class SystemDefinitionContainer {
      */
     public static final String AOP_WEB_INF_XML_FILE = "../aop.xml";
     public static final String WEB_WEB_INF_XML_FILE = "../web.xml";
-
-//    /**
-//     * ThreadLocal context for SystemDefinitions[List]
-//     */
-//    private static ThreadLocal s_systemDefintionsContext = new ThreadLocal();
 
     /**
      * An internal flag to disable registration of the -Daspectwerkz.definition.file definition in the System class
@@ -114,17 +109,6 @@ public class SystemDefinitionContainer {
                     defs.addAll(DefinitionLoader.getDefaultDefinition(loader)); // -D..file=... sysdef
                     defsLocation.add(URL_JVM_OPTION_SYSTEM);
                 }
-                Enumeration res = loader.getResources(AOP_META_INF_XML_FILE);
-                while (res.hasMoreElements()) {
-                    URL def = (URL)res.nextElement();
-                    if (isDefinedBy(loader.getParent(), def.toExternalForm())) {
-                        ;
-                    } else {
-                        aspectNames.addAll(XmlParser.getAspectClassNames(def));
-                        defs.addAll(XmlParser.parseNoCache(loader, def));
-                        defsLocation.add(def.toExternalForm());
-                    }
-                }
 
                 if (loader.getResource(WEB_WEB_INF_XML_FILE) != null) {
                     Enumeration webres = loader.getResources(AOP_WEB_INF_XML_FILE);
@@ -137,6 +121,18 @@ public class SystemDefinitionContainer {
                             defs.addAll(XmlParser.parseNoCache(loader, def));
                             defsLocation.add(def.toExternalForm());
                         }
+                    }
+                }
+
+                Enumeration res = loader.getResources(AOP_META_INF_XML_FILE);
+                while (res.hasMoreElements()) {
+                    URL def = (URL)res.nextElement();
+                    if (isDefinedBy(loader.getParent(), def.toExternalForm())) {
+                        ;
+                    } else {
+                        aspectNames.addAll(XmlParser.getAspectClassNames(def));
+                        defs.addAll(XmlParser.parseNoCache(loader, def));
+                        defsLocation.add(def.toExternalForm());
                     }
                 }
 
@@ -202,27 +198,6 @@ public class SystemDefinitionContainer {
         System.out.println(dump.toString());
     }
 
-//    /**
-//     * Returned the gathered aspect names visible from a classloader
-//     *
-//     * @param loader
-//     * @return List of Aspect class names
-//     */
-//    public static List getHierarchicalAspectNames(ClassLoader loader) {
-//        // if runtime access before load time
-//        if (!s_classLoaderSystemDefinitions.containsKey(loader)) {
-//            registerClassLoader(loader);
-//        }
-//        List aspectNames = new ArrayList();
-//        if (loader == null) {
-//            return aspectNames;
-//        }
-//        ClassLoader parent = loader.getParent();
-//        aspectNames.addAll(getHierarchicalAspectNames(parent));
-//        aspectNames.addAll((List)s_classLoaderAspectNames.get(loader));
-//        return aspectNames;
-//    }
-
     /**
      * Returns the gathered SystemDefinition visible from a classloader.
      *
@@ -257,24 +232,6 @@ public class SystemDefinitionContainer {
         }
         return defs;
     }
-
-//    /**
-//     * Set a ThreadLocal context with given SystemDefinitions list
-//     *
-//     * @param defs SystemDefinition list
-//     */
-//    public static void setDefinitionsContext(List defs) {
-//        s_systemDefintionsContext.set(defs);
-//    }
-//
-//    /**
-//     * Get the current SystemDefinitions list for the context
-//     *
-//     * @return SystemDefinitions list
-//     */
-//    public static List getDefinitionsContext() {
-//        return (List)s_systemDefintionsContext.get();
-//    }
 
     /**
      * Hotdeploy a list of SystemDefintions as defined at the level of the given ClassLoader
