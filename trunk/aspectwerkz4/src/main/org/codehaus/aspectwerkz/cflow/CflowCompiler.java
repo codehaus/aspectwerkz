@@ -13,6 +13,7 @@ import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Label;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.AbstractJoinPointCompiler;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
@@ -156,10 +157,12 @@ public class CflowCompiler implements Constants, TransformationConstants {
         //TODO do we need a Class.forName check first to avoid unecessary compilation ?
         CflowCompiler compiler = new CflowCompiler(cflowID);
 
-        try {
-            AsmHelper.dumpClass("_dump", getCflowAspectClassName(cflowID), compiler.m_cw);
-        } catch (Throwable t) {;}
-
+        if (AbstractJoinPointCompiler.DUMP_JIT_CLASSES) {
+            try {
+                AsmHelper.dumpClass("_dump", getCflowAspectClassName(cflowID), compiler.m_cw);
+            } catch (Throwable t) {;}
+        }
+        
         byte[] cflowAspectBytes = compiler.compile();
         Class cflowAspect = AsmHelper.loadClass(
                 loader,
