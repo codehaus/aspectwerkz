@@ -32,17 +32,13 @@ public class PrepareAdvisedClassTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws Exception {
         List definitions = SystemDefinitionContainer.getDefinitionsContext();
-
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
-
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classMetaData = new JavassistClassInfo(ctClass, context.getLoader());
-
             if (classFilter(definition, new ExpressionContext(PointcutType.ANY, classMetaData, null), ctClass)) {
                 continue;
             }
-
             TransformationUtil.addStaticClassField(ctClass, context);
             TransformationUtil.addJoinPointManagerField(ctClass, definition, context);
         }
@@ -60,25 +56,19 @@ public class PrepareAdvisedClassTransformer implements Transformer {
         if (cg.isInterface()) {
             return true;
         }
-
         String className = cg.getName().replace('/', '.');
-
         if (definition.inExcludePackage(className)) {
             return true;
         }
-
         if (!definition.inIncludePackage(className)) {
             return true;
         }
-
         if (definition.inPreparePackage(className)) {
             return false;
         }
-
         if (definition.isAdvised(ctx)) {
             return false;
         }
-
         return true;
     }
 }

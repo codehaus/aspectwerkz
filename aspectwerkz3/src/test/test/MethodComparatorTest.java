@@ -24,7 +24,6 @@ public class MethodComparatorTest extends TestCase {
         Method method4 = null;
         Method method5 = null;
         Method method6 = null;
-
         try {
             method1 = this.getClass().getMethod("__generated$_AW_$method1", new Class[] {  });
             method11 = this.getClass().getMethod("__generated$_AW_$method1$x", new Class[] {  });
@@ -37,7 +36,6 @@ public class MethodComparatorTest extends TestCase {
         } catch (Exception e) {
             throw new RuntimeException("exception unexpected: " + e);
         }
-
         assertTrue(0 == MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(method1, method1));
         assertTrue(0 == MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(method2, method2));
         assertTrue(0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(method1, method2));

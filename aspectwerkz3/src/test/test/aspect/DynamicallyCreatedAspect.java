@@ -30,11 +30,8 @@ public class DynamicallyCreatedAspect {
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("beforeNew ");
-
         final Object result = joinPoint.proceed();
-
         ((Loggable)joinPoint.getTargetInstance()).log("afterNew ");
-
         return result;
     }
 }

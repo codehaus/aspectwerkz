@@ -122,7 +122,6 @@ public class ProcessStarter {
         } catch (NoSuchMethodException e) {
             return false;
         }
-
         return true;
     }
 
@@ -133,7 +132,6 @@ public class ProcessStarter {
         String cpArgs = javaArgs[1];
         String mainArgs = javaArgs[2];
         String options = optionArgs + " -cp " + cpArgs;
-
         String clp = System.getProperty(CL_PRE_PROCESSOR_CLASSNAME_PROPERTY,
                                         "org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl");
 
@@ -141,23 +139,18 @@ public class ProcessStarter {
         // or if bootclasspath is forced, transform optionsArg
         if (!hasCanRedefineClass() || (System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY) != null)) {
             String bootDir = System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY, CL_BOOTCLASSPATH_FORCE_DEFAULT);
-
             if (System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY) != null) {
                 System.out.println("HotSwap deactivated, using bootclasspath: " + bootDir);
             } else {
                 System.out.println("HotSwap not supported by this java version, using bootclasspath: " + bootDir);
             }
-
             ClassLoaderPatcher.patchClassLoader(clp, bootDir);
-
             BootClasspathStarter starter = new BootClasspathStarter(options, mainArgs, bootDir);
-
             try {
                 process = starter.launchVM();
             } catch (IOException e) {
                 System.err.println("failed to launch process :" + starter.getCommandLine());
                 e.printStackTrace();
-
                 return -1;
             }
 
@@ -167,13 +160,11 @@ public class ProcessStarter {
         } else {
             // lauch VM in suspend mode
             JDWPStarter starter = new JDWPStarter(options, mainArgs, "dt_socket", "9300");
-
             try {
                 process = starter.launchVM();
             } catch (IOException e) {
                 System.err.println("failed to launch process :" + starter.getCommandLine());
                 e.printStackTrace();
-
                 return -1;
             }
 
@@ -183,16 +174,13 @@ public class ProcessStarter {
 
             // override class loader in VM thru an attaching connector
             int secondsToWait = 0;
-
             try {
                 secondsToWait = Integer.parseInt(System.getProperty(CONNECTION_WAIT_PROPERTY, "0"));
             } catch (NumberFormatException nfe) {
                 ;
             }
-
             VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(clp, starter.getTransport(),
                                                                       starter.getAddress(), secondsToWait);
-
             if (vm == null) {
                 process.destroy();
             } else {
@@ -210,19 +198,14 @@ public class ProcessStarter {
                 shutdown();
             }
         };
-
         try {
             Runtime.getRuntime().addShutdownHook(shutdownHook);
-
             int exitCode = process.waitFor();
-
             executeShutdownHook = false;
-
             return exitCode;
         } catch (Exception e) {
             executeShutdownHook = false;
             e.printStackTrace();
-
             return -1;
         }
     }
@@ -234,7 +217,6 @@ public class ProcessStarter {
         if (executeShutdownHook) {
             process.destroy();
         }
-
         try {
             outThread.join();
             errThread.join();
@@ -258,7 +240,6 @@ public class ProcessStarter {
         inThread = new StreamRedirectThread("in.redirect", System.in, process.getOutputStream());
         inThread.setDaemon(true);
         errThread = new StreamRedirectThread("err.redirect", process.getErrorStream(), System.err);
-
         inThread.start();
         errThread.start();
     }
@@ -272,17 +253,14 @@ public class ProcessStarter {
             StringBuffer sb = new StringBuffer();
             StringTokenizer st = new StringTokenizer(s, " ", true);
             String current = null;
-
             while (st.hasMoreTokens()) {
                 current = st.nextToken();
-
                 if (" ".equals(current)) {
                     sb.append("\\ ");
                 } else {
                     sb.append(current);
                 }
             }
-
             return sb.toString();
         } else {
             return s;
@@ -317,7 +295,6 @@ public class ProcessStarter {
         StringBuffer mainArgB = new StringBuffer();
         String previous = null;
         boolean foundMain = false;
-
         for (int i = 0; i < args.length; i++) {
             //System.out.println("" + i + " " + args[i]);
             if (args[i].startsWith("-") && !foundMain) {
@@ -329,27 +306,22 @@ public class ProcessStarter {
                     cpOptionsArgB.append((System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0)
                                          ? ";" : ":");
                 }
-
                 cpOptionsArgB.append(removeEmbracingQuotes(args[i]));
             } else {
                 foundMain = true;
                 mainArgB.append(args[i]).append(" ");
             }
-
             previous = args[i];
         }
 
         // restore quote around classpath or escape whitespace depending on win*/*nix
         StringBuffer classPath = new StringBuffer();
-
         if (System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) {
             classPath = classPath.append("\"").append(cpOptionsArgB.toString()).append("\"");
         } else {
             classPath = classPath.append(escapeWhiteSpace(cpOptionsArgB.toString()));
         }
-
         String[] res = new String[] { optionsArgB.toString(), classPath.toString(), mainArgB.toString() };
-
         return res;
     }
 }

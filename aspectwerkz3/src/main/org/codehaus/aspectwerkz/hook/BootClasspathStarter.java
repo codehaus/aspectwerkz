@@ -23,7 +23,6 @@ public class BootClasspathStarter extends AbstractStarter {
     public BootClasspathStarter(String opt, String main, String bootDir) {
         super(opt, main);
         this.bootDir = bootDir;
-
         patchBootclasspath();
     }
 
@@ -38,7 +37,6 @@ public class BootClasspathStarter extends AbstractStarter {
             //todo ? is \" ok on *nix
         } else {
             int index = -1;
-
             if (opt.indexOf("-Xbootclasspath/p:\"") >= 0) {
                 // -Xbootclasspath/p: is defined using "
                 index = opt.indexOf("-Xbootclasspath/p:\"") + "-Xbootclasspath/p:\"".length();
@@ -49,9 +47,7 @@ public class BootClasspathStarter extends AbstractStarter {
                 // -Xbootclasspath/p: is defined without quotes
                 index = opt.indexOf("-Xbootclasspath/p:") + "-Xbootclasspath/p:".length();
             }
-
             StringBuffer optB = new StringBuffer("");
-
             optB.append(opt.substring(0, index));
             optB.append(bootDir);
             optB.append((System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) ? ";" : ":");

@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <document>
-
     <properties>
         <title>Papers &amp; Talks</title>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
         <author email="alex at gnilux dot com">alexandre vasseur</author>
     </properties>
-
     <body>
-
         <section name="Papers">
             <p>
                 <ul>
@@ -58,7 +55,6 @@
                 </ul>
             </p>
         </section>
-
         <section name="Talks">
             <p>
                 <ul>
@@ -100,6 +96,5 @@
                 </ul>
             </p>
         </section>
-
     </body>
 </document>

@@ -25,7 +25,6 @@ public class VerifierClassLoader extends URLClassLoader {
     protected synchronized Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
         // First, check if the class has already been loaded
         Class c = findLoadedClass(name);
-
         if (c == null) {
             try {
                 // try to load the class localy
@@ -35,11 +34,9 @@ public class VerifierClassLoader extends URLClassLoader {
                 c = getParent().loadClass(name);
             }
         }
-
         if (resolve) {
             resolveClass(c);
         }
-
         return c;
     }
 }

@@ -25,51 +25,40 @@ public class ConstructorAdviceTest extends WeavedTestCase {
 
     public void testCallAroundAdvice() {
         s_logCall = "";
-
         TestAroundAdvice test = new TestAroundAdvice(1L, new Object(), new String[] {  });
-
         assertEquals("beforeCall init afterCall ", s_logCall);
         assertNotNull(test);
     }
 
     public void testCallBeforeAdvice() {
         s_logCall = "";
-
         TestBeforeAdvice test = new TestBeforeAdvice();
-
         assertEquals("preCall init ", s_logCall);
         assertNotNull(test);
     }
 
     public void testCallAfterAdvice() {
         s_logCall = "";
-
         TestAfterAdvice test = new TestAfterAdvice("test");
-
         assertEquals("test postCall ", s_logCall);
         assertNotNull(test);
     }
 
     public void testCallBeforeAfterAdvice() {
         s_logCall = "";
-
         TestBeforeAfterAdvice test = new TestBeforeAfterAdvice(new String[] { "test" });
-
         assertEquals("preCall test postCall ", s_logCall);
         assertNotNull(test);
     }
 
     public void testCallReturnFalseType() {
         s_logCall = "";
-
         TestReturnFalseType test = null;
-
         try {
             test = new TestReturnFalseType();
         } catch (ClassCastException e) {
             return;
         }
-
         fail("this point should not have been reached a class cast exception should have been thrown");
     }
 

@@ -1,12 +1,9 @@
 <?xml version="1.0"?>
-
 <document>
-
     <properties>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
         <title>Startup &amp; Runtime issues</title>
     </properties>
-
     <body>
         <section name="Table of Contents">
             <p>
@@ -29,7 +26,6 @@
                 </ol>
             </p>
         </section>
-
         <section name="Startup and transformation issues">
             <p>
                 <code>AspectWerkz</code> support three different ways of
@@ -133,16 +129,13 @@
                     section for a detailed description on how to do this.
                 </p>
             </subsection>
-
         </section>
-
         <section name="Loading the definition">
             <p>
                 The
                 <code>AspectWerkz</code> system needs to know where it
                 can find the aspect definition.
             </p>
-
             <p>
                 You have two options depending on your needs and settings:
                 <ul>
@@ -162,9 +155,7 @@
                     <br/>
                 </ul>
             </p>
-
         </section>
-
         <section name="Pluggable container implementation">
             <p>
                 You have the possibility of providing your own aspect container implementation.
@@ -289,13 +280,11 @@
         <!--                </p>-->
         <!--            </subsection>-->
         <!--        </section>-->
-
         <section name="Remote Proxy Server - RPC mechanism">
             <p>
                 <code>AspectWerkz</code> provides an RPC mechanism that allows you to use the
                 instrumented objects (advices and mixins) seamlessly on a remote client site.
             </p>
-
             <subsection name="Client side">
                 <p>
                     You can use the remote proxy on the client side in two ways:
@@ -371,9 +360,7 @@ AnotherMixin anotherMixin = (AnotherMixin)remoteProxy.getInstance();
                     <code>^C</code> then the server listener
                     threads are still hanging so you need to close down them manually.)
                 </p>
-
             </subsection>
-
             <subsection name="Server side">
                 <p>
                     The remote proxy server is a multi-threaded production-ready implementation that
@@ -402,14 +389,12 @@ remote.server.thread.pool.wait.when.blocked=true
 remote.server.invoker.classname=
                     ]]></source>
                 </p>
-
                 <p>
                     To enable support for RPC in the
                     <code>AspectWerkz</code> system you have to feed
                     the JVM with the
                     <code>-Daspectwerkz.remote.server.run=true</code> option.
                 </p>
-
                 <p>
                     If you have specific requirements. For example if you want to handle the user
                     context that you (optionally) can set on the client
@@ -424,9 +409,6 @@ remote.server.invoker.classname=
                     <code>org.codehaus.aspectwerkz.System.getDefaultInvoker()</code> method.
                 </p>
             </subsection>
-
         </section>
-
     </body>
-
 </document>

@@ -20,16 +20,12 @@ public class ASTConstructorPattern extends SimpleNode {
 
     public void setFullNamePattern(String pattern) {
         int index = pattern.lastIndexOf('.');
-
         pattern = pattern.substring(0, index);
-
         boolean hierarchical = false;
-
         if (pattern.endsWith("+")) {
             hierarchical = true;
             pattern = pattern.substring(0, pattern.length() - 1);
         }
-
         m_declaringTypePattern = Pattern.compileTypePattern(pattern, hierarchical);
     }
 

@@ -15,7 +15,6 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 public class TestAspect {
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         String last = AdviceBindingTest.flow;
-
         AdviceBindingTest.flow += " ";
 
         //System.out.println(AdviceBindingTest.flow + " -> Advice_1");
@@ -23,13 +22,11 @@ public class TestAspect {
 
         //System.out.println(AdviceBindingTest.flow + " <- Advice_1");
         AdviceBindingTest.flow = last;
-
         return '1' + (String)r;
     }
 
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
         String last = AdviceBindingTest.flow;
-
         AdviceBindingTest.flow += " ";
 
         //System.out.println(AdviceBindingTest.flow + " -> Advice_2");
@@ -37,7 +34,6 @@ public class TestAspect {
 
         //System.out.println(AdviceBindingTest.flow + " <- Advice_2");
         AdviceBindingTest.flow = last;
-
         return '2' + (String)r;
     }
 }

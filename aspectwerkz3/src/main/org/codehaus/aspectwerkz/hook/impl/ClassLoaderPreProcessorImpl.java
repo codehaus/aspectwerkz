@@ -63,7 +63,6 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
                     }
                 }
             };
-
             klass.instrument(defineClass0Pre);
 
             //
@@ -73,7 +72,6 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
         } catch (Exception e) {
             System.err.println("failed to patch ClassLoader:");
             e.printStackTrace();
-
             return b;
         }
     }
@@ -84,7 +82,6 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
     public static void main(String[] args) throws Exception {
         ClassLoaderPreProcessor me = new ClassLoaderPreProcessorImpl();
         InputStream is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream("java/lang/ClassLoader.class");
-
         me.preProcess(ClassLoaderPatcher.inputStreamToByteArray(is));
         is.close();
     }

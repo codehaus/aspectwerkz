@@ -45,22 +45,17 @@ public class Strings {
         if ((str == null) || (oldToken == null) || (newToken == null) || (oldToken.length() == 0)) {
             return str;
         }
-
         StringBuffer buf = new StringBuffer(str.length());
         int start = 0;
         int end = 0;
-
         while ((end = str.indexOf(oldToken, start)) != -1) {
             buf.append(str.substring(start, end)).append(newToken);
             start = end + oldToken.length();
-
             if (--max == 0) {
                 break;
             }
         }
-
         buf.append(str.substring(start));
-
         return buf.toString();
     }
 
@@ -84,33 +79,26 @@ public class Strings {
         //Count Field Entries
         iFrom = 0;
         iRecords = 0;
-
         while (true) {
             iFound = sS.indexOf(sD, iFrom);
-
             if (iFound == -1) {
                 break;
             }
-
             iRecords++;
             iFrom = iFound + sD.length();
         }
-
         iRecords = iRecords + 1;
 
         // Populate aRet[]
         aRet = new String[iRecords];
-
         if (iRecords == 1) {
             aRet[0] = sS;
         } else {
             iLast = 0;
             iFrom = 0;
             iFound = 0;
-
             for (int i = 0; i < iRecords; i++) {
                 iFound = sS.indexOf(sD, iFrom);
-
                 if (iFound == -1) //At End
                  {
                     aRet[i] = sS.substring(iLast + sD.length(), sS.length());
@@ -121,12 +109,10 @@ public class Strings {
                  {
                     aRet[i] = sS.substring(iFrom, iFound);
                 }
-
                 iLast = iFound;
                 iFrom = iFound + sD.length();
             }
         }
-
         return aRet;
     }
 }

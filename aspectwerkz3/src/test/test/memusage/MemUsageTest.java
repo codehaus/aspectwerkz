@@ -121,7 +121,6 @@ public class MemUsageTest extends TestCase {
 
         // private byte[] buffer = new byte[XXX];
         FieldGen field = new FieldGen(Constants.ACC_PRIVATE, new ArrayType(Type.BYTE, 1), "buffer", cp);
-
         cg.addField(field.getField());
 
         // private static byte[] sbuffer = new byte[XXX];
@@ -132,7 +131,6 @@ public class MemUsageTest extends TestCase {
         InstructionList il = new InstructionList();
         MethodGen method = new MethodGen(Constants.ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[] {  }, "<init>",
                                          className, il, cp);
-
         il.append(factory.createLoad(Type.OBJECT, 0));
         il.append(factory.createInvoke("java.lang.Object", "<init>", Type.VOID, Type.NO_ARGS, Constants.INVOKESPECIAL));
         il.append(factory.createLoad(Type.OBJECT, 0));
@@ -190,21 +188,16 @@ public class MemUsageTest extends TestCase {
     private void callClassesOneByOne(ClassLoader cl, String classPrefix) throws Exception {
         Class klass = null;
         Hello instance = null;
-
         for (int i = 1; i <= classFactor; i++) {
             klass = Class.forName(classPrefix + i, true, cl);
-
             if (isClassCache) {
                 classCache.add(klass);
             }
-
             for (int j = 1; j <= instanceFactor; j++) {
                 instance = (Hello)klass.newInstance();
-
                 if (isInstanceCache) {
                     instanceCache.add(instance);
                 }
-
                 for (int k = 0; k < HELLO_METHOD_COUNT; k++) {
                     //System.out.print(":");
                     assertEquals("before sayHello" + k + " after",
@@ -223,13 +216,10 @@ public class MemUsageTest extends TestCase {
         if (!isInstanceCache) {
             return;
         }
-
         Hello instance = null;
-
         while (true) {
             for (int i = 0; i < instanceCache.size(); i++) {
                 instance = (Hello)instanceCache.get(i);
-
                 for (int k = 0; k < HELLO_METHOD_COUNT; k++) {
                     try {
                         assertEquals("before sayHello" + k + " after",
@@ -242,7 +232,6 @@ public class MemUsageTest extends TestCase {
                     }
                 }
             }
-
             try {
                 Thread.sleep(200);
                 System.out.print(".");
@@ -259,7 +248,6 @@ public class MemUsageTest extends TestCase {
         while (!instanceCache.isEmpty()) {
             instanceCache.remove(0);
         }
-
         while (!classCache.isEmpty()) {
             classCache.remove(0);
         }
@@ -281,11 +269,8 @@ public class MemUsageTest extends TestCase {
     public void runThruWeavingClassLoader() throws Exception {
         ClassLoader cl = new WeavingClassLoader(new URL[] { (new File("_temp")).toURL() },
                                                 ClassLoader.getSystemClassLoader());
-
         createClassFiles("_temp", "atest");
-
         long ms = System.currentTimeMillis();
-
         callClassesOneByOne(cl, "atest");
         System.out.println("completed in: " + (System.currentTimeMillis() - ms));
 
@@ -299,11 +284,8 @@ public class MemUsageTest extends TestCase {
     public void runThruStandardClassLoader() throws Exception {
         ClassLoader cl = new URLClassLoader(new URL[] { (new File("_temp")).toURL() },
                                             ClassLoader.getSystemClassLoader());
-
         createClassFiles("_temp", "HelloClass");
-
         long ms = System.currentTimeMillis();
-
         callClassesOneByOne(cl, "HelloClass");
         System.out.println("completed in: " + (System.currentTimeMillis() - ms));
         releaseCache();
@@ -335,16 +317,13 @@ public class MemUsageTest extends TestCase {
         //junit.textui.TestRunner.run(suite());
         // uncomment for inside IDE use
         MemUsageTest me = new MemUsageTest("test", 10, 20, true, true);
-
         me.createClassFiles("_temp", "HelloClass");
         me.runThruWeavingClassLoader();
     }
 
     public static junit.framework.Test suite() {
         TestSuite suite = new TestSuite();
-
         suite.addTest(new MemUsageTest("testLongRun", 10, 20, true, true));
-
         return suite;
     }
 }

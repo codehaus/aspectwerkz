@@ -93,11 +93,8 @@ public class StaticMethodTestAspect {
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
         StaticMethodAdviceTest.log("before1 ");
-
         final Object result = joinPoint.proceed();
-
         StaticMethodAdviceTest.log("after1 ");
-
         return result;
     }
 
@@ -106,11 +103,8 @@ public class StaticMethodTestAspect {
      */
     public Object advice3(final JoinPoint joinPoint) throws Throwable {
         StaticMethodAdviceTest.log("before2 ");
-
         final Object result = joinPoint.proceed();
-
         StaticMethodAdviceTest.log("after2 ");
-
         return result;
     }
 
@@ -123,7 +117,6 @@ public class StaticMethodTestAspect {
         String metadata = joinPoint.getTargetClass().getName() + rtti.getMethod().getName()
                           + rtti.getParameterValues()[0] + rtti.getParameterTypes()[0].getName()
                           + rtti.getReturnType().getName() + rtti.getReturnValue();
-
         return metadata;
     }
 
@@ -132,11 +125,8 @@ public class StaticMethodTestAspect {
      */
     public Object advice5(final JoinPoint joinPoint) throws Throwable {
         StaticMethodAdviceTest.log("before ");
-
         final Object result = joinPoint.proceed();
-
         StaticMethodAdviceTest.log("after ");
-
         return result;
     }
 

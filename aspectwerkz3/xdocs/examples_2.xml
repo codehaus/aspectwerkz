@@ -1,14 +1,11 @@
 <?xml version="1.0"?>
 <document>
-
     <properties>
         <title>Examples</title>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
         <author email="alex at gnilux dot com">alexandre vasseur</author>
     </properties>
-
     <body>
-
         <section name="Table of Contents">
             <p>
                 <ol>
@@ -36,7 +33,6 @@
                 </ol>
             </p>
         </section>
-
         <section name="Introduction">
             <p>
                 Here are some simple examples to get you going.
@@ -46,7 +42,6 @@
                 <code>samples-attribdef.xml</code>
             </p>
         </section>
-
         <section name="Call and Execution pointcuts + Around advice">
             <p>
                 This aspect implements a simple caching service. It caches
@@ -120,7 +115,6 @@
 }
             ]]></source>
         </section>
-
         <section name="Set and Get pointcuts + Aspect inheritance">
             <p>
                 This aspect implements a simple logging service.
@@ -216,7 +210,6 @@ public class LoggingAspect extends AbstractLoggingAspect {
 }
             ]]></source>
         </section>
-
         <section name="Implementation introductions">
             <p>
                 This example shows both how implementation introductions (Mixins) are implemented.
@@ -297,7 +290,6 @@ public class Target {
 }]]></source>
             </p>
         </section>
-
         <section name="Control flow (cflow) pointcuts">
             <p>
                 This example shows how control flow (cflow) pointcuts are implemented.
@@ -341,7 +333,6 @@ public class CFlowAspect {
 }]]></source>
             </p>
         </section>
-
         <section name="Handler pointcuts">
             <p>
                 This example shows how catch clauses be intercepted with
@@ -369,7 +360,6 @@ public class ExceptionHandler {
                 ]]></source>
             </p>
         </section>
-
         <section name="XML definition file for the examples">
             <p>
                 Here is the XML deployment descriptor file for the aspect examples above.
@@ -395,6 +385,5 @@ public class ExceptionHandler {
             ]]></source>
         </section>
     </body>
-
 </document>
 

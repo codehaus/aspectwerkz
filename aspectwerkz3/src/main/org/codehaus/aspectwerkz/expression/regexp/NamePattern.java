@@ -47,11 +47,9 @@ public class NamePattern extends Pattern {
         if (name == null) {
             throw new IllegalArgumentException("name can not be null");
         }
-
         if (name.equals("")) {
             return false;
         }
-
         return m_namePattern.contains(name);
     }
 
@@ -76,7 +74,6 @@ public class NamePattern extends Pattern {
             } else {
                 namePattern = Strings.replaceSubString(namePattern, "*", "[a-zA-Z0-9_$]*");
             }
-
             m_namePattern = new com.karneim.util.collection.regex.Pattern(namePattern);
         } catch (Throwable e) {
             throw new ExpressionException("type pattern is not well formed: " + namePattern, e);
@@ -91,17 +88,14 @@ public class NamePattern extends Pattern {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-
         m_pattern = (String)fields.get("m_pattern", null);
         escape(m_pattern);
     }
 
     public int hashCode() {
         int result = 17;
-
         result = (37 * result) + hashCodeOrZeroIfNull(m_pattern);
         result = (37 * result) + hashCodeOrZeroIfNull(m_namePattern);
-
         return result;
     }
 
@@ -109,7 +103,6 @@ public class NamePattern extends Pattern {
         if (null == o) {
             return 19;
         }
-
         return o.hashCode();
     }
 
@@ -117,13 +110,10 @@ public class NamePattern extends Pattern {
         if (this == o) {
             return true;
         }
-
         if (!(o instanceof NamePattern)) {
             return false;
         }
-
         final NamePattern obj = (NamePattern)o;
-
         return areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
                && areEqualsOrBothNull(obj.m_namePattern, this.m_namePattern);
     }
@@ -132,7 +122,6 @@ public class NamePattern extends Pattern {
         if (null == o1) {
             return (null == o2);
         }
-
         return o1.equals(o2);
     }
 }

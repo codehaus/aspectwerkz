@@ -2,7 +2,6 @@
 <faqs title="Frequently Asked Questions">
     <part id="General">
         <title>General</title>
-
         <faq id="general/what is aw">
             <question>
                 What is AspectWerkz?
@@ -127,7 +126,6 @@
             </answer>
         </faq>
     </part>
-
     <part id="migration">
         <title>Migration</title>
         <faq id="migration/0.9">
@@ -218,10 +216,8 @@
             </answer>
         </faq>
     </part>
-
     <part id="Other">
         <title>Other</title>
-
         <faq id="other/ibm">
             <question>
                 Does AspectWerkz supports custom JRE like IBM ones?
@@ -259,7 +255,5 @@
                 <code>JAVA_HOME/jre/lib/ext/</code> when done.
             </answer>
         </faq>
-
     </part>
-
 </faqs>

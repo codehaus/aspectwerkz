@@ -66,7 +66,6 @@ public class IntroductionContainer {
         if (prototype == null) {
             throw new IllegalArgumentException("introduction prototype can not be null");
         }
-
         m_prototype = prototype;
         createMethodRepository();
 
@@ -83,24 +82,20 @@ public class IntroductionContainer {
      */
     public Object invokeIntroductionPerJvm(final int methodIndex, final Object[] parameters) {
         Object result = null;
-
         try {
             if (m_perJvm == null) {
                 // only compatible aspect deployment is perJVM
                 m_perJvm = Introduction.newInstance(m_prototype, m_prototype.getCrossCuttingInfo());
             }
-
             result = m_methodRepository[methodIndex].invoke(m_perJvm.getImplementation(), parameters);
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ClassCastException) {
                 System.err.println("WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'");
             }
-
             throw new WrappedRuntimeException(e.getTargetException());
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-
         return result;
     }
 
@@ -116,30 +111,25 @@ public class IntroductionContainer {
                                              final Object[] parameters) {
         final Class targetClass = targetInstance.getClass();
         Object result = null;
-
         try {
             if (!m_perClass.containsKey(targetClass)) {
                 synchronized (m_perClass) {
                     // only compatible aspect deployments are perJVM and perClass
                     Introduction perClassIntroduction = Introduction.newInstance(m_prototype,
                                                                                  m_prototype.getCrossCuttingInfo());
-
                     m_perClass.put(targetClass, perClassIntroduction);
                 }
             }
-
             result = m_methodRepository[methodIndex].invoke(((Introduction)m_perClass.get(targetClass))
                                                             .getImplementation(), parameters);
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ClassCastException) {
                 System.err.println("WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'");
             }
-
             throw new WrappedRuntimeException(e.getTargetException());
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-
         return result;
     }
 
@@ -154,30 +144,25 @@ public class IntroductionContainer {
     public Object invokeIntroductionPerInstance(final Object targetInstance, final int methodIndex,
                                                 final Object[] parameters) {
         Object result = null;
-
         try {
             if (!m_perInstance.containsKey(targetInstance)) {
                 synchronized (m_perInstance) {
                     // only compatible aspect deployments are perJVM and perClass
                     Introduction perInstanceIntroduction = Introduction.newInstance(m_prototype,
                                                                                     m_prototype.getCrossCuttingInfo());
-
                     m_perInstance.put(targetInstance, perInstanceIntroduction);
                 }
             }
-
             result = m_methodRepository[methodIndex].invoke(((Introduction)m_perInstance.get(targetInstance))
                                                             .getImplementation(), parameters);
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ClassCastException) {
                 System.err.println("WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'");
             }
-
             throw new WrappedRuntimeException(e.getTargetException());
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-
         return result;
     }
 
@@ -190,10 +175,8 @@ public class IntroductionContainer {
      */
     public Object invokeIntroductionPerThread(final int methodIndex, final Object[] parameters) {
         Object result;
-
         try {
             final Thread currentThread = Thread.currentThread();
-
             if (!m_perThread.containsKey(currentThread)) {
                 synchronized (m_perThread) {
                     // only compatible aspect deployments is perThread
@@ -201,19 +184,16 @@ public class IntroductionContainer {
                                     Introduction.newInstance(m_prototype, m_prototype.getCrossCuttingInfo()));
                 }
             }
-
             result = m_methodRepository[methodIndex].invoke(((Introduction)m_perThread.get(currentThread))
                                                             .getImplementation(), parameters);
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ClassCastException) {
                 System.err.println("WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'");
             }
-
             throw new WrappedRuntimeException(e.getTargetException());
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-
         return result;
     }
 
@@ -271,13 +251,11 @@ public class IntroductionContainer {
 
         // check compatibility
         IntroductionDefinition def = m_prototype.getIntroductionDefinition();
-
         for (Iterator intfs = def.getInterfaceClassNames().iterator(); intfs.hasNext();) {
             if (!findInterfaceInHierarchy(newImplementationClass, (String)intfs.next())) {
                 throw new DefinitionException("new implementation class is not compatible");
             }
         }
-
         synchronized (this) {
             try {
                 // create the new introduction to replace the current one
@@ -310,16 +288,13 @@ public class IntroductionContainer {
 
         // looks in directly implemented interface first
         Class[] interfaces = root.getInterfaces();
-
         for (int i = 0; i < interfaces.length; i++) {
             Class implemented = interfaces[i];
-
             if (implemented.getName().equals(requiredInterface)
                 || findInterfaceInHierarchy(implemented, requiredInterface)) {
                 return true;
             }
         }
-
         return findInterfaceInHierarchy(root.getSuperclass(), requiredInterface);
     }
 
@@ -329,12 +304,9 @@ public class IntroductionContainer {
     private void createMethodRepository() {
         synchronized (m_methodRepository) {
             List methodList = TransformationUtil.createSortedMethodList(m_prototype.getImplementation().getClass());
-
             m_methodRepository = new Method[methodList.size()];
-
             for (int i = 0; i < m_methodRepository.length; i++) {
                 Method method = (Method)methodList.get(i);
-
                 method.setAccessible(true);
                 m_methodRepository[i] = method;
             }
@@ -349,20 +321,16 @@ public class IntroductionContainer {
      */
     public Object getTargetInstance(Object mixinImpl) {
         Object targetInstance = null;
-
         if (m_prototype.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
             for (Iterator i = m_perInstance.entrySet().iterator(); i.hasNext();) {
                 Map.Entry entry = (Map.Entry)i.next();
                 Object mixin = ((Introduction)entry.getValue()).getImplementation();
-
                 if (mixinImpl.equals(mixin)) {
                     targetInstance = entry.getKey();
-
                     break;
                 }
             }
         }
-
         return targetInstance;
     }
 
@@ -374,10 +342,8 @@ public class IntroductionContainer {
      */
     public Class getTargetClass(Object mixinImpl) {
         Class targetClass = null;
-
         if (m_prototype.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
             Object instance = getTargetInstance(mixinImpl);
-
             if (instance != null) {
                 targetClass = instance.getClass();
             }
@@ -385,15 +351,12 @@ public class IntroductionContainer {
             for (Iterator i = m_perClass.entrySet().iterator(); i.hasNext();) {
                 Map.Entry entry = (Map.Entry)i.next();
                 Object mixin = ((Introduction)entry.getValue()).getImplementation();
-
                 if (mixinImpl.equals(mixin)) {
                     targetClass = (Class)entry.getKey();
-
                     break;
                 }
             }
         }
-
         return targetClass;
     }
 }

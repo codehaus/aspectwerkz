@@ -1,13 +1,10 @@
 <?xml version="1.0"?>
-
 <document>
-
     <properties>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
         <author email="alex at gnilux dot com">alexandre vasseur</author>
         <title>Implementation issues</title>
     </properties>
-
     <body>
         <section name="Table of Contents">
             <p>
@@ -45,9 +42,7 @@
                 </ol>
             </p>
         </section>
-
         <section name="Aspects">
-
             <p>
                 In
                 <code>AspectWerkz</code> any Java class can be an aspect (or more conceptually correct, can
@@ -55,12 +50,10 @@
                 <i>cross-cutting</i>), which means that it will become a unit of modularity
                 for crosscutting concerns.
             </p>
-
             <p>
                 They do not have to extend any special class or implement a specific interface, but can extend any
                 class they want.
             </p>
-
             <p>
                 The only requirement is that the aspect needs to have either
                 <b>no</b> constructor at all
@@ -86,13 +79,11 @@
                 If a constructor of type 2 is found then it is used else the default constructor. If no default
                 constructor can be found then an exception is thrown.
             </p>
-
             <p>
                 The aspect can then be defined using XML or attributes, see the
                 <a href="xml_definition.html">XML definition</a> section or the
                 <a href="attribute_definition.html">Attribute definition</a> section for more information.
             </p>
-
             <subsection name="Abstract aspects - aspect inheritance">
                 <p>
                     Since the Aspects are pure Java classes, you have the possibility of
@@ -108,7 +99,6 @@
                 </p>
             </subsection>
         </section>
-
         <section name="Advice">
             <p>
                     In the aspect class the advice are regular methods. The methods needs to conform to a specfic signature:
@@ -152,9 +142,7 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
 }
             ]]></source>
             </p>
-
         </section>
-
         <section name="JoinPoint instance">
             <p>
                 Each advice is passed a
@@ -174,7 +162,6 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
                 by invoking
                 <code>getRtti()</code>.
             </p>
-
             <p>
                 The
                 <code>JoinPoint</code> clas has a method called
@@ -194,7 +181,6 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
                 <code>Around</code> advice you have the option of either returning the value returned from the
                 <code>proceed()</code> method or faking the value and returning something else.
             </p>
-
             <p>
                 <b>Warning</b>: if the
                 <code>proceed()</code> method is invoked within an
@@ -202,13 +188,11 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
                 <code>After</code>
                 advice it will currently result in infinite recursion.
             </p>
-
             <p>
                 The
                 <code>JoinPoint</code> class has some other interesting methods as well, see the JavaDoc for details.
             </p>
         </section>
-
         <section name="Signature interfaces">
             <p>
                 The
@@ -216,7 +200,6 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
                 about the join point we are currently executing at. The interfaces forms a hierarchy in which you can
                 be both fine-grained and course-grained depending on you needs. Just cast to the appropriate interface.
             </p>
-
             <p>
                 The
                 <code>Signature</code> can ber retrieved from the
@@ -251,9 +234,7 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
                 </ul>
                 See the JavaDoc for API details.
             </p>
-
         </section>
-
         <section name="RTTI interfaces">
             <p>
                 The
@@ -261,7 +242,6 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
                 about the join point we are currently executing at. The interfaces forms a hierarchy in which you can
                 be both fine-grained and course-grained depending on you needs. Just cast to the appropriate interface.
             </p>
-
             <p>
                 The
                 <code>Signature</code> can ber retrieved from the
@@ -296,9 +276,7 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
                 </ul>
                 See the JavaDoc for API details.
             </p>
-
         </section>
-
         <section name="Using the CrossCuttingInfo class">
             <p>
                 The
@@ -315,7 +293,6 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
                 when the aspect of mixin is instantiated. This instance you can then use as you wish, store it in
                 a member field etc.
             </p>
-
             <p>
                 This class has many useful methods. For example:
                 <source><![CDATA[
@@ -336,10 +313,8 @@ Object getMixinTargetInstance(String mixinName, Object mixinImpl)
 Class getMixinTargetClass(String mixinName, Object mixinImpl)
 ...
                 ]]></source>
-
             </p>
         </section>
-
         <section name="Introductions">
             <p>
                 Introductions makes it possible to extend a class with a new interface and/or a new implementation
@@ -354,9 +329,7 @@ Class getMixinTargetClass(String mixinName, Object mixinImpl)
                         Implementation introductions - where you introduce implementations to a target class.
                     </li>
                 </ul>
-
             </p>
-
             <p>
                 Implementation introductions (interface with concrete implementation), in
                 <code>AspectWerkz</code> implemented as
@@ -389,7 +362,6 @@ Class getMixinTargetClass(String mixinName, Object mixinImpl)
                 If a constructor of type 2 is found then it is used else the default constructor. If no default
                 constructor can be found then an exception is thrown.
             </p>
-
             <p>
                 The inner class implements the interface(s) to introduce on the target class.
             </p>
@@ -406,7 +378,6 @@ public MyAspect {
 }
                 ]]></source>
             </p>
-
             <subsection name="Implementation swapping">
                 <p>
                     It is possible to replace the introduction implementation at runtime using a call like
@@ -421,7 +392,6 @@ SystemLoader.getSystem("systemId").getAspectManager().getMixin("test.attribdef.a
                 </p>
             </subsection>
         </section>
-
         <section name="Example of an Aspect">
             <p>
                    This is a simple example showing how an aspect implementation with a couple of advice
@@ -447,7 +417,6 @@ public class MyAspect {
                     ]]></source>
             </p>
         </section>
-
         <section name="Choosing a definition model">
             <p>
                 The
@@ -472,5 +441,4 @@ public class MyAspect {
             </p>
         </section>
     </body>
-
 </document>

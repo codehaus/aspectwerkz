@@ -73,7 +73,6 @@ public class Plug {
      */
     public void target(String destJar) throws Exception {
         File dest = new File(destJar);
-
         if (dest.exists() && !dest.canWrite()) {
             throw new Exception(destJar + " exists and is not writable");
         }
@@ -87,21 +86,14 @@ public class Plug {
         // pack the jar file
         Manifest mf = new Manifest();
         Attributes at = mf.getMainAttributes();
-
         at.putValue(Attributes.Name.MANIFEST_VERSION.toString(), "1.0");
         at.putValue("Created-By", "AspectWerkz (c) Plug [java " + System.getProperty("java.version") + ']');
-
         ZipEntry entry = new ZipEntry("java/lang/ClassLoader.class");
-
         entry.setSize(patched.length);
-
         CRC32 crc = new CRC32();
-
         crc.update(patched);
         entry.setCrc(crc.getValue());
-
         JarOutputStream jar = new JarOutputStream(new FileOutputStream(dest), mf);
-
         jar.putNextEntry(entry);
         jar.write(patched);
         jar.closeEntry();
@@ -119,54 +111,41 @@ public class Plug {
         String transport = (String)jdwp.get(TRANSPORT_JDWP);
         String address = (String)jdwp.get(ADDRESS_JDWP);
         String name = null;
-
         if ("dt_socket".equals(transport)) {
             name = "com.sun.jdi.SocketAttach";
         } else if ("dt_shmem".equals(transport)) {
             name = "com.sun.jdi.SharedMemoryAttach";
         }
-
         AttachingConnector connector = null;
-
         for (Iterator i = Bootstrap.virtualMachineManager().attachingConnectors().iterator(); i.hasNext();) {
             AttachingConnector aConnector = (AttachingConnector)i.next();
-
             if (aConnector.name().equals(name)) {
                 connector = aConnector;
-
                 break;
             }
         }
-
         if (connector == null) {
             throw new Exception("no AttachingConnector for transport: " + transport);
         }
-
         Map args = connector.defaultArguments();
-
         if ("dt_socket".equals(transport)) {
             ((Connector.Argument)args.get("port")).setValue(address);
         } else if ("dt_shmem".equals(transport)) {
             ((Connector.Argument)args.get("name")).setValue(address);
         }
-
         try {
             VirtualMachine vm = connector.attach(args);
-
             return vm;
         } catch (IllegalConnectorArgumentsException e) {
             System.err.println("failed to attach to VM (" + transport + ", " + address + "):");
             e.printStackTrace();
-
             for (Iterator i = e.argumentNames().iterator(); i.hasNext();) {
                 System.err.println("wrong or missing argument - " + i.next());
             }
-
             return null;
         } catch (IOException e) {
             System.err.println("failed to attach to VM (" + transport + ", " + address + "):");
             e.printStackTrace();
-
             return null;
         }
     }
@@ -179,7 +158,6 @@ public class Plug {
      */
     public void resume(Map jdwp) throws Exception {
         VirtualMachine vm = connect(jdwp);
-
         if (vm != null) {
             vm.resume();
             vm.dispose();
@@ -194,7 +172,6 @@ public class Plug {
      */
     public void info(Map jdwp) throws Exception {
         VirtualMachine vm = connect(jdwp);
-
         if (vm != null) {
             System.out.println("java.vm.name = " + vm.name());
             System.out.println("java.version = " + vm.version());
@@ -217,7 +194,6 @@ public class Plug {
                                                                                      .getName()),
                                                                   (String)jdwp.get(TRANSPORT_JDWP),
                                                                   (String)jdwp.get(ADDRESS_JDWP));
-
         if (vm != null) {
             vm.resume();
             vm.dispose();
@@ -246,29 +222,23 @@ public class Plug {
     public static Map parseArgs(String args) throws Exception {
         Map map = new HashMap();
         StringTokenizer st = new StringTokenizer(args, ",");
-
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
             int index = token.indexOf("=");
-
             if (index < 0) {
                 throw new Exception("invalid jdwp string: " + args);
             }
-
             map.put(token.substring(0, index), token.substring(index + 1));
         }
-
         return map;
     }
 
     public static void main(String[] args) {
         Plug plug = new Plug();
-
         if (args.length != 2) {
             usage();
             System.exit(1);
         }
-
         if ("-target".equals(args[0])) {
             try {
                 plug.target(args[1]);
@@ -280,7 +250,6 @@ public class Plug {
         } else {
             try {
                 Map jdwp = parseArgs(args[1]);
-
                 if ("-hotswap".equals(args[0])) {
                     plug.hotswap(jdwp);
                 } else if ("-resume".equals(args[0])) {

@@ -51,15 +51,12 @@ public class InterfaceIntroductionDefinition {
         if (name == null) {
             throw new IllegalArgumentException("name can not be null");
         }
-
         if (expressionInfo == null) {
             throw new IllegalArgumentException("expressionInfo can not be null");
         }
-
         if (interfaceClassName == null) {
             throw new IllegalArgumentException("interface class name can not be null");
         }
-
         m_name = name;
         m_interfaceClassNames.add(interfaceClassName);
         m_expressionInfos = new ExpressionInfo[1];
@@ -127,7 +124,6 @@ public class InterfaceIntroductionDefinition {
      */
     public void addExpressionInfo(final ExpressionInfo expression) {
         final ExpressionInfo[] tmpExpressions = new ExpressionInfo[m_expressionInfos.length + 1];
-
         java.lang.System.arraycopy(m_expressionInfos, 0, tmpExpressions, 0, m_expressionInfos.length);
         tmpExpressions[m_expressionInfos.length] = expression;
         m_expressionInfos = new ExpressionInfo[m_expressionInfos.length + 1];
@@ -141,7 +137,6 @@ public class InterfaceIntroductionDefinition {
      */
     public void addExpressionInfos(final ExpressionInfo[] expressions) {
         final ExpressionInfo[] tmpExpressions = new ExpressionInfo[m_expressionInfos.length + expressions.length];
-
         java.lang.System.arraycopy(m_expressionInfos, 0, tmpExpressions, 0, m_expressionInfos.length);
         java.lang.System.arraycopy(expressions, 0, tmpExpressions, m_expressionInfos.length, expressions.length);
         m_expressionInfos = new ExpressionInfo[m_expressionInfos.length + expressions.length];

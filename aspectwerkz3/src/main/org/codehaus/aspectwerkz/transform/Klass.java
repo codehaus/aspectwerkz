@@ -114,10 +114,8 @@ public class Klass {
     public static CtClass fromByte(final String name, final byte[] bytecode, final ClassLoader loader) {
         try {
             ClassPool cp = new ClassPool(null);
-
             cp.insertClassPath(new ByteArrayClassPath(name, bytecode));
             cp.appendClassPath(new LoaderClassPath(loader));
-
             return cp.get(name);
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);

@@ -37,13 +37,11 @@ public class EWorldUtil {
         Map aspects = (Map)s_weaveStatus.get(uuid);
         if (aspects == null || aspects.keySet().size() == 0) {
             return false;
-        }
-        else {
+        } else {
             Boolean status = (Boolean)aspects.get(aspectName);
             if (status == null) {
                 return false;
-            }
-            else {
+            } else {
                 return status.booleanValue();
             }
         }
@@ -55,7 +53,6 @@ public class EWorldUtil {
             final String adviceName,
             final String expression,
             final String pointcutName) {
-
 //        System.out.println(
 //                "activate  = " + uuid + "," + aspectName + "." + adviceName + " @ " + expression + "," + pointcutName
 //        );
@@ -175,8 +172,7 @@ public class EWorldUtil {
                 try {
                     System.out.println("hotswap " + tuple.getClassName());
                     HotSwapClient.hotswap(tuple.getClassLoader().loadClass(tuple.getClassName()));
-                }
-                catch (Throwable t) {
+                } catch (Throwable t) {
                     System.err.println("Unable to hotswap " + tuple.getClassName() + ": " + t.getMessage());
                 }
             }
@@ -187,7 +183,6 @@ public class EWorldUtil {
         java.io.PrintStream out = System.out;
         out.println("dumpSystemDefinitions [ " + loader + " ]");
         List defs = SystemDefinitionContainer.getSystemDefinitions(loader);
-
         for (Iterator sysDefs = defs.iterator(); sysDefs.hasNext();) {
             SystemDefinition sysDef = (SystemDefinition)sysDefs.next();
             out.print(sysDef.getUuid());
@@ -211,7 +206,6 @@ public class EWorldUtil {
             }
             out.println("\n----");
         }
-
     }
 
     private static void setStatus(final String uuid, final String aspectName, final Boolean status) {

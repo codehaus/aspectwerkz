@@ -63,12 +63,9 @@ public class ClassPreProcessorHelper {
         if (preProcessorInitialized) {
             return;
         }
-
         preProcessorInitialized = true;
-
         Class klass = null;
         String s = System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT);
-
         try {
             // force loading thru System class loader to allow
             // preprocessor implementation to be in standard classpath
@@ -83,7 +80,6 @@ public class ClassPreProcessorHelper {
         } catch (ClassNotFoundException _ex) {
             System.err.println("AspectWerkz - WARN - Pre-processor class '" + s + "' not found");
         }
-
         if (klass != null) {
             try {
                 preProcessor = (ClassPreProcessor)klass.newInstance();
@@ -104,31 +100,24 @@ public class ClassPreProcessorHelper {
         if (!preProcessorInitialized) {
             initializePreProcessor();
         }
-
         if (preProcessor == null) {
             // we need to check this due to reentrancy when ClassPreProcessorHelper is beeing initialized
             // since it tries to load a ClassPreProcessor implementation
             byte[] obyte = new byte[len];
-
             System.arraycopy(b, off, obyte, 0, len);
-
             return obyte;
         } else {
             try {
                 byte[] ibyte = new byte[len];
                 byte[] obyte = new byte[] {  };
-
                 System.arraycopy(b, off, ibyte, 0, len);
                 obyte = preProcessor.preProcess(name, ibyte, caller);
-
                 return obyte;
             } catch (Throwable throwable) {
                 System.err.println("AspectWerkz - WARN - Error pre-processing class " + name + " in "
                                    + Thread.currentThread());
                 throwable.printStackTrace();
-
                 byte[] obyte = new byte[len];
-
                 System.arraycopy(b, off, obyte, 0, len);
 
                 //abyte = preProcessor.preProcess(name, abyte, caller);

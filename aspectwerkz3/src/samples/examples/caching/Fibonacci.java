@@ -26,8 +26,7 @@ public class Fibonacci {
         if (n < 2) {
             System.err.println(n + ".");
             return 1;
-        }
-        else {
+        } else {
             System.err.print(n + ",");
             return fib(n - 1) + fib(n - 2);
         }
@@ -55,8 +54,7 @@ public class Fibonacci {
                 Object newValue = joinPoint.proceed(); // not found => calculate
                 m_cache.put(parameter, newValue);
                 return newValue;
-            }
-            else {
+            } else {
                 System.out.println("using cache: " + cachedValue);
                 return cachedValue; // return cached value
             }

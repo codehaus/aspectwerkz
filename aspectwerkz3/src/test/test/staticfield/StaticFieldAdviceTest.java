@@ -40,36 +40,28 @@ public class StaticFieldAdviceTest extends TestCase {
     private int accessStaticFieldA() {
         //static field access in member method
         s_fieldA = 1;
-
         int value = s_fieldA;
-
         return value;
     }
 
     private static int accessStaticFieldB() {
         //static field access in static method
         s_fieldB = 1;
-
         int value = s_fieldB;
-
         return value;
     }
 
     private int accessFieldA() {
         //static field access in member method
         m_fieldA = 1;
-
         int value = m_fieldA;
-
         return value;
     }
 
     private static int accessFieldB(StaticFieldAdviceTest myself) {
         //field access in static method
         myself.m_fieldB = 1;
-
         int value = myself.m_fieldB;
-
         return value;
     }
 

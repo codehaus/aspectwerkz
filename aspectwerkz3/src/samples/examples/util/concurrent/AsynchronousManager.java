@@ -10,9 +10,7 @@ package examples.util.concurrent;
 import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
 import EDU.oswego.cs.dl.util.concurrent.LinkedQueue;
 import EDU.oswego.cs.dl.util.concurrent.BoundedBuffer;
-
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-
 import examples.util.definition.Definition;
 
 /**
@@ -38,13 +36,11 @@ public class AsynchronousManager {
         }
         try {
             m_threadPool.execute(task);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             notifyAll();
             throw new WrappedRuntimeException(e);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -70,7 +66,6 @@ public class AsynchronousManager {
         if (m_initialized) {
             return;
         }
-
         examples.util.definition.ThreadPoolDefinition def = (examples.util.definition.ThreadPoolDefinition)definition;
         int threadPoolMaxSize = def.getMaxSize();
         int threadPoolInitSize = def.getInitSize();
@@ -78,7 +73,6 @@ public class AsynchronousManager {
         int keepAliveTime = def.getKeepAliveTime();
         boolean waitWhenBlocked = def.getWaitWhenBlocked();
         boolean bounded = def.getBounded();
-
         if (threadPoolMaxSize < threadPoolInitSize || threadPoolMaxSize < threadPoolMinSize) {
             throw new IllegalArgumentException("max size of thread pool can not exceed the init size");
         }
@@ -93,8 +87,7 @@ public class AsynchronousManager {
                     keepAliveTime,
                     waitWhenBlocked
             );
-        }
-        else {
+        } else {
             createDynamicThreadPool(
                     threadPoolMinSize,
                     threadPoolInitSize,

@@ -88,11 +88,9 @@ public class AspectDefinition {
         if (name == null) {
             throw new IllegalArgumentException("aspect name can not be null");
         }
-
         if (className == null) {
             throw new IllegalArgumentException("aspect class name can not be null");
         }
-
         m_name = name;
         m_className = className;
     }
@@ -323,11 +321,9 @@ public class AspectDefinition {
      */
     public List getAllAdvices() {
         final List allAdvices = new ArrayList();
-
         allAdvices.addAll(m_aroundAdvices);
         allAdvices.addAll(m_beforeAdvices);
         allAdvices.addAll(m_afterAdvices);
-
         return sortAdvices(allAdvices);
     }
 
@@ -345,11 +341,9 @@ public class AspectDefinition {
                 public int compare(final Object obj1, final Object obj2) {
                     AdviceDefinition advice1 = (AdviceDefinition)obj1;
                     AdviceDefinition advice2 = (AdviceDefinition)obj2;
-
                     return m_comparator.compare(advice1.getMethod(), advice2.getMethod());
                 }
             });
-
         return advices;
     }
 }

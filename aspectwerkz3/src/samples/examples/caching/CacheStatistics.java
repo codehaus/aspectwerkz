@@ -23,7 +23,6 @@ public class CacheStatistics {
             final String methodName,
             final Class[] parameterTypes) {
         Long hash = calculateHash(methodName, parameterTypes);
-
         if (!s_methodInvocations.containsKey(hash)) {
             s_methodInvocations.put(hash, new Integer(0));
         }
@@ -36,7 +35,6 @@ public class CacheStatistics {
             final String methodName,
             final Class[] parameterTypes) {
         Long hash = calculateHash(methodName, parameterTypes);
-
         if (!s_cacheInvocations.containsKey(hash)) {
             s_cacheInvocations.put(hash, new Integer(0));
         }
@@ -51,8 +49,7 @@ public class CacheStatistics {
         Integer number = (Integer)s_methodInvocations.get(calculateHash(methodName, parameterTypes));
         if (number != null) {
             return number.intValue();
-        }
-        else {
+        } else {
             return 0;
         }
     }
@@ -63,8 +60,7 @@ public class CacheStatistics {
         Integer number = (Integer)s_cacheInvocations.get(calculateHash(methodName, parameterTypes));
         if (number != null) {
             return number.intValue();
-        }
-        else {
+        } else {
             return 0;
         }
     }

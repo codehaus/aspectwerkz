@@ -50,11 +50,8 @@ public class CFlowTestAspect {
      */
     public Object execute(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("advice-before ");
-
         final Object result = joinPoint.proceed();
-
         ((Loggable)joinPoint.getTargetInstance()).log("advice-after ");
-
         return result;
     }
 
@@ -63,11 +60,8 @@ public class CFlowTestAspect {
      */
     public Object execute2(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("advice-before2 ");
-
         final Object result = joinPoint.proceed();
-
         ((Loggable)joinPoint.getTargetInstance()).log("advice-after2 ");
-
         return result;
     }
 
@@ -77,11 +71,8 @@ public class CFlowTestAspect {
      */
     public Object executeAnonymous(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("advice-beforeAnonymous ");
-
         final Object result = joinPoint.proceed();
-
         ((Loggable)joinPoint.getTargetInstance()).log("advice-afterAnonymous ");
-
         return result;
     }
 
@@ -91,11 +82,8 @@ public class CFlowTestAspect {
      */
     public Object executeC(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("advice-beforeC ");
-
         final Object result = joinPoint.proceed();
-
         ((Loggable)joinPoint.getTargetInstance()).log("advice-afterC ");
-
         return result;
     }
 }

@@ -42,17 +42,13 @@ public class IntroductionDefinition extends InterfaceIntroductionDefinition {
                                   final String[] interfaceClassNames, final Method[] introducedMethods,
                                   final String deploymentModel) {
         super(name, expressionInfo, interfaceClassNames[0]);
-
         for (int i = 1; i < interfaceClassNames.length; i++) {
             m_interfaceClassNames.add(interfaceClassNames[i]);
         }
-
         for (int i = 0; i < introducedMethods.length; i++) {
             Method introducedMethod = introducedMethods[i];
-
             m_methodsToIntroduce.add(JavaMethodInfo.getMethodInfo(introducedMethod));
         }
-
         m_deploymentModel = deploymentModel;
     }
 

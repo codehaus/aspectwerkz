@@ -49,7 +49,6 @@ class JJTExpressionParserState {
         if (--sp < mk) {
             mk = ((Integer)marks.pop()).intValue();
         }
-
         return (Node)nodes.pop();
     }
 
@@ -68,7 +67,6 @@ class JJTExpressionParserState {
         while (sp > mk) {
             popNode();
         }
-
         mk = ((Integer)marks.pop()).intValue();
     }
 
@@ -84,14 +82,11 @@ class JJTExpressionParserState {
        is pushed on to the stack. */
     void closeNodeScope(Node n, int num) {
         mk = ((Integer)marks.pop()).intValue();
-
         while (num-- > 0) {
             Node c = popNode();
-
             c.jjtSetParent(n);
             n.jjtAddChild(c, num);
         }
-
         n.jjtClose();
         pushNode(n);
         node_created = true;
@@ -105,16 +100,12 @@ class JJTExpressionParserState {
     void closeNodeScope(Node n, boolean condition) {
         if (condition) {
             int a = nodeArity();
-
             mk = ((Integer)marks.pop()).intValue();
-
             while (a-- > 0) {
                 Node c = popNode();
-
                 c.jjtSetParent(n);
                 n.jjtAddChild(c, a);
             }
-
             n.jjtClose();
             pushNode(n);
             node_created = true;

@@ -112,7 +112,6 @@ public final class AspectSystem {
             } catch (DefinitionException e) {
                 ;
             }
-
             if (aspectManager == null) {
                 // new def defined in THIS CL and not a parent one
                 aspectManager = new AspectManager(this, def);
@@ -123,7 +122,6 @@ public final class AspectSystem {
             }
             m_aspectManagers[i] = aspectManager;
         }
-
         if (START_REMOTE_PROXY_SERVER) {
             startRemoteProxyServer();
         }
@@ -315,9 +313,9 @@ public final class AspectSystem {
 
     /**
      * Checks uuid unicity within the list. Throw a DefinitionException on failure.
-     * @TODO AVAOPC algo is crapped, check earlier and avoid exception but do a WARN (in SysDefContainer)
      *
      * @param definitions
+     * @TODO AVAOPC algo is crapped, check earlier and avoid exception but do a WARN (in SysDefContainer)
      */
     private static void assertUuidUniqueWithinHierarchy(final List definitions) {
         for (int i = 0; i < definitions.size(); i++) {

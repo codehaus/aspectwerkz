@@ -25,7 +25,9 @@ public abstract class AbstractLoggingAspect {
     }
 
     /**
-     * @Around methodsToLog1 || methodsToLog2 || methodsToLog3
+     * Around methodsToLog1 || methodsToLog2 || methodsToLog3
+     *
+     * @Around execution(@log * *..*.*(..))
      */
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature)joinPoint.getSignature();

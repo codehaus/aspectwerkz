@@ -54,11 +54,9 @@ public class TypePattern extends Pattern {
         if (typeName == null) {
             throw new IllegalArgumentException("type name can not be null");
         }
-
         if (typeName.equals("")) {
             return false;
         }
-
         return m_typeNamePattern.contains(typeName);
     }
 
@@ -105,11 +103,9 @@ public class TypePattern extends Pattern {
      */
     protected void escape(final String pattern) {
         String typeName = pattern;
-
         if (ABBREVIATIONS.containsKey(pattern)) {
             typeName = (String)ABBREVIATIONS.get(pattern);
         }
-
         try {
             if (typeName.equals(REGULAR_WILDCARD) || typeName.equals(EAGER_WILDCARD)) {
                 typeName = "[a-zA-Z0-9_$.\\[\\]]+";
@@ -121,7 +117,6 @@ public class TypePattern extends Pattern {
                 typeName = Strings.replaceSubString(typeName, ".", "\\.");
                 typeName = Strings.replaceSubString(typeName, "*", "[a-zA-Z0-9_$\\[\\]]*");
             }
-
             m_typeNamePattern = new com.karneim.util.collection.regex.Pattern(typeName);
         } catch (Throwable e) {
             throw new ExpressionException("type pattern is not well formed: " + pattern, e);
@@ -136,17 +131,14 @@ public class TypePattern extends Pattern {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-
         m_pattern = (String)fields.get("m_pattern", null);
         escape(m_pattern);
     }
 
     public int hashCode() {
         int result = 17;
-
         result = (37 * result) + hashCodeOrZeroIfNull(m_pattern);
         result = (37 * result) + hashCodeOrZeroIfNull(m_typeNamePattern);
-
         return result;
     }
 
@@ -154,7 +146,6 @@ public class TypePattern extends Pattern {
         if (null == o) {
             return 19;
         }
-
         return o.hashCode();
     }
 
@@ -162,13 +153,10 @@ public class TypePattern extends Pattern {
         if (this == o) {
             return true;
         }
-
         if (!(o instanceof TypePattern)) {
             return false;
         }
-
         final TypePattern obj = (TypePattern)o;
-
         return areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
                && areEqualsOrBothNull(obj.m_typeNamePattern, this.m_typeNamePattern);
     }
@@ -177,7 +165,6 @@ public class TypePattern extends Pattern {
         if (null == o1) {
             return (null == o2);
         }
-
         return o1.equals(o2);
     }
 }

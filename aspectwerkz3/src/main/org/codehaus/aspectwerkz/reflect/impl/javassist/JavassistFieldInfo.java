@@ -52,12 +52,10 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
      */
     public static JavassistFieldInfo getFieldInfo(final CtField field, final ClassLoader loader) {
         JavassistFieldInfo fieldInfo = (JavassistFieldInfo)s_cache.get(field);
-
         if (fieldInfo == null) { //  declaring class is not loaded yet; load it and retry
             new JavassistClassInfo(field.getDeclaringClass(), loader);
             fieldInfo = (JavassistFieldInfo)s_cache.get(field);
         }
-
         return fieldInfo;
     }
 
@@ -80,7 +78,6 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
         if (m_type == null) {
             try {
                 CtClass type = ((CtField)m_member).getType();
-
                 if (m_classInfoRepository.hasClassInfo(type.getName())) {
                     m_type = m_classInfoRepository.getClassInfo(type.getName());
                 } else {
@@ -91,7 +88,6 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
                 e.printStackTrace();
             }
         }
-
         return m_type;
     }
 }

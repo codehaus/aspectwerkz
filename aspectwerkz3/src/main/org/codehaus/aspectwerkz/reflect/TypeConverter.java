@@ -24,11 +24,9 @@ public class TypeConverter {
      */
     public static String[] convertTypeToJava(final Class[] types) {
         String[] parameterTypeNames = new String[types.length];
-
         for (int i = 0; i < types.length; i++) {
             parameterTypeNames[i] = convertTypeToJava(types[i]);
         }
-
         return parameterTypeNames;
     }
 
@@ -45,7 +43,6 @@ public class TypeConverter {
         if (type != null) {
             StringBuffer dim = new StringBuffer();
             Class componentType = type.getComponentType();
-
             for (Class nestedType = type; nestedType.isArray(); nestedType = nestedType.getComponentType()) {
                 dim.append("[]");
             }
@@ -59,19 +56,16 @@ public class TypeConverter {
         } else {
             rv = "void";
         }
-
         return rv;
     }
 
     public static String convertTypeToJava(final Type type) {
         StringBuffer dim = new StringBuffer();
-
         if (type.isArray()) {
             for (int i = type.getDimensions(); i > 0; --i) {
                 dim.append("[]");
             }
         }
-
         return type.getValue() + dim;
     }
 }

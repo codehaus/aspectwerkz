@@ -35,13 +35,11 @@ public class WeavingClassLoader extends URLClassLoader {
     protected Class findClass(String name) throws ClassNotFoundException {
         String path = name.replace('.', '/').concat(".class");
         Resource res = new URLClassPath(getURLs()).getResource(path, false);
-
         if (res != null) {
             //definePackage(name.substring(0, name.lastIndexOf(".")), null, null);
             try {
                 byte[] b = res.getBytes();
                 byte[] transformed = ClassPreProcessorHelper.defineClass0Pre(this, name, b, 0, b.length, null);
-
                 return defineClass(name, transformed, 0, transformed.length);
             } catch (IOException e) {
                 throw new ClassNotFoundException(e.getMessage());
@@ -55,7 +53,6 @@ public class WeavingClassLoader extends URLClassLoader {
         String path = System.getProperty("java.class.path");
         ArrayList paths = new ArrayList();
         StringTokenizer st = new StringTokenizer(path, File.pathSeparator);
-
         while (st.hasMoreTokens()) {
             paths.add((new File(st.nextToken())).getCanonicalFile().toURL());
         }
@@ -66,19 +63,14 @@ public class WeavingClassLoader extends URLClassLoader {
         //@todo check child of extension classloader instead of boot classloader
         ClassLoader cl = new WeavingClassLoader((URL[])paths.toArray(new URL[] {  }),
                                                 ClassLoader.getSystemClassLoader().getParent());
-
         Thread.currentThread().setContextClassLoader(cl);
-
         String s = args[0];
         String[] args1 = new String[args.length - 1];
-
         if (args1.length > 0) {
             System.arraycopy(args, 1, args1, 0, args.length - 1);
         }
-
         Class class1 = cl.loadClass(s);
         Method method = class1.getMethod("main", new Class[] { String[].class });
-
         method.invoke(null, new Object[] { args1 });
     }
 }

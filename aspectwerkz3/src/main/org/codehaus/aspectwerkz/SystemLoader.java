@@ -45,16 +45,12 @@ public class SystemLoader {
      */
     public synchronized static AspectSystem getSystem(ClassLoader loader) {
         AspectSystem system = (AspectSystem)s_systems.get(loader);
-
         if (system == null) {
             SystemDefinitionContainer.registerClassLoader(loader);
-
             List defs = SystemDefinitionContainer.getHierarchicalDefs(loader);
-
             system = new AspectSystem(loader, defs);
             s_systems.put(loader, system);
         }
-
         return system;
     }
 
@@ -88,23 +84,17 @@ public class SystemLoader {
         //TODO check uuid in the bottom hierarchy
         AspectSystem system = getSystem(loader);
         AspectManager[] currentAspectManagers = system.getAspectManagers();
-
         AspectManager[] newAspectManagers = new AspectManager[currentAspectManagers.length + definitions.size()];
-
         System.arraycopy(currentAspectManagers, 0, newAspectManagers, 0, currentAspectManagers.length);
-
         int index = currentAspectManagers.length;
-
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             newAspectManagers[index++] = new AspectManager(system, (SystemDefinition)it.next());
         }
 
         // now we should grab all subclassloader' AspectSystem and rebuild em
         Collection systems = SystemLoader.getAllSystems();
-
         for (Iterator it = systems.iterator(); it.hasNext();) {
             AspectSystem aspectSystem = (AspectSystem)it.next();
-
             if (isChildOfOrEqual(aspectSystem.getDefiningClassLoader(), loader)) {
                 system.propagateAspectManagers(newAspectManagers, currentAspectManagers.length);
             }
@@ -115,10 +105,8 @@ public class SystemLoader {
             //TODO find a better way to trigger that
             // the singleton idea of AWPP is boring
             AspectWerkzPreProcessor awpp = (AspectWerkzPreProcessor)ClassPreProcessorHelper.getClassPreProcessor();
-
             for (Iterator it = awpp.getClassCacheTuples().iterator(); it.hasNext();) {
                 ClassCacheTuple tuple = (ClassCacheTuple)it.next();
-
                 if (isChildOfOrEqual(tuple.getClassLoader(), loader)) {
                     try {
                         System.out.println("hotswap = " + tuple.getClassName());
@@ -136,17 +124,13 @@ public class SystemLoader {
         if (loader.equals(parent)) {
             return true;
         }
-
         ClassLoader currentParent = loader.getParent();
-
         while (currentParent != null) {
             if (currentParent.equals(parent)) {
                 return true;
             }
-
             currentParent = currentParent.getParent();
         }
-
         return false;
     }
 }

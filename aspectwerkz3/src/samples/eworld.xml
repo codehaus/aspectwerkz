@@ -1,7 +1,6 @@
 <!DOCTYPE aspectwerkz PUBLIC
     "-//AspectWerkz//DTD//EN"
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
-
 <aspectwerkz>
     <system id="eworld/wlw/aop">
         <prepare package="eworld.service."/>

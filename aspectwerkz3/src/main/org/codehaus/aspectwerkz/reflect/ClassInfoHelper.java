@@ -71,10 +71,8 @@ public class ClassInfoHelper {
         if ((interfaces.length == 0) || (classInfo == null) || (pattern == null)) {
             return false;
         }
-
         for (int i = 0; i < interfaces.length; i++) {
             ClassInfo anInterface = interfaces[i];
-
             if (pattern.matches(anInterface.getName())) {
                 return true;
             } else {
@@ -85,7 +83,6 @@ public class ClassInfoHelper {
                 }
             }
         }
-
         return false;
     }
 }

@@ -40,11 +40,8 @@ public class OrthogonalTestAspect {
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("before ");
-
         Object o = joinPoint.proceed();
-
         ((Loggable)joinPoint.getTargetInstance()).log("after ");
-
         return o;
     }
 }

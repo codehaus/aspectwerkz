@@ -44,11 +44,8 @@ public class TestAspect {
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         CallExecutionTest.log("call1 ");
-
         Object result = joinPoint.proceed();
-
         CallExecutionTest.log("call2 ");
-
         return result;
     }
 
@@ -57,11 +54,8 @@ public class TestAspect {
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
         CallExecutionTest.log("execution1 ");
-
         Object result = joinPoint.proceed();
-
         CallExecutionTest.log("execution2 ");
-
         return result;
     }
 }

@@ -76,11 +76,9 @@ public class CflowMetaData {
 
     public int hashCode() {
         int result = 17;
-
         result = (37 * result) + hashCodeOrZeroIfNull(m_className);
         result = (37 * result) + hashCodeOrZeroIfNull(m_classMetaData);
         result = (37 * result) + hashCodeOrZeroIfNull(m_methodMetaData);
-
         return result;
     }
 
@@ -88,7 +86,6 @@ public class CflowMetaData {
         if (null == o) {
             return 19;
         }
-
         return o.hashCode();
     }
 
@@ -96,13 +93,10 @@ public class CflowMetaData {
         if (this == o) {
             return true;
         }
-
         if (!(o instanceof CflowMetaData)) {
             return false;
         }
-
         final CflowMetaData obj = (CflowMetaData)o;
-
         return areEqualsOrBothNull(obj.m_className, this.m_className)
                && areEqualsOrBothNull(obj.m_classMetaData, this.m_classMetaData)
                && areEqualsOrBothNull(obj.m_methodMetaData, this.m_methodMetaData);
@@ -112,7 +106,6 @@ public class CflowMetaData {
         if (null == o1) {
             return (null == o2);
         }
-
         return o1.equals(o2);
     }
 }

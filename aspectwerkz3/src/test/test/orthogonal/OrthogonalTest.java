@@ -68,7 +68,6 @@ public class OrthogonalTest extends WeavedTestCase implements Loggable {
 
     public void setField() {
         int local = 1;
-
         m_setFieldAroundAdviced = 1;
     }
 }

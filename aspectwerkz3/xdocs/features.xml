@@ -1,16 +1,11 @@
 <?xml version="1.0"?>
-
 <document>
-
     <properties>
         <title>AspectWerkz</title>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
     </properties>
-
     <body>
-
         <section name="Features">
-
             <subsection name="AspectWerkz supports the following features">
                 <p>
                     This is a very incomplete list, see the documentation for all features.
@@ -107,7 +102,6 @@
                 </ul>
             </subsection>
         </section>
-
     </body>
 </document>
 

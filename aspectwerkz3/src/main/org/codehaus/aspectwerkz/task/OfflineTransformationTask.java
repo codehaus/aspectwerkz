@@ -86,41 +86,31 @@ public class OfflineTransformationTask extends Task {
         if (m_aspectWerkzHome == null) {
             throw new BuildException("AspectWerkz home dir must be specified");
         }
-
         if (m_classesToTransform == null) {
             throw new BuildException("classes to transform must be specified");
         }
-
         if (m_definitionFile == null) {
             throw new BuildException("definition file must be specified");
         }
-
         System.out.println("CAUTION: This Ant task might be a bit shaky, does not show errors in compilation process properly (use at own risk or patch it :-))");
         System.out.println("NOTE: Make shure that you don't transform your classes more than once (without recompiling first)");
-
         StringBuffer command = new StringBuffer();
-
         command.append(m_aspectWerkzHome);
         command.append(File.separator);
         command.append("bin");
         command.append(File.separator);
         command.append("aspectwerkz");
-
         if (System.getProperty("os.name").startsWith("Win") || System.getProperty("os.name").startsWith("win")) {
             command.append(".bat");
         }
-
         command.append(" -offline ");
         command.append(m_definitionFile);
         command.append(' ');
-
         if (m_classPath != null) {
             command.append(m_classPath);
         }
-
         command.append(' ');
         command.append(m_classesToTransform);
-
         try {
             Process p = Runtime.getRuntime().exec(command.toString(),
                                                   new String[] {
@@ -128,27 +118,21 @@ public class OfflineTransformationTask extends Task {
                                                       "JAVA_HOME=" + System.getProperty("java.home"),
                                                       "CLASSPATH=" + System.getProperty("java.class.path")
                                                   });
-
             System.out.flush();
-
             BufferedReader stdOut = new BufferedReader(new InputStreamReader(p.getInputStream()));
             BufferedReader stdErr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
             String out;
             String err = null;
-
             while (((out = stdOut.readLine()) != null) || ((err = stdErr.readLine()) != null)) {
                 if (out != null) {
                     System.out.println(out);
                     System.out.flush();
                 }
-
                 if (err != null) {
                     System.err.println("Error: " + err);
                 }
             }
-
             p.waitFor();
-
             if (p.exitValue() != 0) {
                 throw new BuildException("Failed to transform classes, exit code: " + p.exitValue());
             }

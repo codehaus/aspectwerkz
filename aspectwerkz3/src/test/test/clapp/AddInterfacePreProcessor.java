@@ -40,14 +40,12 @@ public class AddInterfacePreProcessor implements ClassPreProcessor {
             if (!cg.isInterface() && !Arrays.asList(cg.getInterfaceNames()).contains("java.util.EventListener")) {
                 cg.addInterface("java.util.EventListener");
             }
-
             try {
                 cg.getJavaClass().dump("_dump/" + klass.replace('.', '/') + ".class");
             } catch (Exception e) {
                 System.err.println("failed to dump " + klass);
                 e.printStackTrace();
             }
-
             return cg.getJavaClass().getBytes();
         } catch (Exception e) {
             e.printStackTrace();

@@ -54,15 +54,10 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     static {
         String verbose = System.getProperty(AW_TRANSFORM_VERBOSE, null);
-
         VERBOSE = "yes".equalsIgnoreCase(verbose) || "true".equalsIgnoreCase(verbose);
-
         String filter = System.getProperty(AW_TRANSFORM_FILTER, null);
-
         NOFILTER = "no".equalsIgnoreCase(filter) || "false".equalsIgnoreCase(filter);
-
         String dumpPattern = System.getProperty(AW_TRANSFORM_DUMP, null);
-
         if (dumpPattern == null) {
             DUMP_BEFORE = false;
             DUMP_AFTER = false;
@@ -70,7 +65,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         } else {
             DUMP_AFTER = true;
             DUMP_BEFORE = dumpPattern.indexOf(",before") > 0;
-
             if (DUMP_BEFORE) {
                 DUMP_PATTERN = Pattern.compileTypePattern(dumpPattern.substring(0, dumpPattern.indexOf(',')), false);
             } else {
@@ -147,27 +141,21 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
                 return bytecode;
             }
         }
-
         final String className = name.replace('/', '.'); // needed for JRockit (as well as all in all TFs)
-
         if (filter(className) || !m_initialized) {
             return bytecode;
         }
-
         if (VERBOSE) {
             log(loader.toString() + ':' + className + '[' + Thread.currentThread().getName() + ']');
         }
 
         // AOPC
         SystemDefinitionContainer.registerClassLoader(loader);
-
         List preAspectNamesContext = SystemDefinitionContainer.getAspectNamesContext();
         List preDefintionsContext = SystemDefinitionContainer.getAspectNamesContext();
-
         try {
             SystemDefinitionContainer.setAspectNamesContext(SystemDefinitionContainer.getHierarchicalAspectNames(loader));
             SystemDefinitionContainer.setDefinitionsContext(SystemDefinitionContainer.getHierarchicalDefs(loader));
-
             return _preProcess(name, bytecode, loader);
         } finally {
             SystemDefinitionContainer.setAspectNamesContext(preAspectNamesContext);
@@ -177,15 +165,12 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     public byte[] _preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
         final String className = name.replace('/', '.'); // needed for JRockit (as well as all in all TFs)
-
         Klass klass = null;
-
         try {
             klass = new Klass(className, bytecode, loader);
         } catch (Exception e) {
             log("failed " + className);
             e.printStackTrace();
-
             return bytecode;
         }
 
@@ -194,23 +179,17 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
         // create a new transformation context
         final Context context = new Context(loader);
-
         boolean advisedAtLeastOnce = false;
-
         for (Iterator it = m_stack.iterator(); it.hasNext();) {
             Object transformer = it.next();
-
             if (transformer instanceof Transformer) {
                 Transformer tf = (Transformer)transformer;
-
                 context.resetAdvised();
-
                 try {
                     tf.transform(context, klass);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
                 if (context.isAdvised()) {
                     advisedAtLeastOnce = true;
                 }
@@ -229,14 +208,12 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
             dumpForce(className, klass);
         }
 
         // handle the prepared Class cache for further runtime weaving
         if (context.isPrepared()) {
             ClassCacheTuple key = new ClassCacheTuple(loader, className);
-
             log("cache prepared " + className);
             m_classByteCache.put(key, new ByteArray(klass.getBytecode()));
         }
@@ -244,7 +221,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         // dump after (not compliant with multiple CL weaving same class differently,
         // since based on class FQN name)
         dumpAfter(className, klass);
-
         return klass.getBytecode();
     }
 
@@ -261,7 +237,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         // fetch class from prepared class cache
         ClassCacheTuple key = new ClassCacheTuple(klazz);
         ByteArray currentBytesArray = (ByteArray)m_classByteCache.get(key);
-
         if (currentBytesArray == null) {
             throw new RuntimeException("can not find cached class in cache for prepared classes: " + className);
         }
@@ -274,7 +249,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
         // update cache
         m_classByteCache.put(key, new ByteArray(newBytes));
-
         return newBytes;
     }
 

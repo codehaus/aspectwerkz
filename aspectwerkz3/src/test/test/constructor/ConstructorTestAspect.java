@@ -75,11 +75,8 @@ public class ConstructorTestAspect {
      */
     public Object aroundCall(final JoinPoint joinPoint) throws Throwable {
         ConstructorAdviceTest.logCall("beforeCall ");
-
         final Object result = joinPoint.proceed();
-
         ConstructorAdviceTest.logCall("afterCall ");
-
         return result;
     }
 
@@ -95,7 +92,6 @@ public class ConstructorTestAspect {
      */
     public void afterCall(final JoinPoint joinPoint) throws Throwable {
         ConstructorAdviceTest.logCall("postCall ");
-
         ConstructorSignature sig = (ConstructorSignature)joinPoint.getSignature();
     }
 
@@ -111,11 +107,8 @@ public class ConstructorTestAspect {
      */
     public Object aroundExecution(final JoinPoint joinPoint) throws Throwable {
         ConstructorAdviceTest.logExecution("beforeExecution ");
-
         final Object result = joinPoint.proceed();
-
         ConstructorAdviceTest.logExecution("afterExecution ");
-
         return result;
     }
 

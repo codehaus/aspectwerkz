@@ -55,7 +55,6 @@ public class ExpressionException extends RuntimeException {
      */
     public void printStackTrace(final PrintStream ps) {
         super.printStackTrace(ps);
-
         if (m_originalException != null) {
             m_originalException.printStackTrace(ps);
         }
@@ -68,7 +67,6 @@ public class ExpressionException extends RuntimeException {
      */
     public void printStackTrace(final PrintWriter pw) {
         super.printStackTrace(pw);
-
         if (m_originalException != null) {
             m_originalException.printStackTrace(pw);
         }

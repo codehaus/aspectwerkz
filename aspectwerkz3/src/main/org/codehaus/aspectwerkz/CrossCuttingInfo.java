@@ -118,7 +118,6 @@ public final class CrossCuttingInfo implements Serializable {
             m_system = SystemLoader.getSystem(getAspectClass()); //AVAOPC CRAP
             m_system.initialize();
         }
-
         return m_system;
     }
 
@@ -214,7 +213,6 @@ public final class CrossCuttingInfo implements Serializable {
         if (!m_parameters.containsKey(name)) {
             throw new DefinitionException("parameter to advice not specified: " + name);
         }
-
         return (String)m_parameters.get(name);
     }
 
@@ -300,7 +298,6 @@ public final class CrossCuttingInfo implements Serializable {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-
         m_uuid = (String)fields.get("m_uuid", null);
         m_name = (String)fields.get("m_name", null);
         m_aspectClass = (Class)fields.get("m_aspectClass", null);

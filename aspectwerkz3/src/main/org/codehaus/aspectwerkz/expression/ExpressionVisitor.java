@@ -285,7 +285,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         List attributes = (List)data;
         for (Iterator it = attributes.iterator(); it.hasNext();) {
             String attribute = (String)it.next();
-
             if (attribute.equals(node.getName())) {
                 return Boolean.TRUE;
             }

@@ -70,7 +70,6 @@ public class RemoteProxyServerThread implements Runnable {
         if (clientSocket == null) {
             throw new IllegalArgumentException("client socket can not be null");
         }
-
         m_socket = clientSocket;
         m_loader = loader;
         m_invoker = invoker;
@@ -82,17 +81,14 @@ public class RemoteProxyServerThread implements Runnable {
      */
     public void run() {
         Thread.currentThread().setContextClassLoader(m_loader);
-
         try {
             m_socket.setTcpNoDelay(true);
             m_socket.setSoTimeout(m_timeout);
-
             m_in = new ObjectInputStream(m_socket.getInputStream());
             m_out = new ObjectOutputStream(m_socket.getOutputStream());
         } catch (IOException e) {
             throw new WrappedRuntimeException(e);
         }
-
         while (m_running) {
             try {
                 switch (m_in.read()) {
@@ -113,7 +109,6 @@ public class RemoteProxyServerThread implements Runnable {
                 throw new WrappedRuntimeException(e);
             }
         }
-
         close();
     }
 
@@ -130,10 +125,8 @@ public class RemoteProxyServerThread implements Runnable {
                                      IllegalAccessException {
         final String className = (String)m_in.readObject();
         Class klass = m_loader.loadClass(className);
-
         final Object instance = klass.newInstance();
         final String handle = RemoteProxy.wrapInstance(instance);
-
         m_out.writeObject(handle);
         m_out.flush();
     }
@@ -150,15 +143,12 @@ public class RemoteProxyServerThread implements Runnable {
         final String methodName = (String)m_in.readObject();
         final Class[] paramTypes = (Class[])m_in.readObject();
         final Object[] args = (Object[])m_in.readObject();
-
         Object result = null;
-
         try {
             result = m_invoker.invoke(handle, methodName, paramTypes, args, context);
         } catch (Exception e) {
             result = e;
         }
-
         m_out.writeObject(result);
         m_out.flush();
     }
@@ -171,11 +161,9 @@ public class RemoteProxyServerThread implements Runnable {
             if (m_in != null) {
                 m_in.close();
             }
-
             if (m_out != null) {
                 m_out.close();
             }
-
             if (m_socket != null) {
                 m_socket.close();
             }

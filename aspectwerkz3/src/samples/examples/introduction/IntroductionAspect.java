@@ -2,7 +2,6 @@ package examples.introduction;
 
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
-
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perClass

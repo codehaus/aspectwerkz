@@ -20,8 +20,7 @@ public class Target {
         Target target = new Target();
         try {
             target.method();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
     }
 }

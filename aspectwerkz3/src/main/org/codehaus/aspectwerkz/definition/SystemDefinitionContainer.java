@@ -84,7 +84,6 @@ public class SystemDefinitionContainer {
         if (loader == null) {
             return;
         }
-
         if (loader != null) {
             // register parents first
             registerClassLoader(loader.getParent());
@@ -106,12 +105,9 @@ public class SystemDefinitionContainer {
                     defs.addAll(DefinitionLoader.getDefaultDefinition(loader)); // -D..file=... sysdef
                     defsLocation.add(URL_JVM_OPTION_SYSTEM);
                 }
-
                 Enumeration res = loader.getResources(AOP_XML_FILE);
-
                 while (res.hasMoreElements()) {
                     URL def = (URL)res.nextElement();
-
                     if (isDefinedBy(loader.getParent(), def.toExternalForm())) {
                         ;
                     } else {
@@ -120,7 +116,6 @@ public class SystemDefinitionContainer {
                         defsLocation.add(def.toExternalForm());
                     }
                 }
-
                 dump(loader);
             } catch (Throwable t) {
                 t.printStackTrace();
@@ -144,9 +139,7 @@ public class SystemDefinitionContainer {
         if (loader == null) {
             return false;
         }
-
         ArrayList defLocation = (ArrayList)s_classLoaderDefinitionLocations.get(loader);
-
         if ((defLocation != null) && defLocation.contains(def)) {
             return true;
         } else {
@@ -161,23 +154,16 @@ public class SystemDefinitionContainer {
      */
     public static void dump(ClassLoader loader) {
         StringBuffer dump = new StringBuffer("******************************************************************");
-
         dump.append("\n* ClassLoader = ").append(loader);
-
         List defs = (List)s_classLoaderSystemDefinitions.get(loader);
-
         for (Iterator it = defs.iterator(); it.hasNext();) {
             SystemDefinition def = (SystemDefinition)it.next();
-
             dump.append("\n* SystemID = ").append(def.getUuid());
         }
-
         dump.append("\n* Aspect total count = ").append(((List)s_classLoaderAspectNames.get(loader)).size());
-
         for (Iterator it = ((List)s_classLoaderDefinitionLocations.get(loader)).iterator(); it.hasNext();) {
             dump.append("\n* ").append(it.next());
         }
-
         dump.append("\n******************************************************************");
         System.out.println(dump.toString());
     }
@@ -193,18 +179,13 @@ public class SystemDefinitionContainer {
         if (!s_classLoaderSystemDefinitions.containsKey(loader)) {
             registerClassLoader(loader);
         }
-
         List aspectNames = new ArrayList();
-
         if (loader == null) {
             return aspectNames;
         }
-
         ClassLoader parent = loader.getParent();
-
         aspectNames.addAll(getHierarchicalAspectNames(parent));
         aspectNames.addAll((List)s_classLoaderAspectNames.get(loader));
-
         return aspectNames;
     }
 
@@ -219,18 +200,13 @@ public class SystemDefinitionContainer {
         if (!s_classLoaderSystemDefinitions.containsKey(loader)) {
             registerClassLoader(loader);
         }
-
         List defs = new ArrayList();
-
         if (loader == null) {
             return defs;
         }
-
         ClassLoader parent = loader.getParent();
-
         defs.addAll(getHierarchicalDefs(parent));
         defs.addAll((List)s_classLoaderSystemDefinitions.get(loader));
-
         return defs;
     }
 
@@ -278,9 +254,7 @@ public class SystemDefinitionContainer {
      */
     public static void deploySystemDefinitions(final ClassLoader loader, final List definitions) {
         registerClassLoader(loader);
-
         List defs = (List)s_classLoaderSystemDefinitions.get(loader);
-
         defs.addAll(definitions);
     }
 
@@ -293,7 +267,6 @@ public class SystemDefinitionContainer {
      */
     public static List getSystemDefinitions(final ClassLoader loader) {
         registerClassLoader(loader);
-
         return (List)s_classLoaderSystemDefinitions.get(loader);
     }
 
@@ -307,15 +280,12 @@ public class SystemDefinitionContainer {
      */
     public static SystemDefinition getSystemDefinition(final ClassLoader loader, final String uuid) {
         registerClassLoader(loader);
-
         for (Iterator defs = getSystemDefinitions(loader).iterator(); defs.hasNext();) {
             SystemDefinition def = (SystemDefinition)defs.next();
-
             if (def.getUuid().equals(uuid)) {
                 return def;
             }
         }
-
         return null;
     }
 

@@ -196,7 +196,6 @@ public class AspectRegistry {
                                                               + container.getCrossCuttingInfo().getName()
                                                               + "] due to: " + e.toString());
                             }
-
                             if (m_aspectContainers.length != m_aspectIndexes.size()) {
                                 throw new IllegalStateException("aspect indexing out of synch");
                             }
@@ -398,10 +397,10 @@ public class AspectRegistry {
 
     /**
      * Returns the cflow pointcut list for the context specified.
-    *
-    * @param ctx the expression context
-    * @return the pointcuts for this join point
-    */
+     *
+     * @param ctx the expression context
+     * @return the pointcuts for this join point
+     */
     public List getCflowPointcuts(final ExpressionContext ctx) {
         List pointcuts = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
@@ -440,7 +439,6 @@ public class AspectRegistry {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
-
         try {
             // create the method repository lazily
             if (!s_methods.containsKey(klass)) {
@@ -449,15 +447,12 @@ public class AspectRegistry {
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-
         MethodTuple methodTuple;
-
         try {
             methodTuple = (MethodTuple)((TIntObjectHashMap)s_methods.get(klass)).get(methodHash);
         } catch (Throwable e1) {
             throw new WrappedRuntimeException(e1);
         }
-
         return methodTuple;
     }
 
@@ -472,7 +467,6 @@ public class AspectRegistry {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
-
         try {
             // create the constructor repository lazily
             if (!s_constructors.containsKey(klass)) {
@@ -481,15 +475,12 @@ public class AspectRegistry {
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-
         ConstructorTuple constructorTuple;
-
         try {
             constructorTuple = (ConstructorTuple)((TIntObjectHashMap)s_constructors.get(klass)).get(constructorHash);
         } catch (Throwable e1) {
             throw new WrappedRuntimeException(e1);
         }
-
         return constructorTuple;
     }
 
@@ -504,7 +495,6 @@ public class AspectRegistry {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
-
         try {
             // create the fields repository lazily
             if (!s_fields.containsKey(klass)) {
@@ -513,15 +503,12 @@ public class AspectRegistry {
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-
         Field field;
-
         try {
             field = (Field)((TIntObjectHashMap)s_fields.get(klass)).get(fieldHash);
         } catch (Throwable e1) {
             throw new WrappedRuntimeException(e1);
         }
-
         return field;
     }
 
@@ -534,7 +521,6 @@ public class AspectRegistry {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
-
         Method[] methods = klass.getDeclaredMethods();
         TIntObjectHashMap methodMap = new TIntObjectHashMap(methods.length);
         for (int i = 0; i < methods.length; i++) {
@@ -601,7 +587,6 @@ public class AspectRegistry {
                 Constructor constructor2 = constructors[j];
                 Class[] parameterTypes1 = constructor1.getParameterTypes();
                 Class[] parameterTypes2 = constructor2.getParameterTypes();
-
                 if (!constructor2.getName().equals(constructor1.getName())) {
                     continue;
                 }
@@ -616,7 +601,6 @@ public class AspectRegistry {
                             break;
                         }
                     }
-
                     if (parameterTypes2[parameterTypes1.length].getName().equals(TransformationUtil.JOIN_POINT_MANAGER_CLASS)) {
                         match = true;
                     }
@@ -632,7 +616,6 @@ public class AspectRegistry {
                     for (int k = 0; k < parameterTypes2.length; k++) {
                         if (parameterTypes2[k] != parameterTypes1[k]) {
                             match = false;
-
                             break;
                         }
                     }

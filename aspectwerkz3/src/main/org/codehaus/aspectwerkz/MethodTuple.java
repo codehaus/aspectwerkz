@@ -27,12 +27,10 @@ public class MethodTuple {
         if (originalMethod == null) {
             originalMethod = wrapperMethod;
         }
-
         if (wrapperMethod.getDeclaringClass() != originalMethod.getDeclaringClass()) {
             throw new RuntimeException(wrapperMethod.getName() + " and " + originalMethod.getName()
                                        + " does not have the same declaring class");
         }
-
         m_declaringClass = wrapperMethod.getDeclaringClass();
         m_wrapperMethod = wrapperMethod;
         m_wrapperMethod.setAccessible(true);

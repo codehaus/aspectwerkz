@@ -119,11 +119,10 @@ public class JoinPointManager {
     /**
      * Returns the join point manager for a specific class.
      *
-     * @TODO: UUID is not use or needed anymore, remove it from the TFs
-     *
      * @param targetClass
      * @param uuid
      * @return the join point manager instance for this class
+     * @TODO: UUID is not use or needed anymore, remove it from the TFs
      */
     public final static JoinPointManager getJoinPointManager(final Class targetClass, final String uuid) {
         if (s_managers.containsKey(targetClass)) { //TODO AVAOPC should be Weak ?
@@ -190,7 +189,6 @@ public class JoinPointManager {
             s_registry.registerJoinPoint(joinPointType, methodHash, null, m_classHash, m_targetClass,
                                          m_targetClassInfo, m_system);
             threadLocal = new ThreadLocal();
-
             synchronized (m_joinPoints) {
                 if (m_joinPoints.length <= joinPointIndex) {
                     ThreadLocal[] tmp = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
@@ -203,31 +201,25 @@ public class JoinPointManager {
         } else {
             threadLocal = m_joinPoints[joinPointIndex];
         }
-
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
         if (joinPointInfo == null) {
             joinPointInfo = new JoinPointInfo();
             threadLocal.set(joinPointInfo);
         }
-
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
             handleJitCompilation(methodHash, joinPointType, PointcutType.EXECUTION, joinPointInfo, m_targetClass,
                                  m_targetClass, targetInstance, targetInstance);
         }
-
         JoinPoint joinPoint = joinPointInfo.joinPoint;
 
         // if null or redefined -> create a new join point and cache it
         if (joinPoint == null) {
             Map joinPointMetaDataMap = s_registry.getJoinPointMetaData(m_classHash, methodHash);
             JoinPointMetaData joinPointMetaData = (JoinPointMetaData)joinPointMetaDataMap.get(PointcutType.EXECUTION);
-
             AdviceIndexInfo[] adviceIndexes = joinPointMetaData.adviceIndexes;
             CflowExpressionVisitor[] cflowExpressions = joinPointMetaData.cflowExpressions;
             Pointcut cflowPointcut = joinPointMetaData.cflowPointcut;
-
             initCflowManagement(cflowPointcut, joinPointInfo);
-
             switch (joinPointType) {
                 case JoinPointType.METHOD_EXECUTION:
                     joinPoint = createMethodJoinPoint(methodHash, joinPointType, m_targetClass, adviceIndexes,
@@ -257,7 +249,6 @@ public class JoinPointManager {
         if (parameters != null) {
             ((CodeRtti)joinPoint.getRtti()).setParameterValues(parameters);
         }
-
         exitCflow(joinPointInfo);
         final Object result = joinPoint.proceed();
         enterCflow(joinPointInfo);
@@ -301,7 +292,6 @@ public class JoinPointManager {
         } else {
             threadLocal = m_joinPoints[joinPointIndex];
         }
-
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
         if (joinPointInfo == null) {
             joinPointInfo = new JoinPointInfo();
@@ -313,20 +303,16 @@ public class JoinPointManager {
             handleJitCompilation(methodHash, joinPointType, PointcutType.CALL, joinPointInfo, declaringClass,
                                  m_targetClass, declaringClassInstance, declaringClassInstance);
         }
-
         JoinPoint joinPoint = joinPointInfo.joinPoint;
 
         // if null or redefined -> create a new join point and cache it
         if (joinPoint == null) {
             Map joinPointMetaDataMap = s_registry.getJoinPointMetaData(m_classHash, methodHash);
             JoinPointMetaData joinPointMetaData = (JoinPointMetaData)joinPointMetaDataMap.get(PointcutType.CALL);
-
             AdviceIndexInfo[] adviceIndexes = joinPointMetaData.adviceIndexes;
             CflowExpressionVisitor[] cflowExpressions = joinPointMetaData.cflowExpressions;
             Pointcut cflowPointcut = joinPointMetaData.cflowPointcut;
-
             initCflowManagement(cflowPointcut, joinPointInfo);
-
             switch (joinPointType) {
                 case JoinPointType.METHOD_CALL:
 
@@ -355,12 +341,10 @@ public class JoinPointManager {
                 joinPointInfo.state = JoinPointState.HAS_ADVICES;
             }
         }
-
         joinPoint.setTargetInstance(declaringClassInstance);
         if (parameters != null) {
             ((CodeRtti)joinPoint.getRtti()).setParameterValues(parameters);
         }
-
         exitCflow(joinPointInfo);
         final Object result = joinPoint.proceed();
         enterCflow(joinPointInfo);
@@ -387,7 +371,6 @@ public class JoinPointManager {
             s_registry.registerJoinPoint(JoinPointType.FIELD_SET, fieldHash, fieldSignature, m_classHash,
                                          declaringClass, createClassInfo(declaringClass), m_system);
             threadLocal = new ThreadLocal();
-
             synchronized (m_joinPoints) {
                 if (m_joinPoints.length <= joinPointIndex) {
                     ThreadLocal[] tmp = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
@@ -400,29 +383,24 @@ public class JoinPointManager {
         } else {
             threadLocal = m_joinPoints[joinPointIndex];
         }
-
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
         if (joinPointInfo == null) {
             joinPointInfo = new JoinPointInfo();
             threadLocal.set(joinPointInfo);
         }
-
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
             handleJitCompilation(fieldHash, JoinPointType.FIELD_SET, PointcutType.SET, joinPointInfo, declaringClass,
                                  m_targetClass, targetInstance, targetInstance);
         }
-
         JoinPoint joinPoint = joinPointInfo.joinPoint;
 
         // if null or redefined -> create a new join point and cache it
         if (joinPoint == null) {
             Map joinPointMetaDataMap = s_registry.getJoinPointMetaData(m_classHash, fieldHash);
             JoinPointMetaData joinPointMetaData = (JoinPointMetaData)joinPointMetaDataMap.get(PointcutType.SET);
-
             AdviceIndexInfo[] adviceIndexes = joinPointMetaData.adviceIndexes;
             CflowExpressionVisitor[] cflowExpressions = joinPointMetaData.cflowExpressions;
             Pointcut cflowPointcut = joinPointMetaData.cflowPointcut;
-
             initCflowManagement(cflowPointcut, joinPointInfo);
             joinPoint = createFieldJoinPoint(fieldHash, JoinPointType.FIELD_SET, m_targetClass, adviceIndexes,
                                              cflowExpressions, targetInstance, targetInstance);
@@ -443,7 +421,6 @@ public class JoinPointManager {
         if (fieldValue[0] != null) {
             ((FieldRtti)joinPoint.getRtti()).setFieldValue(fieldValue[0]); // array due to sucky javassist field handling
         }
-
         exitCflow(joinPointInfo);
         joinPoint.proceed();
         enterCflow(joinPointInfo);
@@ -468,7 +445,6 @@ public class JoinPointManager {
             s_registry.registerJoinPoint(JoinPointType.FIELD_GET, fieldHash, fieldSignature, m_classHash,
                                          declaringClass, createClassInfo(declaringClass), m_system);
             threadLocal = new ThreadLocal();
-
             synchronized (m_joinPoints) {
                 if (m_joinPoints.length <= joinPointIndex) {
                     ThreadLocal[] tmp = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
@@ -481,31 +457,25 @@ public class JoinPointManager {
         } else {
             threadLocal = m_joinPoints[joinPointIndex];
         }
-
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
         if (joinPointInfo == null) {
             joinPointInfo = new JoinPointInfo();
             threadLocal.set(joinPointInfo);
         }
-
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
             handleJitCompilation(fieldHash, JoinPointType.FIELD_GET, PointcutType.GET, joinPointInfo, declaringClass,
                                  m_targetClass, targetInstance, targetInstance);
         }
-
         JoinPoint joinPoint = joinPointInfo.joinPoint;
 
         // if null or redefined -> create a new join point and cache it
         if (joinPoint == null) {
             Map joinPointMetaDataMap = s_registry.getJoinPointMetaData(m_classHash, fieldHash);
             JoinPointMetaData joinPointMetaData = (JoinPointMetaData)joinPointMetaDataMap.get(PointcutType.GET);
-
             AdviceIndexInfo[] adviceIndexes = joinPointMetaData.adviceIndexes;
             CflowExpressionVisitor[] cflowExpressions = joinPointMetaData.cflowExpressions;
             Pointcut cflowPointcut = joinPointMetaData.cflowPointcut;
-
             initCflowManagement(cflowPointcut, joinPointInfo);
-
             joinPoint = createFieldJoinPoint(fieldHash, JoinPointType.FIELD_GET, m_targetClass, adviceIndexes,
                                              cflowExpressions, targetInstance, targetInstance);
 
@@ -522,7 +492,6 @@ public class JoinPointManager {
 
         // intialize the join point before each usage
         joinPoint.setTargetInstance(targetInstance);
-
         exitCflow(joinPointInfo);
         final Object result = joinPoint.proceed();
         enterCflow(joinPointInfo);
@@ -548,7 +517,6 @@ public class JoinPointManager {
             s_registry.registerJoinPoint(JoinPointType.HANDLER, handlerHash, handlerSignature, m_classHash,
                                          exceptionInstance.getClass(), createClassInfo(m_targetClass), m_system);
             threadLocal = new ThreadLocal();
-
             synchronized (m_joinPoints) {
                 if (m_joinPoints.length <= joinPointIndex) {
                     ThreadLocal[] tmp = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
@@ -561,13 +529,11 @@ public class JoinPointManager {
         } else {
             threadLocal = m_joinPoints[joinPointIndex];
         }
-
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
         if (joinPointInfo == null) {
             joinPointInfo = new JoinPointInfo();
             threadLocal.set(joinPointInfo);
         }
-
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
             handleJitCompilation(handlerHash, JoinPointType.HANDLER, PointcutType.HANDLER, joinPointInfo,
                                  m_targetClass, m_targetClass, targetInstance, targetInstance);
@@ -578,13 +544,10 @@ public class JoinPointManager {
         if (joinPoint == null) {
             Map joinPointMetaDataMap = s_registry.getJoinPointMetaData(m_classHash, handlerHash);
             JoinPointMetaData joinPointMetaData = (JoinPointMetaData)joinPointMetaDataMap.get(PointcutType.HANDLER);
-
             AdviceIndexInfo[] adviceIndexes = joinPointMetaData.adviceIndexes;
             CflowExpressionVisitor[] cflowExpressions = joinPointMetaData.cflowExpressions;
             Pointcut cflowPointcut = joinPointMetaData.cflowPointcut;
-
             initCflowManagement(cflowPointcut, joinPointInfo);
-
             joinPoint = createCatchClauseJoinPoint(exceptionInstance.getClass(), m_targetClass, handlerSignature,
                                                    adviceIndexes, cflowExpressions, targetInstance, targetInstance);
 
@@ -602,7 +565,6 @@ public class JoinPointManager {
         // intialize the join point before each usage
         joinPoint.setTargetInstance(targetInstance);
         ((CatchClauseRtti)joinPoint.getRtti()).setParameterValue(exceptionInstance);
-
         exitCflow(joinPointInfo);
         joinPoint.proceed();
         enterCflow(joinPointInfo);
@@ -678,7 +640,6 @@ public class JoinPointManager {
         Class declaringType = methodTuple.getDeclaringClass();
         MethodSignatureImpl signature = new MethodSignatureImpl(declaringType, methodTuple);
         Rtti rtti = new MethodRttiImpl(signature, thisInstance, targetInstance);
-
         return new MethodJoinPoint(joinPointType, m_targetClass, signature, rtti, cflowExpressions,
                                    createAroundAdviceExecutor(adviceIndexes, joinPointType),
                                    createBeforeAdviceExecutor(adviceIndexes), createAfterAdviceExecutor(adviceIndexes));
@@ -701,11 +662,9 @@ public class JoinPointManager {
                                                        final CflowExpressionVisitor[] cflowExpressions,
                                                        final Object thisInstance, final Object targetInstance) {
         ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(declaringClass, constructorHash);
-
         Class declaringType = constructorTuple.getDeclaringClass();
         ConstructorSignatureImpl signature = new ConstructorSignatureImpl(declaringType, constructorTuple);
         Rtti rtti = new ConstructorRttiImpl(signature, thisInstance, targetInstance);
-
         return new ConstructorJoinPoint(joinPointType, m_targetClass, signature, rtti, cflowExpressions,
                                         createAroundAdviceExecutor(adviceIndexes, joinPointType),
                                         createBeforeAdviceExecutor(adviceIndexes),
@@ -730,7 +689,6 @@ public class JoinPointManager {
         Field field = AspectRegistry.getField(declaringClass, fieldHash);
         FieldSignatureImpl signature = new FieldSignatureImpl(declaringClass, field);
         Rtti rtti = new FieldRttiImpl(signature, thisInstance, targetInstance);
-
         return new FieldJoinPoint(joinPointType, m_targetClass, signature, rtti, cflowExpressions,
                                   createAroundAdviceExecutor(adviceIndexes, joinPointType),
                                   createBeforeAdviceExecutor(adviceIndexes), createAfterAdviceExecutor(adviceIndexes));
@@ -755,7 +713,6 @@ public class JoinPointManager {
         CatchClauseSignatureImpl signature = new CatchClauseSignatureImpl(exceptionClass, declaringClass,
                                                                           catchClauseSignature);
         Rtti rtti = new CatchClauseRttiImpl(signature, thisInstance, targetInstance);
-
         return new CatchClauseJoinPoint(m_targetClass, signature, rtti, cflowExpressions,
                                         createAroundAdviceExecutor(adviceIndexes, JoinPointType.HANDLER),
                                         createBeforeAdviceExecutor(adviceIndexes),
@@ -881,7 +838,6 @@ public class JoinPointManager {
         s_registry.reset(klass.hashCode());
         JoinPointManager joinPointManager = new JoinPointManager(klass, oldJoinPointManager.m_hotswapCount + 1);
         s_managers.put(klass, joinPointManager);
-
         try {
             Field jpMan = klass.getDeclaredField(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
             jpMan.setAccessible(true);

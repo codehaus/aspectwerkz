@@ -36,8 +36,7 @@ public class ComputationStandalone {
         if (n < 2) {
             System.err.println(n + ".");
             return 1;
-        }
-        else {
+        } else {
             System.err.print(n + ",");
             return fib(n - 1) + fib(n - 2);
         }
@@ -108,7 +107,6 @@ public class ComputationStandalone {
             long sleep = new Long(args[1]).longValue();
             int counter = 0;
             boolean isWeaved = false;
-
             while (true) {
                 System.out.println(
                         "TraceAspect weave status = " + EWorldUtil.isWeaved(SYSTEM_ID, TraceAspect.class.getName())
@@ -116,19 +114,15 @@ public class ComputationStandalone {
                 System.out.println(
                         "CacheAspect weave status = " + EWorldUtil.isWeaved(SYSTEM_ID, CacheAspect.class.getName())
                 );
-
                 counter++;
                 Thread.sleep(sleep);
-
                 System.err.println("fib(" + iterations + ") = " + fib(iterations));
-
                 if (USE_CACHE || USE_TRACE) {
                     if ((counter %= WEAVING_FREQUENCY) == 0) {
                         if (isWeaved) {
                             unWeave();
                             isWeaved = false;
-                        }
-                        else {
+                        } else {
                             weave();
                             isWeaved = true;
                         }
@@ -136,8 +130,7 @@ public class ComputationStandalone {
                     }
                 }
             }
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -157,8 +150,7 @@ public class ComputationStandalone {
                 Object newValue = joinPoint.proceed(); // not found => calculate
                 m_cache.put(parameter, newValue);
                 return newValue;
-            }
-            else {
+            } else {
                 System.err.println("using cache: " + cachedValue);
                 return cachedValue; // return cached value
             }

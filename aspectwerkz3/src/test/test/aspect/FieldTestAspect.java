@@ -184,11 +184,8 @@ public class FieldTestAspect {
      */
     public Object around(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
-
         final Object result = joinPoint.proceed();
-
         FieldAdviceTest.log("after ");
-
         return result;
     }
 
@@ -198,11 +195,8 @@ public class FieldTestAspect {
      */
     public Object aroundNullAdvice(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
-
         final Object result = joinPoint.proceed();
-
         FieldAdviceTest.log("after ");
-
         return null;
     }
 
@@ -211,13 +205,10 @@ public class FieldTestAspect {
      */
     public Object aroundAdviceAltering(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
-
         FieldRtti rtti = (FieldRtti)joinPoint.getRtti();
-
         rtti.setFieldValue(new String("byAdvice"));
         joinPoint.proceed();
         FieldAdviceTest.log("after ");
-
         return null;
     }
 
@@ -226,13 +217,10 @@ public class FieldTestAspect {
      */
     public Object aroundAdviceAlteringPrimitive(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
-
         FieldRtti rtti = (FieldRtti)joinPoint.getRtti();
-
         rtti.setFieldValue(new Integer(3));
         joinPoint.proceed();
         FieldAdviceTest.log("after ");
-
         return null;
     }
 }

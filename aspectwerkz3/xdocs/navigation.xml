@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-
 <project name="aspectwerkz" repository="aspectwerkz" href="http://aspectwerkz.codehaus.org">
-
     <properties>
         <title>AspectWerkz</title>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
     </properties>
-
     <body>
         <links>
             <item name="Wiki" href="http://docs.codehaus.org/display/AW/Home"/>
@@ -15,14 +12,12 @@
             <item name="Codehaus" href="http://codehaus.org"/>
             <item name="Create an Issue" href="http://jira.codehaus.org/secure/CreateIssue.jspa"/>
         </links>
-
         <menu name="General Information">
             <item name="Overview" href="/index.html"/>
             <item name="Features" href="/features.html"/>
             <item name="License" href="/license.html"/>
             <item name="Downloads" href="/releases.html"/>
         </menu>
-
         <menu name="Documentation">
             <item name="Introduction" href="/introduction.html"/>
             <item name="Implementation issues" href="/implementation.html"/>
@@ -35,7 +30,6 @@
             <item name="JavaDoc" href="/apidocs/index.html"/>
             <item name="FAQ" href="/faq.html"/>
         </menu>
-
         <menu name="Misc.">
             <!--            <item name="Testimonials" href="/testimonials.html"/>-->
             <item name="Releases &amp; Release notes" href="/releases.html"/>
@@ -46,5 +40,4 @@
             <!--            <item name="Clover report" href="/clover/index.html"/>-->
         </menu>
     </body>
-
 </project>

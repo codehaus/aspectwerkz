@@ -195,7 +195,6 @@ public class DefinitionParserHelper {
         ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectName);
         final AdviceDefinition adviceDef = new AdviceDefinition(adviceName, adviceType, aspectName, aspectClassName,
                                                                 expressionInfo, method, methodIndex, aspectDef);
-
         return adviceDef;
     }
 

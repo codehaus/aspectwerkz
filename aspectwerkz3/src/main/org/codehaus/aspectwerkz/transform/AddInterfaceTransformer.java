@@ -39,15 +39,12 @@ public final class AddInterfaceTransformer implements Transformer {
         // loop over all the definitions
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
-
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
             ExpressionContext ctx = new ExpressionContext(PointcutType.ANY, classInfo, classInfo);
-
             if (classFilter(ctClass, ctx, definition)) {
                 continue;
             }
-
             addInterfaceIntroductions(definition, ctClass, context, ctx);
         }
     }
@@ -63,32 +60,25 @@ public final class AddInterfaceTransformer implements Transformer {
     private void addInterfaceIntroductions(final SystemDefinition definition, final CtClass cg, final Context context,
                                            final ExpressionContext ctx) {
         boolean isClassAdvised = false;
-
         List introDefs = definition.getInterfaceIntroductions(ctx);
-
         for (Iterator it = introDefs.iterator(); it.hasNext();) {
             InterfaceIntroductionDefinition introductionDef = (InterfaceIntroductionDefinition)it.next();
             List interfaceClassNames = introductionDef.getInterfaceClassNames();
-
             for (Iterator iit = interfaceClassNames.iterator(); iit.hasNext();) {
                 String className = (String)iit.next();
-
                 if (implementsInterface(cg, className)) {
                     continue;
                 }
-
                 if (className != null) {
                     try {
                         cg.addInterface(cg.getClassPool().get(className));
                     } catch (NotFoundException e) {
                         throw new WrappedRuntimeException(e);
                     }
-
                     isClassAdvised = true;
                 }
             }
         }
-
         if (isClassAdvised) {
             context.markAsAdvised();
         }
@@ -103,13 +93,11 @@ public final class AddInterfaceTransformer implements Transformer {
     private boolean implementsInterface(final CtClass ctClass, final String interfaceName) {
         try {
             CtClass[] interfaces = ctClass.getInterfaces();
-
             for (int i = 0; i < interfaces.length; i++) {
                 if (interfaces[i].getName().replace('/', '.').equals(interfaceName)) {
                     return true;
                 }
             }
-
             return false;
         } catch (NotFoundException e) {
             throw new WrappedRuntimeException(e);
@@ -128,17 +116,13 @@ public final class AddInterfaceTransformer implements Transformer {
         if (cg.isInterface()) {
             return true;
         }
-
         String className = cg.getName().replace('/', '.');
-
         if (definition.inExcludePackage(className)) {
             return true;
         }
-
         if (definition.inIncludePackage(className) && definition.isIntroduced(ctx)) {
             return false;
         }
-
         return true;
     }
 

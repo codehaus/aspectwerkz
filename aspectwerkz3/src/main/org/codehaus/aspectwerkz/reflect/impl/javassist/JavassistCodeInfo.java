@@ -48,27 +48,22 @@ abstract class JavassistCodeInfo extends JavassistMemberInfo {
         if (m_parameterTypes == null) {
             try {
                 CtClass[] parameterTypes = ((CtBehavior)m_member).getParameterTypes();
-
                 m_parameterTypes = new ClassInfo[parameterTypes.length];
-
                 for (int i = 0; i < parameterTypes.length; i++) {
                     CtClass parameterType = parameterTypes[i];
                     ClassInfo metaData;
-
                     if (m_classInfoRepository.hasClassInfo(parameterType.getName())) {
                         metaData = m_classInfoRepository.getClassInfo(parameterType.getName());
                     } else {
                         metaData = new JavassistClassInfo(parameterType, m_loader);
                         m_classInfoRepository.addClassInfo(metaData);
                     }
-
                     m_parameterTypes[i] = metaData;
                 }
             } catch (NotFoundException e) {
                 e.printStackTrace();
             }
         }
-
         return m_parameterTypes;
     }
 
@@ -81,27 +76,22 @@ abstract class JavassistCodeInfo extends JavassistMemberInfo {
         if (m_exceptionTypes == null) {
             try {
                 CtClass[] exceptionTypes = ((CtBehavior)m_member).getExceptionTypes();
-
                 m_exceptionTypes = new ClassInfo[exceptionTypes.length];
-
                 for (int i = 0; i < exceptionTypes.length; i++) {
                     CtClass exceptionType = exceptionTypes[i];
                     ClassInfo metaData;
-
                     if (m_classInfoRepository.hasClassInfo(exceptionType.getName())) {
                         metaData = m_classInfoRepository.getClassInfo(exceptionType.getName());
                     } else {
                         metaData = new JavassistClassInfo(exceptionType, m_loader);
                         m_classInfoRepository.addClassInfo(metaData);
                     }
-
                     m_exceptionTypes[i] = metaData;
                 }
             } catch (NotFoundException e) {
                 e.printStackTrace();
             }
         }
-
         return m_exceptionTypes;
     }
 }

@@ -71,16 +71,12 @@ public class AsmHelper {
     public static String getConstructorDescriptor(final Constructor constructor) {
         Class[] parameters = constructor.getParameterTypes();
         StringBuffer buf = new StringBuffer();
-
         buf.append('(');
-
         for (int i = 0; i < parameters.length; ++i) {
             Class d = parameters[i];
-
             while (true) {
                 if (d.isPrimitive()) {
                     char car;
-
                     if (d == Integer.TYPE) {
                         car = 'I';
                     } else if (d == Void.TYPE) {
@@ -101,34 +97,25 @@ public class AsmHelper {
                      {
                         car = 'J';
                     }
-
                     buf.append(car);
-
                     break;
                 } else if (d.isArray()) {
                     buf.append('[');
                     d = d.getComponentType();
                 } else {
                     buf.append('L');
-
                     String name = d.getName();
                     int len = name.length();
-
                     for (int i1 = 0; i1 < len; ++i1) {
                         char car = name.charAt(i1);
-
                         buf.append((car == '.') ? '/' : car);
                     }
-
                     buf.append(';');
-
                     break;
                 }
             }
         }
-
         buf.append(")V");
-
         return buf.toString();
     }
 
@@ -143,11 +130,9 @@ public class AsmHelper {
     public static Type[] getArgumentTypes(final Constructor constructor) {
         Class[] classes = constructor.getParameterTypes();
         Type[] types = new Type[classes.length];
-
         for (int i = classes.length - 1; i >= 0; --i) {
             types[i] = Type.getType(classes[i]);
         }
-
         return types;
     }
 
@@ -161,11 +146,8 @@ public class AsmHelper {
      */
     public static void dumpClass(final String dumpDir, final String className, final ClassWriter cw) throws IOException {
         File dir = new File(dumpDir + File.separator + className.substring(0, className.lastIndexOf('/')));
-
         dir.mkdirs();
-
         FileOutputStream os = new FileOutputStream(dumpDir + File.separator + className.replace('/', '/') + ".class");
-
         os.write(cw.toByteArray());
         os.close();
     }
@@ -183,20 +165,15 @@ public class AsmHelper {
             if (loader == null) {
                 loader = ContextClassLoader.getLoader();
             }
-
             Class klass = loader.loadClass(CLASS_LOADER_CLASS_NAME);
             Method method = klass.getDeclaredMethod(DEFINE_CLASS_METHOD_NAME,
                                                     new Class[] { String.class, byte[].class, int.class, int.class });
 
             // TODO: what if we don't have rights to set this method to accessible on this specific CL? Load it in System CL?
             method.setAccessible(true);
-
             Object[] args = new Object[] { name, bytes, new Integer(0), new Integer(bytes.length) };
-
             Class clazz = (Class)method.invoke(loader, args);
-
             method.setAccessible(false);
-
             return clazz;
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -215,7 +192,6 @@ public class AsmHelper {
             if (loader == null) {
                 loader = ContextClassLoader.getLoader();
             }
-
             return loader.loadClass(name);
         } catch (Exception e) {
             return null;

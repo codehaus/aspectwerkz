@@ -45,7 +45,6 @@ public class RemoteProxyServer implements Runnable {
      */
     static {
         Properties properties = new Properties();
-
         try {
             properties.load(new FileInputStream(System.getProperty("aspectwerkz.resource.bundle")));
         } catch (Exception e) {
@@ -53,97 +52,73 @@ public class RemoteProxyServer implements Runnable {
 
             // ignore, use defaults
         }
-
         String property = properties.getProperty("remote.server.hostname");
-
         if (property == null) {
             HOST_NAME = property;
         } else {
             HOST_NAME = property;
         }
-
         property = properties.getProperty("remote.server.port");
-
         if (property == null) {
             PORT = 7777;
         } else {
             PORT = Integer.parseInt(property);
         }
-
         property = properties.getProperty("remote.server.listener.threads.backlog");
-
         if (property == null) {
             BACKLOG = 200;
         } else {
             BACKLOG = Integer.parseInt(property);
         }
-
         property = properties.getProperty("remote.server.listener.threads.nr");
-
         if (property == null) {
             NUM_LISTENER_THREADS = 10;
         } else {
             NUM_LISTENER_THREADS = Integer.parseInt(property);
         }
-
         property = properties.getProperty("remote.server.client.threads.timeout");
-
         if (property == null) {
             CLIENT_THREAD_TIMEOUT = 60000;
         } else {
             CLIENT_THREAD_TIMEOUT = Integer.parseInt(property);
         }
-
         property = properties.getProperty("remote.server.thread.pool.max.size");
-
         if (property == null) {
             THREAD_POOL_MAX_SIZE = 100;
         } else {
             THREAD_POOL_MAX_SIZE = Integer.parseInt(property);
         }
-
         property = properties.getProperty("remote.server.thread.pool.min.size");
-
         if (property == null) {
             THREAD_POOL_MIN_SIZE = 10;
         } else {
             THREAD_POOL_MIN_SIZE = Integer.parseInt(property);
         }
-
         property = properties.getProperty("remote.server.thread.pool.init.size");
-
         if (property == null) {
             THREAD_POOL_INIT_SIZE = 10;
         } else {
             THREAD_POOL_INIT_SIZE = Integer.parseInt(property);
         }
-
         property = properties.getProperty("remote.server.thread.pool.keep.alive.time");
-
         if (property == null) {
             THREAD_POOL_KEEP_ALIVE_TIME = 300000;
         } else {
             THREAD_POOL_KEEP_ALIVE_TIME = Integer.parseInt(property);
         }
-
         property = properties.getProperty("remote.server.thread.pool.type");
-
         if ((property != null) && property.equals("dynamic")) {
             BOUNDED_THREAD_POOL = false;
         } else {
             BOUNDED_THREAD_POOL = true;
         }
-
         property = properties.getProperty("remote.server.listener.threads.run.as.daemon");
-
         if ((property != null) && property.equals("true")) {
             LISTENER_THREAD_RUN_AS_DAEMON = true;
         } else {
             LISTENER_THREAD_RUN_AS_DAEMON = false;
         }
-
         property = properties.getProperty("remote.server.thread.pool.wait.when.blocked");
-
         if ((property != null) && property.equals("true")) {
             THREAD_POOL_WAIT_WHEN_BLOCKED = true;
         } else {
@@ -197,21 +172,16 @@ public class RemoteProxyServer implements Runnable {
      */
     public void start() {
         m_running = true;
-
         try {
             InetAddress bindAddress = InetAddress.getByName(HOST_NAME);
-
             m_serverSocket = new ServerSocket(PORT, BACKLOG, bindAddress);
-
             if (BOUNDED_THREAD_POOL) {
                 createBoundedThreadPool(THREAD_POOL_MAX_SIZE, THREAD_POOL_MIN_SIZE, THREAD_POOL_INIT_SIZE,
                                         THREAD_POOL_KEEP_ALIVE_TIME, THREAD_POOL_WAIT_WHEN_BLOCKED);
             } else {
                 createDynamicThreadPool(THREAD_POOL_MIN_SIZE, THREAD_POOL_INIT_SIZE, THREAD_POOL_KEEP_ALIVE_TIME);
             }
-
             m_listenerThreads = new Thread[NUM_LISTENER_THREADS];
-
             for (int i = 0; i < NUM_LISTENER_THREADS; i++) {
                 m_listenerThreads[i] = new Thread(this);
                 m_listenerThreads[i].setName("AspectWerkz::Listener " + (i + 1));
@@ -229,11 +199,9 @@ public class RemoteProxyServer implements Runnable {
      */
     public void stop() {
         m_running = false;
-
         for (int i = 0; i < NUM_LISTENER_THREADS; i++) {
             m_listenerThreads[i].interrupt();
         }
-
         m_threadPool.shutdownNow();
     }
 
@@ -245,13 +213,11 @@ public class RemoteProxyServer implements Runnable {
         try {
             while (m_running) {
                 final Socket clientSocket = m_serverSocket.accept();
-
                 synchronized (m_threadPool) {
                     m_threadPool.execute(new RemoteProxyServerThread(clientSocket, m_loader, m_invoker,
                                                                      CLIENT_THREAD_TIMEOUT));
                 }
             }
-
             m_serverSocket.close();
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -274,7 +240,6 @@ public class RemoteProxyServer implements Runnable {
         m_threadPool.setKeepAliveTime(keepAliveTime);
         m_threadPool.createThreads(threadPoolInitSize);
         m_threadPool.setMinimumPoolSize(threadPoolMinSize);
-
         if (waitWhenBlocked) {
             m_threadPool.waitWhenBlocked();
         }

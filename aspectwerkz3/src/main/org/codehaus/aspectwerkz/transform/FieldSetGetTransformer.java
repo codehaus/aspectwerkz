@@ -46,26 +46,21 @@ public class FieldSetGetTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = SystemDefinitionContainer.getDefinitionsContext();
-
         m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO thread safe and reentrant
 
         // loop over all the definitions
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
-
             final CtClass ctClass = klass.getCtClass();
             final ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
-
             if (classFilter(ctClass, new ExpressionContext(PointcutType.SET, classInfo, null), definition)
                 && classFilter(ctClass, new ExpressionContext(PointcutType.GET, classInfo, null), definition)) {
                 continue;
             }
-
             ctClass.instrument(new ExprEditor() {
                     public void edit(FieldAccess fieldAccess) throws CannotCompileException {
                         try {
                             CtBehavior where = null;
-
                             try {
                                 where = fieldAccess.where();
                             } catch (RuntimeException e) {
@@ -82,10 +77,8 @@ public class FieldSetGetTransformer implements Transformer {
                             final String fieldName = fieldAccess.getFieldName();
                             final String fieldSignature = fieldAccess.getField().getType().getName().replace('/', '.')
                                                           + ' ' + fieldName;
-
                             FieldInfo fieldInfo = JavassistFieldInfo.getFieldInfo(fieldAccess.getField(),
                                                                                   context.getLoader());
-
                             if (fieldAccess.isReader()
                                 && !getFieldFilter(definition,
                                                    new ExpressionContext(PointcutType.GET, fieldInfo, classInfo),
@@ -94,7 +87,6 @@ public class FieldSetGetTransformer implements Transformer {
                                 // if that is the case then we have have class loaded and set in the ___AW_clazz already
                                 String declaringClassFieldName = TransformationUtil.STATIC_CLASS_FIELD;
                                 CtClass declaringClass = fieldAccess.getField().getDeclaringClass();
-
                                 if (!declaringClass.getName().replace('/', '.').equals(where.getDeclaringClass()
                                                                                             .getName().replace('/', '.'))) {
                                     declaringClassFieldName = addFieldAccessDeclaringClassField(declaringClass,
@@ -104,7 +96,6 @@ public class FieldSetGetTransformer implements Transformer {
                                 //TODO ALEX might need to review since SET is not handled gracefully that way
                                 StringBuffer body = new StringBuffer();
                                 StringBuffer callBody = new StringBuffer();
-
                                 callBody.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
                                 callBody.append('.');
                                 callBody.append(TransformationUtil.PROCEED_WITH_GET_JOIN_POINT_METHOD);
@@ -112,13 +103,11 @@ public class FieldSetGetTransformer implements Transformer {
                                 callBody.append(TransformationUtil.calculateHash(fieldAccess.getField()));
                                 callBody.append(',');
                                 callBody.append(m_joinPointIndex);
-
                                 if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {
                                     callBody.append(", (Object)null, ");
                                 } else {
                                     callBody.append(", $0, ");
                                 }
-
                                 callBody.append(declaringClassFieldName);
                                 callBody.append(",\"");
                                 callBody.append(fieldSignature);
@@ -130,7 +119,6 @@ public class FieldSetGetTransformer implements Transformer {
                                     body.append(callBody.toString());
                                 } else {
                                     String localResult = TransformationUtil.ASPECTWERKZ_PREFIX + "res";
-
                                     body.append("{ Object ").append(localResult).append(" = ");
                                     body.append(callBody.toString());
                                     body.append("if (").append(localResult).append(" != null)");
@@ -139,13 +127,10 @@ public class FieldSetGetTransformer implements Transformer {
                                     body.append(JavassistHelper.getDefaultPrimitiveValue(fieldAccess.getField().getType()));
                                     body.append("; }");
                                 }
-
                                 fieldAccess.replace(body.toString());
                                 context.markAsAdvised();
-
                                 m_joinPointIndex++;
                             }
-
                             if (fieldAccess.isWriter()
                                 && !setFieldFilter(definition,
                                                    new ExpressionContext(PointcutType.SET, fieldInfo, classInfo),
@@ -154,7 +139,6 @@ public class FieldSetGetTransformer implements Transformer {
                                 // if that is the case then we have have class loaded and set in the ___AW_clazz already
                                 String declaringClassFieldName = TransformationUtil.STATIC_CLASS_FIELD;
                                 CtClass declaringClass = fieldAccess.getField().getDeclaringClass();
-
                                 if (!declaringClass.getName().replace('/', '.').equals(where.getDeclaringClass()
                                                                                             .getName().replace('/', '.'))) {
                                     declaringClassFieldName = addFieldAccessDeclaringClassField(declaringClass,
@@ -163,7 +147,6 @@ public class FieldSetGetTransformer implements Transformer {
 
                                 //TODO ALEX think about null advice
                                 StringBuffer body = new StringBuffer();
-
                                 body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
                                 body.append('.');
                                 body.append(TransformationUtil.PROCEED_WITH_SET_JOIN_POINT_METHOD);
@@ -171,21 +154,17 @@ public class FieldSetGetTransformer implements Transformer {
                                 body.append(TransformationUtil.calculateHash(fieldAccess.getField()));
                                 body.append(',');
                                 body.append(m_joinPointIndex);
-
                                 if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {
                                     body.append(", $args, (Object)null, ");
                                 } else {
                                     body.append(", $args, $0, ");
                                 }
-
                                 body.append(declaringClassFieldName);
                                 body.append(",\"");
                                 body.append(fieldSignature);
                                 body.append("\");");
-
                                 fieldAccess.replace(body.toString());
                                 context.markAsAdvised();
-
                                 m_joinPointIndex++;
                             }
                         } catch (NotFoundException nfe) {
@@ -194,7 +173,6 @@ public class FieldSetGetTransformer implements Transformer {
                     }
                 });
         }
-
         TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
     }
 
@@ -209,29 +187,22 @@ public class FieldSetGetTransformer implements Transformer {
                                               throws NotFoundException, CannotCompileException {
         String fieldName = TransformationUtil.STATIC_CLASS_FIELD + TransformationUtil.DELIMITER + "field"
                            + TransformationUtil.DELIMITER + ctField.getDeclaringClass().getName().replace('.', '_');
-
         boolean hasField = false;
         CtField[] fields = ctClass.getDeclaredFields();
-
         for (int i = 0; i < fields.length; i++) {
             CtField field = fields[i];
-
             if (field.getName().equals(fieldName)) {
                 hasField = true;
-
                 break;
             }
         }
-
         if (!hasField) {
             CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"), fieldName, ctClass);
-
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field,
                              "java.lang.Class#forName(\"" + ctField.getDeclaringClass().getName().replace('/', '.')
                              + "\")");
         }
-
         return fieldName;
     }
 
@@ -247,17 +218,13 @@ public class FieldSetGetTransformer implements Transformer {
         if (cg.isInterface()) {
             return true;
         }
-
         String className = cg.getName().replace('/', '.');
-
         if (definition.inExcludePackage(className)) {
             return true;
         }
-
         if (definition.inIncludePackage(className) || definition.isAdvised(ctx)) {
             return false;
         }
-
         return true;
     }
 
@@ -285,15 +252,12 @@ public class FieldSetGetTransformer implements Transformer {
         if (fieldInfo.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
             return true;
         }
-
         if (Modifier.isFinal(fieldInfo.getModifiers())) {
             return true;
         }
-
         if (definition.hasPointcut(ctx)) {
             return false;
         }
-
         return true;
     }
 
@@ -310,11 +274,9 @@ public class FieldSetGetTransformer implements Transformer {
         if (fieldInfo.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
             return true;
         }
-
         if (definition.hasPointcut(ctx)) {
             return false;
         }
-
         return true;
     }
 }
