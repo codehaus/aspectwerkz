@@ -19,8 +19,8 @@ import java.io.File;
 
 /**
  * Utility class providing file manipulation facilities.
- *
- * This implementation uses Ant task programmaticaly
+ * <p/>
+ * This implementation uses Ant task programmaticaly.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */

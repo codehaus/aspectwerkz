@@ -685,8 +685,8 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
         if (!definition.inIncludePackage(className)) {
             return true;
         }
-        if (definition.hasSetFieldPointcut(classMetaData) ||
-                definition.hasGetFieldPointcut(classMetaData)) {
+        if (definition.hasSetPointcut(classMetaData) ||
+                definition.hasGetPointcut(classMetaData)) {
             return false;
         }
         return true;
@@ -716,7 +716,7 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
         if (fieldMetaData.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
             return null;
         }
-        if (definition.hasSetFieldPointcut(classMetaData, fieldMetaData)) {
+        if (definition.hasSetPointcut(classMetaData, fieldMetaData)) {
             return definition.getUuid();
         }
         return null;
@@ -736,7 +736,7 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
         if (fieldMetaData.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
             return null;
         }
-        if (definition.hasGetFieldPointcut(classMetaData, fieldMetaData)) {
+        if (definition.hasGetPointcut(classMetaData, fieldMetaData)) {
             return definition.getUuid();
         }
         return null;

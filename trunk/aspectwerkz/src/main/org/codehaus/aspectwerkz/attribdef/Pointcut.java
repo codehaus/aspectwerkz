@@ -13,11 +13,4 @@ package org.codehaus.aspectwerkz.attribdef;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class Pointcut {
-    public static final String EXECUTION = "execution";
-    public static final String CALL = "call";
-    public static final String SET = "set";
-    public static final String GET = "get";
-    public static final String THROWS = "throws";
-    public static final String CFLOW = "cflow";
-    public static final String CLASS = "class";
 }

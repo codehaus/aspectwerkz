@@ -15,7 +15,7 @@ import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
-import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
+import org.codehaus.aspectwerkz.regexp.CompiledPatternTuple;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 
 /**
@@ -88,7 +88,18 @@ public interface System {
      * @param methodMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    List getMethodPointcuts(ClassMetaData classMetaData, MethodMetaData methodMetaData);
+    List getExecutionPointcuts(ClassMetaData classMetaData, MethodMetaData methodMetaData);
+
+    /**
+     * Returns the caller side pointcut list for the class and method specified.
+     * Caches the list, needed since the actual method call is expensive
+     * and is made each time a new instance of an advised class is created.
+     *
+     * @param classMetaData the meta-data for the class
+     * @param methodMetaData meta-data for the method
+     * @return the pointcuts for this join point
+     */
+    List getCallPointcuts(ClassMetaData classMetaData, MethodMetaData methodMetaData);
 
     /**
      * Returns the get field pointcut list for the class and field specified.
@@ -99,7 +110,7 @@ public interface System {
      * @param methodMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    List getGetFieldPointcuts(ClassMetaData classMetaData, FieldMetaData fieldMetaData);
+    List getGetPointcuts(ClassMetaData classMetaData, FieldMetaData fieldMetaData);
 
     /**
      * Returns the set field pointcut list for the class and field specified.
@@ -110,7 +121,7 @@ public interface System {
      * @param methodMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    List getSetFieldPointcuts(ClassMetaData classMetaData, FieldMetaData fieldMetaData);
+    List getSetPointcuts(ClassMetaData classMetaData, FieldMetaData fieldMetaData);
 
     /**
      * Returns the throws pointcut list for the class and method specified.
@@ -122,17 +133,6 @@ public interface System {
      * @return the pointcuts for this join point
      */
     List getThrowsPointcuts(ClassMetaData classMetaData, MethodMetaData methodMetaData);
-
-    /**
-     * Returns the caller side pointcut list for the class and method specified.
-     * Caches the list, needed since the actual method call is expensive
-     * and is made each time a new instance of an advised class is created.
-     *
-     * @param className the class name
-     * @param methodMetaData meta-data for the method
-     * @return the pointcuts for this join point
-     */
-    List getCallerSidePointcuts(String className, MethodMetaData methodMetaData);
 
     /**
      * Returns a list with the cflow pointcuts that affects the join point with the
@@ -205,5 +205,5 @@ public interface System {
      * @param patternTuple the compiled tuple with the class pattern and the method pattern of the cflow pointcut
      * @return boolean
      */
-    boolean isInControlFlowOf(PointcutPatternTuple patternTuple);
+    boolean isInControlFlowOf(CompiledPatternTuple patternTuple);
 }

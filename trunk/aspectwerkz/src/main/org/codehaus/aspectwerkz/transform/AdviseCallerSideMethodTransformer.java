@@ -157,11 +157,12 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                     }
 
                     // create the method meta-data
-                    MethodMetaData calleeSideMethodMetaData =
-                            BcelMetaDataMaker.createMethodMetaData(invokeInstruction, cpg);
+                    MethodMetaData calleeSideMethodMetaData = BcelMetaDataMaker.createMethodMetaData(
+                            invokeInstruction, cpg
+                    );
 
                     // is this a caller side method pointcut?
-                    if (m_definition.isCallerSideMethod(calleeSideClassMetaData, calleeSideMethodMetaData)) {
+                    if (m_definition.isPickedOutByCallPointcut(calleeSideClassMetaData, calleeSideMethodMetaData)) {
 
                         // get the caller method name and signature
                         Method method = mg.getMethod();
@@ -173,8 +174,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                         // take care of identification of overloaded methods
                         // by inserting a sequence number
                         if (methodSequences.containsKey(calleeMethodName)) {
-                            int sequence = ((Integer)methodSequences.
-                                    get(calleeMethodName)).intValue();
+                            int sequence = ((Integer)methodSequences.get(calleeMethodName)).intValue();
 
                             methodSequences.remove(calleeMethodName);
                             sequence++;
@@ -707,7 +707,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         if (!m_definition.inIncludePackage(className)) {
             return true;
         }
-        if (m_definition.hasCallerSidePointcut(classMetaData)) {
+        if (m_definition.hasCallPointcut(classMetaData)) {
             return false;
         }
         return true;

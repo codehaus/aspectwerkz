@@ -971,7 +971,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
         if (!definition.inIncludePackage(className)) {
             return true;
         }
-        if (definition.hasMethodPointcut(classMetaData) ||
+        if (definition.hasExecutionPointcut(classMetaData) ||
                 definition.hasThrowsPointcut(classMetaData)) {
             return false;
         }
@@ -1001,7 +1001,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                 method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
         }
-        else if (definition.hasMethodPointcut(classMetaData, methodMetaData)) {
+        else if (definition.hasExecutionPointcut(classMetaData, methodMetaData)) {
             return false;
         }
         else if (definition.hasThrowsPointcut(classMetaData, methodMetaData)) {

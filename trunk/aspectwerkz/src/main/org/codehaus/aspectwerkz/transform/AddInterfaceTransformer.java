@@ -62,6 +62,7 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
             final ConstantPoolGen cpg = cg.getConstantPool();
 
             ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+
             if (classFilter(cg, classMetaData, definition)) {
                 return;
             }
@@ -102,7 +103,6 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
         if (definition.inExcludePackage(className)) {
             return true;
         }
-
         if (definition.inIncludePackage(className) &&
                 definition.hasIntroductions(classMetaData)) {
             return false;

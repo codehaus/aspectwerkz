@@ -158,7 +158,7 @@ public class Introduction implements Mixin {
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
-    public Object ___AW_invokeMixin(int methodIndex, Object callingObject) {
+    public Object ___AW_invokeMixin(final int methodIndex, final Object callingObject) {
         return ___AW_invokeMixin(methodIndex, EMPTY_OBJECT_ARRAY, callingObject);
     }
 
@@ -170,7 +170,7 @@ public class Introduction implements Mixin {
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
-    public Object ___AW_invokeMixin(int methodIndex, Object[] parameters, Object callingObject) {
+    public Object ___AW_invokeMixin(final int methodIndex, final Object[] parameters, final Object callingObject) {
         try {
             Object result = null;
             switch (___AW_getDeploymentModel()) {
@@ -224,7 +224,7 @@ public class Introduction implements Mixin {
      *
      * @param className the class name of the new implementation
      */
-    public void ___AW_swapImplementation(String className) {
+    public void ___AW_swapImplementation(final String className) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
         try {
             Class newImplClass = ContextClassLoader.loadClass(className);//todo pbly old impl.getClassLoader() would be safer

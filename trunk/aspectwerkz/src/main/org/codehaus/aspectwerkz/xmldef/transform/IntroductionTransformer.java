@@ -53,7 +53,9 @@ public class IntroductionTransformer {
         int[] interfaces = cg.getInterfaces();
 
         boolean isClassAdvised = false;
-        for (Iterator it2 = def.getIntroductionNames(cg.getClassName()).iterator(); it2.hasNext();) {
+        ClassMetaData classMetaData = new ClassMetaData();
+        classMetaData.setName(cg.getClassName());
+        for (Iterator it2 = def.getIntroductionNames(classMetaData).iterator(); it2.hasNext();) {
 
             String introductionName = (String)it2.next();
             String interfaceName = def.getIntroductionInterfaceName(introductionName);
@@ -102,7 +104,9 @@ public class IntroductionTransformer {
         AspectWerkzDefinitionImpl def = (AspectWerkzDefinitionImpl)definition;
 
         boolean isClassAdvised = false;
-        for (Iterator it = def.getIntroductionNames(cg.getClassName()).iterator(); it.hasNext();) {
+        ClassMetaData metaData = new ClassMetaData();
+        metaData.setName(cg.getClassName());
+        for (Iterator it = def.getIntroductionNames(metaData).iterator(); it.hasNext();) {
 
             String introductionName = (String)it.next();
             String introductionImplName = def.getIntroductionImplName(introductionName);

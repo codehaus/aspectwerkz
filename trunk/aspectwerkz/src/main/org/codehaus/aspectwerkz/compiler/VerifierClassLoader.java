@@ -11,9 +11,9 @@ import java.net.URLClassLoader;
 import java.net.URL;
 
 /**
- * VerifierClassLoader does not follow parent delegation model
- *
- * It allow to run the -verify option of offline mode on aspectwerkz itself
+ * VerifierClassLoader does not follow parent delegation model.
+ * <p/>
+ * It allow to run the -verify option of offline mode on aspectwerkz itself.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
@@ -29,11 +29,11 @@ public class VerifierClassLoader extends URLClassLoader {
         Class c = findLoadedClass(name);
         if (c == null) {
             try {
-// try to load the class localy
+                // try to load the class localy
                 c = findClass(name);
             }
             catch (ClassNotFoundException e) {
-// delegate to parent
+                // delegate to parent
                 c = getParent().loadClass(name);
             }
         }
@@ -42,5 +42,4 @@ public class VerifierClassLoader extends URLClassLoader {
         }
         return c;
     }
-
 }

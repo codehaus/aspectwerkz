@@ -103,7 +103,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
     /**
      * Marks the pre-processor as initialized.
      */
-    private boolean initialized = false;
+    private boolean m_initialized = false;
 
     /**
      * The mixin meta-data repositories, each repository is mapped to its class loader.
@@ -137,7 +137,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 //        m_stack.add(new AddMetaDataTransformer());
 //        m_stack.add(new AddUuidTransformer());
 
-        initialized = true;
+        m_initialized = true;
     }
 
     /**
@@ -149,7 +149,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      * @return modified (or not) bytecode
      */
     public byte[] preProcess(final String className, final byte[] bytecode, final ClassLoader loader) {
-        if (!initialized || (filter(className) && !NOFILTER)) {
+        if (!m_initialized || (filter(className) && !NOFILTER)) {
             return bytecode;
         }
 
