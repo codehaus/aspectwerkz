@@ -7,7 +7,7 @@
  **************************************************************************************/
 package test;
 
-import org.codehaus.aspectwerkz.WeavedTestCase;
+import junit.framework.TestCase;
 
 /**
  * test "pc AND (cf OR cf2)"
@@ -15,7 +15,7 @@ import org.codehaus.aspectwerkz.WeavedTestCase;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class CFlowTest extends WeavedTestCase implements Loggable {
+public class CFlowTest extends TestCase implements Loggable {
     private String m_logString = "";
 
     public CFlowTest(String name) {

@@ -7,12 +7,12 @@
  **************************************************************************************/
 package test;
 
-import org.codehaus.aspectwerkz.WeavedTestCase;
+import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class FieldAdviceTest extends WeavedTestCase {
+public class FieldAdviceTest extends TestCase {
     private static String s_logString = "";
     private static int s_setStaticFieldAroundAdviced = 0;
     private static int s_setStaticFieldPreAdviced = 0;

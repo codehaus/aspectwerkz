@@ -7,12 +7,12 @@
  **************************************************************************************/
 package test.modifier;
 
-import org.codehaus.aspectwerkz.WeavedTestCase;
+import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ModifierTest extends WeavedTestCase {
+public class ModifierTest extends TestCase {
     private static String s_logString = "";
     private int privateField;
     protected int protectedField;

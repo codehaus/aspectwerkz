@@ -7,7 +7,7 @@
  **************************************************************************************/
 package test.performance;
 
-import org.codehaus.aspectwerkz.WeavedTestCase;
+import junit.framework.TestCase;
 
 /**
  * A so far VERY limited bench.
@@ -18,7 +18,7 @@ import org.codehaus.aspectwerkz.WeavedTestCase;
  * @TODO: extends this test case to be more interesting or replace with a real bench
  * @TODO: should add some more around advice, since JIT really shines when we have advice chains
  */
-public class PerformanceTest extends WeavedTestCase {
+public class PerformanceTest extends TestCase {
     private boolean m_printInfo = true;
     private int m_numberOfInvocations = 1000000;
 

@@ -7,12 +7,12 @@
  **************************************************************************************/
 package test.mixindeployment;
 
-import org.codehaus.aspectwerkz.WeavedTestCase;
+import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class IntroductionDeploymentTest extends WeavedTestCase {
+public class IntroductionDeploymentTest extends TestCase {
     public IntroductionDeploymentTest(String s) {
         super(s);
     }

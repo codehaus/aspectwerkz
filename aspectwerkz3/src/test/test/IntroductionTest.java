@@ -7,13 +7,13 @@
  **************************************************************************************/
 package test;
 
+import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.SystemLoader;
-import org.codehaus.aspectwerkz.WeavedTestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class IntroductionTest extends WeavedTestCase {
+public class IntroductionTest extends TestCase {
     private ToBeIntroduced m_toBeIntroduced;
 
     public IntroductionTest(String name) {

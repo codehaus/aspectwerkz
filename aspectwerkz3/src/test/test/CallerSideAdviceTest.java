@@ -7,12 +7,12 @@
  **************************************************************************************/
 package test;
 
-import org.codehaus.aspectwerkz.WeavedTestCase;
+import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CallerSideAdviceTest extends WeavedTestCase {
+public class CallerSideAdviceTest extends TestCase {
     private static String s_logString = "";
 
     public CallerSideAdviceTest(String name) {

@@ -7,13 +7,13 @@
  **************************************************************************************/
 package test.orthogonal;
 
+import junit.framework.TestCase;
 import test.Loggable;
-import org.codehaus.aspectwerkz.WeavedTestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class OrthogonalTest extends WeavedTestCase implements Loggable {
+public class OrthogonalTest extends TestCase implements Loggable {
     private String m_logString = "";
     private int m_setFieldAroundAdviced = 0;
     private int m_getFieldAroundAdviced = 0;

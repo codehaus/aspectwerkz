@@ -7,12 +7,12 @@
  **************************************************************************************/
 package test.constructor;
 
-import org.codehaus.aspectwerkz.WeavedTestCase;
+import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ConstructorAdviceTest extends WeavedTestCase {
+public class ConstructorAdviceTest extends TestCase {
     private static String s_logCall = "";
     private static String s_logExecution = "";
 
