@@ -12,6 +12,9 @@ import java.lang.reflect.Method;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
+import org.codehaus.aspectwerkz.joinpoint.impl.MethodRttiImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.management.SignatureFactory;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
 
@@ -36,19 +39,25 @@ public class InlinedJoinPoint extends InlinedJoinPointBase {
 
     private Target m_this;
 
+    // TODO performance penalty in CTOR
+    private MethodRttiImpl m_rtti = new MethodRttiImpl((MethodSignatureImpl)SIGNATURE, m_this, m_target);
+
     private int m_stackFrame = -1;
 
     private int m_i;
 
     private String m_s;
 
-    public static final int invoke(int i, Target targetInstance) throws Throwable {
+    public static final int invoke(int i, Target callerInstance, Target calleeInstance) throws Throwable {
         InlinedJoinPoint joinPoint = new InlinedJoinPoint();
-        joinPoint.m_target = targetInstance;
+        joinPoint.m_this = callerInstance;
+        joinPoint.m_target = calleeInstance;
         joinPoint.m_i = i;
+        //TODO joinPoint.m_rtti.setParameterValues(new Object[]{.....});//performance penalty
         // add cflow
         Object returnValue = joinPoint.proceed();
         // add cflow
+        //TODO joinPoint.m_rtti.setReturnValue(returnValue);
         return ((Integer) returnValue).intValue();
     }
 
@@ -100,11 +109,9 @@ public class InlinedJoinPoint extends InlinedJoinPointBase {
         return m_this;
     }
 
-    class InnerAlex {
-        public InnerAlex(int a) {
-            ;
-        }
-        public void doSome() {;}
+    public Rtti getRtti() {
+        return m_rtti;
     }
+
 }
 
