@@ -64,7 +64,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
     protected static final String THIS_CLASS_FIELD_NAME	  = "THIS_CLASS";
 
     // FIXME define these two using VM option - if dump dir specified then dump
-    public static final boolean DUMP_JIT_CLASSES = true;
+    public static final boolean DUMP_JIT_CLASSES = false;
     protected static final String DUMP_DIR = "_dump";
 
     protected final String m_callerClassName;
@@ -909,12 +909,11 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         // retrieve the aspect set it to the field
         DeploymentModel deploymentModel = aspectInfo.getDeploymentModel();
         if (CflowCompiler.isCflowClass(aspectClassName)) {
-            System.out.println("??? " + aspectClassName);            
             // handle Cflow native aspectOf
             cv.visitMethodInsn(
                     INVOKESTATIC,
                     aspectClassName,
-                    "aspectOf",
+                    CflowCompiler.CFLOW_ASPECTOF_METHOD_NAME,
                     "()"+aspectClassSignature
             );
             cv.visitFieldInsn(PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature);
