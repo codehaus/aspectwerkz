@@ -110,7 +110,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
             MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
 
             String uuid = methodFilter(classMetaData, methodMetaData, methods[i]);
-            if (!methods[i].isStatic() || uuid == null || methods[i].isNative()) {
+            if (!methods[i].isStatic() || uuid == null) {
                 continue;
             }
 
@@ -877,7 +877,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                                 final MethodMetaData methodMetaData,
                                 final Method method) {
         String uuid = null;
-        if (method.isAbstract() ||
+        if (method.isAbstract() || method.isNative() ||
                 method.getName().equals("<init>") ||
                 method.getName().equals("<clinit>") ||
                 method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
