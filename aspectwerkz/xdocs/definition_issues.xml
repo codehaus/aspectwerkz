@@ -355,7 +355,6 @@
             <subsection name="Expression">
                 <p>
                     It is possible to combine patterns selection together using algebraic expressions. The following operators are supported:
-                    TODO check if nospace separated is supported
                     <ul>
                         <li>AND or &amp;&amp;</li>
                         <li>OR or ||</li>

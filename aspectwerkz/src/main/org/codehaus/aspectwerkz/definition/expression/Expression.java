@@ -905,11 +905,11 @@ public abstract class Expression implements Serializable {
      * @return the pointcut references in a tokenizer
      */
     protected StringTokenizer getPointcutRefTokenizer() {
-        String exprRefList = Strings.replaceSubString(m_expression, "&&", "");
-        exprRefList = Strings.replaceSubString(exprRefList, "||", "");
-        exprRefList = Strings.replaceSubString(exprRefList, "!", "");
-        exprRefList = Strings.replaceSubString(exprRefList, "(", "");
-        exprRefList = Strings.replaceSubString(exprRefList, ")", "");
+        String exprRefList = Strings.replaceSubString(m_expression, "&&", " ");
+        exprRefList = Strings.replaceSubString(exprRefList, "||", " ");
+        exprRefList = Strings.replaceSubString(exprRefList, "!", " ");
+        exprRefList = Strings.replaceSubString(exprRefList, "(", " ");
+        exprRefList = Strings.replaceSubString(exprRefList, ")", " ");
         StringTokenizer tokenizer = new StringTokenizer(exprRefList, " ");
         return tokenizer;
     }

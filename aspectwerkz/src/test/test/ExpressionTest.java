@@ -46,7 +46,7 @@ public class ExpressionTest extends TestCase {
         try {
             Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.set(..)", "", "pc1", PointcutType.EXECUTION));
             Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.get(..)", "", "pc2", PointcutType.EXECUTION));
-            Expression root = Expression.createRootExpression("namespace", "pc1 && pc2");
+            Expression root = Expression.createRootExpression("namespace", "pc1&&pc2");
         }
         catch (Exception e) {
             e.printStackTrace();
