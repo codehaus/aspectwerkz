@@ -132,22 +132,11 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
             m_callerMethodDesc = callerMethodDesc;
 
             if (INIT_METHOD_NAME.equals(m_callerMethodName)) {
-                m_callerMemberInfo =
-                m_callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(m_callerMethodDesc));
+                int hash = AsmHelper.calculateConstructorHash(m_callerMethodDesc);
+                m_callerMemberInfo = m_callerClassInfo.getConstructor(hash);
             } else {
-                m_callerMemberInfo =
-                m_callerClassInfo.getMethod(AsmHelper.calculateMethodHash(m_callerMethodName, m_callerMethodDesc));
-            }
-
-            if (m_callerMemberInfo == null) {
-                throw new Error(
-                        "caller method info metadata structure could not be build for method: "
-                        + callerClassName
-                        + '.'
-                        + callerMethodName
-                        + ':'
-                        + callerMethodDesc
-                );
+                int hash = AsmHelper.calculateMethodHash(m_callerMethodName, m_callerMethodDesc);
+                m_callerMemberInfo = m_callerClassInfo.getMethod(hash);
             }
         }
 
@@ -174,9 +163,16 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
                                        final Label handlerLabel,
                                        final String exceptionTypeName) {
 
-            System.out.println("exception = " + exceptionTypeName);
-            System.out.println("within class = " + m_callerClassName);
-            System.out.println("within method = " + m_callerMemberInfo.getName());
+            if (m_callerMemberInfo == null) {
+                System.err.println(
+                        "AW::WARNING " +
+                        "metadata structure could not be build for method ["
+                        + m_callerClassInfo.getName().replace('/', '.')
+                        + '.' + m_callerMethodName + ':' + m_callerMethodDesc + ']'
+                );
+                cv.visitTryCatchBlock(startLabel, endLabel, handlerLabel, exceptionTypeName);
+                return;
+            }
 
             final ClassInfo classInfo = AsmClassInfo.getClassInfo(exceptionTypeName, m_loader);
             final ExpressionContext ctx = new ExpressionContext(PointcutType.HANDLER, classInfo, m_callerMemberInfo);

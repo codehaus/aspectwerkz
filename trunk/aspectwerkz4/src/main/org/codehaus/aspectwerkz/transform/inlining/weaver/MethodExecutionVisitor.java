@@ -111,9 +111,13 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
         int hash = AsmHelper.calculateMethodHash(name, desc);
         MethodInfo methodInfo = m_classInfo.getMethod(hash);
         if (methodInfo == null) {
-//            System.err.println(
-//                    "WARNING: introduced method could not be advised [" + name + ":" + desc + "] "
-//            );
+            System.err.println(
+                    "AW::WARNING " +
+                    "metadata structure could not be build for method ["
+                    + m_classInfo.getName().replace('/', '.')
+                    + '.' + name + ':' + desc + ']'
+            );
+            // bail out
             return cv.visitMethod(access, name, desc, exceptions, attrs);
         }
 

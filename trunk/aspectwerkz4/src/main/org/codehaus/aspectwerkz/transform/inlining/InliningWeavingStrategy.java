@@ -59,11 +59,6 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                 return;
             }
 
-            // FIXME - "fix" for ASM enum bug - remove later
-            if (className.startsWith("javax")) {
-                return;
-            }
-
             final byte[] bytecode = context.getInitialBytecode();
             final ClassLoader loader = context.getLoader();
 

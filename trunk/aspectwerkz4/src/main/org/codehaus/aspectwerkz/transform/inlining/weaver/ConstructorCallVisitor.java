@@ -192,21 +192,18 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
             m_newInvocations = (newInvocations != null) ? newInvocations : EMPTY_INTHASHMAP;
 
             if (INIT_METHOD_NAME.equals(m_callerMethodName)) {
-                m_callerMemberInfo =
-                m_callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(m_callerMethodDesc));
+                final int hash = AsmHelper.calculateConstructorHash(m_callerMethodDesc);
+                m_callerMemberInfo = m_callerClassInfo.getConstructor(hash);
             } else {
-                m_callerMemberInfo =
-                m_callerClassInfo.getMethod(AsmHelper.calculateMethodHash(m_callerMethodName, m_callerMethodDesc));
+                final int hash = AsmHelper.calculateMethodHash(m_callerMethodName, m_callerMethodDesc);
+                m_callerMemberInfo = m_callerClassInfo.getMethod(hash);
             }
-
             if (m_callerMemberInfo == null) {
-                throw new Error(
-                        "caller method info metadata structure could not be build for method: "
-                        + callerClassName
-                        + '.'
-                        + callerMethodName
-                        + ':'
-                        + callerMethodDesc
+                System.err.println(
+                        "AW::WARNING " +
+                        "metadata structure could not be build for method ["
+                        + m_callerClassInfo.getName().replace('/', '.')
+                        + '.' + m_callerMethodName + ':' + m_callerMethodDesc + ']'
                 );
             }
         }
@@ -228,6 +225,10 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
          * @param desc
          */
         public void visitTypeInsn(int opcode, String desc) {
+            if (m_callerMemberInfo == null) {
+                return;
+            }
+
             if (opcode == NEW) {
                 m_newInvocationIndex++;
                 // build the callee ConstructorInfo and check for a match
@@ -238,31 +239,17 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
                 String calleeMethodName = INIT_METHOD_NAME;
                 String calleeMethodDesc = newInvocationStruct.ctorDesc;
                 int joinPointHash = AsmHelper.calculateMethodHash(calleeMethodName, calleeMethodDesc);
-                ClassInfo classInfo = AsmClassInfo.getClassInfo(calleeClassName.replace('/', '.'), m_loader);
+                ClassInfo classInfo = AsmClassInfo.getClassInfo(calleeClassName, m_loader);
                 ConstructorInfo calleeConstructorInfo = classInfo.getConstructor(joinPointHash);
                 if (calleeConstructorInfo == null) {
-                    // lookup in the class hierarchy
-                    ClassInfo superClassInfo = classInfo.getSuperclass();
-                    while (superClassInfo != null) {
-                        calleeConstructorInfo = superClassInfo.getConstructor(joinPointHash);
-                        if (calleeConstructorInfo == null) {
-                            // go up in the hierarchy
-                            superClassInfo = superClassInfo.getSuperclass();
-                        } else {
-                            break;
-                        }
-                    }
-                    if (calleeConstructorInfo == null) {
-                        super.visitTypeInsn(opcode, desc);//we failed
-                        throw new Error(
-                                "callee method info metadata structure could not be build for method: "
-                                + calleeClassName
-                                + '.'
-                                + calleeMethodName
-                                + ':'
-                                + calleeMethodDesc
-                        );
-                    }
+                    super.visitTypeInsn(opcode, desc);//we failed
+                    System.err.println(
+                            "AW::WARNING " +
+                            "metadata structure could not be build for method ["
+                            + classInfo.getName().replace('/', '.')
+                            + '.' + calleeMethodName + ':' + calleeMethodDesc + ']'
+                    );
+                    return;
                 }
 
                 // do we have a match - if so, skip the NEW and the DUP
@@ -316,6 +303,11 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
                                     final String calleeConstructorName,
                                     final String calleeConstructorDesc) {
 
+            if (m_callerMemberInfo == null) {
+                super.visitMethodInsn(opcode, calleeClassName, calleeConstructorName, calleeConstructorDesc);
+                return;
+            }
+
             if (!INIT_METHOD_NAME.equals(calleeConstructorName) ||
                 calleeClassName.endsWith(AbstractJoinPointCompiler.JOIN_POINT_CLASS_SUFFIX) ||
                 calleeClassName.startsWith(ASPECTWERKZ_PACKAGE_NAME)) {
@@ -329,11 +321,7 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
                 super.visitMethodInsn(opcode, calleeClassName, calleeConstructorName, calleeConstructorDesc);
                 return;
             }
-//                throw new Error("Constructor call invocation stack corrupted at NEW index " + m_newInvocationIndex + " within "
-//                        + m_callerClassName
-//                        + "." + m_callerMethodName
-//                        + m_callerMethodDesc);
-//            }
+
             NewInvocationStruct struct = (NewInvocationStruct) m_newInvocationStructStack.pop();
             if (struct == null) {
                 // not matched
@@ -444,7 +432,8 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
         }
     }
 
-    public static class LookaheadNewDupInvokeSpecialInstructionCodeAdapter extends AsmAnnotationHelper.NullCodeAdapter {
+    public static class LookaheadNewDupInvokeSpecialInstructionCodeAdapter
+            extends AsmAnnotationHelper.NullCodeAdapter {
 
         private TIntObjectHashMap m_newInvocations;
 
