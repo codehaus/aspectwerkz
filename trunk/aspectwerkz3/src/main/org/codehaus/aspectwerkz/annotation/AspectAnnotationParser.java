@@ -14,6 +14,8 @@ import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
+import org.codehaus.aspectwerkz.transform.aspectj.AjAspectDefinitionManager;
+import org.codehaus.aspectwerkz.transform.aspectj.AjAdviceInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
@@ -64,9 +66,10 @@ public class AspectAnnotationParser {
         if (klass == null) {
             throw new IllegalArgumentException("class to parse can not be null");
         }
+        final ClassLoader loader = klass.getClassLoader();
 
         // grab the classInfo now, and enfore non lazy gathering of annotations
-        ClassInfo classInfo = AsmClassInfo.getClassInfo(klass.getName(), klass.getClassLoader(), false);
+        ClassInfo classInfo = AsmClassInfo.getClassInfo(klass.getName(), loader, false);
 
         AspectAnnotationProxy aspectAnnotation = (AspectAnnotationProxy) Annotations.getAnnotation(
                 AnnotationC.ANNOTATION_ASPECT,
@@ -94,7 +97,7 @@ public class AspectAnnotationParser {
      * @param klass     the class to extract attributes from
      * @param aspectDef the aspect definition
      */
-    private void parseFieldAttributes(final Class klass, AspectDefinition aspectDef) {
+    private void parseFieldAttributes(final Class klass, final AspectDefinition aspectDef) {
         if (aspectDef == null) {
             throw new IllegalArgumentException("aspect definition can not be null");
         }
@@ -163,8 +166,7 @@ public class AspectAnnotationParser {
         List methodList = ReflectHelper.createSortedMethodList(klass);
 
         // iterate first on all method to lookup @Expression Pointcut annotations so that they can be resolved
-        int methodIndex = 0;
-        for (Iterator it = methodList.iterator(); it.hasNext(); methodIndex++) {
+        for (Iterator it = methodList.iterator(); it.hasNext(); ) {
             Method method = (Method) it.next();
 
             // Pointcut with signature
@@ -183,8 +185,7 @@ public class AspectAnnotationParser {
         }
 
         // iterate on other annotations
-        methodIndex = 0;
-        for (Iterator it = methodList.iterator(); it.hasNext(); methodIndex++) {
+        for (Iterator it = methodList.iterator(); it.hasNext(); ) {
             Method method = (Method) it.next();
 
             try {
@@ -205,7 +206,6 @@ public class AspectAnnotationParser {
                                 aspectName,
                                 aspectClassName,
                                 method,
-                                methodIndex,
                                 aspectDef
                         );
                         aspectDef.addAroundAdviceDefinition(adviceDef);
@@ -227,7 +227,6 @@ public class AspectAnnotationParser {
                                 aspectName,
                                 aspectClassName,
                                 method,
-                                methodIndex,
                                 aspectDef
                         );
                         aspectDef.addBeforeAdviceDefinition(adviceDef);
@@ -249,7 +248,6 @@ public class AspectAnnotationParser {
                                 aspectName,
                                 aspectClassName,
                                 method,
-                                methodIndex,
                                 aspectDef
                         );
                         aspectDef.addAfterAdviceDefinition(adviceDef);
