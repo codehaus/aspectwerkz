@@ -12,7 +12,7 @@ set ASPECTWERKZ_VERSION=0.8
 
 IF "%1"=="" goto error
 IF "%ASPECTWERKZ_HOME%"=="" goto error_no_aw_home
-IF "%JAVA_COMMAND%"=="" set JAVA_COMMAND=java
+IF "%JAVA_COMMAND%"=="" set JAVA_COMMAND=%JAVA_HOME%\bin\java
 IF "%JAVA_HOME%"=="" goto error_no_java_home
 
 set CP=%CLASSPATH%

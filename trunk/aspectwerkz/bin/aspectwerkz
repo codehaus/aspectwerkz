@@ -36,7 +36,7 @@ if [ -z "$CLASSPATH" ]; then
 	CLASSPATH="."
 fi
 if [ -z "$JAVA_COMMAND" ]; then
-	JAVA_COMMAND="java"
+	JAVA_COMMAND="$JAVA_HOME/bin/java"
 fi
 
 if [ "$1" != "-offline" ]; then
