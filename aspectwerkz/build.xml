@@ -44,9 +44,6 @@
         <property name="javac.optimize" value="on"/>
         <property name="javac.depend" value="off"/>
         <property name="javac.verbose" value="off"/>
-
-        <mkdir dir="${basedir}/_metaData"/>
-        <mkdir dir="${basedir}/_txLogs"/>
         <mkdir dir="${dist.dir}"/>
 
         <!-- os specific -->
@@ -340,17 +337,6 @@
         <exec executable="java">
             <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.AttributeC ${basedir}/src/samples ${basedir}/src/samples/aspectwerkz.xml -m ${basedir}/src/samples/samples.xml -u samples"/>
         </exec>
-    </target>
-
-    <!-- ============================================================== -->
-    <!-- task definitions -->
-    <!-- ============================================================== -->
-    <target name="offline" depends="aspectwerkz:init">
-        <offlineTransformation
-            aspectWerkzHome="${basedir}"
-            definitionFile="${basedir}/src/samples/samples.xml"
-            classesDir="${basedir}/target/samples-classes"
-            metaDataDir="${basedir}/_metaData"/>
     </target>
 
 </project>

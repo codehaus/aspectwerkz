@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<aspectwerkz>
+<aspectwerkz id="xmltest">
 
     <introduction-def name="loggable" interface="logging.Loggable" deployment-model="perJVM" attribute="loggable"/>
     <introduction-def name="mixin" interface="mixins.Mixin" implementation="mixins.MixinImpl" deployment-model="perInstance" attribute="attribute"/>

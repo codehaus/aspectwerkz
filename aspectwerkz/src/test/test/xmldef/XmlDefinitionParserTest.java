@@ -20,6 +20,8 @@ import org.codehaus.aspectwerkz.definition.IntroductionWeavingRule;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
 import org.codehaus.aspectwerkz.definition.XmlDefinitionParser;
+import org.codehaus.aspectwerkz.metadata.AttributeC;
+import org.dom4j.Document;
 
 public class XmlDefinitionParserTest extends TestCase {
 
@@ -27,7 +29,7 @@ public class XmlDefinitionParserTest extends TestCase {
 
     public void testIntroductionTag() {
         try {
-            AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parseNoCache(m_input);
+            AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parseNoCache(m_input.toURL());
             Iterator it = aspectwerkz.getIntroductionDefinitions().iterator();
             IntroductionDefinition introduction2 = (IntroductionDefinition)it.next();
             assertEquals("mixin", introduction2.getName());
@@ -44,7 +46,7 @@ public class XmlDefinitionParserTest extends TestCase {
 
     public void testAdviceTag() {
         try {
-            AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parseNoCache(m_input);
+            AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parseNoCache(m_input.toURL());
             Iterator it = aspectwerkz.getAdviceDefinitions().iterator();
             AdviceDefinition advice1 = (AdviceDefinition)it.next();
             assertEquals("logging", advice1.getName());
@@ -59,7 +61,7 @@ public class XmlDefinitionParserTest extends TestCase {
 
     public void testAspectTag() {
         try {
-            AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parseNoCache(m_input);
+            AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parseNoCache(m_input.toURL());
             Iterator it1 = aspectwerkz.getAspectDefinitions().iterator();
             AspectDefinition aspect = (AspectDefinition)it1.next();
             assertEquals("Logger", aspect.getName());
@@ -81,7 +83,7 @@ public class XmlDefinitionParserTest extends TestCase {
 
     public void testPointcutTag() {
         try {
-            final AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parseNoCache(m_input);
+            final AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parseNoCache(m_input.toURL());
             Iterator it = ((AspectDefinition)aspectwerkz.getAspectDefinitions().iterator().
                     next()).getPointcutDefs().iterator();
             PointcutDefinition pointcut2 = (PointcutDefinition)it.next();
@@ -100,6 +102,19 @@ public class XmlDefinitionParserTest extends TestCase {
             fail();
         }
     }
+
+//    public void testMergeDocuments() {
+//        try {
+//            Document document1 = XmlDefinitionParser.createDocument(m_input.toURL());
+//            Document document2 = XmlDefinitionParser.createDocument(new File("src/test/aspectwerkz-test.xml").toURL());
+//            Document document = XmlDefinitionParser.mergeDocuments(document1, document2);
+//            AttributeC.writeDocumentToFile(document, "c:\\temp\\mergedDocument.xml");
+//        }
+//        catch (Exception e) {
+//            System.out.println(e);
+//            fail();
+//        }
+//    }
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());

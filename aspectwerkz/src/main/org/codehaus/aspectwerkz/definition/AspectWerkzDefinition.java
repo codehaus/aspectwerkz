@@ -28,6 +28,7 @@ import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.AspectWerkz;
+import org.dom4j.Document;
 
 /**
  * Implements the <code>AspectWerkz</code> definition.
@@ -49,24 +50,24 @@ public class AspectWerkzDefinition implements Serializable {
     public static final String DEFINITION_FILE = System.getProperty("aspectwerkz.definition.file", null);
 
     /**
-     * Default name for the definition file.
+     * The default name for the definition file.
      */
     public static final String DEFAULT_DEFINITION_FILE_NAME = "aspectwerkz.xml";
 
     /**
-     * Name of the system aspect.
+     * The name of the system aspect.
      */
     public static final String SYSTEM_ASPECT = "org/codehaus/aspectwerkz/system";
 
     /**
-     * Holds the aspectwerkz definitions.
+     * The aspectwerkz definitions.
      */
     private static Map s_definitions = new HashMap();
 
     /**
      * Holds the indexes for the introductions. The introduction indexes are needed here
      * (instead of in the AspectWerkz class like the advice indexes) since they need to
-     * be available to the transformers before the AspectWerkz system has been initalized.
+     * be available to the transformers before the AspectWerkz system has been initialized.
      */
     private final TObjectIntHashMap m_introductionIndexes = new TObjectIntHashMap();
 
@@ -105,13 +106,26 @@ public class AspectWerkzDefinition implements Serializable {
      */
     private final Set m_transformationScopeSet = new HashSet();
 
-    //========================================================
     /**
-     * Loads the current weave model from disk based.
+     * Creates, caches and returns new definition. Loads the definition in the file specified.
+     *
+     * @param document the DOM document containing the definition
+     * @return the aspectwerkz definition
+     */
+    public static AspectWerkzDefinition createDefinition(final Document document) {
+        if (document == null) throw new IllegalArgumentException("definition document can not be null");
+        final AspectWerkzDefinition definition =
+                AspectWerkzDefinition.loadDefinitionAsDocument(document);
+        s_definitions.put(definition.getUuid(), definition);
+        return definition;
+    }
+
+    /**
+     * Loads the aspectwerkz definition from disk.
      * Used by the transformers.
      * Grabs the first one it finds (should only by one in the transformations process).
      *
-     * @return the weave model
+     * @return the aspectwerkz definition
      */
     public static AspectWerkzDefinition getDefinitionForTransformation() {
         if (s_definitions.containsKey(AspectWerkz.DEFAULT_SYSTEM)) {
@@ -137,12 +151,12 @@ public class AspectWerkzDefinition implements Serializable {
     }
 
     /**
-     * Loads the current weave model from disk based on a specific UUID.
+     * Loads the aspectwerkz definition from disk based on a specific UUID.
      * Only loads from the disk if the timestamp for the latest parsing is
      * older than the timestamp for the weave model.
      *
      * @param uuid the uuid for the weave model to load (null is allowed if only XML definition is used)
-     * @return the weave model
+     * @return the aspectwerkz definition
      */
     public static AspectWerkzDefinition getDefinition(final String uuid) {
         if (s_definitions.containsKey(uuid)) {
@@ -152,11 +166,11 @@ public class AspectWerkzDefinition implements Serializable {
         final boolean isDirty = false;
         final AspectWerkzDefinition definition;
         if (DEFINITION_FILE == null) {
-            // no definition file is specified => try to locate the weave model as a resource on the classpath
+            // no definition file is specified => try to locate the definition as a resource on the classpath
             definition = loadDefinitionAsResource();
         }
         else {
-            // definition file is specified => create a weave model in memory
+            // definition file is specified => create one in memory
             definition = loadDefinitionFromFile(isDirty);
         }
 
@@ -180,23 +194,22 @@ public class AspectWerkzDefinition implements Serializable {
      * @return the definition
      */
     private static AspectWerkzDefinition loadDefinitionFromFile(final boolean useCache) {
-        return AspectWerkzDefinition.loadDefinition(useCache);
+        return AspectWerkzDefinition.loadDefaultDefinitionAsFile(useCache);
     }
 
     /**
-     * Loads an existing weave model from disk.
+     * Loads a definition from disk.
      * Only loads a new model from disk if it has changed.
      *
-     * @param uuid the uuid for the weave model to load
-     * @return the definition model
+     * @param uuid the uuid for the definition to load
+     * @param uuid the uuid for the definition to load
+     * @return the definition
      */
     public static AspectWerkzDefinition loadDefinitionAsResource() {
-        InputStream stream = ContextClassLoader.getResourceAsStream(DEFAULT_DEFINITION_FILE_NAME);
+        InputStream stream = getDefinitionInputStream();
         if (stream == null) throw new RuntimeException("either you have to specify an XML definition file using the -Daspectwerkz.definition.file=... option or you have to have the XML definition file <aspectwerkz.xml> somewhere on the classpath");
-        return AspectWerkzDefinition.loadDefinition(stream);
+        return AspectWerkzDefinition.loadDefinitionAsStream(stream);
     }
-
-    //========================================================
 
     /**
      * Returns the definition.
@@ -207,7 +220,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @param isDirty flag to mark the the defintion as updated or not
      * @return the definition
      */
-    public static AspectWerkzDefinition loadDefinition(boolean isDirty) {
+    public static AspectWerkzDefinition loadDefaultDefinitionAsFile(boolean isDirty) {
         String definitionFileName;
         if (DEFINITION_FILE == null) {
             URL definition = ContextClassLoader.loadResource(DEFAULT_DEFINITION_FILE_NAME);
@@ -217,7 +230,7 @@ public class AspectWerkzDefinition implements Serializable {
         else {
             definitionFileName = DEFINITION_FILE;
         }
-        return loadDefinition(definitionFileName, isDirty);
+        return loadDefinitionAsFile(definitionFileName, isDirty);
     }
 
     /**
@@ -226,8 +239,8 @@ public class AspectWerkzDefinition implements Serializable {
      * @param definitionFile the definition file
      * @return the definition
      */
-    public static AspectWerkzDefinition loadDefinition(final String definitionFile) {
-        return loadDefinition(definitionFile, false);
+    public static AspectWerkzDefinition loadDefinitionAsFile(final String definitionFile) {
+        return loadDefinitionAsFile(definitionFile, false);
     }
 
     /**
@@ -237,8 +250,8 @@ public class AspectWerkzDefinition implements Serializable {
      * @param isDirty flag to mark the the defintion as updated or not
      * @return the definition
      */
-    public static AspectWerkzDefinition loadDefinition(final String definitionFile,
-                                                      boolean isDirty) {
+    public static AspectWerkzDefinition loadDefinitionAsFile(final String definitionFile,
+                                                             boolean isDirty) {
         return XmlDefinitionParser.parse(new File(definitionFile), isDirty);
     }
 
@@ -248,8 +261,27 @@ public class AspectWerkzDefinition implements Serializable {
      * @param stream the stream containing the definition file
      * @return the definition
      */
-    public static AspectWerkzDefinition loadDefinition(final InputStream stream) {
+    public static AspectWerkzDefinition loadDefinitionAsStream(final InputStream stream) {
         return XmlDefinitionParser.parse(stream);
+    }
+
+    /**
+     * Returns the definition.
+     *
+     * @param document the DOM document containing the definition file
+     * @return the definition
+     */
+    public static AspectWerkzDefinition loadDefinitionAsDocument(final Document document) {
+        return XmlDefinitionParser.parse(document);
+    }
+
+    /**
+     * Returns an input stream to the definition if found on classpath.
+     *
+     * @return the input stream to the definition
+     */
+    public static InputStream getDefinitionInputStream() {
+        return ContextClassLoader.getResourceAsStream(DEFAULT_DEFINITION_FILE_NAME);
     }
 
     /**
@@ -823,10 +855,6 @@ public class AspectWerkzDefinition implements Serializable {
             }
         }
         return introductionNames;
-    }
-
-    public List getIntroductionMethodsMetaData(String introductionName) {
-        throw new UnsupportedOperationException("introducution meta-data should be retrieved and stored by the hook");
     }
 }
 
