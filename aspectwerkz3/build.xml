@@ -262,12 +262,6 @@
             <rule pattern="org.objectweb.asm.**" result="org.codehaus.aspectwerkz.@0"/>
         </jarjar>
 		<copy tofile="${lib.dir}/aspectwerkz-extensions-${version}.jar" file="${target.dir}/aspectwerkz-extensions-${version}.jar" overwrite="true" />
-		
-		<antcall target="samples:annotationc"/>
-        <jarjar jarfile="${target.dir}/aspectwerkz-samples-${version}.jar" basedir="${samples.classes}">
-            <rule pattern="org.objectweb.asm.**" result="org.codehaus.aspectwerkz.@0"/>
-        </jarjar>
-		<copy tofile="${lib.dir}/aspectwerkz-samples-${version}.jar" file="${target.dir}/aspectwerkz-samples-${version}.jar" overwrite="true" />
 	</target>
 
 	<!-- ============================================================== -->
