@@ -9,10 +9,12 @@ package org.codehaus.aspectwerkz.joinpoint;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
@@ -95,6 +97,7 @@ public class ThrowsJoinPoint implements JoinPoint {
 
         createMetaData();
         AspectWerkz.fakeStackTrace(m_exception, getTargetClass().getName());
+
         loadAdvices();
     }
 
@@ -112,14 +115,18 @@ public class ThrowsJoinPoint implements JoinPoint {
     /**
      * Invokes the next advice in the chain until it reaches the end.
      *
-     * @return null the result from a throws pointcut always returns null
+     * @return result the result the around advice
      * @throws Throwable
      */
     public Object proceed() throws Throwable {
+        Object result = null;
         m_currentAdviceIndex++;
         if (m_currentAdviceIndex != m_adviceIndexes.length) {
             try {
-//                m_system.getAspect(m_adviceIndexes[m_currentAdviceIndex]).doExecute(this);
+                IndexTuple index = m_adviceIndexes[m_currentAdviceIndex];
+                int aspectIndex = index.getAspectIndex();
+                int methodIndex = index.getMethodIndex();
+                result = m_system.getAspect(aspectIndex).___AW_invokeAdvice(methodIndex, this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
                 StringBuffer cause = new StringBuffer();
@@ -133,7 +140,7 @@ public class ThrowsJoinPoint implements JoinPoint {
                 throw new DefinitionException(cause.toString());
             }
         }
-        return null;
+        return result;
     }
 
     /**
@@ -286,29 +293,26 @@ public class ThrowsJoinPoint implements JoinPoint {
 
     /**
      * Loads the advices for this pointcut.
-     *
-     * @TODO: think over how to implement
      */
     protected void loadAdvices() {
         synchronized (m_adviceIndexes) {
             List adviceIndexes = new ArrayList();
 
-            // get all the throws pointcuts for this class
             List pointcuts = m_system.getThrowsPointcuts(m_classMetaData, m_methodMetaData);
+            for (Iterator it = pointcuts.iterator(); it.hasNext();) {
+                ThrowsPointcut fieldPointcut = (ThrowsPointcut)it.next();
 
-//            for (Iterator it = pointcuts.iterator(); it.hasNext();) {
-//                ThrowsPointcut throwsPointcut = (ThrowsPointcut)it.next();
-//                IndexTuple[] advices = throwsPointcut.getAdviceIndexes();
-//                for (int j = 0; j < advices.length; j++) {
-//                    adviceIndexes.add(new Integer(advices[j]));
-//                }
-//            }
-//
-//            m_adviceIndexes = new IndexTuple[adviceIndexes.size()];
-//            int i = 0;
-//            for (Iterator it = adviceIndexes.iterator(); it.hasNext(); i++) {
-//                m_adviceIndexes[i] = ((Integer)it.next()).intValue();
-//            }
+                IndexTuple[] indexes = fieldPointcut.getAdviceIndexes();
+                for (int j = 0; j < indexes.length; j++) {
+                    adviceIndexes.add(indexes[j]);
+                }
+            }
+
+            m_adviceIndexes = new IndexTuple[adviceIndexes.size()];
+            int i = 0;
+            for (Iterator it = adviceIndexes.iterator(); it.hasNext(); i++) {
+                m_adviceIndexes[i] = (IndexTuple)it.next();
+            }
         }
     }
 
