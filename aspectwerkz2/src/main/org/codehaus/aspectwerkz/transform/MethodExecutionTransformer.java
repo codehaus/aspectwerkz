@@ -8,12 +8,8 @@
 package org.codehaus.aspectwerkz.transform;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Comparator;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Arrays;
 
@@ -28,14 +24,13 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.MethodComparator;
 import gnu.trove.TObjectIntHashMap;
 
 /**
  * Advises method EXECUTION join points.
  *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class MethodExecutionTransformer implements Transformer {
 
@@ -43,7 +38,6 @@ public class MethodExecutionTransformer implements Transformer {
     public final static int STATUS_SKIP = 1;
     public final static int STATUS_HASNOPOINTCUT = 2;
     public final static int STATUS_HASPOINTCUT = 3;
-
 
     /**
      * List with the definitions.
@@ -402,6 +396,11 @@ public class MethodExecutionTransformer implements Transformer {
     }
 }
 
+/**
+ *
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ */
 class MethodSequenceTuple {
     private CtMethod m_method;
     private int m_sequence;
@@ -431,5 +430,4 @@ class MethodSequenceTuple {
     public String toString() {
         return m_method.getName() + " : " + m_status;
     }
-
 }

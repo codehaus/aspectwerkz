@@ -22,7 +22,6 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
@@ -115,7 +114,7 @@ public class HandlerTransformer implements Transformer {
                                 body.append(',');
                                 body.append(m_joinPointIndex);
                                 if (Modifier.isStatic(where.getModifiers())) {
-                                    body.append(", $1, null, \"");
+                                    body.append(", $1, (Object)null, \"");
                                 }
                                 else {
                                     body.append(", $1, this, \"");
