@@ -24,6 +24,7 @@ import org.codehaus.aspectwerkz.transform.TransformationConstants;
 /**
  * Generic aspect used by perX deployment modes to initialize the aspect instance.
  * It gets registered programatically when finding perX aspects. 
+ * fake
  * 
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
