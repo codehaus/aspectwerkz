@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.StringTokenizer;
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -44,7 +43,7 @@ import gnu.trove.TIntObjectHashMap;
 /**
  * Stores the aspects, advices, pointcuts etc. Manages the method, advice and aspect indexing.
  *
- * TODO: FIRST REFACTOR
+ * @TODO: FIRST REFACTOR
  * 1. Use hashes, aspect=>hashcode for class advice=>hashcode for method signature
  * 3. Store references to all join points that uses advices from a certain aspect [aspectKey=>joinPoints]
  * 4. Map all aspects to a key, meaning have a key that maps to a data structure that contains full info about the
@@ -73,7 +72,7 @@ public class AspectRegistry {
      * Sorted map with PointcutManager instance containing the pointcut instance the aspect,
      * mapped to its name (the name of the class implementing the aspect).
      */
-    private final Map m_aspectMetaDataMap = new SequencedHashMap();
+    private final Map m_pointcutManagerMap = new SequencedHashMap();
 
     /**
      * Holds the indexes for the aspects, maps the aspect name to the index for the aspect.
@@ -139,19 +138,19 @@ public class AspectRegistry {
      * Registers a new aspect.
      *
      * @param aspect the aspect to register
-     * @param aspectMetaData the aspect meta-data
+     * @param pointcutManager the pointcut manager
      */
-    public void register(final Aspect aspect, final PointcutManager aspectMetaData) {
+    public void register(final Aspect aspect, final PointcutManager pointcutManager) {
         if (aspect == null) throw new IllegalArgumentException("aspect can not be null");
-        if (aspectMetaData == null) throw new IllegalArgumentException("aspect meta-data can not be null");
+        if (pointcutManager == null) throw new IllegalArgumentException("pointcut manager can not be null");
 
         synchronized (m_aspects) {
             synchronized (m_aspectIndexes) {
                 synchronized (m_adviceIndexes) {
                     synchronized (m_mixins) {
-                        synchronized (m_aspectMetaDataMap) {
+                        synchronized (m_pointcutManagerMap) {
                             try {
-                                m_aspectMetaDataMap.put(aspect.___AW_getName(), aspectMetaData);
+                                m_pointcutManagerMap.put(aspect.___AW_getName(), pointcutManager);
 
                                 final int indexAspect = m_aspects.length + 1;
                                 m_aspectIndexes.put(aspect.___AW_getName(), indexAspect);
@@ -321,20 +320,20 @@ public class AspectRegistry {
     }
 
     /**
-     * Returns the aspect meta-data for the name specified.
+     * Returns the pointcut managers for the name specified.
      *
      * @param name the name of the aspect
-     * @return the aspect
+     * @return the pointcut manager
      */
-    public PointcutManager getAspectMetaData(final String name) {
+    public PointcutManager getPointcutManager(final String name) {
         if (name == null) throw new IllegalArgumentException("aspect name can not be null");
-        if (m_aspectMetaDataMap.containsKey(name)) {
-            return (PointcutManager)m_aspectMetaDataMap.get(name);
+        if (m_pointcutManagerMap.containsKey(name)) {
+            return (PointcutManager)m_pointcutManagerMap.get(name);
         }
         else {
             initialize();
-            if (m_aspectMetaDataMap.containsKey(name)) {
-                return (PointcutManager)m_aspectMetaDataMap.get(name);
+            if (m_pointcutManagerMap.containsKey(name)) {
+                return (PointcutManager)m_pointcutManagerMap.get(name);
             }
             else {
                 throw new DefinitionException("aspect " + name + " is not properly defined");
@@ -343,13 +342,13 @@ public class AspectRegistry {
     }
 
     /**
-     * Returns a list with all the aspects meta-data.
+     * Returns a list with all the pointcut managers.
      *
-     * @return the aspects
+     * @return the pointcut managers
      */
-    public Collection getAspectsMetaData() {
+    public Collection getPointcutManagers() {
         initialize();
-        return m_aspectMetaDataMap.values();
+        return m_pointcutManagerMap.values();
     }
 
     /**
@@ -371,7 +370,7 @@ public class AspectRegistry {
      */
     public List getExecutionPointcuts(final ClassMetaData classMetaData, final MethodMetaData methodMetaData) {
         List pointcuts = new ArrayList();
-        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
+        for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager aspect = (PointcutManager)it.next();
             List methodPointcuts = aspect.getExecutionPointcuts(classMetaData, methodMetaData);
             pointcuts.addAll(methodPointcuts);
@@ -388,7 +387,7 @@ public class AspectRegistry {
      */
     public List getGetPointcuts(final ClassMetaData classMetaData, final FieldMetaData fieldMetaData) {
         List pointcuts = new ArrayList();
-        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
+        for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager aspect = (PointcutManager)it.next();
             pointcuts.addAll(aspect.getGetPointcuts(classMetaData, fieldMetaData));
         }
@@ -404,25 +403,9 @@ public class AspectRegistry {
      */
     public List getSetPointcuts(final ClassMetaData classMetaData, final FieldMetaData fieldMetaData) {
         List pointcuts = new ArrayList();
-        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
+        for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager aspect = (PointcutManager)it.next();
             pointcuts.addAll(aspect.getSetPointcuts(classMetaData, fieldMetaData));
-        }
-        return pointcuts;
-    }
-
-    /**
-     * Returns the throws pointcut list for the class and method specified.
-     *
-     * @param classMetaData the meta-data for the class
-     * @param methodMetaData meta-data for the method
-     * @return the pointcuts for this join point
-     */
-    public List getThrowsPointcuts(final ClassMetaData classMetaData, final MethodMetaData methodMetaData) {
-        List pointcuts = new ArrayList();
-        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
-            PointcutManager aspect = (PointcutManager)it.next();
-            pointcuts.addAll(aspect.getThrowsPointcuts(classMetaData, methodMetaData));
         }
         return pointcuts;
     }
@@ -436,7 +419,7 @@ public class AspectRegistry {
      */
     public List getCallPointcuts(final ClassMetaData classMetaData, final MethodMetaData methodMetaData) {
         List pointcuts = new ArrayList();
-        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
+        for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager aspect = (PointcutManager)it.next();
             pointcuts.addAll(aspect.getCallPointcuts(classMetaData, methodMetaData));
         }
@@ -452,7 +435,7 @@ public class AspectRegistry {
      */
     public List getCflowPointcuts(final ClassMetaData classMetaData, final MethodMetaData methodMetaData) {
         List pointcuts = new ArrayList();
-        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
+        for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager aspect = (PointcutManager)it.next();
             pointcuts.addAll(aspect.getCFlowExpressions(classMetaData, methodMetaData));
         }
@@ -469,7 +452,7 @@ public class AspectRegistry {
         if (name == null) throw new IllegalArgumentException("aspect name can not be null");
 
         initialize();
-        if (m_aspectMetaDataMap.containsKey(name)) {
+        if (m_pointcutManagerMap.containsKey(name)) {
             return true;
         }
         else {

@@ -251,6 +251,7 @@ public class JoinPointManager {
         if (ENABLE_JIT_COMPILATION) {
             joinPoint = handleJitCompilation(methodHash, joinPointState);
         }
+
         if (joinPoint == null) {
             // get the join point from the cache
             ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(methodHash);
@@ -342,6 +343,7 @@ public class JoinPointManager {
         if (ENABLE_JIT_COMPILATION) {
             joinPoint = handleJitCompilation(methodHash, joinPointState);
         }
+
         if (joinPoint == null) {
             // get the join point from the cache
             ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(methodHash);
@@ -423,6 +425,7 @@ public class JoinPointManager {
         if (ENABLE_JIT_COMPILATION) {
             joinPoint = handleJitCompilation(fieldHash, joinPointState);
         }
+
         if (joinPoint == null) {
             // get the join point from the cache
             ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(fieldHash);
@@ -434,8 +437,7 @@ public class JoinPointManager {
                 Map pointcutTypeToAdvicesMap = s_registry.getAdvicesForJoinPoint(m_classHash, fieldHash);
 
                 AdviceContainer[] adviceIndexes = null;
-                Object o = pointcutTypeToAdvicesMap.get(PointcutType.SET);
-                adviceIndexes = (AdviceContainer[])o;
+                adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.SET);
                 joinPoint = createFieldJoinPoint(
                         fieldHash, fieldSignature, JoinPointType.FIELD_SET, m_targetClass, adviceIndexes
                 );
@@ -490,6 +492,7 @@ public class JoinPointManager {
         if (ENABLE_JIT_COMPILATION) {
             joinPoint = handleJitCompilation(fieldHash, joinPointState);
         }
+
         if (joinPoint == null) {
             // get the join point from the cache
             ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(fieldHash);
@@ -563,6 +566,7 @@ public class JoinPointManager {
         if (ENABLE_JIT_COMPILATION) {
             joinPoint = handleJitCompilation(catchClauseHash, joinPointState);
         }
+
         if (joinPoint == null) {
             // get the join point from the cache
             ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(catchClauseHash);

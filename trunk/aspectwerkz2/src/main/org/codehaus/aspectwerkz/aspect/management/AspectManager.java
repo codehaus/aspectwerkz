@@ -28,14 +28,14 @@ import java.util.List;
 import java.util.Collection;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 /**
- * Manages the aspects. Meaning f.e. deployment, redeployment, management, configuration or redefinition of the aspects.
+ * Manages the aspects. Meaning f.e. deployment, redeployment, management, configuration or
+ * redefinition of the aspects.
  *
- * TODO: Must handle :
+ * @TODO: Must handle :
  *  - undeployment of the aspects
  *  - notification of all the pointcuts that it should remove a certain advice from the pointcut
  *  - notification of the JoinPoinManager.
@@ -275,7 +275,7 @@ public final class AspectManager {
      * @return the aspect
      */
     public PointcutManager getAspectMetaData(final String name) {
-        return m_aspectRegistry.getAspectMetaData(name);
+        return m_aspectRegistry.getPointcutManager(name);
     }
 
     /**
@@ -284,7 +284,7 @@ public final class AspectManager {
      * @return the aspects
      */
     public Collection getAspectsMetaData() {
-        return m_aspectRegistry.getAspectsMetaData();
+        return m_aspectRegistry.getPointcutManagers();
     }
 
     /**
@@ -387,38 +387,6 @@ public final class AspectManager {
 
         synchronized (m_setPointcutCache) {
             m_setPointcutCache.put(hashKey, pointcuts);
-        }
-
-        return pointcuts;
-    }
-
-    /**
-     * Returns the throws pointcut list for the class and method specified.
-     * <p/>Caches the list, needed since the actual method call is expensive
-     * and is made each time a new instance of an advised class is created.
-     *
-     * @param classMetaData the meta-data for the class
-     * @param methodMetaData meta-data for the method
-     * @return the pointcuts for this join point
-     */
-    public List getThrowsPointcuts(final ClassMetaData classMetaData,
-                                   final MethodMetaData methodMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
-
-        initialize();
-
-        Integer hashKey = Util.calculateHash(classMetaData.getName(), methodMetaData);
-
-        // if cached; return the cached list
-        if (m_throwsPointcutCache.containsKey(hashKey)) {
-            return (List)m_throwsPointcutCache.get(hashKey);
-        }
-
-        List pointcuts = m_aspectRegistry.getThrowsPointcuts(classMetaData, methodMetaData);
-
-        synchronized (m_throwsPointcutCache) {
-            m_throwsPointcutCache.put(hashKey, pointcuts);
         }
 
         return pointcuts;

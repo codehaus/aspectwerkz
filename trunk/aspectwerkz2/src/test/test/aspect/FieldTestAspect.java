@@ -59,6 +59,16 @@ public class FieldTestAspect extends Aspect {
     /** @Get * test.FieldAdviceTest.s_getStaticFieldPrePostAdviced */
     Pointcut pc17;
 
+    /** @Set * test.FieldAdviceTest.m_setFieldAroundAdviced */
+    Pointcut pc18;
+    /** @Set * test.FieldAdviceTest.s_setStaticFieldAroundAdviced */
+    Pointcut pc19;
+    /** @Get * test.FieldAdviceTest.m_getFieldAroundAdviced */
+    Pointcut pc20;
+    /** @Get * test.FieldAdviceTest.s_getStaticFieldAroundAdviced */
+    Pointcut pc21;
+
+
     // ============ Advices ============
 
     /**
@@ -91,5 +101,16 @@ public class FieldTestAspect extends Aspect {
      */
     public void postAdvice2(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("post2 ");
+    }
+
+    /**
+     * @Around pc18 || pc19
+     * @Around pc20 || pc21
+     */
+    public Object around(final JoinPoint joinPoint) throws Throwable {
+        FieldAdviceTest.log("before ");
+        final Object result = joinPoint.proceed();
+        FieldAdviceTest.log("after ");
+        return result;
     }
 }

@@ -20,6 +20,9 @@ import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 
 /**
+ *
+ * @TODO: refactor to only use ONE single pointcut but with a type field???
+ *
  * Abstract implementation of the pointcut concept.
  * I.e. an abstraction of a well defined point of execution in the program.<br/>
  * Could matches one or many as long at it is well defined.<br/>
@@ -173,36 +176,6 @@ public abstract class AbstractPointcut {
             }
         }
     }
-    /**
-     * Adds an array of advices to the pointcut.<br/>
-     * Makes a defensive copy.
-     *
-     * @param advicesToAdd the name of the advices to add
-     */
-//    public void addAroundAdvices(final String[] advicesToAdd) {
-//        for (int i = 0; i < advicesToAdd.length; i++) {
-//            if (advicesToAdd[i] == null || advicesToAdd[i].trim().length() == 0) throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
-//        }
-//        synchronized (m_names) {
-//            synchronized (m_aroundAdviceIndexes) {
-//                final String[] clone = new String[advicesToAdd.length];
-//                System.arraycopy(advicesToAdd, 0, clone, 0, advicesToAdd.length);
-//
-//                final String[] tmp = new String[m_names.length + advicesToAdd.length];
-//                System.arraycopy(m_names, 0, tmp, 0, m_names.length);
-//                System.arraycopy(clone, 0, tmp, m_names.length, tmp.length);
-//
-//                m_names = new String[tmp.length];
-//                System.arraycopy(tmp, 0, m_names, 0, tmp.length);
-//
-//                m_aroundAdviceIndexes = new IndexTuple[m_names.length];
-//                for (int j = 0; j < m_names.length; j++) {
-//                    m_aroundAdviceIndexes[j] = SystemLoader.getSystem(m_uuid).getAspectManager().
-//                            getAdviceIndexFor(m_names[j]);
-//                }
-//            }
-//        }
-//    }
 
     /**
      * Removes an advice from the pointcut.

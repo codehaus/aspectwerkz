@@ -14,7 +14,6 @@ import java.util.ArrayList;
 
 import org.codehaus.aspectwerkz.pointcut.GetPointcut;
 import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
-import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
 import org.codehaus.aspectwerkz.pointcut.CallPointcut;
 import org.codehaus.aspectwerkz.pointcut.SetPointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
@@ -51,11 +50,6 @@ public class PointcutManager {
      * Holds references to all the the set pointcuts.
      */
     protected final List m_setPointcuts = new ArrayList();
-
-    /**
-     * Holds references to all the the throws pointcuts.
-     */
-    protected final List m_throwsPointcuts = new ArrayList();
 
     /**
      * Maps the method to all the cflow method it should care about.
@@ -180,17 +174,6 @@ public class PointcutManager {
     public void addExecutionPointcut(final ExecutionPointcut pointcut) {
         synchronized (m_executionPointcuts) {
             m_executionPointcuts.add(pointcut);
-        }
-    }
-
-    /**
-     * Adds a new throws pointcut to the class.
-     *
-     * @param pointcut the pointcut to add
-     */
-    public void addThrowsPointcut(final ThrowsPointcut pointcut) {
-        synchronized (m_throwsPointcuts) {
-            m_throwsPointcuts.add(pointcut);
         }
     }
 
@@ -380,45 +363,8 @@ public class PointcutManager {
         List pointcutList = new ArrayList();
         for (Iterator it = m_setPointcuts.iterator(); it.hasNext();) {
             final SetPointcut pointcut = (SetPointcut)it.next();
-            if (pointcut.getExpression().match(classMetaData, fieldMetaData)) {
-                pointcutList.add(pointcut);
-            }
-        }
-        return pointcutList;
-    }
-
-    /**
-     * Returns the throws pointcut for a specific uuid and expression.
-     *
-     * @param expression the expression
-     * @return the method pointcut
-     */
-    public ThrowsPointcut getThrowsPointcut(final String expression) {
-        for (Iterator it = m_throwsPointcuts.iterator(); it.hasNext();) {
-            ThrowsPointcut pointcut = (ThrowsPointcut)it.next();
-            if (pointcut.getExpression().getExpression().equals(expression)) {
-                return pointcut;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Returns the pointcut for the method/exception join point specified.
-     *
-     * @param classMetaData the meta-data for the class
-     * @param methodMetaData the method meta-data
-     * @return the pointcut
-     */
-    public List getThrowsPointcuts(final ClassMetaData classMetaData,
-                                   final MethodMetaData methodMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
-
-        List pointcutList = new ArrayList();
-        for (Iterator it = m_throwsPointcuts.iterator(); it.hasNext();) {
-            final ThrowsPointcut pointcut = (ThrowsPointcut)it.next();
-            if (pointcut.getExpression().match(classMetaData, methodMetaData)) {
+            boolean flag = pointcut.getExpression().match(classMetaData, fieldMetaData);
+            if (flag) {
                 pointcutList.add(pointcut);
             }
         }
@@ -521,31 +467,6 @@ public class PointcutManager {
         return pointcutList;
     }
 
-    /**
-     * Checks if a specific method/exceptoin join point has a specific throws
-     * pointcut configured.
-     *
-     * @param classMetaData the meta-data for the class
-     * @param methodMetaData the meta-data for the method
-     * @param exception the name pattern of the exception
-     * @return boolean
-     */
-    public boolean hasThrowsPointcut(final ClassMetaData classMetaData,
-                                     final MethodMetaData methodMetaData,
-                                     final String exception) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
-        if (exception == null) throw new IllegalArgumentException("exception class name can not be null");
-
-        for (Iterator it = m_throwsPointcuts.iterator(); it.hasNext();) {
-            final ThrowsPointcut pointcut = (ThrowsPointcut)it.next();
-            if (pointcut.getExpression().match(classMetaData, methodMetaData, exception)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     // --- over-ridden methods ---
 
     public String toString() {
@@ -560,7 +481,6 @@ public class PointcutManager {
                 + "," + m_getPointcuts
                 + "," + m_setPointcuts
                 + "," + m_callPointcuts
-                + "," + m_throwsPointcuts
                 + "," + m_methodToCFlowMethodsMap
                 + "]";
     }
@@ -575,7 +495,6 @@ public class PointcutManager {
         result = 37 * result + hashCodeOrZeroIfNull(m_getPointcuts);
         result = 37 * result + hashCodeOrZeroIfNull(m_setPointcuts);
         result = 37 * result + hashCodeOrZeroIfNull(m_callPointcuts);
-        result = 37 * result + hashCodeOrZeroIfNull(m_throwsPointcuts);
         result = 37 * result + hashCodeOrZeroIfNull(m_methodToCFlowMethodsMap);
         return result;
     }
@@ -597,7 +516,6 @@ public class PointcutManager {
                 && areEqualsOrBothNull(obj.m_getPointcuts, this.m_getPointcuts)
                 && areEqualsOrBothNull(obj.m_setPointcuts, this.m_setPointcuts)
                 && areEqualsOrBothNull(obj.m_callPointcuts, this.m_callPointcuts)
-                && areEqualsOrBothNull(obj.m_throwsPointcuts, this.m_throwsPointcuts)
                 && areEqualsOrBothNull(obj.m_methodToCFlowMethodsMap, this.m_methodToCFlowMethodsMap);
     }
 

@@ -27,7 +27,7 @@ public class ExecutionPointcut extends AbstractPointcut {
     protected boolean m_isNonReentrant = false;
 
     /**
-     * Creates a new method pointcut.
+     * Creates a new execution pointcut.
      *
      * @param uuid the UUID for the AspectWerkz system
      * @param expression the expression of the pointcut
