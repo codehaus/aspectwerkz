@@ -168,7 +168,7 @@ public class AspectRegistry {
                                 java.lang.System.arraycopy(tmpAspects, 0, m_aspects, 0, tmpAspects.length);
 
                                 // retrieve a sorted advices list => matches the sorted method list in the container
-                                List advices = aspect.___AW_getAspectDef().getAllAdvices();
+                                List advices = aspect.___AW_getAspectDefinition().getAllAdvices();
                                 for (Iterator it = advices.iterator(); it.hasNext();) {
                                     final AdviceDefinition adviceDef = (AdviceDefinition)it.next();
                                     m_adviceIndexes.put(
@@ -177,7 +177,7 @@ public class AspectRegistry {
                                     );
                                 }
 
-                                List introductions = aspect.___AW_getAspectDef().getIntroductions();
+                                List introductions = aspect.___AW_getAspectDefinition().getIntroductions();
                                 for (Iterator it = introductions.iterator(); it.hasNext();) {
                                     IntroductionDefinition introDef = (IntroductionDefinition)it.next();
                                     // load default mixin impl from the aspect which defines it

@@ -10,6 +10,16 @@ package test;
 import junit.framework.TestCase;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.codehaus.aspectwerkz.aspect.Aspect;
+import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
+import org.codehaus.aspectwerkz.definition.AdviceDefinition;
+
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This tests can be run without online / offline or other post compilation mode.
@@ -22,6 +32,26 @@ public class AllTests extends TestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("All tests");
+        Aspect[] aspects = SystemLoader.getSystem("name").getAspectManager().getAspects();
+        for (int i = 0; i < aspects.length; i++) {
+            Aspect aspect = aspects[i];
+            AspectDefinition def = aspect.___AW_getAspectDefinition();
+            String deploymentModel = def.getDeploymentModel();
+
+            List advice = def.getAroundAdvices();
+            for (Iterator iterator = advice.iterator(); iterator.hasNext();) {
+                AdviceDefinition adviceDefinition = (AdviceDefinition)iterator.next();
+                String expr = adviceDefinition.getExpressionAsString();
+                String name = adviceDefinition.getName();
+                adviceDefinition.
+            }
+            Collection pcDefs = def.getPointcuts();
+            for (Iterator iterator = pcDefs.iterator(); iterator.hasNext();) {
+                PointcutDefinition pointcutDefinition = (PointcutDefinition)iterator.next();
+                String expr = pointcutDefinition.getExpression();
+            }
+
+        }
 
         // definition tests
 //        suite.addTestSuite(test.ClassPatternTest.class);
