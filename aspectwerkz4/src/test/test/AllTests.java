@@ -73,6 +73,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.customproceed.CustomProceedTest.class);
         suite.addTestSuite(CFlowTest.class);
         suite.addTestSuite(ComplexCFlowTest.class);
+        suite.addTestSuite(CflowCompilerTest.class);
 
         suite.addTestSuite(test.ClassInfoTest.class);
         // AW-361, should not throw an NPE
