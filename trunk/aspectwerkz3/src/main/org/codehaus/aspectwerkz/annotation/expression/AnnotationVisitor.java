@@ -31,8 +31,8 @@ public class AnnotationVisitor implements ExpressionParserVisitor {
         m_namespace = namespace;
     }
 
-    public boolean match(final TypedAnnotationProxy context) {
-        return ((Boolean)visit(m_root, context)).booleanValue();
+    public boolean match(final TypedAnnotationProxy annotation) {
+        return ((Boolean)visit(m_root, annotation)).booleanValue();
     }
 
     public Object visit(SimpleNode node, Object data) {

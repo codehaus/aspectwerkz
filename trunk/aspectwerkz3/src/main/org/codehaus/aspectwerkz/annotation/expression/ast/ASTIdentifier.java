@@ -8,11 +8,11 @@ public class ASTIdentifier extends SimpleNode {
         super(id);
     }
 
-    public ASTIdentifier(ExpressionParser p, int id) {
+    public ASTIdentifier(AnnotationParser p, int id) {
         super(p, id);
     }
 
-    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
+    public Object jjtAccept(AnnotationParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 

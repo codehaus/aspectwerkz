@@ -6,12 +6,12 @@ public class ASTArray extends SimpleNode {
         super(id);
     }
 
-    public ASTArray(ExpressionParser p, int id) {
+    public ASTArray(AnnotationParser p, int id) {
         super(p, id);
     }
 
     /** Accept the visitor. **/
-    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
+    public Object jjtAccept(AnnotationParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 }

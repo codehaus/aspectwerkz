@@ -16,8 +16,8 @@ import org.apache.xmlbeans.impl.jam.mutable.MAnnotatedElement;
 import org.apache.xmlbeans.impl.jam.mutable.MAnnotation;
 import org.apache.xmlbeans.impl.jam.provider.JamServiceContext;
 import org.codehaus.aspectwerkz.annotation.expression.DumpVisitor;
-import org.codehaus.aspectwerkz.annotation.expression.ast.ExpressionParser;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ParseException;
+import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParser;
 import org.codehaus.aspectwerkz.util.Strings;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -29,7 +29,7 @@ import java.util.Properties;
  */
 public class CustomJavadocTagParser extends JavadocTagParser {
     private JamServiceContext m_ctx;
-    private ExpressionParser m_parser;
+    private AnnotationParser m_parser;
 
     public void init(JamServiceContext ctx) {
         super.init(ctx);
@@ -40,7 +40,7 @@ public class CustomJavadocTagParser extends JavadocTagParser {
             throw new IllegalStateException("CustomJavadocTagParser.init(JamServiceContext) called twice");
         }
         m_ctx = ctx;
-        m_parser = new ExpressionParser(System.in); // can be only one
+        m_parser = new AnnotationParser(System.in); // can be only one
     }
 
     /**

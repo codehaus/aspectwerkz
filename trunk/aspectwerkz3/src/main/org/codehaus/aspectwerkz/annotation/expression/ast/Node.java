@@ -32,5 +32,5 @@ public interface Node {
     public int jjtGetNumChildren();
 
     /** Accept the visitor. **/
-    public Object jjtAccept(ExpressionParserVisitor visitor, Object data);
+    public Object jjtAccept(AnnotationParserVisitor visitor, Object data);
 }
