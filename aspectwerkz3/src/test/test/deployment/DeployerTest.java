@@ -75,12 +75,45 @@ public class DeployerTest extends TestCase {
         assertEquals("deployUndeployUsingHandle ", s_logString);
     }
 
+    public void testDeployUndeployUsingXmlDef() {
+        s_logString = "";
+
+        deployUndeployUsingXmlDef();
+        assertEquals("deployUndeployUsingXmlDef ", s_logString);
+        s_logString = "";
+
+        SystemDefinition def = SystemDefinition.getDefinitionFor(
+                Thread.currentThread().getContextClassLoader(), "tests"
+        );
+        PreparedPointcut preparedPointcut = def.getPreparedPointcut("deployUndeployUsingXmlDef");
+
+        String aspectXmlDef =
+                "<aspect class=\"test.deployment.XmlDefAspect\">" +
+                "<pointcut name=\"pc\" expression=\"execution(void test.deployment.DeployerTest.deployUndeployUsingXmlDef())\"/>" +
+                "<advice name=\"advice\" type=\"around\" bind-to=\"pc\"/>" +
+                "</aspect>";
+        Deployer.deploy(XmlDefAspect.class, preparedPointcut, aspectXmlDef);
+
+        deployUndeployUsingXmlDef();
+        assertEquals("before deployUndeployUsingXmlDef after ", s_logString);
+        s_logString = "";
+
+        Deployer.undeploy(XmlDefAspect.class);
+
+        deployUndeployUsingXmlDef();
+        assertEquals("deployUndeployUsingXmlDef ", s_logString);
+    }
+
     private void deployUndeployUsingHandle() {
         log("deployUndeployUsingHandle ");
     }
 
     private void deployUndeployUsingPreparedPointcut() {
         log("deployUndeployUsingPreparedPointcut ");
+    }
+
+    private void deployUndeployUsingXmlDef() {
+        log("deployUndeployUsingXmlDef ");
     }
 
     public static void main(String[] args) {

@@ -12,11 +12,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class AnnDefAspect {
-    /**
-     * @Around execution(void test.deployment.DeployerTest.deployUndeployUsingHandle()) ||
-     * execution(void test.deployment.DeployerTest.deployUndeployUsingPreparedPointcut())
-     */
+public class XmlDefAspect {
     public Object advice(final JoinPoint joinPoint) throws Throwable {
         DeployerTest.log("before ");
         Object result = joinPoint.proceed();
