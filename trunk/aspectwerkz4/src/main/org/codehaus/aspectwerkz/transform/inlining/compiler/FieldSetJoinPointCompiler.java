@@ -35,36 +35,6 @@ public class FieldSetJoinPointCompiler extends AbstractJoinPointCompiler {
     }
 
     /**
-     * Creates fields common for all join point classes.
-     */
-    protected void createFieldsCommonToAllJoinPoints() {
-        m_cw.visitField(
-                ACC_PRIVATE + ACC_STATIC,
-                TARGET_CLASS_FIELD_NAME,
-                CLASS_CLASS_SIGNATURE,
-                null,
-                null
-        );
-        m_cw.visitField(
-                ACC_PRIVATE + ACC_STATIC,
-                SIGNATURE_FIELD_NAME,
-                FIELD_SIGNATURE_IMPL_CLASS_SIGNATURE,
-                null,
-                null
-        );
-        m_cw.visitField(ACC_PRIVATE + ACC_STATIC, META_DATA_FIELD_NAME, MAP_CLASS_SIGNATURE, null, null);
-        m_cw.visitField(
-                ACC_PRIVATE + ACC_STATIC,
-                OPTIMIZED_JOIN_POINT_INSTANCE_FIELD_NAME,
-                L + m_joinPointClassName + SEMICOLON,
-                null, null
-        );
-        m_cw.visitField(ACC_PRIVATE, CALLEE_INSTANCE_FIELD_NAME, m_calleeClassSignature, null, null);
-        m_cw.visitField(ACC_PRIVATE, CALLER_INSTANCE_FIELD_NAME, m_callerClassSignature, null, null);
-        m_cw.visitField(ACC_PRIVATE, FieldSetJoinPointCompiler.STACK_FRAME_COUNTER_FIELD_NAME, I, null, null);
-    }
-
-    /**
      * Creates join point specific fields.
      */
     protected void createJoinPointSpecificFields() {
@@ -76,6 +46,14 @@ public class FieldSetJoinPointCompiler extends AbstractJoinPointCompiler {
         fieldNames[0] = fieldName;
         m_cw.visitField(ACC_PRIVATE, fieldName, fieldType.getDescriptor(), null, null);
         m_fieldNames = fieldNames;
+
+        m_cw.visitField(
+                ACC_PRIVATE + ACC_STATIC,
+                SIGNATURE_FIELD_NAME,
+                FIELD_SIGNATURE_IMPL_CLASS_SIGNATURE,
+                null,
+                null
+        );
     }
 
     /**

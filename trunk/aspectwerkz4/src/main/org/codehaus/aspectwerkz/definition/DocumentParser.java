@@ -1104,6 +1104,9 @@ public class DocumentParser {
                     hasExecution = true;
                 } else if (token.trim().equalsIgnoreCase("call")) {
                     hasCall = true;
+                    throw new DefinitionException(
+                            "advisable definition with [call] pointcut-type is currently not supported, call helpdesk"
+                    );
                 } else if (token.trim().equalsIgnoreCase("set")) {
                     hasSet = true;
                 } else if (token.trim().equalsIgnoreCase("get")) {
@@ -1114,20 +1117,33 @@ public class DocumentParser {
             }
         }
         if (hasAll || hasExecution) {
+            // FIXME - preparing constructors makes it fail now - chicken and egg pbm since advisable impl based on mixin
             DefinitionParserHelper.createAndAddAdvisableDef(
-                    "((execution(* *..*.*(..)) || execution(*..*.new(..))) && " + expression + ')', definition
+                    "(execution(!static * *..*.*(..)) && " + expression + ')',
+
+                                                            // TODO use when ctor problem with mixin is solved
+//                    "((execution(!static * *..*.*(..)) || execution(*..*.new(..))) && " + expression + ')',
+                    definition
             );
         }
         if (hasAll || hasCall) {
+            // FIXME - make sure that call pc works - req some plumbing with CALLEE and CALLER in JIT JP
             DefinitionParserHelper.createAndAddAdvisableDef(
-                    "((call(* *..*.*(..)) || call(*..*.new(..))) && " + expression + ')', definition
+                    "((call(!static * *..*.*(..)) || call(*..*.new(..))) && " + expression + ')',
+                    definition
             );
         }
         if (hasAll || hasSet) {
-            DefinitionParserHelper.createAndAddAdvisableDef("(set(* *..*.*) && " + expression + ')', definition);
+            DefinitionParserHelper.createAndAddAdvisableDef(
+                    "(set(!static * *..*.*) && " + expression + ')',
+                    definition
+            );
         }
         if (hasAll || hasGet) {
-            DefinitionParserHelper.createAndAddAdvisableDef("(get(* *..*.*) && " + expression + ')', definition);
+            DefinitionParserHelper.createAndAddAdvisableDef(
+                    "(get(!static * *..*.*) && " + expression + ')',
+                    definition
+            );
         }
         //TODO handler
     }

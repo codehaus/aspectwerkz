@@ -133,6 +133,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      */
     private synchronized void initialize(final CompilationInfo.Model model) {
 
+        // check if 'this' is Advisable, e.g. can handle runtime per instance deployment
         ClassInfo[] interfaces = model.getThisClassInfo().getInterfaces();
         for (int i = 0; i < interfaces.length; i++) {
             if (interfaces[i].getName().equals(ADVISABLE_CLASS_JAVA_NAME)) {
@@ -140,44 +141,6 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 break;
             }
         }
-
-        // FIXME impl support for JIT gen of advisable code - example below
-        /*
-class JitJoinPoint {
-    private int joinPointIndex;
-    private POJO CALLEE;
-    private int STACK_FRAME_INDEX = -1;
-
-    private AroundAdviceDelegator[] aroundDelegators = ((Advisable)CALLEE).getAroundAdviceDelegators(joinPointIndex);
-    private int NR_OF_DELEGATORS = aroundDelegators.length;
-    private int DELEGATOR_INDEX = -1;
-
-
-    public Object proceed() {
-        // NOTE: in weaver we have checked POJO implements Advisable
-
-//        if (DELEGATOR_INDEX != -1 && DELEGATOR_INDEX < NR_OF_DELEGATORS) {
-//            return aroundDelegators[DELEGATOR_INDEX++].delegate(this);
-//        }
-
-        STACK_FRAME_INDEX++;
-        switch(STACK_FRAME_INDEX) {
-            case 0:
-                // regular advice invoke 1
-                return null;
-            case 1:
-                // regular advice invoke 2
-                return null;
-            case 2:
-                DELEGATOR_INDEX = 0; // trigger start of delegator chain
-                return proceed();
-            default:
-                return CALLEE.toString();
-        }
-    }
-}
-
-        */
 
         final AdviceInfoContainer advices = model.getAdviceInfoContainer();
 
@@ -289,7 +252,7 @@ class JitJoinPoint {
      */
     private String getJoinPointInterface() {
         String joinPointInterface;
-        if (m_hasAroundAdvices || m_requiresJoinPoint) {
+        if (requiresProceedMethod() || m_requiresJoinPoint) {
             joinPointInterface = JOIN_POINT_CLASS_NAME;
         } else {
             joinPointInterface = STATIC_JOIN_POINT_CLASS_NAME;
@@ -343,9 +306,37 @@ class JitJoinPoint {
     }
 
     /**
-     * Creates fields common for all join point classes.
+     * Creates join point specific fields.
      */
-    protected abstract void createFieldsCommonToAllJoinPoints();
+    protected void createFieldsCommonToAllJoinPoints() {
+        m_cw.visitField(
+                ACC_PRIVATE + ACC_STATIC,
+                TARGET_CLASS_FIELD_NAME,
+                CLASS_CLASS_SIGNATURE,
+                null,
+                null
+        );
+        m_cw.visitField(ACC_PRIVATE + ACC_STATIC, META_DATA_FIELD_NAME, MAP_CLASS_SIGNATURE, null, null);
+        m_cw.visitField(
+                ACC_PRIVATE + ACC_STATIC,
+                OPTIMIZED_JOIN_POINT_INSTANCE_FIELD_NAME,
+                L + m_joinPointClassName + SEMICOLON,
+                null, null
+        );
+        m_cw.visitField(ACC_PRIVATE, CALLEE_INSTANCE_FIELD_NAME, m_calleeClassSignature, null, null);
+        m_cw.visitField(ACC_PRIVATE, CALLER_INSTANCE_FIELD_NAME, m_callerClassSignature, null, null);
+        m_cw.visitField(ACC_PRIVATE, STACK_FRAME_COUNTER_FIELD_NAME, I, null, null);
+
+        if (m_isThisAdvisable) {
+            m_cw.visitField(
+                    ACC_PRIVATE, AROUND_DELEGATORS_FIELD_NAME,
+                    "[Lorg/codehaus/aspectwerkz/delegation/AroundAdviceDelegator;", null, null
+            );
+            m_cw.visitField(ACC_PRIVATE, NR_OF_AROUND_DELEGATORS_FIELD_NAME, I, null, null);
+            m_cw.visitField(ACC_PRIVATE, DELEGATOR_INDEX_FIELD_NAME, I, null, null);
+        }
+    }
+
 
     /**
      * Creates join point specific fields.
@@ -354,8 +345,6 @@ class JitJoinPoint {
 
     /**
      * Creates the signature for the join point.
-     * <p/>
-     * FIXME signature field should NOT be of type Signature but of the specific type (update all refs as well)
      *
      * @param cv
      */
@@ -443,7 +432,8 @@ class JitJoinPoint {
             }
 
             createInvokeMethod();
-            if (m_hasAroundAdvices) {
+
+            if (requiresProceedMethod()) {
                 createProceedMethod();
             }
 
@@ -512,6 +502,7 @@ class JitJoinPoint {
 
         cv.visitVarInsn(ALOAD, 0);
         resetStackFrameCounter(cv);
+
         cv.visitInsn(RETURN);
         cv.visitMaxs(0, 0);
     }
@@ -723,7 +714,7 @@ class JitJoinPoint {
         // do we need to keep track of CALLEE, ARGS etc, if not then completely skip it
         // and make use of the optimized join point instance
         // while not using its fields (does not support reentrancy and thread safety)
-        final boolean isOptimizedJoinPoint = !m_requiresJoinPoint && !m_hasAroundAdvices;
+        final boolean isOptimizedJoinPoint = !m_requiresJoinPoint && !requiresProceedMethod();
         int joinPointIndex = INDEX_NOTAVAILABLE;
 
         if (!isOptimizedJoinPoint) {
@@ -732,7 +723,7 @@ class JitJoinPoint {
             createInvocationLocalJoinPointInstance(cv, argStartIndex, joinPointIndex);
         }
 
-        // initialize the instance local aspects
+        // initialize the instance level aspects (perInstance)
         initializeInstanceLevelAspects(cv, isOptimizedJoinPoint, joinPointIndex, callerIndex, calleeIndex);
 
         // before advices
@@ -825,7 +816,7 @@ class JitJoinPoint {
 
         Label tryLabel = new Label();
         cv.visitLabel(tryLabel);
-        if (!m_hasAroundAdvices) {
+        if (!requiresProceedMethod()) {
             // if no around advice then optimize by invoking the target JP directly and no call to proceed()
             createInlinedJoinPointInvocation(cv, isOptimizedJoinPoint, argStartIndex, joinPointInstanceIndex);
             int stackIndex = returnValueIndex;//use another int since storeType will update it
@@ -919,7 +910,7 @@ class JitJoinPoint {
 
         // unwrap if around advice and return in all cases
         if (m_returnType.getSort() != Type.VOID) {
-            if (m_hasAroundAdvices) {
+            if (requiresProceedMethod()) {
                 cv.visitVarInsn(ALOAD, returnValueIndex);
                 AsmHelper.unwrapType(cv, m_returnType);
             } else {
@@ -958,7 +949,7 @@ class JitJoinPoint {
 
         Label tryLabel = new Label();
         cv.visitLabel(tryLabel);
-        if (!m_hasAroundAdvices) {
+        if (!requiresProceedMethod()) {
             // if no around advice then optimize by invoking the target JP directly and no call to proceed()
             createInlinedJoinPointInvocation(cv, isOptimizedJoinPoint, argStartIndex, joinPointInstanceIndex);
             int stackIndex = returnValueIndex;//use another int since storeType will update it
@@ -1003,7 +994,7 @@ class JitJoinPoint {
 
         // unwrap if around advice and return in all cases
         if (m_returnType.getSort() != Type.VOID) {
-            if (m_hasAroundAdvices) {
+            if (requiresProceedMethod()) {
                 cv.visitVarInsn(ALOAD, returnValueIndex);
                 AsmHelper.unwrapType(cv, m_returnType);
             } else {
@@ -1034,7 +1025,7 @@ class JitJoinPoint {
 
         final int returnValueIndex = (joinPointInstanceIndex != INDEX_NOTAVAILABLE) ?
                                      (joinPointInstanceIndex + 1) : callerIndex + 1;
-        if (!m_hasAroundAdvices) {
+        if (!requiresProceedMethod()) {
             // if no around advice then optimize by invoking the target JP directly and no call to proceed()
             createInlinedJoinPointInvocation(cv, isOptimizedJoinPoint, argStartIndex, joinPointInstanceIndex);
             int stackIndex = returnValueIndex;//use another int since storeType will update it
@@ -1053,7 +1044,7 @@ class JitJoinPoint {
 
         // unwrap if around advice and return in all cases
         if (m_returnType.getSort() != Type.VOID) {
-            if (m_hasAroundAdvices) {
+            if (requiresProceedMethod()) {
                 cv.visitVarInsn(ALOAD, returnValueIndex);
                 AsmHelper.unwrapType(cv, m_returnType);
             } else {
@@ -1122,6 +1113,10 @@ class JitJoinPoint {
             cv.visitInsn(ACONST_NULL);
         }
         cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, CALLEE_INSTANCE_FIELD_NAME, m_calleeClassSignature);
+
+        if (m_isThisAdvisable) {
+            createAdvisableManagementSetup(cv, joinPointInstanceIndex);
+        }
     }
 
     /**
@@ -1138,6 +1133,11 @@ class JitJoinPoint {
                 },
                 null
         );
+
+        if (m_isThisAdvisable) {
+            createAroundDelegatorManagement(cv);
+        }
+
         incrementStackFrameCounter(cv);
 
         // set up the labels
@@ -1146,7 +1146,12 @@ class JitJoinPoint {
         Label gotoLabel = new Label();
         Label handlerLabel = new Label();
         Label endLabel = new Label();
+
         int nrOfCases = m_aroundAdviceMethodInfos.length;
+        if (m_isThisAdvisable) {
+            nrOfCases++;
+        }
+
         Label[] caseLabels = new Label[nrOfCases];
         Label[] returnLabels = new Label[nrOfCases];
         int[] caseNumbers = new int[nrOfCases];
@@ -1219,7 +1224,7 @@ class JitJoinPoint {
             );
             cv.visitVarInsn(ASTORE, 1);
 
-            // we need to handle the case when the advice was skept due to runtime check
+            // we need to handle the case when the advice was skipped due to runtime check
             // that is : if (runtimeCheck) { ret = advice() } else { ret = proceed() }
             if (endInstanceOflabel != null) {
                 Label elseInstanceOfLabel = new Label();
@@ -1234,6 +1239,20 @@ class JitJoinPoint {
             cv.visitLabel(returnLabels[i]);
 
             cv.visitVarInsn(ALOAD, 1);
+            cv.visitInsn(ARETURN);
+        }
+
+        if (m_isThisAdvisable) {
+            int delegationCaseIndex = caseLabels.length - 1;
+            cv.visitLabel(caseLabels[delegationCaseIndex]);
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitInsn(ICONST_0);
+            cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, DELEGATOR_INDEX_FIELD_NAME, I);
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitMethodInsn(INVOKEVIRTUAL, m_joinPointClassName, PROCEED_METHOD_NAME, PROCEED_METHOD_SIGNATURE);
+
+            cv.visitLabel(returnLabels[delegationCaseIndex]);
+
             cv.visitInsn(ARETURN);
         }
 
@@ -1455,7 +1474,7 @@ class JitJoinPoint {
             }
         }
         // need the return value in return operation
-        if (!m_hasAroundAdvices && hasPoppedReturnValueFromStack) {
+        if (!requiresProceedMethod() && hasPoppedReturnValueFromStack) {
             cv.visitVarInsn(ALOAD, returnValueIndex);
         }
     }
@@ -1804,6 +1823,7 @@ class JitJoinPoint {
         // getType
         {
             // FIXME should return Enum (type-safe pattern in 1.4 and enum in 1.5)
+            // FIXME should delegate to Signature.getType()
             cv = m_cw.visitMethod(ACC_PUBLIC, GET_TYPE_METHOD_NAME, GET_TYPE_METHOD_SIGNATURE, null, null);
             cv.visitInsn(ACONST_NULL);
             cv.visitInsn(ARETURN);
@@ -1832,6 +1852,14 @@ class JitJoinPoint {
         cv.visitVarInsn(ALOAD, 0);
         cv.visitFieldInsn(GETFIELD, m_joinPointClassName, STACK_FRAME_COUNTER_FIELD_NAME, I);
         cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, STACK_FRAME_COUNTER_FIELD_NAME, I);
+
+        if (m_isThisAdvisable) {
+            // set stack frame index
+            cv.visitVarInsn(ALOAD, joinPointCloneIndex);
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitFieldInsn(GETFIELD, m_joinPointClassName, DELEGATOR_INDEX_FIELD_NAME, I);
+            cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, DELEGATOR_INDEX_FIELD_NAME, I);
+        }
 
         // set callee
         cv.visitVarInsn(ALOAD, joinPointCloneIndex);
@@ -1909,7 +1937,8 @@ class JitJoinPoint {
      * @return true if so
      */
     protected boolean requiresThisOrTarget() {
-        return requiresThisOrTarget(m_aroundAdviceMethodInfos) ||
+        return m_isThisAdvisable ||
+               requiresThisOrTarget(m_aroundAdviceMethodInfos) ||
                requiresThisOrTarget(m_beforeAdviceMethodInfos) ||
                requiresThisOrTarget(m_afterFinallyAdviceMethodInfos) ||
                requiresThisOrTarget(m_afterReturningAdviceMethodInfos) ||
@@ -1922,7 +1951,8 @@ class JitJoinPoint {
      * @return true if so
      */
     protected boolean requiresJoinPoint() {
-        return requiresJoinPoint(m_aroundAdviceMethodInfos) ||
+        return m_isThisAdvisable ||
+               requiresJoinPoint(m_aroundAdviceMethodInfos) ||
                requiresJoinPoint(m_beforeAdviceMethodInfos) ||
                requiresJoinPoint(m_afterFinallyAdviceMethodInfos) ||
                requiresJoinPoint(m_afterReturningAdviceMethodInfos) ||
@@ -2089,7 +2119,8 @@ class JitJoinPoint {
                                            final int calleeIndex,
                                            final AspectInfo aspectInfo) {
         if (aspectInfo.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
-            //aspectField = (cast) Aspects.aspectOf(aspectQN, callee)
+
+            //generates code: aspectField = (cast) Aspects.aspectOf(aspectQN, callee)
             loadJoinPointInstance(cv, isOptimizedJoinPoint, joinPointIndex);
             cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
             if (calleeIndex >= 0) {
@@ -2101,6 +2132,7 @@ class JitJoinPoint {
                         ASPECT_OF_PER_INSTANCE_METHOD_SIGNATURE
                 );
             } else {
+                // TODO: should this really happen? we are filtering at early stage now. - REMOVE CODE BLOCK
                 // fallback to perClass
                 //aspectField = (cast) Aspects.aspectOf(aspectQN, callee)
                 cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
@@ -2117,5 +2149,105 @@ class JitJoinPoint {
                     aspectInfo.getAspectClassSignature()
             );
         }
+    }
+
+    /**
+     * Generates code needed for handling Advisable management for the target class.
+     *
+     * @param cv
+     * @param joinPointInstanceIndex
+     */
+    private void createAdvisableManagementSetup(final CodeVisitor cv,
+                                                final int joinPointInstanceIndex) {
+        // delegator index
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitInsn(ICONST_M1);
+        cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, DELEGATOR_INDEX_FIELD_NAME, I);
+
+        // around delegators array
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+
+        // NOTE: contract in DocumentParser is to filter out all static join points -> callee is always in register 0
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitTypeInsn(CHECKCAST, ADVISABLE_CLASS_NAME);
+
+        cv.visitLdcInsn(new Integer(m_joinPointHash));
+        cv.visitMethodInsn(
+                INVOKEINTERFACE,
+                ADVISABLE_CLASS_NAME,
+                GET_AROUND_ADVICE_DELEGATORS_METHOD_NAME,
+                GET_AROUND_ADVICE_DELEGATORS_METHOD_SIGNATURE
+        );
+        cv.visitFieldInsn(
+                PUTFIELD,
+                m_joinPointClassName,
+                AROUND_DELEGATORS_FIELD_NAME,
+                AROUND_ADVICE_DELEGATOR_ARRAY_CLASS_SIGNATURE
+        );
+
+        // around delegators array length
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitFieldInsn(
+                GETFIELD,
+                m_joinPointClassName,
+                AROUND_DELEGATORS_FIELD_NAME,
+                AROUND_ADVICE_DELEGATOR_ARRAY_CLASS_SIGNATURE
+        );
+        cv.visitInsn(ARRAYLENGTH);
+        cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, NR_OF_AROUND_DELEGATORS_FIELD_NAME, I);
+
+        // FIXME - suppport ALL delegator types
+    }
+
+    /**
+     * Handles the around delegators.
+     *
+     * @param cv
+     */
+    private void createAroundDelegatorManagement(final CodeVisitor cv) {
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, DELEGATOR_INDEX_FIELD_NAME, I);
+        cv.visitInsn(ICONST_M1);
+        Label ifStatementLabel = new Label();
+        cv.visitJumpInsn(IF_ICMPEQ, ifStatementLabel);
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, DELEGATOR_INDEX_FIELD_NAME, I);
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, NR_OF_AROUND_DELEGATORS_FIELD_NAME, I);
+        cv.visitJumpInsn(IF_ICMPGE, ifStatementLabel);
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitFieldInsn(
+                GETFIELD,
+                m_joinPointClassName,
+                AROUND_DELEGATORS_FIELD_NAME,
+                AROUND_ADVICE_DELEGATOR_ARRAY_CLASS_SIGNATURE
+        );
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitInsn(DUP);
+        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, DELEGATOR_INDEX_FIELD_NAME, I);
+        cv.visitInsn(DUP_X1);
+        cv.visitInsn(ICONST_1);
+        cv.visitInsn(IADD);
+        cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, DELEGATOR_INDEX_FIELD_NAME, I);
+        cv.visitInsn(AALOAD);
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitMethodInsn(
+                INVOKEVIRTUAL,
+                AROUND_ADVICE_DELEGATOR_CLASS_NAME,
+                DELEGATE_METHOD_NAME,
+                DELEGATE_METHOD_SIGNATURE
+        );
+        cv.visitInsn(ARETURN);
+        cv.visitLabel(ifStatementLabel);
+    }
+
+    /**
+     * Checks if the join point requires a proceed() method.
+     *
+     * @return
+     */
+    protected boolean requiresProceedMethod() {
+        return m_hasAroundAdvices || m_isThisAdvisable;
     }
 }

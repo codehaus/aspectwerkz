@@ -109,11 +109,23 @@ public interface TransformationConstants extends Constants {
     public static final String META_DATA_FIELD_NAME = "META_DATA";
     public static final String ASPECT_FIELD_PREFIX = "ASPECT_";
     public static final String STACK_FRAME_COUNTER_FIELD_NAME = "STACK_FRAME_COUNTER";
+    public static final String DELEGATOR_INDEX_FIELD_NAME = "DELEGATOR_INDEX";
     public static final String CALLEE_INSTANCE_FIELD_NAME = "CALLEE";
     public static final String CALLER_INSTANCE_FIELD_NAME = "CALLER";
     public static final String ARGUMENT_FIELD = "ARGUMENT_";
     public static final String RETURN_VALUE_FIELD_NAME = "RETURN_VALUE";
     public static final String OPTIMIZED_JOIN_POINT_INSTANCE_FIELD_NAME = "OPTIMIZED_JOIN_POINT";
+
+    public static final String AROUND_DELEGATORS_FIELD_NAME = "AROUND_DELEGATORS";
+    public static final String NR_OF_AROUND_DELEGATORS_FIELD_NAME = "NR_OF_AROUND_DELEGATORS";
+    public static final String BEFORE_DELEGATORS_FIELD_NAME = "BEFORE_DELEGATORS";
+    public static final String NR_OF_BEFORE_DELEGATORS_FIELD_NAME = "NR_OF_BEFORE_DELEGATORS";
+    public static final String AFTER_FINALLY_DELEGATORS_FIELD_NAME = "AFTER_FINALLY_DELEGATORS";
+    public static final String NR_OF_AFTER_FINALLY_DELEGATORS_FIELD_NAME = "NR_OF_AFTER_FINALLY_DELEGATORS";
+    public static final String AFTER_RETURNING_DELEGATORS_FIELD_NAME = "AFTER_RETURNING_DELEGATORS";
+    public static final String NR_OF_AFTER_RETURNING_DELEGATORS_FIELD_NAME = "NR_OF_AFTER_RETURNING_DELEGATORS";
+    public static final String AFTER_THROWING_DELEGATORS_FIELD_NAME = "AFTER_THROWING_DELEGATORS";
+    public static final String NR_OF_AFTER_THROWING_DELEGATORS_FIELD_NAME = "NR_OF_AFTER_THROWING_DELEGATORS";
 
     // runtime system signatures and types
     public static final String JOIN_POINT_MANAGER_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/management/JoinPointManager";
@@ -209,7 +221,31 @@ public interface TransformationConstants extends Constants {
     public static final String INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE = "Ljava/util/Map;";
     public static final String GET_INSTANCE_LEVEL_ASPECT_METHOD_NAME = WRAPPER_METHOD_PREFIX + "getAspect";
     public static final String GET_INSTANCE_LEVEL_ASPECT_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;";
+
     public static final String ADVISABLE_CLASS_JAVA_NAME = "org.codehaus.aspectwerkz.delegation.Advisable";
+    public static final String ADVISABLE_CLASS_NAME = "org/codehaus/aspectwerkz/delegation/Advisable";
+    public static final String DELEGATE_METHOD_NAME = "delegate";
+    public static final String DELEGATE_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)Ljava/lang/Object;";
+    public static final String AROUND_ADVICE_DELEGATOR_CLASS_NAME = "org/codehaus/aspectwerkz/delegation/AroundAdviceDelegator";
+    public static final String BEFORE_ADVICE_DELEGATOR_CLASS_NAME = "org/codehaus/aspectwerkz/delegation/BeforeAdviceDelegator";
+    public static final String AFTER_FINALLY_ADVICE_DELEGATOR_CLASS_NAME = "org/codehaus/aspectwerkz/delegation/AfterFinallyAdviceDelegator";
+    public static final String AFTER_RETURNING_ADVICE_DELEGATOR_CLASS_NAME = "org/codehaus/aspectwerkz/delegation/AfterReturningAdviceDelegator";
+    public static final String AFTER_THROWING_ADVICE_DELEGATOR_CLASS_NAME = "org/codehaus/aspectwerkz/delegation/AfterThrowingAdviceDelegator";
+    public static final String AROUND_ADVICE_DELEGATOR_ARRAY_CLASS_SIGNATURE = "[Lorg/codehaus/aspectwerkz/delegation/AroundAdviceDelegator;";
+    public static final String BEFORE_ADVICE_DELEGATOR_ARRAY_CLASS_SIGNATURE = "[Lorg/codehaus/aspectwerkz/delegation/BeforeAdviceDelegator;";
+    public static final String AFTER_FINALLY_ADVICE_DELEGATOR_ARRAY_CLASS_SIGNATURE = "[Lorg/codehaus/aspectwerkz/delegation/AfterFinallyAdviceDelegator;";
+    public static final String AFTER_RETURNING_ADVICE_DELEGATOR_ARRAY_CLASS_SIGNATURE = "[Lorg/codehaus/aspectwerkz/delegation/AfterReturningAdviceDelegator;";
+    public static final String AFTER_THROWING_ADVICE_DELEGATOR_ARRAY_CLASS_SIGNATURE = "[Lorg/codehaus/aspectwerkz/delegation/AfterThrowingAdviceDelegator;";
+    public static final String GET_AROUND_ADVICE_DELEGATORS_METHOD_NAME = "aw$getAroundAdviceDelegators";
+    public static final String GET_AROUND_ADVICE_DELEGATORS_METHOD_SIGNATURE = "(I)[Lorg/codehaus/aspectwerkz/delegation/AroundAdviceDelegator;";
+    public static final String GET_BEFORE_ADVICE_DELEGATORS_METHOD_NAME = "aw$getBeforeAdviceDelegators";
+    public static final String GET_BEFORE_ADVICE_DELEGATORS_METHOD_SIGNATURE = "(I)[Lorg/codehaus/aspectwerkz/delegation/BeforeAdviceDelegator;";
+    public static final String GET_AFTER_FINALLY_ADVICE_DELEGATORS_METHOD_NAME = "aw$getAfterFinallyAdviceDelegators";
+    public static final String GET_AFTER_FINALLY_ADVICE_DELEGATORS_METHOD_SIGNATURE = "(I)[Lorg/codehaus/aspectwerkz/delegation/AfterFinallyAdviceDelegator;";
+    public static final String GET_AFTER_RETURNING_ADVICE_DELEGATORS_METHOD_NAME = "aw$getAfterReturningAdviceDelegators";
+    public static final String GET_AFTER_RETURNING_ADVICE_DELEGATORS_METHOD_SIGNATURE = "(I)[Lorg/codehaus/aspectwerkz/delegation/AfterReturningAdviceDelegator;";
+    public static final String GET_AFTER_THROWING_ADVICE_DELEGATORS_METHOD_NAME = "aw$getAfterThrowingAdviceDelegators";
+    public static final String GET_AFTER_THROWING_ADVICE_DELEGATORS_METHOD_SIGNATURE = "(I)[Lorg/codehaus/aspectwerkz/delegation/AfterThrowingAdviceDelegator;";
 
     public static final int MODIFIER_INVOKEINTERFACE = 0x10000000;
     public static final int INDEX_NOTAVAILABLE = -1;
