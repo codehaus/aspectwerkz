@@ -8,7 +8,6 @@
 package test.deployment;
 
 import junit.framework.TestCase;
-import test.annotation.DefaultValueTest;
 import org.codehaus.aspectwerkz.transform.inlining.deployer.Deployer;
 
 /**
