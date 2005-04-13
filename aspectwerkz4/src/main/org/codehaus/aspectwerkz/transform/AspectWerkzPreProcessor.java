@@ -62,6 +62,10 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     public final static boolean DUMP_AFTER;
 
+    public static final String DUMP_DIR_BEFORE;
+
+    public static final String DUMP_DIR_AFTER;
+
     public final static boolean VERBOSE;
 
     public final static boolean DETAILS;
@@ -96,6 +100,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
                 DUMP_PATTERN = Pattern.compileTypePattern(dumpPattern, SubtypePatternType.NOT_HIERARCHICAL);
             }
         }
+        DUMP_DIR_BEFORE = "_dump/before";
+        DUMP_DIR_AFTER = AspectWerkzPreProcessor.DUMP_BEFORE ? "_dump/after" : "_dump";
     }
 
     /**
