@@ -283,4 +283,8 @@ public interface TransformationConstants extends Constants {
 
     public static final String HASASPECT_METHOD_NAME = "hasAspect";
     public static final String HASASPECT_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/Object;)Z";
+
+    public static final String TARGET_CLASS_FIELD_NAME_IN_JP = "TARGET_CLASS";
+    public static final String THIS_CLASS_FIELD_NAME_IN_JP	  = "THIS_CLASS";
+    
 }

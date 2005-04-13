@@ -7,12 +7,16 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining.spi;
 
-import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AdviceMethodInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AspectInfo;
-import org.objectweb.asm.CodeVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilerInput;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.AbstractJoinPointCompiler;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.Type;
 
 /**
  * TODO document
@@ -20,6 +24,15 @@ import org.objectweb.asm.ClassWriter;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface AspectModel {
+
+    /**
+     * A prototype patttern. Ones may return "this" if singleton / non thread safe instance is enough.
+     *
+     * @param compilationModel
+     * @return
+     */
+    AspectModel getInstance(CompilationInfo.Model compilationModel);
+
     /**
      * Returns the aspect model type, which is an id for the the special aspect model, can be anything as long
      * as it is unique.
@@ -48,9 +61,9 @@ public interface AspectModel {
      * Creates the methods required to implement or extend to implement the closure for the specific aspect model type.
      *
      * @param cw
-     * @param className
+     * @param compiler
      */
-    void createMandatoryMethods(ClassWriter cw, String className);
+    void createMandatoryMethods(ClassWriter cw, AbstractJoinPointCompiler compiler);
 
     /**
      * Creates invocation of the super class for the around closure.
@@ -73,13 +86,38 @@ public interface AspectModel {
     void createAspectReferenceField(ClassWriter cw, AspectInfo aspectInfo, String joinPointClassName);
 
     /**
-     * Creates instantiation of an aspect instance.
+     * Creates instantiation of an aspect instance and stores them if appropriate (see createAspectReferenceField).
      *
      * @param cv
      * @param aspectInfo
      * @param joinPointClassName
      */
-    void createAspectInstantiation(CodeVisitor cv, AspectInfo aspectInfo, String joinPointClassName);
+    void createAndStoreStaticAspectInstantiation(CodeVisitor cv, AspectInfo aspectInfo, String joinPointClassName);
+
+    /**
+     * Initializes instance level aspects, retrieves them from the target instance through the
+     * <code>HasInstanceLevelAspect</code> interfaces.
+     * <p/>
+     * Use by 'perInstance', 'perThis' and 'perTarget' deployment models.
+     *
+     * @param cv
+     * @param input
+     * @param aspectInfo
+     */
+    void createAndStoreRuntimeAspectInstantiation(final CodeVisitor cv,
+                                                  final CompilerInput input,
+                                                  final AspectInfo aspectInfo);
+
+    /**
+     * Loads the aspect instance on stack.
+     * See loadJoinPointInstance(..) and
+     *
+     * @param cv
+     * @param aspectInfo
+     */
+    void loadAspect(final CodeVisitor cv,
+                    final CompilerInput input,
+                    final AspectInfo aspectInfo);
 
     /**
      * Handles the arguments to the around advice.
@@ -90,20 +128,20 @@ public interface AspectModel {
     void createAroundAdviceArgumentHandling(CodeVisitor cv, AdviceMethodInfo adviceMethodInfo);
 
     /**
-     * Handles the arguments to the after advice.
+     * Handles the arguments to the before or after (after XXX) advice.
      *
      * @param cv
+     * @param input
+     * @param joinPointArgumentTypes
      * @param adviceMethodInfo
+     * @param specialArgIndex        index on the stack of the throwned exception / returned value (makes sense for after advice,
+     *                               else set to INDEX_NOTAVAILABLE)
      */
-    void createBeforeAdviceArgumentHandling(CodeVisitor cv, AdviceMethodInfo adviceMethodInfo);
-
-    /**
-     * Handles the arguments to the after advice.
-     *
-     * @param cv
-     * @param adviceMethodInfo
-     */
-    void createAfterAdviceArgumentHandling(CodeVisitor cv, AdviceMethodInfo adviceMethodInfo);
+    public void createBeforeOrAfterAdviceArgumentHandling(CodeVisitor cv,
+                                                          CompilerInput input,
+                                                          Type[] joinPointArgumentTypes,
+                                                          AdviceMethodInfo adviceMethodInfo,
+                                                          int specialArgIndex);
 
     /**
      * Should return true if the aspect model requires that Runtime Type Information (RTTI) is build up
@@ -119,11 +157,17 @@ public interface AspectModel {
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
     public static class AroundClosureClassInfo {
+
         private final String m_superClassName;
+
         private final String[] m_interfaceNames;
+
         public AroundClosureClassInfo(final String superClassName, final String[] interfaceNames) {
-            m_superClassName = superClassName;
-            m_interfaceNames = interfaceNames;
+            m_superClassName = superClassName.replace('.', '/');
+            m_interfaceNames = new String[interfaceNames.length];
+            for (int i = 0; i < interfaceNames.length; i++) {
+                m_interfaceNames[i] = interfaceNames[i].replace('.', '/');
+            }
         }
 
         public String getSuperClassName() {
@@ -141,9 +185,11 @@ public interface AspectModel {
             public static final Type INTERFACE = new Type("INTERFACE");
             public static final Type CLASS = new Type("CLASS");
             private final String m_name;
+
             private Type(String name) {
                 m_name = name;
             }
+
             public String toString() {
                 return m_name;
             }

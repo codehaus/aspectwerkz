@@ -55,19 +55,11 @@ public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants 
     public static final int PER_THIS_TYPE        = 1;
     public static final int PER_TARGET_TYPE      = 2;
 
-    private AbstractJoinPointCompiler m_compiler;
-
     private CodeVisitor cv;
 
     private ExpressionInfo m_expressionInfo;
 
-    private boolean m_isOptimizedJoinPoint;
-
-    private int m_joinPointIndex;
-
-    private int m_callerIndex;
-
-    private int m_calleeIndex;
+    private CompilerInput m_input;
 
     private int m_perObjectCheckType = NULL_PER_OBJECT_TYPE;
 
@@ -76,19 +68,15 @@ public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants 
     /**
      * Create a new visitor given a specific AdviceInfo
      *
-     * @param compiler             we are working for
      * @param cv                   of the method block we are compiling
      * @param info                 expression info
-     * @param isOptimizedJoinPoint
-     * @param joinPointIndex
+     * @param input
+     * @param perObjectType
+     * @param aspectQName
      */
-    public RuntimeCheckVisitor(final AbstractJoinPointCompiler compiler,
-                               final CodeVisitor cv,
+    public RuntimeCheckVisitor(final CodeVisitor cv,
                                final ExpressionInfo info,
-                               final boolean isOptimizedJoinPoint,
-                               final int joinPointIndex,
-                               final int callerIndex,
-                               final int calleeIndex,
+                               final CompilerInput input,
                                final int perObjectType,
                                final String aspectQName) {
         super(
@@ -97,12 +85,8 @@ public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants 
                 info.getNamespace(),
                 info.getExpression().getASTRoot()
         );
-        m_compiler = compiler;
         m_expressionInfo = info;
-        m_isOptimizedJoinPoint = isOptimizedJoinPoint;
-        m_joinPointIndex = joinPointIndex;
-        m_callerIndex          = callerIndex;
-        m_calleeIndex = calleeIndex;
+        m_input = input;
         m_perObjectCheckType   = perObjectType;
         m_aspectQName          = aspectQName;
 
@@ -120,7 +104,7 @@ public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants 
         switch(m_perObjectCheckType) {
             case PER_THIS_TYPE: {
                 cv.visitLdcInsn(m_aspectQName);
-                m_compiler.loadCaller(cv, m_isOptimizedJoinPoint, m_joinPointIndex, m_callerIndex);
+                AbstractJoinPointCompiler.loadCaller(cv, m_input);
                 cv.visitMethodInsn(INVOKESTATIC,
                                    TransformationConstants.ASPECTS_CLASS_NAME,
                                    TransformationConstants.HASASPECT_METHOD_NAME,
@@ -132,7 +116,7 @@ public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants 
 
             case PER_TARGET_TYPE: {
                 cv.visitLdcInsn(m_aspectQName);
-                m_compiler.loadCallee(cv, m_isOptimizedJoinPoint, m_joinPointIndex, m_calleeIndex);
+                AbstractJoinPointCompiler.loadCallee(cv,m_input);
                 cv.visitMethodInsn(INVOKESTATIC,
                                    TransformationConstants.ASPECTS_CLASS_NAME,
                                    TransformationConstants.HASASPECT_METHOD_NAME,
@@ -190,7 +174,7 @@ public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants 
         } else {
             // runtime check
             String boundedTypeDesc = AsmHelper.convertReflectDescToTypeDesc(node.getBoundedType(m_expressionInfo));
-            m_compiler.loadCallee(cv, m_isOptimizedJoinPoint, m_joinPointIndex, m_calleeIndex);
+            AbstractJoinPointCompiler.loadCallee(cv, m_input);
             cv.visitTypeInsn(INSTANCEOF, boundedTypeDesc.substring(1, boundedTypeDesc.length() - 1));
         }
         return match;
@@ -240,13 +224,9 @@ public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants 
 
         // build a new RuntimeCheckVisitor to visit the sub expression
         RuntimeCheckVisitor referenced = new RuntimeCheckVisitor(
-                m_compiler,
                 cv,
                 expression.getExpressionInfo(),
-                m_isOptimizedJoinPoint,
-                m_joinPointIndex,
-                m_callerIndex,
-                m_calleeIndex,
+                m_input,
                 m_perObjectCheckType,
                 m_aspectQName
         );
