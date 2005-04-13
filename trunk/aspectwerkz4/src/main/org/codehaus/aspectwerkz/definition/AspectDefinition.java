@@ -16,6 +16,7 @@ import java.util.Map;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.AspectWerkzAspectModel;
 import org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy;
 
 /**
@@ -27,11 +28,6 @@ import org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy;
 public class AspectDefinition {
 
     private final static String DEFAULT_ASPECTCONTAINER_CLASSNAME = DefaultAspectContainerStrategy.class.getName();
-
-    /**
-     * The default aspectwerkz aspect model type id.
-     */
-    public static final String ASPECTWERKZ_ASPECT_MODEL_TYPE = "aspectwerkz";
 
     /**
      * The name of the aspect (nickname).
@@ -94,9 +90,9 @@ public class AspectDefinition {
     private SystemDefinition m_systemDefinition;
 
     /**
-     * The aspect model.
+     * The aspect model. Defaults to AspectWerkz
      */
-    private String m_aspectModelType = ASPECTWERKZ_ASPECT_MODEL_TYPE;
+    private String m_aspectModelType = AspectWerkzAspectModel.TYPE;
 
     /**
      * Creates a new aspect meta-data instance.
@@ -190,7 +186,7 @@ public class AspectDefinition {
      * @return
      */
     public boolean isAspectWerkzAspect() {
-        return m_aspectModelType.equals(ASPECTWERKZ_ASPECT_MODEL_TYPE);
+        return m_aspectModelType.equals(AspectWerkzAspectModel.TYPE);
     }
 
     /**

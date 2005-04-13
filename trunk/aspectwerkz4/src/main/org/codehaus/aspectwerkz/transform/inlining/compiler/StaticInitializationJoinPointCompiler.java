@@ -22,7 +22,7 @@ import java.lang.reflect.Modifier;
  * statically.
  * 
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class StaticInitializationJoinPointCompiler extends AbstractJoinPointCompiler {
 	private static final Type[] ARG_TYPES = new Type[0];
@@ -57,7 +57,7 @@ public class StaticInitializationJoinPointCompiler extends AbstractJoinPointComp
 	protected void createSignature(final CodeVisitor cv) {
 		cv.visitFieldInsn(GETSTATIC,
 		                  m_joinPointClassName,
-		                  TARGET_CLASS_FIELD_NAME,
+		                  TARGET_CLASS_FIELD_NAME_IN_JP,
 		                  CLASS_CLASS_SIGNATURE);
 		cv.visitMethodInsn(INVOKESTATIC,
 		                   SIGNATURE_FACTORY_CLASS,
@@ -76,14 +76,10 @@ public class StaticInitializationJoinPointCompiler extends AbstractJoinPointComp
 	 * exists.
 	 * 
 	 * @param cv
-	 * @param argStartIndex
-	 *            index on stack of first target method arg (0 or 1, depends of
-	 *            static target or not)
+	 * @param input
 	 */
 	protected void createInlinedJoinPointInvocation(final CodeVisitor cv,
-													final boolean isOptimizedJoinPoint,
-													final int argStartIndex,
-													final int joinPointIndex) {
+                                                    final CompilerInput input) {
 		String joinPointName = TransformationUtil.getPrefixedOriginalClinitName(m_calleeClassName);
 		
 		cv.visitMethodInsn(INVOKESTATIC, m_calleeClassName, joinPointName, m_calleeMemberDesc);

@@ -34,6 +34,7 @@ public class AdviceMethodInfo {
                             final String joinPointClassName,
                             final String calleeMemberDesc) {
         m_adviceInfo = adviceInfo;
+        //FIXME avoid this new all the time
         m_aspectInfo = new AspectInfo(
                 adviceInfo.getAdviceDefinition().getAspectDefinition(),
                 aspectFieldName, aspectClassName, aspectClassSignature

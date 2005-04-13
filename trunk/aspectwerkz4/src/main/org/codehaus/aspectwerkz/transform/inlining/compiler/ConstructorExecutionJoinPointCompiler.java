@@ -65,7 +65,7 @@ public class ConstructorExecutionJoinPointCompiler extends AbstractJoinPointComp
      * @param cv
      */
     protected void createSignature(final CodeVisitor cv) {
-        cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+        cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME_IN_JP, CLASS_CLASS_SIGNATURE);
         cv.visitLdcInsn(new Integer(m_joinPointHash));
 
         cv.visitMethodInsn(
@@ -86,17 +86,16 @@ public class ConstructorExecutionJoinPointCompiler extends AbstractJoinPointComp
      * exists.
      *
      * @param cv
-     * @param argStartIndex index on stack of first target method arg (0 or 1, depends of static target or not)
+     * @param input
      */
-    protected void createInlinedJoinPointInvocation(final CodeVisitor cv, final boolean isOptimizedJoinPoint,
-                                                    final int argStartIndex, final int joinPointIndex) {
+    protected void createInlinedJoinPointInvocation(final CodeVisitor cv, final CompilerInput input) {
 
         // load the target instance (arg0 else not available for static target)
         if (!Modifier.isStatic(m_calleeMemberModifiers)) {
             cv.visitVarInsn(ALOAD, 0);
         }
 
-        loadArgumentMemberFields(cv, argStartIndex);
+        loadArgumentMemberFields(cv, input.argStartIndex);
         String bodyName = TransformationUtil.getConstructorBodyMethodName(m_calleeClassName);
         String bodyDesc = TransformationUtil.getConstructorBodyMethodSignature(m_calleeMemberDesc, m_calleeClassName);
         cv.visitMethodInsn(INVOKESTATIC, m_calleeClassName, bodyName, bodyDesc);

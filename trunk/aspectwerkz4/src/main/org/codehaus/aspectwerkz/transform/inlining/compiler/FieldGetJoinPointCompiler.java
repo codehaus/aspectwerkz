@@ -63,7 +63,7 @@ public class FieldGetJoinPointCompiler extends AbstractJoinPointCompiler {
      * @param cv
      */
     protected void createSignature(final CodeVisitor cv) {
-        cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+        cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME_IN_JP, CLASS_CLASS_SIGNATURE);
         cv.visitLdcInsn(new Integer(m_joinPointHash));
 
         cv.visitMethodInsn(
@@ -81,10 +81,9 @@ public class FieldGetJoinPointCompiler extends AbstractJoinPointCompiler {
      * exists.
      *
      * @param cv
-     * @param argStartIndex index on stack of first target method arg (0 or 1, depends of static target or not)
+     * @param input
      */
-    protected void createInlinedJoinPointInvocation(final CodeVisitor cv, final boolean isOptimizedJoinPoint,
-                                                    final int argStartIndex, final int joinPointIndex) {
+    protected void createInlinedJoinPointInvocation(final CodeVisitor cv, final CompilerInput input) {
 
         // load the target instance (arg0 else not available for static target)
         if (!Modifier.isStatic(m_calleeMemberModifiers)) {

@@ -60,7 +60,7 @@ public class ConstructorCallJoinPointCompiler extends AbstractJoinPointCompiler 
      * @param cv
      */
     protected void createSignature(final CodeVisitor cv) {
-        cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+        cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME_IN_JP, CLASS_CLASS_SIGNATURE);
         cv.visitLdcInsn(new Integer(m_joinPointHash));
 
         cv.visitMethodInsn(
@@ -81,13 +81,12 @@ public class ConstructorCallJoinPointCompiler extends AbstractJoinPointCompiler 
      * exists.
      *
      * @param cv
-     * @param argStartIndex index on stack of first target method arg (0 or 1, depends of static target or not)
+     * @param input
      */
-    protected void createInlinedJoinPointInvocation(final CodeVisitor cv, final boolean isOptimizedJoinPoint,
-                                                    final int argStartIndex, final int joinPointIndex) {
+    protected void createInlinedJoinPointInvocation(final CodeVisitor cv, final CompilerInput input) {
         cv.visitTypeInsn(NEW, m_calleeClassName);
         cv.visitInsn(DUP);
-        loadArgumentMemberFields(cv, argStartIndex);
+        loadArgumentMemberFields(cv, input.argStartIndex);
         cv.visitMethodInsn(
                 INVOKESPECIAL, m_calleeClassName, INIT_METHOD_NAME/*FIXME caller wrapper factory*/,
                 m_calleeMemberDesc
@@ -96,7 +95,7 @@ public class ConstructorCallJoinPointCompiler extends AbstractJoinPointCompiler 
         //TODO - might not be needed / feasible for optimized jp - we should ensure that it is affected to target for
         // after advice that comes after (but should we support target on ctor call)
         cv.visitInsn(DUP);
-        loadJoinPointInstance(cv, isOptimizedJoinPoint, joinPointIndex);
+        loadJoinPointInstance(cv, input);
         cv.visitInsn(SWAP);
         cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, CALLEE_INSTANCE_FIELD_NAME, m_calleeClassSignature);
     }

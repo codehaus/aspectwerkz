@@ -57,7 +57,7 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      * @param cv
      */
     protected void createSignature(final CodeVisitor cv) {
-        cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+        cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME_IN_JP, CLASS_CLASS_SIGNATURE);
 
         cv.visitMethodInsn(
                 INVOKESTATIC,
@@ -77,12 +77,10 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      * exists.
      *
      * @param cv
-     * @param argStartIndex index on stack of first target method arg (0 or 1, depends of static target or not)
+     * @param input
      */
     protected void createInlinedJoinPointInvocation(final CodeVisitor cv,
-                                                    final boolean isOptimizedJoinPoint,
-                                                    final int argStartIndex,
-                                                    final int joinPointIndex) {
+                                                    final CompilerInput input) {
         // load the exception
         cv.visitVarInsn(ALOAD, 0);//TODO if changed perhaps load CALLEE instead that host the exception ?
     }

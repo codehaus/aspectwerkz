@@ -49,7 +49,7 @@ public class Math {
         math.subtract(1, 6);
         math.subtract(4, 4);
         math.subtract(8, 4);
-        Thread.sleep(100);
+        Thread.sleep(1000);
         System.exit(0);
     }
 }
