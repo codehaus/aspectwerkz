@@ -23,6 +23,7 @@ import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.transform.Compiler;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.inlining.AdviceMethodInfo;
@@ -58,8 +59,7 @@ import java.util.Map;
 public abstract class AbstractJoinPointCompiler implements Compiler, TransformationConstants {
 
     // FIXME define these two using VM option - if dump dir specified then dump
-    public static final boolean DUMP_JIT_CLASSES = true;
-    protected static final String DUMP_DIR = "_dump";
+    public static final boolean DUMP_JIT_CLASSES = AspectWerkzPreProcessor.DUMP_AFTER;
 
     protected final String m_callerClassName;
     protected final String m_calleeClassName;
@@ -385,8 +385,9 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
             }
             m_cw.visitEnd();
 
-            if (DUMP_JIT_CLASSES) {
-                AsmHelper.dumpClass(DUMP_DIR, m_joinPointClassName, m_cw);
+            if (DUMP_JIT_CLASSES
+                && AspectWerkzPreProcessor.DUMP_PATTERN.matches(m_joinPointClassName.replace('/', '.'))) {
+                AsmHelper.dumpClass(AspectWerkzPreProcessor.DUMP_DIR_AFTER, m_joinPointClassName, m_cw);
             }
             return m_cw.toByteArray();
 
