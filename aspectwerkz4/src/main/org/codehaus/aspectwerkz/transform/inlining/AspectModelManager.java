@@ -87,7 +87,7 @@ public class AspectModelManager {
      *
      * @param aspectModels the class names of the aspect models to register concatenated and separated with a ':'.
      */
-    private static void registerAspectModels(final String aspectModels) {
+    public static void registerAspectModels(final String aspectModels) {
         if (aspectModels != null) {
             StringTokenizer tokenizer = new StringTokenizer(aspectModels, DELIMITER);
             while (tokenizer.hasMoreTokens()) {

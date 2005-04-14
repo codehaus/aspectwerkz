@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.transform.inlining;
 
 import org.codehaus.aspectwerkz.aspect.AdviceInfo;
+import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
 
 /**
  * Container for the advice method info.
@@ -25,20 +26,14 @@ public class AdviceMethodInfo {
     private String m_joinPointClassName;
     private String m_calleeMemberDesc;
 
-    public AdviceMethodInfo(final AdviceInfo adviceInfo,
-                            final String aspectFieldName,
-                            final String aspectClassName,
-                            final String aspectClassSignature,
+    public AdviceMethodInfo(final AspectInfo aspectInfo,
+                            final AdviceInfo adviceInfo,
                             final String callerClassSignature,
                             final String calleeClassSignature,
                             final String joinPointClassName,
                             final String calleeMemberDesc) {
+        m_aspectInfo = aspectInfo;
         m_adviceInfo = adviceInfo;
-        //FIXME avoid this new all the time
-        m_aspectInfo = new AspectInfo(
-                adviceInfo.getAdviceDefinition().getAspectDefinition(),
-                aspectFieldName, aspectClassName, aspectClassSignature
-        );
         m_callerClassSignature = callerClassSignature;
         m_calleeClassSignature = calleeClassSignature;
         m_joinPointClassName = joinPointClassName;
@@ -63,14 +58,6 @@ public class AdviceMethodInfo {
 
     public String getSpecialArgumentTypeName() {
         return m_adviceInfo.getSpecialArgumentTypeName();
-    }
-
-    public int getJoinPointIndex() {
-        return m_joinPointIndex;
-    }
-
-    public void setJoinPointIndex(final int joinPointIndex) {
-        m_joinPointIndex = joinPointIndex;
     }
 
     public int getSpecialArgumentIndex() {

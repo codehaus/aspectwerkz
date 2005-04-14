@@ -30,7 +30,7 @@ import java.util.Iterator;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
- * @TODO: for multi weaving, we could go on in adding several AW initJoinPoints_xxWeaveCount method, but then cannot be
+ * TODO: for multi weaving, we could go on in adding several AW initJoinPoints_xxWeaveCount method, but then cannot be
  * done with RW
  */
 public class JoinPointInitVisitor extends ClassAdapter implements TransformationConstants {
@@ -56,7 +56,7 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
      * Visits the methods. If the AW joinPointsInit method is found, remember that, it means we are in a multi-weaving
      * scheme. Patch the 'clinit' method if already present.
      *
-     * @TODO: multi-weaving will lead to several invocation of AW initJoinPoints and several assigment of __AW_Clazz in the patched clinit which slows down a bit the load time
+     * TODO: multi-weaving will lead to several invocation of AW initJoinPoints and several assigment of __AW_Clazz in the patched clinit which slows down a bit the load time
      * @see org.objectweb.asm.ClassVisitor#visitMethod(int, java.lang.String, java.lang.String, java.lang.String[],
             *      org.objectweb.asm.Attribute)
      */
@@ -145,7 +145,7 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
                     cv.visitMethod(
                             ACC_STATIC,
                             CLINIT_METHOD_NAME,
-                            NO_PARAMS_RETURN_VOID_METHOD_SIGNATURE,
+                            NO_PARAM_RETURN_VOID_SIGNATURE,
                             null,
                             null
                     )
@@ -159,7 +159,7 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
                     cv.visitMethod(
                             ACC_PRIVATE + ACC_FINAL + ACC_STATIC + ACC_SYNTHETIC,
                             INIT_JOIN_POINTS_METHOD_NAME,
-                            NO_PARAMS_RETURN_VOID_METHOD_SIGNATURE,
+                            NO_PARAM_RETURN_VOID_SIGNATURE,
                             null,
                             null
                     )
@@ -197,7 +197,7 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
                         INVOKESTATIC,
                         m_ctx.getClassName(),
                         INIT_JOIN_POINTS_METHOD_NAME,
-                        NO_PARAMS_RETURN_VOID_METHOD_SIGNATURE
+                        NO_PARAM_RETURN_VOID_SIGNATURE
                 );
             }
         }

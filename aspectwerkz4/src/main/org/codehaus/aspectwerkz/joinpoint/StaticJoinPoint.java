@@ -14,6 +14,10 @@ import org.codehaus.aspectwerkz.joinpoint.management.JoinPointType;
  * <p/>
  * Provides access to only static data, is therefore much more performant than the usage of the {@link
  * org.codehaus.aspectwerkz.joinpoint.JoinPoint} interface.
+ * <p/>
+ * Note that it is possible to call proceed() on a StaticJoinPoint instance. The optimization comes from the fact
+ * that StaticJoinPoint does not host RTTI information (caller, callee instances and args). It can be used with
+ * pcd "args()", "this()" and "target()".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -35,13 +39,6 @@ public interface StaticJoinPoint {
      * @throws Throwable
      */
     Object proceed() throws Throwable;
-
-    /**
-     * Creates a copy of the join point instance.
-     *
-     * @return a copy of the join point instance
-     */
-    StaticJoinPoint copy();
 
     /**
      * Returns metadata matchingn a specfic key.
