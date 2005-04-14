@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.transform.inlining;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
 
 /**
  * TODO docuemnt
@@ -23,6 +24,8 @@ public class AspectInfo {
     private final String m_aspectClassName;
     private final String m_aspectClassSignature;
     private final DeploymentModel m_deploymentModel;
+
+    private AspectModel m_aspectModel;
 
     public AspectInfo(final AspectDefinition aspectDefinition,
                       final String aspectFieldName,
@@ -60,6 +63,13 @@ public class AspectInfo {
         return m_aspectClassSignature;
     }
 
+    public AspectModel getAspectModel() {
+        return m_aspectModel;
+    }
+
+    public void setAspectModel(AspectModel aspectModel) {
+        m_aspectModel = aspectModel;
+    }
 
     public boolean equals(Object o) {
         //TODO should we use AspectDef instead ??

@@ -14,14 +14,25 @@ import org.codehaus.aspectwerkz.transform.inlining.AspectInfo;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilerInput;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.AbstractJoinPointCompiler;
+import org.codehaus.aspectwerkz.transform.JoinPointCompiler;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.ClassVisitor;
 
 /**
- * TODO document
+ * An aspect model defines a custom hook for the JoinPointCompiler.
+ * <p/>
+ * The AspectModel is registered using AspectModelManager, and the AspectDefinition is linked to the model
+ * "getAspectModelType()" unique identifier.
+ * <p/>
+ * An no arg constructor instance of the model will be callback during aspect registration for defineAspect(..)
+ * </p>
+ * During compilation, different aspect model instance can be instantiated per compilation using the getInstance(..)
+ * method (not returning "this").
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public interface AspectModel {
 
@@ -63,7 +74,7 @@ public interface AspectModel {
      * @param cw
      * @param compiler
      */
-    void createMandatoryMethods(ClassWriter cw, AbstractJoinPointCompiler compiler);
+    void createMandatoryMethods(ClassWriter cw, JoinPointCompiler compiler);
 
     /**
      * Creates invocation of the super class for the around closure.
@@ -78,21 +89,14 @@ public interface AspectModel {
 
     /**
      * Creates aspect reference field (field in the jit jointpoint class f.e.) for an aspect instance.
-     *
-     * @param cw
-     * @param aspectInfo
-     * @param joinPointClassName
-     */
-    void createAspectReferenceField(ClassWriter cw, AspectInfo aspectInfo, String joinPointClassName);
-
-    /**
      * Creates instantiation of an aspect instance and stores them if appropriate (see createAspectReferenceField).
      *
-     * @param cv
+     * @param cw for the jp class beeing compiled
+     * @param cv for the <clinit> method
      * @param aspectInfo
      * @param joinPointClassName
      */
-    void createAndStoreStaticAspectInstantiation(CodeVisitor cv, AspectInfo aspectInfo, String joinPointClassName);
+    void createAndStoreStaticAspectInstantiation(ClassVisitor cw, CodeVisitor cv, AspectInfo aspectInfo, String joinPointClassName);
 
     /**
      * Initializes instance level aspects, retrieves them from the target instance through the
@@ -125,7 +129,10 @@ public interface AspectModel {
      * @param cv
      * @param adviceMethodInfo
      */
-    void createAroundAdviceArgumentHandling(CodeVisitor cv, AdviceMethodInfo adviceMethodInfo);
+    void createAroundAdviceArgumentHandling(CodeVisitor cv,
+                                            CompilerInput input,
+                                            Type[] joinPointArgumentTypes,
+                                            AdviceMethodInfo adviceMethodInfo);
 
     /**
      * Handles the arguments to the before or after (after XXX) advice.

@@ -461,6 +461,10 @@ public class JoinPointManager {
                         );
                     }
                 } else {
+                    //handles other models
+                    //custom proceed won't be recognized here but will be in the first block
+                    // logic (mandatory arg type declaration).
+                    //TODO refactor models or def to not use getAroundClosureClassInfo
                     final AspectModel aspectModel = AspectModelManager.getModelFor(aspectDef.getAspectModel());
                     final String superClassName = aspectModel.getAroundClosureClassInfo().getSuperClassName();
                     final String[] interfaces = aspectModel.getAroundClosureClassInfo().getInterfaceNames();

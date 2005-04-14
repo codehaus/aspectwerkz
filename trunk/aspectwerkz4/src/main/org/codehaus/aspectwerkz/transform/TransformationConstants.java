@@ -96,7 +96,6 @@ public interface TransformationConstants extends Constants {
     public static final String BYTE_CLASS_INIT_METHOD_SIGNATURE = "(B)V";
     public static final String BOOLEAN_CLASS_INIT_METHOD_SIGNATURE = "(Z)V";
     public static final String CHARACTER_CLASS_INIT_METHOD_SIGNATURE = "(C)V";
-    public static final String NO_PARAMS_RETURN_VOID_METHOD_SIGNATURE = "()V";
     public static final String CLASS_CLASS_GETCLASSLOADER_METHOD_SIGNATURE = "()Ljava/lang/ClassLoader;";
     public static final String ENCLOSING_SJP_FIELD_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/EnclosingStaticJoinPoint;";
     public static final String L = "L";
@@ -286,5 +285,5 @@ public interface TransformationConstants extends Constants {
 
     public static final String TARGET_CLASS_FIELD_NAME_IN_JP = "TARGET_CLASS";
     public static final String THIS_CLASS_FIELD_NAME_IN_JP	  = "THIS_CLASS";
-    
+
 }

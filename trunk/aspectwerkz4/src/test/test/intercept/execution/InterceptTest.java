@@ -40,7 +40,7 @@ public class InterceptTest extends TestCase {
                 new AroundAdvice() {
                     public Object invoke(JoinPoint jp) throws Throwable {
                         InterceptTest.log("around1_pre_execution ");
-                        Object result = jp.copy().proceed();
+                        Object result = jp.proceed();
                         InterceptTest.log("around1_post_execution ");
                         return result;
                     }
