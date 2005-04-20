@@ -7,13 +7,21 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-
-import org.codehaus.aspectwerkz.AspectContext;
-
 /**
- * Interface for that all aspect container implementations must implement.
+ * Interface that all aspect container implementations must implement.
+ * <p/>
+ * An implementation can have a no-arg constructor or a constructor with 5 args:
+ * Class aspectClass, ClassLoader aopSystemClassLoader, String systemUuid, String aspectQualifiedName (composed of systemUuid and given aspect name
+ * in the aop.xml that defines it), Map (of parameters declared in the aop.xml for this aspect declaration).
+ * <p/>
+ * An Aspect can have no aspect container at all. In such a case, the aspect is simply created using its no-arg
+ * constructor (thus in a faster way).
+ * <p/>
+ * Note that the container will only be invoked for aspect instantiation, but not for aspect lookup (association).
+ * The lookup is handled by the deployment model semantics and thus by the framework.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public interface AspectContainer {
 
@@ -48,10 +56,4 @@ public interface AspectContainer {
      */
     Object aspectOf(Thread thread);
 
-    /**
-     * Returns the context.
-     *
-     * @return the context
-     */
-    AspectContext getContext();
 }

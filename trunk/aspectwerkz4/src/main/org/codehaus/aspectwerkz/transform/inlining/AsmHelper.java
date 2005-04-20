@@ -591,6 +591,20 @@ public class AsmHelper implements TransformationConstants {
     }
 
     /**
+     * Push the string on the stack. Deal when case where string is null.
+     * 
+     * @param cv
+     * @param s
+     */
+    public static void loadStringConstant(final CodeVisitor cv, final String s) {
+        if (s != null) {
+            cv.visitLdcInsn(s);
+        } else {
+            cv.visitInsn(ACONST_NULL);
+        }
+    }
+
+    /**
      * Creates and adds the correct parameter index for integer types.
      *
      * @param cv

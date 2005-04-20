@@ -48,6 +48,7 @@ public final class DeploymentHandle {
         if (loader == null) {
             throw new IllegalArgumentException("loader can not be null");
         }
+        //TODO this Uuid is very slow at 1st invocation. Should we use the other one ?
         UUID = UuidGenerator.generate(clazz);
         m_loaderRef = new WeakReference(loader);
         m_classRef = new WeakReference(clazz);

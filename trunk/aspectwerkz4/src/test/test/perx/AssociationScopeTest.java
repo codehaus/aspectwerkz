@@ -58,18 +58,18 @@ public class AssociationScopeTest extends TestCase {
 	public void testAspectsOf() {
 		A a = new A();
         try {
-            Object aspectInstance = Aspects.aspectOf("per-scopes/perThis", a);
-            fail("perX aspect is not yet available");
+            Object aspectInstance = Aspects.aspectOf("perscopes/perThis", a);
+            fail("perX aspect must not be already available");
         } catch(NoAspectBoundException nabe) {
-            ;
+            ;//ok
         }
 
 		a.m();
 		
         try {
-            Object aspectInstance = Aspects.aspectOf("per-scopes/perThis", a);
+            Object aspectInstance = Aspects.aspectOf("perscopes/perThis", a);
         } catch(NoAspectBoundException nabe) {
-            fail("perX aspect should be available now");
+            fail("perX aspect should be available now " + nabe.toString());
         }
 	}
 	

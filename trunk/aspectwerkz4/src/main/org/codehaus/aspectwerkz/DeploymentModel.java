@@ -23,8 +23,8 @@ public class DeploymentModel {
     public static final DeploymentModel PER_CLASS = new DeploymentModel("perClass");
     public static final DeploymentModel PER_INSTANCE = new DeploymentModel("perInstance");
     
-    public static final DeploymentModel PER_TARGET = new DeploymentModel("pertarget");
-    public static final DeploymentModel PER_THIS = new DeploymentModel("perthis");
+    public static final DeploymentModel PER_TARGET = new DeploymentModel("perTarget");
+    public static final DeploymentModel PER_THIS = new DeploymentModel("perThis");
     public static final DeploymentModel PER_CFLOW = new DeploymentModel("perCflow");
     public static final DeploymentModel PER_CFLOWBELOW = new DeploymentModel("perCflowbelow");
 
@@ -73,6 +73,11 @@ public class DeploymentModel {
             return PER_CFLOW;
         } else if (deploymentModelAsString.equalsIgnoreCase(PER_CFLOWBELOW.toString())) {
             return PER_CFLOWBELOW;
+        } else if (deploymentModelAsString.equalsIgnoreCase(PER_THIS.toString())) {
+            return PER_THIS;
+        } else if (deploymentModelAsString.equalsIgnoreCase(PER_TARGET.toString())) {
+            return PER_TARGET;
+        // below support for more advanced schemes.
         } else if (deploymentModelAsString.toLowerCase().startsWith(PER_THIS.m_name.toLowerCase())) {
             return new PointcutControlledDeploymentModel(PER_THIS,
                                        getDeploymentExpression(deploymentModelAsString, THIS_POINTCUT)
@@ -127,7 +132,8 @@ public class DeploymentModel {
         }
 
         public String toString() {
-            return m_name + "(" + m_expression + ")";
+            // returns only the name, not the expression
+            return m_name;
         }
 
         public boolean equals(Object o) {

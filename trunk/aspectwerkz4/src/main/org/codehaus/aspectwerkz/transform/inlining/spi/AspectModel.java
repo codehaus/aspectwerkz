@@ -170,7 +170,11 @@ public interface AspectModel {
         private final String[] m_interfaceNames;
 
         public AroundClosureClassInfo(final String superClassName, final String[] interfaceNames) {
-            m_superClassName = superClassName.replace('.', '/');
+            if (superClassName != null) {
+                m_superClassName = superClassName.replace('.', '/');
+            } else {
+                m_superClassName = null;
+            }
             m_interfaceNames = new String[interfaceNames.length];
             for (int i = 0; i < interfaceNames.length; i++) {
                 m_interfaceNames[i] = interfaceNames[i].replace('.', '/');

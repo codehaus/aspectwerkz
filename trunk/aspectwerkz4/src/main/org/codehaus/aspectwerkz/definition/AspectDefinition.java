@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.AspectWerkzAspectModel;
@@ -80,7 +81,7 @@ public class AspectDefinition {
     private Map m_parameters = new HashMap();
 
     /**
-     * The container implementation class name.
+     * The container implementation class name or null if no container (inlined instantiation in the factory)
      */
     private String m_containerClassName;
 
@@ -113,8 +114,20 @@ public class AspectDefinition {
         m_systemDefinition = systemDefinition;
         m_qualifiedName = systemDefinition.getUuid() + '/' + name;
 
-        // default container
-        setContainerClassName(DEFAULT_ASPECTCONTAINER_CLASSNAME);
+        // if no-arg ctor not found, set the default aspect container just in case it is an old 2.0 aspect
+        // and the user forgot to add the container="...DefaultAspectContainerStrategy"
+        // while still using a ctor(AspectContext) style in the aspect
+        boolean hasNoArg = false;
+        for (int i = 0; i < m_classInfo.getConstructors().length; i++) {
+            ConstructorInfo constructorInfo = m_classInfo.getConstructors()[i];
+            if ("()V".equals(constructorInfo.getSignature())) {
+                hasNoArg = true;
+                break;
+            }
+        }
+        if (!hasNoArg) {
+            setContainerClassName(DEFAULT_ASPECTCONTAINER_CLASSNAME);
+        }
     }
 
     /**
@@ -339,13 +352,15 @@ public class AspectDefinition {
     public void setContainerClassName(final String containerClassName) {
         if (containerClassName != null) {
             m_containerClassName = containerClassName.replace('/', '.');
+        } else {
+            m_containerClassName = null;
         }
     }
 
     /**
      * Returns the name of the container implementation class.
      *
-     * @return the container class name
+     * @return the container class name or null if no container is set
      */
     public String getContainerClassName() {
         return m_containerClassName;

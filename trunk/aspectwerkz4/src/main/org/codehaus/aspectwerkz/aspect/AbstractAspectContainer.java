@@ -7,21 +7,35 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.WeakHashMap;
-
 import org.codehaus.aspectwerkz.AspectContext;
+import org.codehaus.aspectwerkz.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
+
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
+import java.util.Iterator;
+import java.util.Map;
 
 
 /**
- * Abstract base class for the aspect container implementations.
+ * Abstract base class for an aspect container implementations that is passing an AspectContext when
+ * creating the aspect instance if there is such a single arg constructor in the aspect.
+ * <p/>
+ * Provides support for getting the AspectDefinition.
+ * <p/>
+ * Can be used as a base class for user defined container.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
- * @TODO: allow any type of constructor, to support ctor based dependency injection
  */
 public abstract class AbstractAspectContainer implements AspectContainer {
+
+    protected Class m_aspectClass;
+    protected Reference m_classLoader;
+    protected String m_uuid;
+    protected String m_qualifiedName;
+    private AspectDefinition m_aspectDefinitionLazy;
 
     public static final int ASPECT_CONSTRUCTION_TYPE_UNKNOWN = 0;
     public static final int ASPECT_CONSTRUCTION_TYPE_DEFAULT = 1;
@@ -29,130 +43,111 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[]{};
 
     /**
-     * An array with the single aspect context, needed to save one array creation per invocation.
-     */
-    protected final Object[] ARRAY_WITH_SINGLE_ASPECT_CONTEXT = new Object[1];
-
-    /**
-     * The aspect construction type.
+     * The aspect construction type. Defaults to unknown
      */
     protected int m_constructionType = ASPECT_CONSTRUCTION_TYPE_UNKNOWN;
 
     /**
-     * The aspect context prototype.
-     */
-    protected final AspectContext m_aspectContext;
-
-    /**
-     * Holds a reference to the sole per JVM aspect instance.
-     */
-    protected Object m_perJvm;
-
-    /**
-     * Holds references to the per class aspect instances.
-     */
-    protected final Map m_perClass = new WeakHashMap();
-
-    /**
-     * Holds references to the per instance aspect instances.
-     */
-    protected final Map m_perInstance = new WeakHashMap();
-
-    /**
-     * Holds references to the per thread aspect instances.
-     */
-    protected final Map m_perThread = new WeakHashMap();
-
-    /**
-     * Maps the advice infos to the hash codes of the the matching advice method.
-     */
-    protected final Map m_adviceInfos = new HashMap();
-
-    /**
-     * Creates a new aspect container strategy.
+     * Create a new container
      *
-     * @param aspectContext the context
+     * @param aspectClass
+     * @param aopSystemClassLoader the classloader of the defining system (not necessary the one of the aspect class)
+     * @param uuid
+     * @param qualifiedName
+     * @param parameters
      */
-    public AbstractAspectContainer(final AspectContext aspectContext) {
-        if (aspectContext == null) {
-            throw new IllegalArgumentException("cross-cutting info can not be null");
+    public AbstractAspectContainer(Class aspectClass, ClassLoader aopSystemClassLoader, String uuid, String qualifiedName, Map parameters) {
+        m_aspectClass = aspectClass;// we hold a strong ref this the container is hold by the aspect factory only
+        m_classLoader = new WeakReference(aopSystemClassLoader);
+        m_uuid = uuid;
+        m_qualifiedName = qualifiedName;
+    }
+
+    /**
+     * Lazy getter for the aspect definition
+     *
+     * @return
+     */
+    public AspectDefinition getAspectDefinition() {
+        if (m_aspectDefinitionLazy == null) {
+            SystemDefinition def = SystemDefinitionContainer.getDefinitionFor(getDefiningSystemClassLoader(), m_uuid);
+            if (def == null) {
+                throw new RuntimeException(
+                        "Definition " + m_uuid + " not found from " + getDefiningSystemClassLoader()
+                );
+            }
+            for (Iterator iterator = def.getAspectDefinitions().iterator(); iterator.hasNext();) {
+                AspectDefinition aspectDefinition = (AspectDefinition) iterator.next();
+                if (m_qualifiedName.equals(aspectDefinition.getQualifiedName())) {
+                    m_aspectDefinitionLazy = aspectDefinition;
+                }
+            }
+            if (m_aspectDefinitionLazy == null) {
+                throw new RuntimeException(
+                        "Aspect definition not found " + m_qualifiedName + " from " + getDefiningSystemClassLoader()
+                );
+            }
         }
-
-        m_aspectContext = aspectContext;
-        ARRAY_WITH_SINGLE_ASPECT_CONTEXT[0] = m_aspectContext;
+        return m_aspectDefinitionLazy;
     }
 
     /**
-     * Returns the context.
-     *
-     * @return the context
+     * @return the classloader of the system defining the aspect handled by that container instance
      */
-    public AspectContext getContext() {
-        return m_aspectContext;
+    public ClassLoader getDefiningSystemClassLoader() {
+        return ((ClassLoader) m_classLoader.get());
     }
 
-    /**
-     * asm
-     * Creates a new perJVM cross-cutting instance, if it already exists then return it.
-     *
-     * @return the cross-cutting instance
-     */
     public Object aspectOf() {
-        if (m_perJvm == null) {
-            m_perJvm = createAspect();
-        }
-        return m_perJvm;
+        return createAspect(getContext(null));
+    }
+
+    public Object aspectOf(Class klass) {
+        return createAspect(getContext(klass));
+    }
+
+    public Object aspectOf(Object instance) {
+        return createAspect(getContext(instance));
+    }
+
+    public Object aspectOf(Thread thread) {
+        return createAspect(getContext(thread));
     }
 
     /**
-     * Creates a new perClass cross-cutting instance, if it already exists then return it.
-     *
-     * @param klass
-     * @return the cross-cutting instance
-     */
-    public Object aspectOf(final Class klass) {
-        synchronized (m_perClass) {
-            if (!m_perClass.containsKey(klass)) {
-                m_perClass.put(klass, createAspect());
-            }
-        }
-        return m_perClass.get(klass);
-    }
-
-    /**
-     * Creates a new perInstance cross-cutting instance, if it already exists then return it.
-     *
-     * @param instance
-     * @return the cross-cutting instance
-     */
-    public Object aspectOf(final Object instance) {
-        synchronized (m_perInstance) {
-            if (!m_perInstance.containsKey(instance)) {
-                m_perInstance.put(instance, createAspect());
-            }
-        }
-        return m_perInstance.get(instance);
-    }
-
-    /**
-     * Creates a new perThread cross-cutting instance, if it already exists then return it.
-     *
-     * @param thread the thread for the aspect
-     * @return the cross-cutting instance
-     */
-    public Object aspectOf(final Thread thread) {
-        synchronized (m_perThread) {
-            if (!m_perThread.containsKey(thread)) {
-                m_perThread.put(thread, createAspect());
-            }
-        }
-        return m_perThread.get(thread);
-    }
-
-    /**
-     * To be implemented by the concrete aspect containers. <p/>Should return a new aspect instance.
+     * To be implemented by the concrete aspect containers.
+     * <p/>
+     * Should return a new aspect instance.
      *
      * @return a new aspect instance
      */
-    protected abstract Object createAspect();
+    protected abstract Object createAspect(AspectContext aspectContext);
+
+    /**
+     * Create a new AspectContext associated with the given instance (class/instance/thread/null)
+     *
+     * @param associated
+     * @return
+     */
+    protected AspectContext getContext(Object associated) {
+        AspectDefinition aspectDefinition = getAspectDefinition();
+        return new AspectContext(
+                m_uuid,
+                m_aspectClass,
+                aspectDefinition.getName(),
+                aspectDefinition.getDeploymentModel(),
+                aspectDefinition,
+                aspectDefinition.getParameters(),
+                associated
+        );
+    }
+
+    /**
+     * Returns the aspect class
+     * 
+     * @return
+     */
+    public Class getAspectClass() {
+        return m_aspectClass;
+    }
 }

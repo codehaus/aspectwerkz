@@ -149,9 +149,6 @@ public interface TransformationConstants extends Constants {
     public static final String NEW_FIELD_SIGNATURE_METHOD_SIGNATURE = "(Ljava/lang/Class;I)Lorg/codehaus/aspectwerkz/joinpoint/impl/FieldSignatureImpl;";
     public static final String NEW_HANDLER_SIGNATURE_METHOD_SIGNATURE = "(Ljava/lang/Class;)Lorg/codehaus/aspectwerkz/joinpoint/impl/CatchClauseSignatureImpl;";
     public static final String SIGNATURE_FACTORY_CLASS = "org/codehaus/aspectwerkz/joinpoint/management/SignatureFactory";
-    public static final String ASPECTS_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/management/Aspects";
-    public static final String ASPECT_OF_METHOD_NAME = "aspect$Of";
-    public static final String ASPECT_OF_PER_JVM_METHOD_SIGNATURE = "(Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;";
     public static final String GETCLASSLOADER_METHOD_NAME = "getClassLoader";
     public static final String ASPECT_OF_PER_CLASS_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;";
     public static final String ASPECT_OF_PER_INSTANCE_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;";
@@ -189,6 +186,7 @@ public interface TransformationConstants extends Constants {
     public static final String NEW_ENCLOSING_SJP_METHOD_SIGNATURE = "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/String;)Lorg/codehaus/aspectwerkz/joinpoint/EnclosingStaticJoinPoint;";
     public static final String HASH_MAP_CLASS_NAME = "java/util/HashMap";
     public static final String NO_PARAM_RETURN_VOID_SIGNATURE = "()V";
+    public static final String NO_PARAM_RETURN_BOOLEAN_SIGNATURE = "()Z";
     public static final String CLASS_NOT_FOUND_EXCEPTION_CLASS_NAME = "java/lang/ClassNotFoundException";
     public static final String GET_CALLER_CLASS_METHOD_NAME = "getCallerClass";
     public static final String GET_CALLER_CLASS_METHOD_SIGNATURE = "()Ljava/lang/Class;";
@@ -236,8 +234,13 @@ public interface TransformationConstants extends Constants {
     public static final String HAS_INSTANCE_LEVEL_ASPECT_INTERFACE_NAME = "org/codehaus/aspectwerkz/aspect/management/HasInstanceLevelAspect";
     public static final String INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME = SYNTHETIC_MEMBER_PREFIX + "instanceLevelAspects";
     public static final String INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE = "Ljava/util/Map;";
-    public static final String GET_INSTANCE_LEVEL_ASPECT_METHOD_NAME = WRAPPER_METHOD_PREFIX + "getAspect";
-    public static final String GET_INSTANCE_LEVEL_ASPECT_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;";
+    public static final String INSTANCE_LEVEL_GETASPECT_METHOD_NAME = WRAPPER_METHOD_PREFIX + "getAspect";
+    public static final String INSTANCE_LEVEL_GETASPECT_METHOD_SIGNATURE = "(Ljava/lang/Class;)Ljava/lang/Object;";
+    public static final String INSTANCE_LEVEL_HASASPECT_METHOD_NAME = WRAPPER_METHOD_PREFIX + "hasAspect";
+    public static final String INSTANCE_LEVEL_HASASPECT_METHOD_SIGNATURE = "(Ljava/lang/Class;)Z";
+    public static final String INSTANCE_LEVEL_BINDASPECT_METHOD_NAME = WRAPPER_METHOD_PREFIX + "bindAspect";
+    public static final String INSTANCE_LEVEL_BINDASPECT_METHOD_SIGNATURE = "(Ljava/lang/Class;Ljava/lang/Object;)Ljava/lang/Object;";
+
 
     public static final String ADVISABLE_CLASS_JAVA_NAME = "org.codehaus.aspectwerkz.intercept.Advisable";
     public static final String ADVISABLE_CLASS_NAME = "org/codehaus/aspectwerkz/intercept/Advisable";
@@ -277,13 +280,22 @@ public interface TransformationConstants extends Constants {
     public static final String NEW_STATICINITIALIZATION_SIGNATURE_METHOD_SIGNATURE = "(Ljava/lang/Class;)Lorg/codehaus/aspectwerkz/joinpoint/impl/StaticInitializerSignatureImpl;";
     public static final String NEW_STATICINITIALIZATION_SIGNATURE_METHOD_NAME = "newStaticInitializationSignature";
     
-    public static final String HAS_INSTANCE_LEVEL_ASPECT_METHOD_NAME = WRAPPER_METHOD_PREFIX + "hasAspect";
-    public static final String HAS_INSTANCE_LEVEL_ASPECT_METHOD_SIGNATURE = "(Ljava/lang/String;)Z";
-
-    public static final String HASASPECT_METHOD_NAME = "hasAspect";
-    public static final String HASASPECT_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/Object;)Z";
-
     public static final String TARGET_CLASS_FIELD_NAME_IN_JP = "TARGET_CLASS";
     public static final String THIS_CLASS_FIELD_NAME_IN_JP	  = "THIS_CLASS";
+
+    public static final String FACTORY_CLASS_FIELD_NAME = "FACTORY_CLASS";
+    public static final String FACTORY_CONTAINER_FIELD_NAME = "CONTAINER";
+    public static final String FACTORY_SINGLEASPECT_FIELD_NAME = "ASPECT";
+    public static final String FACTORY_ASPECTS_FIELD_NAME = "ASPECTS";
+    public static final String FACTORY_PARAMS_FIELD_NAME = "PARAMS";
+    public static final String FACTORY_ASPECTOF_METHOD_NAME = "aspectOf";
+    public static final String FACTORY_HASASPECT_METHOD_NAME = "hasAspect";
+    public static final String FACTORY_HASASPECT_PEROBJECT_METHOD_SIGNATURE = "(Ljava/lang/Object;)Z";
+    public static final String NO_ASPECT_BOUND_EXCEPTION_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/management/NoAspectBoundException";
+    public static final String ASPECT_CONTAINER_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/AspectContainer";
+    public static final String ASPECT_CONTAINER_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/aspect/AspectContainer;";
+    public static final String ASPECT_CONTAINER_OPTIONAL_INIT_SIGNATURE = "(Ljava/lang/Class;Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V";
+    public static final String ASPECT_CONTAINER_ASPECTOF_METHOD_NAME = "aspectOf";
+    public static final String ASPECT_CONTAINER_ASPECTOF_PERJVM_METHOD_SIGNATURE = "()Ljava/lang/Object;";
 
 }
