@@ -151,7 +151,6 @@ public class PerObjectFactoryCompiler extends AbstractAspectFactoryCompiler {
         cv.visitVarInsn(ALOAD, 0);//object
         cv.visitTypeInsn(CHECKCAST, HAS_INSTANCE_LEVEL_ASPECT_INTERFACE_NAME);
         cv.visitFieldInsn(GETSTATIC, m_aspectFactoryClassName, FACTORY_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
-
         cv.visitMethodInsn(
                 INVOKEINTERFACE,
                 HAS_INSTANCE_LEVEL_ASPECT_INTERFACE_NAME,
@@ -162,6 +161,11 @@ public class PerObjectFactoryCompiler extends AbstractAspectFactoryCompiler {
         cv.visitVarInsn(ALOAD, 1);
         Label ifAlreadyBound = new Label();
         cv.visitJumpInsn(IFNONNULL, ifAlreadyBound);
+
+        // target instance and arg0 for bind call
+        cv.visitVarInsn(ALOAD, 0);//object
+        cv.visitTypeInsn(CHECKCAST, HAS_INSTANCE_LEVEL_ASPECT_INTERFACE_NAME);
+        cv.visitFieldInsn(GETSTATIC, m_aspectFactoryClassName, FACTORY_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
 
         if (m_hasAspectContainer) {
             cv.visitFieldInsn(
@@ -187,7 +191,6 @@ public class PerObjectFactoryCompiler extends AbstractAspectFactoryCompiler {
 
         cv.visitLabel(ifAlreadyBound);
         cv.visitVarInsn(ALOAD, 1);
-        cv.visitTypeInsn(CHECKCAST, m_aspectClassName);
         cv.visitInsn(ARETURN);
 
         cv.visitMaxs(0, 0);
