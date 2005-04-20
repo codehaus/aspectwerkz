@@ -37,10 +37,17 @@ import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
 import org.codehaus.aspectwerkz.transform.inlining.AdviceMethodInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AspectInfo;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.AbstractJoinPointCompiler;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.AspectWerkzAspectModel;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilerInput;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.JoinPointCompiler;
 
 import org.codehaus.aspectwerkz.org.objectweb.asm.ClassWriter;
 import org.codehaus.aspectwerkz.org.objectweb.asm.CodeVisitor;
+import org.codehaus.aspectwerkz.org.objectweb.asm.ClassVisitor;
+import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.cflow.CflowCompiler;
 
 /**
  * Implementation of the AspectModel interface for the AspectJ framework.
@@ -62,6 +69,11 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
     private static final String PREFIX_AFTER_THROWING_ADVICE = "ajc$afterThrowing$";
     private static final String PREFIX_AFTER_RETURNING_ADVICE = "ajc$afterReturning$";
     private static final String PROCEED_SUFFIX = "proceed";
+
+    /**
+     * Use an AspectWerkzAspectModel to delegate common things to it.
+     */
+    private final static AspectModel s_modelHelper = new AspectWerkzAspectModel();
 
     /**
      * Returns the aspect model type, which is an id for the the special aspect model, can be anything as long
@@ -148,6 +160,17 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
     }
 
     /**
+     * Returns the instance to use for the given compilation
+     * Singleton is enough.
+     *
+     * @param model
+     * @return
+     */
+    public AspectModel getInstance(CompilationInfo.Model model) {
+        return this;
+    }
+
+    /**
      * AspectJ is not in need for reflective information, passes contextual info through args() binding etc.
      * or handles it itself using 'thisJoinPoint'.
      *
@@ -166,22 +189,21 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
         return new AspectModel.AroundClosureClassInfo( ASPECTJ_AROUND_CLOSURE_CLASS_NAME, new String[]{});
     }
 
-
     /**
      * Creates the methods required to implement or extend to implement the closure for the specific aspect model type.
      *
-     * @param cw
-     * @param className
+     * @param classWriter
+     * @param joinPointCompiler
      */
-    public void createMandatoryMethods(final ClassWriter cw, final String className) {
-        CodeVisitor cv = cw.visitMethod(
+    public void createMandatoryMethods(ClassWriter classWriter, JoinPointCompiler joinPointCompiler) {
+        CodeVisitor cv = classWriter.visitMethod(
                 ACC_PUBLIC, ASPECTJ_AROUND_CLOSURE_RUN_METHOD_NAME,
                 ASPECTJ_AROUND_CLOSURE_RUN_METHOD_SIGNATURE,
                 new String[]{THROWABLE_CLASS_NAME},
                 null
         );
         cv.visitVarInsn(ALOAD, 0);
-        cv.visitMethodInsn(INVOKEVIRTUAL, className, PROCEED_METHOD_NAME, PROCEED_METHOD_SIGNATURE);
+        cv.visitMethodInsn(INVOKEVIRTUAL, joinPointCompiler.getJoinPointClassName(), PROCEED_METHOD_NAME, PROCEED_METHOD_SIGNATURE);
         cv.visitInsn(ARETURN);
         cv.visitMaxs(0, 0);
     }
@@ -202,78 +224,74 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
     }
 
     /**
-     * Creates a field to host the aspectj aspect instance
-     * <p/>
-     * TODO support other aspect deployment model
-     *
-     * @param cw
-     * @param aspectInfo
+    * Creates a field to host the aspectj aspect instance and instantiate them if possible
+    * <p/>
+    *
+    * @param cw
+    * @param cv
+    * @param aspectInfo
      * @param joinPointClassName
-     */
-    public void createAspectReferenceField(final ClassWriter cw,
-                                           final AspectInfo aspectInfo,
-                                           final String joinPointClassName) {
-        AbstractJoinPointCompiler.createAspectReferenceField(cw, aspectInfo);
-    }
+    */
+    public void createAndStoreStaticAspectInstantiation(ClassVisitor cw, CodeVisitor cv, AspectInfo aspectInfo, String joinPointClassName) {
+        String aspectClassSignature = aspectInfo.getAspectClassSignature();
+        String aspectClassName = aspectInfo.getAspectClassName();
+        DeploymentModel deploymentModel = aspectInfo.getDeploymentModel();
 
-    /**
-     * Creates instantiation of the aspectj aspect instance by invoking aspectOf().
-     * <p/>
-     * TODO support other aspectOf() types of aspect retrieval
-     *
-     * @param cv
-     * @param aspectInfo
-     * @param joinPointClassName
-     */
-    public void createAspectInstantiation(final CodeVisitor cv,
-                                          final AspectInfo aspectInfo,
-                                          final String joinPointClassName) {
-        cv.visitMethodInsn(
-                INVOKESTATIC,
-                aspectInfo.getAspectClassName(),
-                "aspectOf()",
-                "()" + aspectInfo.getAspectClassSignature()
-        );
-        // no cast needed
-        cv.visitFieldInsn(
-                PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectInfo.getAspectClassSignature()
-        );
-
-    }
-
-    /**
-     * Handles the arguments to the before around.
-     *
-     * @param cv
-     * @param adviceMethodInfo
-     */
-    public void createAroundAdviceArgumentHandling(final CodeVisitor cv, final AdviceMethodInfo adviceMethodInfo) {
-    }
-
-    /**
-     * Handles the arguments to the before advice.
-     *
-     * @param cv
-     * @param adviceMethodInfo
-     */
-    public void createBeforeAdviceArgumentHandling(final CodeVisitor cv, final AdviceMethodInfo adviceMethodInfo) {
-    }
-
-    /**
-     * Handles the arguments to the after advice.
-     *
-     * @param cv
-     * @param adviceMethodInfo
-     */
-    public void createAfterAdviceArgumentHandling(final CodeVisitor cv, final AdviceMethodInfo adviceMethodInfo) {
-        final AdviceType adviceType = adviceMethodInfo.getAdviceInfo().getType();
-        final int specialArgumentIndex = adviceMethodInfo.getSpecialArgumentIndex();
-        final String specialArgumentTypeName = adviceMethodInfo.getSpecialArgumentTypeName();
-        if (adviceType.equals(AdviceType.AFTER_RETURNING) ||
-            adviceType.equals(AdviceType.AFTER_THROWING)) {
-            cv.visitVarInsn(ALOAD, specialArgumentIndex);
-            cv.visitTypeInsn(CHECKCAST, specialArgumentTypeName);
+        if (deploymentModel.equals(DeploymentModel.PER_JVM)) {
+            cw.visitField(ACC_PRIVATE + ACC_STATIC, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null);
+            cv.visitMethodInsn(
+                    INVOKESTATIC,
+                    aspectClassName,
+                    "aspectOf",
+                    "()" + aspectClassSignature
+            );
+            cv.visitFieldInsn(PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature);
+        } else {
+            throw new UnsupportedOperationException(
+                    "unsupported deployment model for the AspectJAspectModel - " +
+                    aspectClassName + " " +
+                    deploymentModel
+            );
         }
+    }
+
+    public void createAndStoreRuntimeAspectInstantiation(CodeVisitor codeVisitor, CompilerInput compilerInput, AspectInfo aspectInfo) {
+        //TODO support for non perJVM aspects
+        ;
+    }
+
+    public void loadAspect(CodeVisitor codeVisitor, CompilerInput compilerInput, AspectInfo aspectInfo) {
+        s_modelHelper.loadAspect(
+                codeVisitor,
+                compilerInput,
+                aspectInfo
+        );
+    }
+
+    /**
+     * Handles the arguments to an around advice. Same as in AW.
+     */
+    public void createAroundAdviceArgumentHandling(CodeVisitor codeVisitor, CompilerInput compilerInput, org.codehaus.aspectwerkz.org.objectweb.asm.Type[] types, AdviceMethodInfo adviceMethodInfo) {
+        //TODO - likely to fail if we don't cast the "this" to the closure ?
+        s_modelHelper.createAroundAdviceArgumentHandling(
+                codeVisitor,
+                compilerInput,
+                types,
+                adviceMethodInfo
+        );
+    }
+
+    /**
+     * Handles the arguments to a before/after advice. Same as in AW.
+     */
+    public void createBeforeOrAfterAdviceArgumentHandling(CodeVisitor codeVisitor, CompilerInput compilerInput, org.codehaus.aspectwerkz.org.objectweb.asm.Type[] types, AdviceMethodInfo adviceMethodInfo, int specialArgIndex) {
+        s_modelHelper.createBeforeOrAfterAdviceArgumentHandling(
+                codeVisitor,
+                compilerInput,
+                types,
+                adviceMethodInfo,
+                specialArgIndex
+        );
     }
 
     /**
