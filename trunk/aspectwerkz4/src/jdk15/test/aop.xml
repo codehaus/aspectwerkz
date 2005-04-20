@@ -31,5 +31,15 @@
             <advice name="afterGreeting(JoinPoint jp, java.lang.Exception ex)" type="after throwing(ex)" bind-to="greetMethod"/>
         </aspect>
 
+<!--        notes:-->
+<!--        Foo is inner of CustomProceedChangeTargetTest-->
+<!--        Aspect2 is inner of CustomProceedChangeTargetTest-->
+<!--        CustomJp3 is inner of Aspect2-->
+        <aspect class="test.CustomProceedChangeTargetTest$Aspect2">
+            <advice type="around"
+                name="around3(test.CustomProceedChangeTargetTest$Aspect2$CustomJp3 jp, test.CustomProceedChangeTargetTest$Foo foo)"
+                bind-to="execution(int test.CustomProceedChangeTargetTest.changeArg(test.CustomProceedChangeTargetTest$Foo)) AND args(foo)"/>
+        </aspect>
+
     </system>
 </aspectwerkz>
