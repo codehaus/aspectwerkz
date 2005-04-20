@@ -175,7 +175,7 @@
     <!-- ============================================================== -->
     <target name="test" depends="compile:test">
         <exec executable="${aw.home}/bin/aspectwerkz${executableSuffix}">
-            <arg line="-Daspectwerkz.extension.aspectmodels=org.codehaus.aspectwerkz.transform.aspectj.AspectJAspectModel -cp ${build.test.dir}${pathseparator}${build.core.dir}${pathseparator}${basedir}/lib/aspectjtools.jar${pathseparator}${basedir}/lib/aspectjrt.jar${pathseparator}${aw.home}/lib/junit-3.8.1.jar -Daspectwerkz.definition.file=${test.src.dir}/aop.xml -Daspectwerkz.transform.dump=* test.aj.Test"/>
+            <arg line="-Daspectwerkz.extension.aspectmodels=org.codehaus.aspectwerkz.transform.aspectj.AspectJAspectModel -cp ${basedir}/lib/xercesImpl.jar${pathseparator}${build.test.dir}${pathseparator}${build.core.dir}${pathseparator}${basedir}/lib/aspectjtools.jar${pathseparator}${basedir}/lib/aspectjrt.jar${pathseparator}${aw.home}/lib/junit-3.8.1.jar -Daspectwerkz.definition.file=${test.src.dir}/aop.xml -Daspectwerkz.transform.dump=* test.aj.Test"/>
         </exec>
     </target>
 
