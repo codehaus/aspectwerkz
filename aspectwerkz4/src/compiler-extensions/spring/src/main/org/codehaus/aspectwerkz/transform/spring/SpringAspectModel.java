@@ -11,6 +11,8 @@ import org.codehaus.aspectwerkz.transform.aopalliance.AopAllianceAspectModel;
 import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
 import org.codehaus.aspectwerkz.transform.inlining.AdviceMethodInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilerInput;
+import org.codehaus.aspectwerkz.transform.JoinPointCompiler;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 
@@ -26,6 +28,7 @@ import org.springframework.aop.ThrowsAdvice;
 import org.codehaus.aspectwerkz.org.objectweb.asm.CodeVisitor;
 import org.codehaus.aspectwerkz.org.objectweb.asm.ClassWriter;
 import org.codehaus.aspectwerkz.org.objectweb.asm.Type;
+import org.codehaus.aspectwerkz.aspect.AdviceType;
 
 /**
  * Implementation of the AspectModel interface for Spring framework.
@@ -67,7 +70,7 @@ public class SpringAspectModel extends AopAllianceAspectModel {
                 anInterface.getName().equals(AfterReturningAdvice.class.getName()) ||
                 anInterface.getName().equals(ThrowsAdvice.class.getName())) {
                 aspectDef.setAspectModel(ASPECT_MODEL_TYPE);
-                aspectDef.setContainerClassName(ASPECT_CONTAINER_CLASS_NAME);
+                aspectDef.setContainerClassName(null);
                 return;
             }
         }
@@ -89,16 +92,21 @@ public class SpringAspectModel extends AopAllianceAspectModel {
         );
     }
 
-
-    /**
-     * Creates the methods required to implement or extend to implement the closure for the specific
-     * aspect model type.
-     *
-     * @param cw
-     * @param className
-     */
-    public void createMandatoryMethods(final ClassWriter cw, final String className) {
-        super.createMandatoryMethods(cw, className);
+    public void createBeforeOrAfterAdviceArgumentHandling(CodeVisitor codeVisitor, CompilerInput compilerInput, Type[] types, AdviceMethodInfo adviceMethodInfo, int i) {
+        if (AdviceType.BEFORE.equals(adviceMethodInfo.getAdviceInfo().getType())) {
+            createBeforeAdviceArgumentHandling(
+                    codeVisitor,
+                    adviceMethodInfo,
+                    compilerInput.joinPointInstanceIndex
+            );
+        } else {
+            // after advice no matter what
+            createAfterAdviceArgumentHandling(
+                    codeVisitor,
+                    adviceMethodInfo,
+                    compilerInput.joinPointInstanceIndex
+            );
+        }
     }
 
     /**
@@ -106,10 +114,11 @@ public class SpringAspectModel extends AopAllianceAspectModel {
      *
      * @param cv
      * @param adviceMethodInfo
+     * @param joinPointInstanceIndex
      */
-    public void createBeforeAdviceArgumentHandling(final CodeVisitor cv, final AdviceMethodInfo adviceMethodInfo) {
+    public void createBeforeAdviceArgumentHandling(final CodeVisitor cv, final AdviceMethodInfo adviceMethodInfo, final int joinPointInstanceIndex) {
         final String joinPointClassName = adviceMethodInfo.getJoinPointClassName();
-        final int joinPointIndex = adviceMethodInfo.getJoinPointIndex();
+        final int joinPointIndex = joinPointInstanceIndex;
         cv.visitFieldInsn(
                 GETSTATIC,
                 joinPointClassName,
@@ -155,10 +164,11 @@ public class SpringAspectModel extends AopAllianceAspectModel {
      *
      * @param cv
      * @param adviceMethodInfo
+     * @param joinPointInstanceIndex
      */
-    public void createAfterAdviceArgumentHandling(final CodeVisitor cv, final AdviceMethodInfo adviceMethodInfo) {
+    public void createAfterAdviceArgumentHandling(final CodeVisitor cv, final AdviceMethodInfo adviceMethodInfo, final int joinPointInstanceIndex) {
         final String joinPointClassName = adviceMethodInfo.getJoinPointClassName();
-        final int joinPointIndex = adviceMethodInfo.getJoinPointIndex();
+        final int joinPointIndex = joinPointInstanceIndex;
         final String specArgDesc = adviceMethodInfo.getSpecialArgumentTypeDesc();
         if (specArgDesc == null) {
             cv.visitInsn(ACONST_NULL);
