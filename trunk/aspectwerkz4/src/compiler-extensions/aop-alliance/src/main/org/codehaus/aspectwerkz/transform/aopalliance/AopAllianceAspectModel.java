@@ -13,7 +13,11 @@ import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
 import org.codehaus.aspectwerkz.transform.inlining.AdviceMethodInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AspectInfo;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.AbstractJoinPointCompiler;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilerInput;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.AspectWerkzAspectModel;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.JoinPointCompiler;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.ConstructorInterceptor;
@@ -22,6 +26,8 @@ import org.aopalliance.intercept.ConstructorInterceptor;
 //import org.objectweb.asm.ClassWriter;
 import org.codehaus.aspectwerkz.org.objectweb.asm.CodeVisitor;
 import org.codehaus.aspectwerkz.org.objectweb.asm.ClassWriter;
+import org.codehaus.aspectwerkz.org.objectweb.asm.ClassVisitor;
+import org.codehaus.aspectwerkz.org.objectweb.asm.Type;
 
 /**
  * TODO support ConstructorInvocation (1h work) (plus tests)
@@ -39,7 +45,6 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
     protected static final String AOP_ALLIANCE_CLOSURE_CLASS_NAME = "org/aopalliance/intercept/MethodInvocation";
     protected static final String AOP_ALLIANCE_CLOSURE_PROCEED_METHOD_NAME = "invoke";
     protected static final String AOP_ALLIANCE_CLOSURE_PROCEED_METHOD_SIGNATURE = "(Lorg/aopalliance/intercept/MethodInvocation;)Ljava/lang/Object;";
-    protected static final String ASPECT_CONTAINER_CLASS_NAME = AopAllianceAspectContainer.class.getName();
     protected static final String GET_METHOD_METHOD_NAME = "getMethod";
     protected static final String GET_METHOD_METHOD_SIGNATURE = "()Ljava/lang/reflect/Method;";
     protected static final String GET_STATIC_PART_METHOD_NAME = "getStaticPart";
@@ -48,6 +53,10 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
     protected static final String GET_ARGUMENTS_METHOD_SIGNATURE = "()[Ljava/lang/Object;";
     protected static final String GET_ARGUMENTS_METHOD_NAME = "getArguments";
 
+    /**
+     * Use an AspectWerkzAspectModel to delegate common things to it.
+     */
+    private final static AspectModel s_modelHelper = new AspectWerkzAspectModel();
 
     /**
      * Returns the aspect model type, which is an id for the the special aspect model, can be anything as long
@@ -75,7 +84,7 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
             if (anInterface.getName().equals(MethodInterceptor.class.getName()) ||
                 anInterface.getName().equals(ConstructorInterceptor.class.getName())) {
                 aspectDef.setAspectModel(ASPECT_MODEL_TYPE);
-                aspectDef.setContainerClassName(ASPECT_CONTAINER_CLASS_NAME);
+                aspectDef.setContainerClassName(null);//no container. Inlined factory is enough
                 return;
             }
         }
@@ -99,15 +108,25 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
         return new AspectModel.AroundClosureClassInfo(null, new String[] {AOP_ALLIANCE_CLOSURE_CLASS_NAME});
     }
 
+    /**
+     * Returns an instance for a given compilation. Singleton is enough.
+     *
+     * @param compilationModel
+     * @return
+     */
+    public AspectModel getInstance(CompilationInfo.Model compilationModel) {
+        return this;
+    }
 
     /**
      * Creates the methods required to implement or extend to implement the closure for the specific
      * aspect model type.
      *
      * @param cw
-     * @param className
+     * @param compiler
      */
-    public void createMandatoryMethods(final ClassWriter cw, final String className) {
+    public void createMandatoryMethods(final ClassWriter cw, final JoinPointCompiler compiler) {
+        final String className = compiler.getJoinPointClassName();
         CodeVisitor cv;
 
         // invoke
@@ -191,58 +210,35 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
      * @param cv
      */
     public void createInvocationOfAroundClosureSuperClass(final CodeVisitor cv) {
+        ;// just an interface
     }
 
     /**
      * Creates host of the aop alliance aspect instance by invoking aspectOf().
      *
-     * @param cw
-     * @param aspectInfo
-     * @param joinPointClassName
      */
-    public void createAspectReferenceField(final ClassWriter cw,
-                                           final AspectInfo aspectInfo,
-                                           final String joinPointClassName) {
-        AbstractJoinPointCompiler.createAspectReferenceField(cw, aspectInfo);
+    public void createAndStoreStaticAspectInstantiation(ClassVisitor classVisitor, CodeVisitor codeVisitor, AspectInfo aspectInfo, String joinPointClassName) {
+        // we use static field and handle instantiation thru perJVM factory
+        s_modelHelper.createAndStoreStaticAspectInstantiation(
+                classVisitor, codeVisitor, aspectInfo, joinPointClassName
+        );
     }
 
-    /**
-     * Creates instantiation of the aop alliance aspect instance by invoking aspectOf().
-     *
-     * @param cv
-     * @param aspectInfo
-     * @param joinPointClassName
-     */
-    public void createAspectInstantiation(final CodeVisitor cv,
-                                          final AspectInfo aspectInfo,
-                                          final String joinPointClassName) {
-        AbstractJoinPointCompiler.createAspectInstantiation(cv, aspectInfo, joinPointClassName);
+    public void createAndStoreRuntimeAspectInstantiation(CodeVisitor codeVisitor, CompilerInput compilerInput, AspectInfo aspectInfo) {
+        ;// does not happen
     }
 
-    /**
-     * Handles the arguments to the before around.
-     *
-     * @param cv
-     * @param adviceMethodInfo
-     */
-    public void createAroundAdviceArgumentHandling(final CodeVisitor cv, final AdviceMethodInfo adviceMethodInfo) {
+    public void loadAspect(CodeVisitor codeVisitor, CompilerInput compilerInput, AspectInfo aspectInfo) {
+        s_modelHelper.loadAspect(codeVisitor, compilerInput, aspectInfo);
     }
 
-    /**
-     * Handles the arguments to the before advice.
-     *
-     * @param cv
-     * @param adviceMethodInfo
-     */
-    public void createBeforeAdviceArgumentHandling(final CodeVisitor cv, final AdviceMethodInfo adviceMethodInfo) {
+    public void createAroundAdviceArgumentHandling(CodeVisitor codeVisitor, CompilerInput compilerInput, Type[] types, AdviceMethodInfo adviceMethodInfo) {
+        // push jp ie AOP Alliance MethodInvocation
+        codeVisitor.visitVarInsn(ALOAD, 0);
+
     }
 
-    /**
-     * Handles the arguments to the after advice.
-     *
-     * @param cv
-     * @param adviceMethodInfo
-     */
-    public void createAfterAdviceArgumentHandling(final CodeVisitor cv, final AdviceMethodInfo adviceMethodInfo) {
+    public void createBeforeOrAfterAdviceArgumentHandling(CodeVisitor codeVisitor, CompilerInput compilerInput, Type[] types, AdviceMethodInfo adviceMethodInfo, int i) {
+        ;//does not happen
     }
 }
