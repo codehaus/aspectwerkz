@@ -42,7 +42,8 @@ public class PerInstanceSerializationTest extends TestCase implements Serializab
     public void testSerializeTarget() {
         s_log = new StringBuffer();
         PerInstanceSerializationTest instance = new PerInstanceSerializationTest();
-        instance.doStuff();// advised, new aspect gets created
+        try {instance.doStuff();// advised, new aspect gets created
+        } catch (Throwable t) {t.printStackTrace();}
         Object theAspect = Aspects.aspectOf(TestAspect.class, instance);
 
         try {

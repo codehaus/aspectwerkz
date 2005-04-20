@@ -206,7 +206,7 @@
         </aspect>
     </system>
     
-    <system id="per-scopes">
+    <system id="perscopes">
     		<include package="test.perx.*"/>
     		<pointcut name="perPointcut">
 					within(test.perx.*) 

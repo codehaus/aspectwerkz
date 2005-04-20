@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.transform.inlining.compiler;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.aspect.AdviceInfo;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
+import org.codehaus.aspectwerkz.aspect.container.AspectFactoryManager;
 import org.codehaus.aspectwerkz.cflow.CflowCompiler;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
@@ -105,6 +106,8 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
      * And creates instantiation of aspects using the Aspects.aspectOf() methods which uses the AspectContainer impls.
      * We are using the THIS_CLASS classloader since the aspect can be visible from that one only f.e. for get/set/call
      *
+     * TODO for perJVM and perClass aspect this means we eagerly load the aspect. Different from AJ
+     *
      * @param cw
      * @param cv
      * @param aspectInfo
@@ -118,6 +121,8 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
         if (CflowCompiler.isCflowClass(aspectClassName)) {
             cw.visitField(ACC_PRIVATE + ACC_STATIC, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null);
             // handle Cflow native aspectOf
+            //TODO: would be better done with a custom aspectModel for cflow, or with default factory handling
+            //FIXME AVF what does factory do there ?
             cv.visitMethodInsn(
                     INVOKESTATIC,
                     aspectClassName,
@@ -127,34 +132,22 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
             cv.visitFieldInsn(PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature);
         } else if (deploymentModel.equals(DeploymentModel.PER_JVM)) {
             cw.visitField(ACC_PRIVATE + ACC_STATIC, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null);
-            // AW-355, AW-415 we need a ClassLoader here
-            cv.visitFieldInsn(GETSTATIC, joinPointClassName, THIS_CLASS_FIELD_NAME_IN_JP, CLASS_CLASS_SIGNATURE);
-            cv.visitMethodInsn(
-                    INVOKEVIRTUAL, CLASS_CLASS, GETCLASSLOADER_METHOD_NAME,
-                    CLASS_CLASS_GETCLASSLOADER_METHOD_SIGNATURE
-            );
-            cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
-            cv.visitLdcInsn(aspectInfo.getAspectDefinition().getContainerClassName());
             cv.visitMethodInsn(
                     INVOKESTATIC,
-                    ASPECTS_CLASS_NAME,
-                    ASPECT_OF_METHOD_NAME,
-                    ASPECT_OF_PER_JVM_METHOD_SIGNATURE
+                    aspectInfo.getAspectFactoryClassName(),
+                    "aspectOf",
+                    "()"+aspectClassSignature
             );
-            cv.visitTypeInsn(CHECKCAST, aspectClassName);
             cv.visitFieldInsn(PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature);
         } else if (deploymentModel.equals(DeploymentModel.PER_CLASS)) {
             cw.visitField(ACC_PRIVATE + ACC_STATIC, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null);
-            cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
-            cv.visitLdcInsn(aspectInfo.getAspectDefinition().getContainerClassName());
             cv.visitFieldInsn(GETSTATIC, joinPointClassName, THIS_CLASS_FIELD_NAME_IN_JP, CLASS_CLASS_SIGNATURE);
             cv.visitMethodInsn(
                     INVOKESTATIC,
-                    ASPECTS_CLASS_NAME,
-                    ASPECT_OF_METHOD_NAME,
-                    ASPECT_OF_PER_CLASS_METHOD_SIGNATURE
+                    aspectInfo.getAspectFactoryClassName(),
+                    "aspectOf",
+                    "(Ljava/lang/Class;)"+aspectClassSignature
             );
-            cv.visitTypeInsn(CHECKCAST, aspectClassName);
             cv.visitFieldInsn(PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature);
         } else if (AbstractJoinPointCompiler.requiresCallerOrCallee(deploymentModel)) {
             cw.visitField(ACC_PRIVATE, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null);
@@ -182,15 +175,15 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
                                                          final AspectInfo aspectInfo) {
         // gen code: if (Aspects.hasAspect(...) { aspectField = (<TYPE>)((HasInstanceLocalAspect)CALLER).aw$getAspect(className, qualifiedName, containerClassName) }
         if (DeploymentModel.PER_INSTANCE.equals(aspectInfo.getDeploymentModel())) {//TODO && callerIndex >= 0
-            storeAspectInstance(cv, input, aspectInfo, input.callerIndex);
+            //storeAspectInstance(cv, input, aspectInfo, input.callerIndex);
         } else if (DeploymentModel.PER_THIS.equals(aspectInfo.getDeploymentModel())
                 && input.callerIndex >= 0) {
-            Label hasAspectCheck = pushPerXCondition(cv, input.callerIndex, aspectInfo.getAspectQualifiedName());
+            Label hasAspectCheck = pushPerXCondition(cv, input.callerIndex, aspectInfo);
             storeAspectInstance(cv, input, aspectInfo, input.callerIndex);
             cv.visitLabel(hasAspectCheck);
         } else if (DeploymentModel.PER_TARGET.equals(aspectInfo.getDeploymentModel())
                 && input.calleeIndex >= 0) {
-            Label hasAspectCheck = pushPerXCondition(cv, input.calleeIndex, aspectInfo.getAspectQualifiedName());
+            Label hasAspectCheck = pushPerXCondition(cv, input.calleeIndex, aspectInfo);
             storeAspectInstance(cv, input, aspectInfo, input.calleeIndex);
             cv.visitLabel(hasAspectCheck);
         }
@@ -204,16 +197,22 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
                 // caller instance not available - skipping
                 //TODO clean up should not occur
             }
-            cv.visitLdcInsn(aspectInfo.getAspectClassName().replace('/', '.'));
-            cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
-            cv.visitLdcInsn(aspectInfo.getAspectDefinition().getContainerClassName());
             cv.visitMethodInsn(
-                    INVOKEINTERFACE,
-                    HAS_INSTANCE_LEVEL_ASPECT_INTERFACE_NAME,
-                    GET_INSTANCE_LEVEL_ASPECT_METHOD_NAME,
-                    GET_INSTANCE_LEVEL_ASPECT_METHOD_SIGNATURE
+                    INVOKESTATIC,
+                    aspectInfo.getAspectFactoryClassName(),
+                    "aspectOf",
+                    "(Ljava/lang/Object;)"+aspectInfo.getAspectClassSignature()
             );
-            cv.visitTypeInsn(CHECKCAST, aspectInfo.getAspectClassName());
+//            cv.visitLdcInsn(aspectInfo.getAspectClassName().replace('/', '.'));
+//            cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
+//            AsmHelper.loadStringConstant(cv, aspectInfo.getAspectDefinition().getContainerClassName());
+//            cv.visitMethodInsn(
+//                    INVOKEINTERFACE,
+//                    HAS_INSTANCE_LEVEL_ASPECT_INTERFACE_NAME,
+//                    INSTANCE_LEVEL_GETASPECT_METHOD_NAME,
+//                    INSTANCE_LEVEL_GETASPECT_METHOD_SIGNATURE
+//            );
+//            cv.visitTypeInsn(CHECKCAST, aspectInfo.getAspectClassName());
             cv.visitFieldInsn(
                     PUTFIELD,
                     input.joinPointClassName,
@@ -334,21 +333,20 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
      *
      * @param cv
      * @param perInstanceIndex
-     * @param aspectQName
+     * @param aspectInfo
      * @return
      */
     private Label pushPerXCondition(final CodeVisitor cv,
                                     final int perInstanceIndex,
-                                    final String aspectQName) {
+                                    final AspectInfo aspectInfo) {
         Label hasAspectCheck = new Label();
 
-        cv.visitLdcInsn(aspectQName);
         cv.visitVarInsn(ALOAD, perInstanceIndex);
         cv.visitMethodInsn(
                 INVOKESTATIC,
-                ASPECTS_CLASS_NAME,
-                HASASPECT_METHOD_NAME,
-                HASASPECT_METHOD_SIGNATURE
+                aspectInfo.getAspectFactoryClassName(),
+                FACTORY_HASASPECT_METHOD_NAME,
+                FACTORY_HASASPECT_PEROBJECT_METHOD_SIGNATURE
         );
         cv.visitJumpInsn(IFEQ, hasAspectCheck);
 
@@ -370,17 +368,24 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
             cv.visitVarInsn(ALOAD, perInstanceIndex);
         }
 
-        cv.visitLdcInsn(aspectInfo.getAspectClassName().replace('/', '.'));
-        cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
-        cv.visitLdcInsn(aspectInfo.getAspectDefinition().getContainerClassName());
         cv.visitMethodInsn(
-                INVOKEINTERFACE,
-                HAS_INSTANCE_LEVEL_ASPECT_INTERFACE_NAME,
-                GET_INSTANCE_LEVEL_ASPECT_METHOD_NAME,
-                GET_INSTANCE_LEVEL_ASPECT_METHOD_SIGNATURE
+                INVOKESTATIC,
+                aspectInfo.getAspectFactoryClassName(),
+                FACTORY_ASPECTOF_METHOD_NAME,
+                "(Ljava/lang/Object;)" + aspectInfo.getAspectClassSignature()
         );
-
-        cv.visitTypeInsn(CHECKCAST, aspectInfo.getAspectClassName());
+//
+//        cv.visitLdcInsn(aspectInfo.getAspectClassName().replace('/', '.'));
+//        cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
+//        AsmHelper.loadStringConstant(cv, aspectInfo.getAspectDefinition().getContainerClassName());
+//        cv.visitMethodInsn(
+//                INVOKEINTERFACE,
+//                HAS_INSTANCE_LEVEL_ASPECT_INTERFACE_NAME,
+//                INSTANCE_LEVEL_GETASPECT_METHOD_NAME,
+//                INSTANCE_LEVEL_GETASPECT_METHOD_SIGNATURE
+//        );
+//
+//        cv.visitTypeInsn(CHECKCAST, aspectInfo.getAspectClassName());
 
         cv.visitFieldInsn(
                 PUTFIELD,
@@ -597,7 +602,8 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
             } else if (argIndex == AdviceInfo.SPECIAL_ARGUMENT && specialArgIndex != INDEX_NOTAVAILABLE) {
                 Type argumentType = adviceMethodInfo.getAdviceInfo().getMethodParameterTypes()[j];
                 AsmHelper.loadType(cv, specialArgIndex, argumentType);
-                if (adviceMethodInfo.getAdviceInfo().getAdviceDefinition().getType().equals(AdviceType.AFTER_THROWING)) {
+                if (AdviceType.AFTER_THROWING.equals(adviceMethodInfo.getAdviceInfo().getAdviceDefinition().getType())
+                    || AdviceType.AFTER_RETURNING.equals(adviceMethodInfo.getAdviceInfo().getAdviceDefinition().getType())) {
                     cv.visitTypeInsn(CHECKCAST, argumentType.getInternalName());
                 }
             } else {

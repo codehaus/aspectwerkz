@@ -7,18 +7,18 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
-import org.codehaus.aspectwerkz.aspect.AspectContainer;
-import org.codehaus.aspectwerkz.aspect.management.Aspects;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
-import java.lang.ref.WeakReference;
 
 /**
  * Contains information about and for classes that has been defined as cross-cutting.
+ * <p/>
+ * FIXME why serializable ?
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -34,7 +34,7 @@ public final class AspectContext implements Serializable {
     private String m_name;
 
     /**
-     * The qualified name of the aspect
+     * The qualified name of the aspect. Stored for serialization purpose.
      */
     private String m_qName;
 
@@ -42,11 +42,6 @@ public final class AspectContext implements Serializable {
      * The aspect class, wrapped in a weak reference since is a key of aspect container referenced by this object.
      */
     private transient WeakReference m_aspectClassRef;
-
-    /**
-     * The container.
-     */
-    private transient AspectContainer m_container = null;
 
     /**
      * Holds the deployment model.
@@ -74,6 +69,11 @@ public final class AspectContext implements Serializable {
     private transient AspectDefinition m_aspectDefinition;
 
     /**
+     * The associated object. Null for perJVM, class, target or this instance or thread for other deployment models.
+     */
+    private transient Object m_associatedObject;
+
+    /**
      * Creates a new cross-cutting info instance.
      *
      * @param uuid
@@ -81,13 +81,15 @@ public final class AspectContext implements Serializable {
      * @param deploymentModel
      * @param aspectDef
      * @param parameters
+     * @param associated instance (null/class/instance/thread)
      */
     public AspectContext(final String uuid,
                          final Class aspectClass,
                          final String name,
                          final DeploymentModel deploymentModel,
                          final AspectDefinition aspectDef,
-                         final Map parameters) {
+                         final Map parameters,
+                         final Object associated) {
         m_uuid = uuid;
         m_aspectClassRef = new WeakReference(aspectClass);
         m_name = name;
@@ -97,32 +99,7 @@ public final class AspectContext implements Serializable {
         if (parameters != null) {
             m_parameters = parameters;
         }
-    }
-
-    /**
-     * Copy constructor - creates a clone of the cross-cutting info.
-     * Creates a new instance of the cross-cutting class it holds.
-     *
-     * @return a clone of the cross-cutting info
-     */
-    public static AspectContext newInstance(final AspectContext prototype) {
-        try {
-            return new AspectContext(
-                    prototype.m_uuid,
-                    (Class) prototype.m_aspectClassRef.get(),
-                    prototype.m_name,
-                    prototype.m_deploymentModel,
-                    prototype.m_aspectDefinition,
-                    prototype.m_parameters
-            );
-        } catch (Exception e) {
-            throw new RuntimeException(
-                    "could not clone cross-cutting info ["
-                    + prototype.getName()
-                    + "]: "
-                    + e.toString()
-            );
-        }
+        m_associatedObject = associated;
     }
 
     /**
@@ -159,24 +136,6 @@ public final class AspectContext implements Serializable {
      */
     public Class getAspectClass() {
         return (Class) m_aspectClassRef.get();
-    }
-
-    /**
-     * Sets the container.
-     *
-     * @param container the container
-     */
-    public void setContainer(final AspectContainer container) {
-        m_container = container;
-    }
-
-    /**
-     * Returns the container.
-     *
-     * @return the container
-     */
-    public AspectContainer getContainer() {
-        return m_container;
     }
 
     /**
@@ -231,13 +190,6 @@ public final class AspectContext implements Serializable {
     }
 
     /**
-     * Return true if the AspectContext has not yet the AspectContainer set, that means this is the prototype init time
-     */
-    public boolean isPrototype() {
-        return (m_container == null);
-    }
-
-    /**
      * Provides custom deserialization.
      *
      * @param stream the object input stream containing the serialized object
@@ -254,10 +206,16 @@ public final class AspectContext implements Serializable {
         m_parameters = (Map) fields.get("m_parameters", new HashMap());
         m_metaData = (Map) fields.get("m_metaData", new HashMap());
 
-        String containerClassName = Aspects.getAspectQNameContainerClassName(Thread.currentThread().getContextClassLoader(), m_qName)[1];
-        Class containerClass = Class.forName(containerClassName);
-        m_container = Aspects.getContainerQNamed(Thread.currentThread().getContextClassLoader(), containerClass, m_qName);
+        //TODO aspectDef from m_qName
+    }
 
-        //TODO aspectDef
+    /**
+     * Returns the associated object with the aspect beeing instantiated. This depend on the aspect deployment model.
+     * It can be a null/class/instance/thread.
+     *
+     * @return
+     */
+    public Object getAssociatedObject() {
+        return m_associatedObject;
     }
 }

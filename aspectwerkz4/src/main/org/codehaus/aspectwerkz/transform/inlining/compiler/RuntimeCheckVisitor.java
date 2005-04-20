@@ -36,6 +36,8 @@ import org.codehaus.aspectwerkz.transform.inlining.compiler.AbstractJoinPointCom
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.cflow.CflowCompiler;
+import org.codehaus.aspectwerkz.aspect.AdviceInfo;
+import org.codehaus.aspectwerkz.aspect.container.AspectFactoryManager;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Constants;
 
@@ -96,31 +98,39 @@ public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants 
     /**
      * Push the boolean typed expression on the stack.
      *
-     * @param context
+     * @param adviceInfo
      */
-    public void pushCheckOnStack(ExpressionContext context) {
-        super.match(context);
+    public void pushCheckOnStack(AdviceInfo adviceInfo) {
+        super.match(adviceInfo.getExpressionContext());
 
         switch(m_perObjectCheckType) {
             case PER_THIS_TYPE: {
-                cv.visitLdcInsn(m_aspectQName);
                 AbstractJoinPointCompiler.loadCaller(cv, m_input);
-                cv.visitMethodInsn(INVOKESTATIC,
-                                   TransformationConstants.ASPECTS_CLASS_NAME,
-                                   TransformationConstants.HASASPECT_METHOD_NAME,
-                                   TransformationConstants.HASASPECT_METHOD_SIGNATURE);
+                cv.visitMethodInsn(
+                        INVOKESTATIC,
+                        AspectFactoryManager.getAspectFactoryClassName(
+                                adviceInfo.getAspectClassName(),
+                                adviceInfo.getAspectQualifiedName()
+                        ),
+                        TransformationConstants.FACTORY_HASASPECT_METHOD_NAME,
+                        TransformationConstants.FACTORY_HASASPECT_PEROBJECT_METHOD_SIGNATURE
+                );
                 cv.visitInsn(IAND);
 
                 break;
             }
 
             case PER_TARGET_TYPE: {
-                cv.visitLdcInsn(m_aspectQName);
                 AbstractJoinPointCompiler.loadCallee(cv,m_input);
-                cv.visitMethodInsn(INVOKESTATIC,
-                                   TransformationConstants.ASPECTS_CLASS_NAME,
-                                   TransformationConstants.HASASPECT_METHOD_NAME,
-                                   TransformationConstants.HASASPECT_METHOD_SIGNATURE);
+                cv.visitMethodInsn(
+                        INVOKESTATIC,
+                        AspectFactoryManager.getAspectFactoryClassName(
+                                adviceInfo.getAspectClassName(),
+                                adviceInfo.getAspectQualifiedName()
+                        ),
+                        TransformationConstants.FACTORY_HASASPECT_METHOD_NAME,
+                        TransformationConstants.FACTORY_HASASPECT_PEROBJECT_METHOD_SIGNATURE
+                );
                 cv.visitInsn(IAND);
 
                 break;

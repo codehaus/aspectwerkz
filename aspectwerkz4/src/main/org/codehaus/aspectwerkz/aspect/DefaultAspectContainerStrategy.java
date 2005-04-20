@@ -7,14 +7,18 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.AspectContext;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 /**
- * Implements the default aspect container strategy.
+ * Implements a sample aspect container strategy.
+ * </p>
+ * Use container="org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy" in the aop.xml
+ * The aspect must then have a no-arg constructor or a single arg constructor with param "AspectContext".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -26,11 +30,9 @@ public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
 
     /**
      * Creates a new aspect container strategy.
-     *
-     * @param aspectContext the cross-cutting info
      */
-    public DefaultAspectContainerStrategy(final AspectContext aspectContext) {
-        super(aspectContext);
+    public DefaultAspectContainerStrategy(Class aspectClass, ClassLoader aopSystemClassLoader, String uuid, String qualifiedName, Map parameters) {
+        super(aspectClass, aopSystemClassLoader, uuid, qualifiedName, parameters);
     }
 
     /**
@@ -38,7 +40,7 @@ public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
      *
      * @return the new aspect instance
      */
-    protected Object createAspect() {
+    protected Object createAspect(AspectContext aspectContext) {
         if (m_aspectConstructor == null) {
             m_aspectConstructor = findConstructor();
         }
@@ -47,14 +49,9 @@ public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
                 case ASPECT_CONSTRUCTION_TYPE_DEFAULT:
                     return m_aspectConstructor.newInstance(EMPTY_OBJECT_ARRAY);
                 case ASPECT_CONSTRUCTION_TYPE_ASPECT_CONTEXT:
-                    return m_aspectConstructor.newInstance(ARRAY_WITH_SINGLE_ASPECT_CONTEXT);
+                    return m_aspectConstructor.newInstance(new Object[]{aspectContext});
                 default:
-                    throw new RuntimeException(
-                            "aspect ["
-                            + m_aspectContext.getAspectClass().getName()
-                            +
-                            "] does not have a valid constructor (either default no-arg or one that takes a AspectContext type as its only parameter)"
-                    );
+                    throw new Error("should not happen");
             }
         } catch (InvocationTargetException e) {
             e.printStackTrace();
@@ -71,7 +68,7 @@ public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
      */
     protected Constructor findConstructor() {
         Constructor aspectConstructor = null;
-        Class aspectClass = m_aspectContext.getAspectClass();
+        Class aspectClass = getAspectClass();
         Constructor[] constructors = aspectClass.getDeclaredConstructors();
         for (int i = 0; i < constructors.length; i++) {
             Constructor constructor = constructors[i];
@@ -91,6 +88,7 @@ public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
                     + aspectClass.getName()
                     +
                     "] does not have a valid constructor (either default no-arg or one that takes a AspectContext type as its only parameter)"
+                    + " to be used with container=\"org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy\""
             );
         }
         return aspectConstructor;

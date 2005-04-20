@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.transform.inlining;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.aspect.container.AspectFactoryManager;
 import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
 
 /**
@@ -23,6 +24,7 @@ public class AspectInfo {
     private final String m_aspectFieldName;
     private final String m_aspectClassName;
     private final String m_aspectClassSignature;
+    private final String m_aspectFactoryClassName;
     private final DeploymentModel m_deploymentModel;
 
     private AspectModel m_aspectModel;
@@ -37,6 +39,7 @@ public class AspectInfo {
         m_aspectClassName = aspectClassName;
         m_aspectClassSignature = aspectClassSignature;
         m_deploymentModel = aspectDefinition.getDeploymentModel();
+        m_aspectFactoryClassName = AspectFactoryManager.getAspectFactoryClassName(m_aspectClassName, m_aspectQualifiedName);
     }
 
     public AspectDefinition getAspectDefinition() {
@@ -61,6 +64,10 @@ public class AspectInfo {
 
     public String getAspectClassSignature() {
         return m_aspectClassSignature;
+    }
+
+    public String getAspectFactoryClassName() {
+        return m_aspectFactoryClassName;
     }
 
     public AspectModel getAspectModel() {

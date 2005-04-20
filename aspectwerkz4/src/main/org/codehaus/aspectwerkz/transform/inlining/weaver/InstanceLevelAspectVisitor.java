@@ -97,6 +97,8 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
         
         // add the hasAspect(...) method
         addHasAspectMethod(name);
+
+        addBindAspectMethod(name);
     }
 
     /**
@@ -147,8 +149,8 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
     private void addGetAspectMethod(final String name) {
         CodeVisitor cv = super.visitMethod(
                 ACC_PUBLIC + ACC_SYNTHETIC,
-                GET_INSTANCE_LEVEL_ASPECT_METHOD_NAME,
-                GET_INSTANCE_LEVEL_ASPECT_METHOD_SIGNATURE,
+                INSTANCE_LEVEL_GETASPECT_METHOD_NAME,
+                INSTANCE_LEVEL_GETASPECT_METHOD_SIGNATURE,
                 null, null
         );
 
@@ -159,7 +161,135 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                 INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,
                 INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
         );
+        //--
+        cv.visitInsn(DUP);
+        Label ifMapNonNull = new Label();
+        cv.visitJumpInsn(IFNONNULL, ifMapNonNull);
+        cv.visitInsn(ACONST_NULL);
+        cv.visitInsn(ARETURN);
+        cv.visitLabel(ifMapNonNull);
 
+//        // if == null, field = new HashMap()
+//        Label ifFieldNullNotLabel = new Label();
+//        cv.visitJumpInsn(IFNONNULL, ifFieldNullNotLabel);
+//        cv.visitVarInsn(ALOAD, 0);
+//        cv.visitTypeInsn(NEW, HASH_MAP_CLASS_NAME);
+//        cv.visitInsn(DUP);
+//        cv.visitMethodInsn(
+//                INVOKESPECIAL,
+//                HASH_MAP_CLASS_NAME,
+//                INIT_METHOD_NAME,
+//                NO_PARAM_RETURN_VOID_SIGNATURE
+//        );
+//        cv.visitFieldInsn(
+//                PUTFIELD,
+//                name,
+//                INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,
+//                INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
+//        );
+//        cv.visitLabel(ifFieldNullNotLabel);
+//
+//        cv.visitVarInsn(ALOAD, 0);
+//        cv.visitFieldInsn(
+//                GETFIELD,
+//                name,
+//                INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,
+//                INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
+//        );
+//
+//        cv.visitVarInsn(ALOAD, 2);//qName
+//        cv.visitMethodInsn(INVOKEINTERFACE, MAP_CLASS_NAME, GET_METHOD_NAME, GET_METHOD_SIGNATURE);
+//        cv.visitVarInsn(ASTORE, 4);
+//        cv.visitVarInsn(ALOAD, 4);
+//        Label ifNullNotLabel = new Label();
+//        cv.visitJumpInsn(IFNONNULL, ifNullNotLabel);
+//        cv.visitVarInsn(ALOAD, 2);//qName
+//        cv.visitVarInsn(ALOAD, 3);//containerClassName
+//        cv.visitVarInsn(ALOAD, 0);//this (perInstance)
+//        cv.visitMethodInsn(
+//                INVOKESTATIC,
+//                ASPECTS_CLASS_NAME,
+//                ASPECT_OF_METHOD_NAME,
+//                ASPECT_OF_PER_INSTANCE_METHOD_SIGNATURE
+//        );
+//        cv.visitVarInsn(ASTORE, 4);
+        //cv.visitVarInsn(ALOAD, 0);
+        //--
+        cv.visitVarInsn(ALOAD, 1);
+        cv.visitMethodInsn(INVOKEINTERFACE, MAP_CLASS_NAME, GET_METHOD_NAME, GET_METHOD_SIGNATURE);
+        //--
+//        cv.visitFieldInsn(
+//                GETFIELD,
+//                name,
+//                INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,
+//                INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
+//        );
+        cv.visitInsn(ARETURN);
+//        cv.visitVarInsn(ALOAD, 2);
+//        cv.visitVarInsn(ALOAD, 4);
+//        cv.visitMethodInsn(INVOKEINTERFACE, MAP_CLASS_NAME, PUT_METHOD_NAME, PUT_METHOD_SIGNATURE);
+//        cv.visitInsn(POP);
+//        cv.visitLabel(ifNullNotLabel);
+//        cv.visitVarInsn(ALOAD, 4);
+//        cv.visitInsn(ARETURN);
+        cv.visitMaxs(0, 0);
+
+        m_ctx.markAsAdvised();
+        m_isAdvised = true;
+    }
+
+    private void addHasAspectMethod(String mapFieldName) {
+        CodeVisitor cv = super.visitMethod(ACC_PUBLIC + ACC_SYNTHETIC,
+                                           INSTANCE_LEVEL_HASASPECT_METHOD_NAME,
+                                           INSTANCE_LEVEL_HASASPECT_METHOD_SIGNATURE,
+                                           null, 
+                                           null
+        );
+        
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitFieldInsn(GETFIELD,
+                          mapFieldName,
+                          INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,
+                          INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
+        );
+        cv.visitInsn(DUP);
+        Label ifMapNonNull = new Label();
+        cv.visitJumpInsn(IFNONNULL, ifMapNonNull);
+        cv.visitInsn(ICONST_0);
+        cv.visitInsn(IRETURN);
+        cv.visitLabel(ifMapNonNull);
+        cv.visitVarInsn(ALOAD, 1);
+        cv.visitMethodInsn(INVOKEINTERFACE, MAP_CLASS_NAME, "containsKey", "(Ljava/lang/Object;)Z");
+        //cv.visitMethodInsn(INVOKEINTERFACE, MAP_CLASS_NAME, GET_METHOD_NAME, GET_METHOD_SIGNATURE);
+//
+//        Label ifNullLabel = new Label();
+//        cv.visitJumpInsn(IFNULL, ifNullLabel);
+//        cv.visitInsn(ICONST_1);
+//        cv.visitInsn(IRETURN);
+//        cv.visitLabel(ifNullLabel);
+//        cv.visitInsn(ICONST_0);
+        cv.visitInsn(IRETURN);
+        cv.visitMaxs(0, 0);
+        
+        m_ctx.markAsAdvised();
+        m_isAdvised = true;
+    }
+
+    private void addBindAspectMethod(final String name) {
+        CodeVisitor cv = super.visitMethod(
+                ACC_PUBLIC + ACC_SYNTHETIC,
+                INSTANCE_LEVEL_BINDASPECT_METHOD_NAME,
+                INSTANCE_LEVEL_BINDASPECT_METHOD_SIGNATURE,
+                null, null
+        );
+
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitFieldInsn(
+                GETFIELD,
+                name,
+                INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,
+                INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
+        );
         // if == null, field = new HashMap()
         Label ifFieldNullNotLabel = new Label();
         cv.visitJumpInsn(IFNONNULL, ifFieldNullNotLabel);
@@ -174,7 +304,7 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
         );
         cv.visitFieldInsn(
                 PUTFIELD,
-                m_classInfo.getName().replace('.', '/'),
+                name,
                 INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,
                 INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
         );
@@ -187,73 +317,13 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                 INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,
                 INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
         );
-
-        cv.visitVarInsn(ALOAD, 2);//qName
-        cv.visitMethodInsn(INVOKEINTERFACE, MAP_CLASS_NAME, GET_METHOD_NAME, GET_METHOD_SIGNATURE);
-        cv.visitVarInsn(ASTORE, 4);
-        cv.visitVarInsn(ALOAD, 4);
-        Label ifNullNotLabel = new Label();
-        cv.visitJumpInsn(IFNONNULL, ifNullNotLabel);
-        cv.visitVarInsn(ALOAD, 2);//qName
-        cv.visitVarInsn(ALOAD, 3);//containerClassName
-        cv.visitVarInsn(ALOAD, 0);//this (perInstance)
-        cv.visitMethodInsn(
-                INVOKESTATIC,
-                ASPECTS_CLASS_NAME,
-                ASPECT_OF_METHOD_NAME,
-                ASPECT_OF_PER_INSTANCE_METHOD_SIGNATURE
-        );
-        cv.visitVarInsn(ASTORE, 4);
-        cv.visitVarInsn(ALOAD, 0);
-        cv.visitFieldInsn(
-                GETFIELD,
-                name,
-                INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,
-                INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
-        );
-        cv.visitVarInsn(ALOAD, 2);
-        cv.visitVarInsn(ALOAD, 4);
-        cv.visitMethodInsn(INVOKEINTERFACE, MAP_CLASS_NAME, PUT_METHOD_NAME, PUT_METHOD_SIGNATURE);
-        cv.visitInsn(POP);
-        cv.visitLabel(ifNullNotLabel);
-        cv.visitVarInsn(ALOAD, 4);
-        cv.visitInsn(ARETURN);
-        cv.visitMaxs(0, 0);
-
-        m_ctx.markAsAdvised();
-        m_isAdvised = true;
-    }
-
-    private void addHasAspectMethod(String mapFieldName) {
-        CodeVisitor cv = super.visitMethod(ACC_PUBLIC + ACC_SYNTHETIC,
-                                           HAS_INSTANCE_LEVEL_ASPECT_METHOD_NAME,
-                                           HAS_INSTANCE_LEVEL_ASPECT_METHOD_SIGNATURE,
-                                           null, 
-                                           null
-        );
-        
-        cv.visitVarInsn(ALOAD, 0);
-        cv.visitFieldInsn(GETFIELD,
-                          mapFieldName,
-                          INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,
-                          INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
-        );
         cv.visitVarInsn(ALOAD, 1);
-        cv.visitMethodInsn(INVOKEINTERFACE, MAP_CLASS_NAME, GET_METHOD_NAME, GET_METHOD_SIGNATURE);
-        
-        Label ifNullLabel = new Label();
-        cv.visitJumpInsn(IFNULL, ifNullLabel);
-        cv.visitInsn(ICONST_1);
-        cv.visitInsn(IRETURN);
-        cv.visitLabel(ifNullLabel);
-        cv.visitInsn(ICONST_0);
-        cv.visitInsn(IRETURN);
-        cv.visitMaxs(0, 0);
-        
-        m_ctx.markAsAdvised();
-        m_isAdvised = true;
+        cv.visitVarInsn(ALOAD, 2);
+        cv.visitMethodInsn(INVOKEINTERFACE, MAP_CLASS_NAME, PUT_METHOD_NAME, PUT_METHOD_SIGNATURE);
+        cv.visitVarInsn(ALOAD, 2);
+        cv.visitInsn(ARETURN);
     }
-    
+
     /**
      * Filters the classes to be transformed.
      *

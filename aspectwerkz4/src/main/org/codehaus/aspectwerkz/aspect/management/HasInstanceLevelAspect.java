@@ -8,7 +8,7 @@
 package org.codehaus.aspectwerkz.aspect.management;
 
 /**
- * Interface throught the runtime system can retrieve instance level aspects for a specific target instance.
+ * Interface applied to a target class when it has instance level aspects (perInstance, perThis, perTarget)
  * <p/>
  * Should <b>NEVER</b> be implemented by the user, but is applied to target classes by the weaver.
  *
@@ -17,20 +17,21 @@ package org.codehaus.aspectwerkz.aspect.management;
 public interface HasInstanceLevelAspect {
 
     /**
-     * Returns the instance level aspect with a specific name.
+     * Returns the instance level aspect given a specific aspect factory class, since we know that one aspect class
+     * has one or more factory (due to qNames) and one factory acts for only one aspect qName.
      *
-     * @param aspectClassName     the class name of the aspect
-     * @param qualifiedAspectName the qualified name of the aspect
-     * @param containerClassName  the aspect container class name
-     * @return the aspect instance
+     * @param aspectFactoryClass
+     * @return the aspect instance or null if no such aspect
      */
-    Object aw$getAspect(String aspectClassName, String qualifiedAspectName, String containerClassName);
+    Object aw$getAspect(Class aspectFactoryClass);
     
     /**
-     * Cheks if the instance level aspect with the specific name was initialized.
+     * Cheks if the instance level aspect with the specific factory class was associated with the instance.
      * 
-     * @param qualifiedAspectName
+     * @param aspectFactoryClass
      * @return true in case the aspect was registers, false otherwise
      */
-    boolean aw$hasAspect(String qualifiedAspectName);
+    boolean aw$hasAspect(Class aspectFactoryClass);
+
+    Object aw$bindAspect(Class aspectFactoryClass, Object aspect);
 }

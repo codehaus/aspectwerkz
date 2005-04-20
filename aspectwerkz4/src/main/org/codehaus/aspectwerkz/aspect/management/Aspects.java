@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.aspect.management;
 
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy;
+import org.codehaus.aspectwerkz.aspect.container.AspectFactoryManager;
 import org.codehaus.aspectwerkz.AspectContext;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.cflow.CflowCompiler;
@@ -21,11 +22,15 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 import java.util.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import gnu.trove.TIntObjectHashMap;
 
 /**
- * Manages the aspects, registry for the aspect containers (one container per aspect type).
+ * Manages the aspects.
+ * <p/>
+ * Each Aspect qName has a generated factory (one factory per aspect qName) on which we invoke reflectively
+ * the aspectOf and alike. Those are user exposed method. The weaved code does not use those.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
@@ -33,60 +38,16 @@ import gnu.trove.TIntObjectHashMap;
 public class Aspects {
 
     /**
-     * The default aspect container class.
-     */
-    public static final String DEFAULT_ASPECT_CONTAINER = DefaultAspectContainerStrategy.class.getName();
-
-    /**
-     * Map of TIntHashMap, whose key is containerClass. The TIntHashMap maps container instance, whith
-     * CompositeVisibleFromQNameKey as a key
-     * as a key.
-     * <p/>
-     * TODO:
-     * we end up in having one entry with a list that strong refs the container instances
-     * ie leaks since the DefaultContainer leaves in system CL.
-     */
-    private static Map ASPECT_CONTAINER_LISTS = new WeakHashMap();
-
-    /**
      * Returns the aspect container class for the given aspect class qName.
      * The qName is returned since we may have only the aspect class name upon lookup
      *
      * @param visibleFrom class loader to look from
      * @param qName
-     * @return the container class
+     * @return array of qName and aspect class name (dot formatted as in the aspect definition)
      */
-    public static String[] getAspectQNameContainerClassName(final ClassLoader visibleFrom, final String qName) {
+    private static String[] getAspectQNameAndAspectClassName(final ClassLoader visibleFrom, final String qName) {
         AspectDefinition aspectDefinition = lookupAspectDefinition(visibleFrom, qName);
-        return new String[]{aspectDefinition.getQualifiedName(), aspectDefinition.getContainerClassName()};
-    }
-
-    /**
-     * Returns or create the aspect container for the given container class with the given aspect qualified name
-     * <p/>
-     * We keep a weak key for the containerClass, and we then keep a list of container instance based on a composite key
-     * based on the tuple {visibleFromClassLoader.hashCode, aspectQName}, so that when hot deploying a web app, the
-     * aspects gets tied to the web app class loader even when the container class is higher up (f.e. in aw.jar)
-     *
-     * @param visibleFrom class loader hosting the advised class ie from where all is visible
-     * @param containerClass
-     * @param qName
-     * @return
-     */
-    public static AspectContainer getContainerQNamed(final ClassLoader visibleFrom, final Class containerClass, final String qName) {
-        synchronized (ASPECT_CONTAINER_LISTS) {
-            TIntObjectHashMap containers = (TIntObjectHashMap) ASPECT_CONTAINER_LISTS.get(containerClass);
-            if (containers == null) {
-                containers = new TIntObjectHashMap();
-                ASPECT_CONTAINER_LISTS.put(containerClass, containers);
-            }
-            AspectContainer container = (AspectContainer) containers.get(CompositeVisibleFromQNameKey.hash(visibleFrom, qName));
-            if (container == null) {
-                container = createAspectContainer(visibleFrom, containerClass, qName);
-                containers.put(CompositeVisibleFromQNameKey.hash(visibleFrom, qName), container);
-            }
-            return container;
-        }
+        return new String[]{aspectDefinition.getQualifiedName(), aspectDefinition.getClassName()};
     }
 
     /**
@@ -121,8 +82,8 @@ public class Aspects {
      * @return the singleton aspect instance
      */
     public static Object aspectOf(final ClassLoader visibleFrom, final String qName) {
-        String[] qNameContainerClassName = getAspectQNameContainerClassName(visibleFrom, qName);
-        return aspect$Of(visibleFrom, qNameContainerClassName[0], qNameContainerClassName[1]);
+        String[] qNameAndAspectClassName = getAspectQNameAndAspectClassName(visibleFrom, qName);
+        return aspect$Of(qNameAndAspectClassName[0], qNameAndAspectClassName[1], visibleFrom);
     }
 
     /**
@@ -147,8 +108,8 @@ public class Aspects {
      */
     public static Object aspectOf(final String qName, final Class targetClass) {
         // look up from the targetClass loader is enough in that case
-        String[] qNameContainerClassName = getAspectQNameContainerClassName(targetClass.getClassLoader(), qName);
-        return aspect$Of(qNameContainerClassName[0], qNameContainerClassName[1], targetClass);
+        String[] qNameAndAspectClassName = getAspectQNameAndAspectClassName(targetClass.getClassLoader(), qName);
+        return aspect$Of(qNameAndAspectClassName[0], qNameAndAspectClassName[1], targetClass);
     }
 
     /**
@@ -175,28 +136,20 @@ public class Aspects {
         // look up from the targetInstance loader is enough in that case
         AspectDefinition aspectDef = lookupAspectDefinition(targetInstance.getClass().getClassLoader(), qName);
         DeploymentModel deployModel = aspectDef.getDeploymentModel();
-        String[] qNameContainerClassName = getAspectQNameContainerClassName(
+        String[] qNameAndAspectClassName = getAspectQNameAndAspectClassName(
                 targetInstance.getClass().getClassLoader(), qName);
         
-        if (DeploymentModel.PER_INSTANCE.equals(deployModel)) {
-            return aspect$Of(qNameContainerClassName[0], qNameContainerClassName[1], targetInstance);
-        } else if ((DeploymentModel.PER_THIS.equals(deployModel)
-                    || DeploymentModel.PER_TARGET.equals(deployModel))
-                   && targetInstance instanceof HasInstanceLevelAspect) {
-            HasInstanceLevelAspect hila = (HasInstanceLevelAspect) targetInstance;
-            
-            if(hila.aw$hasAspect(qName)) {
-                return hila.aw$getAspect(qNameContainerClassName[0],
-                                         qName,
-                                         qNameContainerClassName[1]);
-            }
+        if (DeploymentModel.PER_INSTANCE.equals(deployModel)
+                    || DeploymentModel.PER_THIS.equals(deployModel)
+                    || DeploymentModel.PER_TARGET.equals(deployModel)) {
+            return aspect$Of(qNameAndAspectClassName[0], qNameAndAspectClassName[1], targetInstance);
+        } else {
+            throw new NoAspectBoundException("Cannot retrieve instance level aspect with "
+                    + "deployment-scope "
+                    + deployModel.toString()
+                    + " named ",
+                    qName);
         }
-        
-        throw new NoAspectBoundException("Cannot retrieve instance level aspect with "
-                + "deployment-scope " 
-                + deployModel.toString()
-                + " named ", 
-                qName);
     }
 
     /**
@@ -207,98 +160,70 @@ public class Aspects {
      * @return
      */
     public static boolean hasAspect(final String qName, final Object targetInstance) {
-        if (targetInstance instanceof HasInstanceLevelAspect) {
-            return ((HasInstanceLevelAspect)targetInstance).aw$hasAspect(qName);
-        } else {
+        String[] qNameAndAspectClassName = getAspectQNameAndAspectClassName(targetInstance.getClass().getClassLoader(), qName);
+        try {
+            Class factory = ContextClassLoader.forName(
+                    targetInstance.getClass().getClassLoader(),
+                    AspectFactoryManager.getAspectFactoryClassName(qNameAndAspectClassName[1], qName).replace('/', '.')
+            );
+            Method m = factory.getMethod("hasAspect", new Class[]{Object.class});
+            Boolean b = (Boolean) m.invoke(null, new Object[]{targetInstance});
+            return b.booleanValue();
+        } catch (Throwable t) {
             return false;
         }
     }
 
     //---------- weaver exposed
+    // TODO can we cache all those ? what would be the key ?
 
-    public static Object aspect$Of(ClassLoader loader, String qName, String containerClassName) {
+    public static Object aspect$Of(String qName, String aspectClassName, ClassLoader loader) {
         try {
-            Class containerClass = ContextClassLoader.forName(loader, containerClassName);
-            return getContainerQNamed(loader, containerClass, qName).aspectOf();
+            Class factory = ContextClassLoader.forName(
+                    loader,
+                    AspectFactoryManager.getAspectFactoryClassName(aspectClassName, qName).replace('/', '.')
+            );
+            Method m = factory.getMethod("aspectOf", new Class[0]);
+            return m.invoke(null, new Object[0]);
+        } catch (NoAspectBoundException nabe) {
+            throw nabe;
         } catch (Throwable t) {
             throw new NoAspectBoundException(t, qName);
         }
     }
 
-    public static Object aspect$Of(String qName, String containerClassName, final Class perClass) {
+    public static Object aspect$Of(String qName, String aspectClassName, final Class perClass) {
         try {
-            ClassLoader loader = perClass.getClassLoader();
-            Class containerClass = ContextClassLoader.forName(loader, containerClassName);
-            return getContainerQNamed(loader, containerClass, qName).aspectOf(perClass);
+            Class factory = ContextClassLoader.forName(
+                    perClass.getClassLoader(),
+                    AspectFactoryManager.getAspectFactoryClassName(aspectClassName, qName).replace('/', '.')
+            );
+            Method m = factory.getMethod("aspectOf", new Class[]{Class.class});
+            return m.invoke(null, new Object[]{perClass});
+        } catch (NoAspectBoundException nabe) {
+            throw nabe;
         } catch (Throwable t) {
             throw new NoAspectBoundException(t, qName);
         }
     }
 
-    public static Object aspect$Of(String qName, String containerClassName, final Object perInstance) {
+    public static Object aspect$Of(String qName, String aspectClassName, final Object perInstance) {
         try {
             ClassLoader loader = perInstance.getClass().getClassLoader();
-            Class containerClass = ContextClassLoader.forName(loader, containerClassName);
-            return getContainerQNamed(loader, containerClass, qName).aspectOf(perInstance);
+            Class containerClass = ContextClassLoader.forName(
+                    loader,
+                    AspectFactoryManager.getAspectFactoryClassName(aspectClassName, qName).replace('/', '.')
+            );
+            Method m = containerClass.getMethod("aspectOf", new Class[]{Object.class});
+            return m.invoke(null, new Object[]{perInstance});
+        } catch (NoAspectBoundException nabe) {
+            throw nabe;
         } catch (Throwable t) {
             throw new NoAspectBoundException(t, qName);
         }
     }
-
-
-
 
     //---------- helpers
-
-    /**
-     * Creates a new aspect container.
-     *
-     * @param visibleFrom class loader of the advised class from all is visible
-     * @param containerClass the container class
-     * @param qName the aspect qualified name
-     */
-    private static AspectContainer createAspectContainer(final ClassLoader visibleFrom, final Class containerClass, final String qName) {
-        AspectDefinition aspectDefinition = lookupAspectDefinition(visibleFrom, qName);
-
-        Class aspectClass = null;
-        try {
-            aspectClass = ContextClassLoader.forName(visibleFrom, aspectDefinition.getClassName());
-        } catch (Throwable t) {
-            throw new NoAspectBoundException(t, qName);
-        }
-
-        try {
-            Constructor constructor = containerClass.getConstructor(new Class[]{AspectContext.class});
-            final AspectContext aspectContext = new AspectContext(
-                    aspectDefinition.getSystemDefinition().getUuid(),
-                    aspectClass,
-                    aspectDefinition.getName(),
-                    aspectDefinition.getDeploymentModel(),
-                    aspectDefinition,
-                    aspectDefinition.getParameters()
-            );
-            final AspectContainer container = (AspectContainer) constructor.newInstance(new Object[]{aspectContext});
-            aspectContext.setContainer(container);
-            return container;
-        } catch (InvocationTargetException e) {
-            throw new NoAspectBoundException(e, qName);
-        } catch (NoSuchMethodException e) {
-            throw new NoAspectBoundException(
-                    "AspectContainer does not have a valid constructor ["
-                    + containerClass.getName()
-                    + "] need to take an AspectContext instance as its only parameter: "
-                    + e.toString(),
-                    qName
-            );
-        } catch (Throwable e) {
-            StringBuffer cause = new StringBuffer();
-            cause.append("Could not create AspectContainer using the implementation specified [");
-            cause.append(containerClass.getName());
-            cause.append("] for ").append(qName);
-            throw new NoAspectBoundException(e, cause.toString());
-        }
-    }
-
     /**
      * Lookup the aspect definition with the given qName, visible from the given loader.
      * If qName is a class name only, the fallback will ensure only one aspect use is found.
@@ -315,6 +240,9 @@ public class Aspects {
             // has system uuid ie real qName
             for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
                 SystemDefinition systemDefinition = (SystemDefinition) iterator.next();
+                if (!qName.startsWith(systemDefinition.getUuid())) {
+                    continue;
+                }
                 for (Iterator iterator1 = systemDefinition.getAspectDefinitions().iterator(); iterator1.hasNext();) {
                     AspectDefinition aspectDef = (AspectDefinition) iterator1.next();
                     if (qName.equals(aspectDef.getQualifiedName())) {
@@ -350,84 +278,10 @@ public class Aspects {
         return aspectDefinition;
     }
 
-//    /**
-//     * Looks up the aspect class name, based on the qualified name of the aspect.
-//     *
-//     * @param loader
-//     * @param qualifiedName
-//     * @return
-//     */
-//    private static String lookupAspectClassName(final ClassLoader loader, final String qualifiedName) {
-//        if (qualifiedName.indexOf('/') <= 0) {
-//            // no uuid
-//            return null;
-//        }
-//
-//        final Set definitionsBottomUp = SystemDefinitionContainer.getDefinitionsFor(loader);
-//        // TODO: bottom up is broken now
-//        //Collections.reverse(definitionsBottomUp);
-//
-//        for (Iterator iterator = definitionsBottomUp.iterator(); iterator.hasNext();) {
-//            SystemDefinition definition = (SystemDefinition) iterator.next();
-//            for (Iterator iterator1 = definition.getAspectDefinitions().iterator(); iterator1.hasNext();) {
-//                AspectDefinition aspectDefinition = (AspectDefinition) iterator1.next();
-//                if (qualifiedName.equals(aspectDefinition.getQualifiedName())) {
-//                    return aspectDefinition.getClassName();
-//                }
-//            }
-//        }
-//        return null;
-//    }
-
     /**
      * Class is non-instantiable.
      */
     private Aspects() {
     }
 
-    /**
-     * A composite key to ensure uniqueness of the container key even upon application redeployment
-     * when the classloader gets swapped.
-     *
-     * TODO: we could have a weak ref to the CL, and use it as a weak key in a map then to ensure
-     * release of any container when the visibleFromCL gets dropped (which can be different from
-     * the aspect container CL)?
-     *
-     * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
-     */
-    private static class CompositeVisibleFromQNameKey {
-//        private final int m_hash;
-//        private CompositeVisibleFromQNameKey(ClassLoader loader, String qName) {
-//            m_hash = hash(loader, qName);
-//        }
-//
-//        public boolean equals(Object o) {
-//            if (this == o) return true;
-//            if (!(o instanceof CompositeVisibleFromQNameKey)) return false;
-//
-//            final CompositeVisibleFromQNameKey compositeVisibleFromQNameKey = (CompositeVisibleFromQNameKey) o;
-//
-//            if (m_hash != compositeVisibleFromQNameKey.m_hash) return false;
-//
-//            return true;
-//        }
-//
-//        public int hashCode() {
-//            return m_hash;
-//        }
-
-        /**
-         * Hashing strategy
-         *
-         * @param loader
-         * @param qName
-         * @return
-         */
-        public static int hash(ClassLoader loader, String qName) {
-            int result;
-            result = (loader != null ? loader.hashCode() : 0);
-            result = 29 * result + qName.hashCode();
-            return result;
-        }
-    }
 }

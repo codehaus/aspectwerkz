@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.transform.inlining.compiler;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.aspect.AdviceInfo;
+import org.codehaus.aspectwerkz.aspect.container.AspectFactoryManager;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.joinpoint.management.AdviceInfoContainer;
 import org.codehaus.aspectwerkz.joinpoint.management.JoinPointType;
@@ -246,6 +247,9 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
         );
 
         m_aspectInfos = (AspectInfo[]) aspectInfoByQualifiedName.values().toArray(new AspectInfo[aspectInfoByQualifiedName.size()]);
+
+        //
+
     }
 
     /**
@@ -334,7 +338,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
             if (!aspectInfoByQualifiedName.containsKey(adviceInfo.getAspectQualifiedName())) {
                 aspectInfo = new AspectInfo(
                         adviceInfo.getAdviceDefinition().getAspectDefinition(),
-                        ASPECT_FIELD_PREFIX + (aspectInfoByQualifiedName.size()-1),
+                        ASPECT_FIELD_PREFIX + (aspectInfoByQualifiedName.size()),
                         aspectClassName,
                         L + aspectClassName + SEMICOLON
                 );
@@ -417,7 +421,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      *
      * @return the generated, compiled and loaded join point class
      */
-    public byte[] compile() {
+    public final byte[] compile() {
         try {
             createClassHeader();
             createFieldsCommonToAllJoinPoints();
@@ -713,6 +717,44 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
                 OPTIMIZED_JOIN_POINT_INSTANCE_FIELD_NAME,
                 L + m_joinPointClassName + SEMICOLON
         );
+
+        // ensure aspect factories are all loaded
+        for (int i = 0; i < m_aspectInfos.length; i++) {
+            AspectInfo m_aspectInfo = m_aspectInfos[i];
+
+            cv.visitLdcInsn(m_aspectInfo.getAspectFactoryClassName());
+            cv.visitLdcInsn(m_aspectInfo.getAspectDefinition().getSystemDefinition().getUuid());
+            cv.visitLdcInsn(m_aspectInfo.getAspectClassName());
+            cv.visitLdcInsn(m_aspectInfo.getAspectQualifiedName());
+            AsmHelper.loadStringConstant(cv, m_aspectInfo.getAspectDefinition().getContainerClassName());
+            //TODO AVF do it once per aspect def
+            StringBuffer sb = new StringBuffer();
+            boolean hasOne = false;
+            boolean isFirst = true;
+            for (Iterator iterator = m_aspectInfo.getAspectDefinition().getParameters().entrySet().iterator(); iterator.hasNext();) {
+                Map.Entry entry = (Map.Entry) iterator.next();
+                if (!isFirst) {
+                    sb.append(DELIMITER);
+                }
+                isFirst = false;
+                hasOne = true;
+                sb.append(entry.getKey()).append(DELIMITER).append(entry.getValue());
+            }
+            if (hasOne) {
+                cv.visitLdcInsn(sb.toString());
+            } else {
+                cv.visitInsn(ACONST_NULL);
+            }
+            cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, THIS_CLASS_FIELD_NAME_IN_JP, CLASS_CLASS_SIGNATURE);
+            cv.visitMethodInsn(INVOKEVIRTUAL, CLASS_CLASS, GETCLASSLOADER_METHOD_NAME, CLASS_CLASS_GETCLASSLOADER_METHOD_SIGNATURE);
+            cv.visitLdcInsn(m_aspectInfo.getDeploymentModel().toString());
+            cv.visitMethodInsn(
+                    INVOKESTATIC,
+                    Type.getInternalName(AspectFactoryManager.class),
+                    "loadAspectFactory",
+                    "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/ClassLoader;Ljava/lang/String;)V"
+            );
+        }
 
         // create and initialize the aspect fields
         for (int i = 0; i < m_aspectInfos.length; i++) {
@@ -2008,7 +2050,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
                     perObjectCheckType,
                     adviceInfo.getAspectQualifiedName()
             );
-            runtimeCheckVisitor.pushCheckOnStack(adviceInfo.getExpressionContext());
+            runtimeCheckVisitor.pushCheckOnStack(adviceInfo);
             cv.visitJumpInsn(IFEQ, endRuntimeCheckLabel);
         }
         return endRuntimeCheckLabel;
