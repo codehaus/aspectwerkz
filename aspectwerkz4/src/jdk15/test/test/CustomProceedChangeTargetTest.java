@@ -37,12 +37,25 @@ public class CustomProceedChangeTargetTest extends TestCase {
         assertTrue("4".equals(meOfOneAsString));
     }
 
+    public void testChangeArg() {
+        Foo foo = new Foo();
+        assertEquals(1, foo.id);
+
+        // pass it thru, the advice will instantiate a new Foo
+        int id = changeArg(foo);
+        assertEquals(2, id);
+    }
+
     public int getMe(int i) {
         return m_me + i;
     }
 
     public String getMeAsString(int i) {
         return "" + (m_me + i);
+    }
+
+    public int changeArg(Foo foo) {
+        return foo.id;
     }
 
     public static void main(String[] args) {
@@ -60,7 +73,7 @@ public class CustomProceedChangeTargetTest extends TestCase {
         }
 
         @Around("execution(int test.CustomProceedChangeTargetTest.getMe(int)) && args(arg) && target(t)")
-        public Object around(CustomJp jp, CustomProceedChangeTargetTest t, int arg) throws Throwable {
+        public Object around1(CustomJp jp, CustomProceedChangeTargetTest t, int arg) throws Throwable {
             int meOfOther = jp.proceed(new CustomProceedChangeTargetTest(), arg);
             return new Integer(meOfOther);
         }
@@ -70,9 +83,31 @@ public class CustomProceedChangeTargetTest extends TestCase {
         }
 
         @Around("execution(String test.CustomProceedChangeTargetTest.getMeAsString(int)) && args(arg) && target(t)")
-        public Object around(CustomJp2 jp, CustomProceedChangeTargetTest t, int arg) throws Throwable {
+        public Object around2(CustomJp2 jp, CustomProceedChangeTargetTest t, int arg) throws Throwable {
             String meOfOther = jp.proceed(new CustomProceedChangeTargetTest(), arg);
             return meOfOther;
+        }
+    }
+
+    public static class Aspect2 {
+
+        public static interface CustomJp3 extends JoinPoint {
+            Object proceed(Foo foo);
+        }
+
+        // bound in aop.xml
+        //@Around("execution(int test.CustomProceedChangeTargetTest.changeArg(test.CustomProceedChangeTargetTest$Foo)) && args(foo)")
+        public Object around3(CustomJp3 jp, Foo foo) {
+            Foo anotherFoo = new Foo();
+            return jp.proceed(anotherFoo);
+        }
+    }
+
+    static class Foo {
+        static int ID = 0;
+        int id;
+        public Foo() {
+            id = ++ID;
         }
     }
 }
