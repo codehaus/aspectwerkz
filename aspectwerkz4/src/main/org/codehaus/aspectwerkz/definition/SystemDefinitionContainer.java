@@ -402,7 +402,7 @@ public class SystemDefinitionContainer {
      * @param parentLoader
      * @return
      */
-    private static boolean isChildOf(ClassLoader loader, ClassLoader parentLoader) {
+    public static boolean isChildOf(ClassLoader loader, ClassLoader parentLoader) {
         if (loader == null) {
             if (parentLoader == null) {
                 return true;

@@ -11,6 +11,8 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import test.deployment.HotDeployedTest;
+import test.proxy.DelegationProxyTest;
+import test.proxy.SubclassingProxyTest;
 
 /**
  * JDK 5 specific tests.
@@ -35,6 +37,8 @@ public class AllJdk5Tests extends TestCase {
         suite.addTestSuite(QNameTest.class);
         suite.addTestSuite(AfterReturningThrowingTest.class);
 
+        suite.addTestSuite(SubclassingProxyTest.class);
+        suite.addTestSuite(DelegationProxyTest.class);
         return suite;
     }
 

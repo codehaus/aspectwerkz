@@ -1,0 +1,22 @@
+<!DOCTYPE aspectj PUBLIC "-//AspectJ//DTD//EN" "http://.../dtd/aspectj_1_5_0.dtd">
+<aspectj>
+    <weaver options="-Xalex">
+        <exclude within="com.foo.x..* OR com.bar.Y OR (@NoWeave *)"/>
+        <include within="@WeaveMe *"/>
+    </weaver>
+    <aspects>
+        <exclude within="*"/>
+        
+        <aspect name="com.foo.BarAspect"/>
+        
+        <aspect name="com.foo.BarAspect$Nested"/>
+
+        <concrete-aspect name="com.foo.OntheFlyConcrete" extends="com.foo.BarAbstract">
+            <pointcut name="abstractPC" expression="get(*)"/>
+            <pointcut name="another(int i)" expression="execution(* *..*(..)) AND args(i)"/>
+        </concrete-aspect>
+
+    </aspects>
+
+
+</aspectj>

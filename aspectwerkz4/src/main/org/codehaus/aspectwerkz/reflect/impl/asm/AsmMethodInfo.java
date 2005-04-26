@@ -7,21 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.asm;
 
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
-import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.proxy.ProxyCompiler;
 import org.codehaus.backport175.reader.bytecode.AnnotationElement;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.attrs.Attributes;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Modifier;
 
 /**
@@ -250,8 +242,10 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
         if (typeIndex >= 0 && typeIndex < m_parameterNames.length) {
             m_parameterNames[typeIndex] = parameterName;
         } else {
-            throw new DefinitionException("Could not register parameter named " + parameterName
-                + " from register " + registerIndex + " for " + m_member.name + "." + m_member.desc);
+            throw new DefinitionException(
+                    "Could not register parameter named " + parameterName
+                    + " from register " + registerIndex + " for " + m_member.name + "." + m_member.desc
+            );
         }
     }
 }

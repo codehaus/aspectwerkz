@@ -76,7 +76,7 @@ public class AddInterfaceVisitor extends ClassAdapter implements TransformationC
 
         // javaclass names of interface to have
         // use a Set to avoid doublons
-        final Set interfacesToAdd = new HashSet();
+        final Set interfacesToAdd = new HashSet();//FIXME AVP must preserve ordering
 
         // already there interface javaclass names
         for (int i = 0; i < interfaces.length; i++) {
@@ -106,10 +106,11 @@ public class AddInterfaceVisitor extends ClassAdapter implements TransformationC
             }
         }
 
-        if (ClassInfoHelper.hasMethodClash(interfacesToAdd, m_ctx.getLoader())) {
-            super.visit(version, access, name, superName, interfaces, sourceFile);
-            return;
-        }
+        //FIXME AVP refactor to handle precedence injection
+//        if (ClassInfoHelper.hasMethodClash(interfacesToAdd, m_ctx.getLoader())) {
+//            super.visit(version, access, name, superName, interfaces, sourceFile);
+//            return;
+//        }
 
         int i = 0;
         final String[] newInterfaceArray = new String[interfacesToAdd.size()];
