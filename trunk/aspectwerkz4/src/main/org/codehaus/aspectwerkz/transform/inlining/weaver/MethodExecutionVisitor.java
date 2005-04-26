@@ -24,6 +24,7 @@ import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.intercept.AdvisableImpl;
 
 /**
  * Adds a "proxy method" to the methods that matches an <tt>execution</tt> pointcut as well as prefixing the "original
@@ -104,7 +105,9 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
             CLINIT_METHOD_NAME.equals(name) ||
             name.startsWith(ASPECTWERKZ_PREFIX) ||
             name.startsWith(SYNTHETIC_MEMBER_PREFIX) ||
-            name.startsWith(WRAPPER_METHOD_PREFIX)) {
+            name.startsWith(WRAPPER_METHOD_PREFIX) ||
+            (AdvisableImpl.ADD_ADVICE_METHOD_NAME.equals(name) && AdvisableImpl.ADD_ADVICE_METHOD_DESC.equals(desc)) ||
+            (AdvisableImpl.REMOVE_ADVICE_METHOD_NAME.equals(name) && AdvisableImpl.REMOVE_ADVICE_METHOD_DESC.equals(desc))) {
             return cv.visitMethod(access, name, desc, exceptions, attrs);
         }
 

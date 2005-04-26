@@ -117,9 +117,10 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
             for (Iterator it2 = mixinDefs.iterator(); it2.hasNext();) {
                 interfaceSet.addAll(((MixinDefinition) it2.next()).getInterfaceClassNames());
             }
-            if (ClassInfoHelper.hasMethodClash(interfaceSet, m_ctx.getLoader())) {
-                return;
-            }
+            //FIXME AVP refactor to handle precedence injection
+//            if (ClassInfoHelper.hasMethodClash(interfaceSet, m_ctx.getLoader())) {
+//                return;
+//            }
 
             for (Iterator it2 = mixinDefs.iterator(); it2.hasNext();) {
                 final MixinDefinition mixinDef = (MixinDefinition) it2.next();

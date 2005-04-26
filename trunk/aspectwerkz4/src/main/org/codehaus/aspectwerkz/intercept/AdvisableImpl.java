@@ -35,6 +35,10 @@ public class AdvisableImpl implements Advisable {
     private static final String EXPRESSION_NAMESPACE = "___AW_ADVISABLE_AW___";
 
     public static final ClassInfo CLASS_INFO;
+    public static final String ADD_ADVICE_METHOD_NAME = "aw_addAdvice";
+    public static final String ADD_ADVICE_METHOD_DESC = "(Ljava/lang/String;Lorg/codehaus/aspectwerkz/intercept/Advice;)V";
+    public static final String REMOVE_ADVICE_METHOD_NAME = "aw_removeAdvice";
+    public static final String REMOVE_ADVICE_METHOD_DESC = "(Ljava/lang/String;Ljava/lang/Class;)V";
     public static final AroundAdvice[] EMPTY_AROUND_ADVICE_ARRAY = new AroundAdvice[0];
     public static final BeforeAdvice[] EMPTY_BEFORE_ADVICE_ARRAY = new BeforeAdvice[0];
     public static final AfterAdvice[] EMPTY_AFTER_ADVICE_ARRAY = new AfterAdvice[0];

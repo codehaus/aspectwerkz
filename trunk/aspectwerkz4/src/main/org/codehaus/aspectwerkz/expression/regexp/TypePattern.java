@@ -9,9 +9,9 @@ package org.codehaus.aspectwerkz.expression.regexp;
 
 import org.codehaus.aspectwerkz.expression.ExpressionException;
 import org.codehaus.aspectwerkz.expression.SubtypePatternType;
-import org.codehaus.aspectwerkz.util.Strings;
+import org.codehaus.aspectwerkz.proxy.ProxySubclassingStrategy;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.proxy.Proxy;
+import org.codehaus.aspectwerkz.util.Strings;
 
 import java.io.ObjectInputStream;
 
@@ -56,7 +56,13 @@ public class TypePattern extends Pattern {
      * @return true if we have a matche
      */
     public boolean matches(String typeName) {
-        int awProxySuffixStart = typeName.indexOf(Proxy.PROXY_SUFFIX_START);
+        // regular match
+        if (m_typeNamePattern.contains(typeName)) {
+            return true;
+        }
+
+        // fallback on subclassing proxy match and Cglib extension
+        int awProxySuffixStart = typeName.indexOf(ProxySubclassingStrategy.PROXY_SUFFIX_START);
         if (awProxySuffixStart > 0) {
             typeName = typeName.substring(0, awProxySuffixStart);
         } else {
@@ -240,7 +246,7 @@ public class TypePattern extends Pattern {
         }
         final TypePattern obj = (TypePattern) o;
         return areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
-               && areEqualsOrBothNull(obj.m_typeNamePattern, this.m_typeNamePattern);
+                && areEqualsOrBothNull(obj.m_typeNamePattern, this.m_typeNamePattern);
     }
 
     protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
