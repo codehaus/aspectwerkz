@@ -38,6 +38,8 @@ import org.objectweb.asm.attrs.Attributes;
  * <p/>
  * The annotations are copied.
  *
+ * FIXME delete
+ *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -53,7 +55,7 @@ public class ProxyCompiler implements TransformationConstants {
      * @return or null if not found
      */
     public static InputStream getProxyResourceAsStream(final ClassLoader loader, final String proxyClassName) {
-        String className = Proxy.getUniqueClassNameFromProxy(proxyClassName);
+        String className = null; //FIXME delete class - was - Proxy.getUniqueClassNameFromProxy(proxyClassName);
         if (className != null) {
             byte[] proxy = compileProxyFor(loader, className, proxyClassName);
             return new BufferedInputStream(new ByteArrayInputStream(proxy));

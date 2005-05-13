@@ -198,7 +198,7 @@ public class ProcessStarter {
             } catch (NumberFormatException nfe) {
                 ;
             }
-            VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(
+            VirtualMachine vm = JDWPClassLoaderPatcher.hotswapClassLoader(
                     clp,
                     starter.getTransport(),
                     starter.getAddress(),
