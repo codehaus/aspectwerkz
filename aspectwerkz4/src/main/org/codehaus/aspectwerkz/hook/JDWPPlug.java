@@ -124,7 +124,7 @@ public class JDWPPlug {
      */
     public void hotswap(Map jdwp) throws Exception {
         // @todo check it works at runtime not suspended
-        VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(
+        VirtualMachine vm = JDWPClassLoaderPatcher.hotswapClassLoader(
                 System.getProperty(
                         ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY,
                         org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl.class.getName()
