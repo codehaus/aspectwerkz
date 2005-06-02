@@ -17,7 +17,6 @@ import org.codehaus.aspectwerkz.reflect.StaticInitializationInfo;
 import org.codehaus.aspectwerkz.reflect.StaticInitializationInfoImpl;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
-import org.codehaus.backport175.reader.Annotation;
 import org.codehaus.backport175.reader.bytecode.AnnotationElement;
 import org.codehaus.backport175.reader.bytecode.AnnotationReader;
 
@@ -195,18 +194,18 @@ public class JavaClassInfo implements ClassInfo {
         return classInfo.hasStaticInitializer();
     }
 
-	/**
-	 * Returns the static initializer info of the current underlying class if any.
-	 * 
-	 * @see org.codehaus.aspectwerkz.reflect.ClassInfo#staticInitializer()
-	 */
-	public StaticInitializationInfo staticInitializer() {
-		if(hasStaticInitializer() && m_staticInitializer == null) {
-			m_staticInitializer = new StaticInitializationInfoImpl(this);
-		}
-		return m_staticInitializer;
-	}
-	
+    /**
+     * Returns the static initializer info of the current underlying class if any.
+     *
+     * @see org.codehaus.aspectwerkz.reflect.ClassInfo#staticInitializer()
+     */
+    public StaticInitializationInfo staticInitializer() {
+        if (hasStaticInitializer() && m_staticInitializer == null) {
+            m_staticInitializer = new StaticInitializationInfoImpl(this);
+        }
+        return m_staticInitializer;
+    }
+
     /**
      * Returns the signature for the element.
      *
@@ -308,6 +307,16 @@ public class JavaClassInfo implements ClassInfo {
         FieldInfo field = (FieldInfo) m_fields.get(hash);
         if (field == null && getSuperclass() != null) {
             field = getSuperclass().getField(hash);
+        }
+        if (field == null) {
+            // Trying to find constants in Interfaces
+            ClassInfo[] interfaces = getInterfaces();
+            for (int i = 0; i < interfaces.length; i++) {
+                ClassInfo ifc = interfaces[i];
+                field = ifc.getField(hash);
+                if (field != null)
+                    break;
+            }
         }
         return field;
     }

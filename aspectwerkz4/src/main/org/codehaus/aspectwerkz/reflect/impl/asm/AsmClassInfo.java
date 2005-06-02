@@ -7,9 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.asm;
 
-import gnu.trove.TIntObjectHashMap;
 import gnu.trove.TIntArrayList;
-import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
+import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
@@ -18,13 +17,12 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.StaticInitializationInfo;
 import org.codehaus.aspectwerkz.reflect.StaticInitializationInfoImpl;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
+import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
-import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.util.ContextClassLoader;
-import org.codehaus.backport175.reader.bytecode.AnnotationReader;
 import org.codehaus.backport175.reader.bytecode.AnnotationElement;
-import org.codehaus.backport175.reader.Annotation;
+import org.codehaus.backport175.reader.bytecode.AnnotationReader;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.CodeVisitor;
@@ -39,7 +37,6 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * Implementation of the ClassInfo interface utilizing the ASM bytecode library for the info retriaval.
@@ -456,17 +453,17 @@ public class AsmClassInfo implements ClassInfo {
         return m_hasStaticInitializer;
     }
 
-	/**
+    /**
      * Return the static initializer info or null if not present
-     * 
-	 * @see org.codehaus.aspectwerkz.reflect.ClassInfo#staticInitializer()
-	 */
-	public StaticInitializationInfo staticInitializer() {
-		if(hasStaticInitializer() && m_staticInitializer == null) {
-			m_staticInitializer = new StaticInitializationInfoImpl(this);
-		}
-		return m_staticInitializer;
-	}
+     *
+     * @see org.codehaus.aspectwerkz.reflect.ClassInfo#staticInitializer()
+     */
+    public StaticInitializationInfo staticInitializer() {
+        if (hasStaticInitializer() && m_staticInitializer == null) {
+            m_staticInitializer = new StaticInitializationInfoImpl(this);
+        }
+        return m_staticInitializer;
+    }
 
     /**
      * Returns a constructor info by its hash.
@@ -546,6 +543,16 @@ public class AsmClassInfo implements ClassInfo {
         FieldInfo field = (FieldInfo) m_fields.get(hash);
         if (field == null && getSuperclass() != null) {
             field = getSuperclass().getField(hash);
+        }
+        if (field == null) {
+            // Trying to find constants in Interfaces
+            ClassInfo[] interfaces = getInterfaces();
+            for (int i = 0; i < interfaces.length; i++) {
+                ClassInfo ifc = interfaces[i];
+                field = ifc.getField(hash);
+                if (field != null)
+                    break;
+            }
         }
         return field;
     }
@@ -675,7 +682,7 @@ public class AsmClassInfo implements ClassInfo {
      * Creates a ClassInfo based on the stream retrieved from the class loader through
      * <code>getResourceAsStream</code>.
      *
-     * @param name java name as in source code
+     * @param name           java name as in source code
      * @param loader
      * @param lazyAttributes
      */
@@ -689,7 +696,7 @@ public class AsmClassInfo implements ClassInfo {
             // it might be one
             // gets its non array component type and the dimension
             int dimension = 0;
-            for (int i = className.indexOf('['); i > 0; i = className.indexOf('[', i+1)) {
+            for (int i = className.indexOf('['); i > 0; i = className.indexOf('[', i + 1)) {
                 dimension++;
             }
             String unidimComponentName = className;
@@ -729,7 +736,9 @@ public class AsmClassInfo implements ClassInfo {
                 componentClassAsStream = loader.getResourceAsStream(componentName + ".class");
             } else {
                 // boot class loader, fall back to system classloader that will see it anyway
-                componentClassAsStream = ClassLoader.getSystemClassLoader().getResourceAsStream(componentName + ".class");
+                componentClassAsStream = ClassLoader.getSystemClassLoader().getResourceAsStream(
+                        componentName + ".class"
+                );
             }
             if (componentClassAsStream == null) {
                 // might be more than one dimension
@@ -847,13 +856,13 @@ public class AsmClassInfo implements ClassInfo {
                 int index = m_name.indexOf('[');
                 m_componentTypeName = m_name.substring(0, index);
             } else if (m_name.equals("long")
-                       || m_name.equals("int")
-                       || m_name.equals("short")
-                       || m_name.equals("double")
-                       || m_name.equals("float")
-                       || m_name.equals("byte")
-                       || m_name.equals("boolean")
-                       || m_name.equals("char")) {
+                    || m_name.equals("int")
+                    || m_name.equals("short")
+                    || m_name.equals("double")
+                    || m_name.equals("float")
+                    || m_name.equals("byte")
+                    || m_name.equals("boolean")
+                    || m_name.equals("char")) {
                 m_isPrimitive = true;
             }
         }
@@ -962,12 +971,15 @@ public class AsmClassInfo implements ClassInfo {
             if (!m_isStatic) {
                 m_signatureParameterRegisterDepth++;// index 0 = this
             }
-            m_signatureParameterRegisterDepth += AsmHelper.getRegisterDepth(Type.getArgumentTypes(m_methodInfo.m_member.desc));
+            m_signatureParameterRegisterDepth += AsmHelper.getRegisterDepth(
+                    Type.getArgumentTypes(m_methodInfo.m_member.desc)
+            );
         }
 
         /**
          * Do not assume to visit the local variable with index always increasing since it is a wrong assumption
          * [ see f.e. test.args.ArgsAspect.withArray advice ]
+         *
          * @param name
          * @param desc
          * @param start

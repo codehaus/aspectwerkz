@@ -391,6 +391,14 @@ public class DocumentParser {
                     containerClassName = value;
                 }
             }
+
+            // class is mandatory
+            if (Strings.isNullOrEmpty(className)) {
+                System.err.println("Warning: could not load aspect without 'class=..' attribute");
+                new Exception().printStackTrace();
+                continue;
+            }
+
             String aspectClassName = packageName + className;
             if (aspectName == null) {
                 aspectName = aspectClassName;
