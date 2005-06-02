@@ -10,6 +10,7 @@ package test;
 import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.annotation.Around;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>

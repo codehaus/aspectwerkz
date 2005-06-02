@@ -41,5 +41,8 @@
                 bind-to="execution(int test.CustomProceedChangeTargetTest.changeArg(test.CustomProceedChangeTargetTest$Foo)) AND args(foo)"/>
         </aspect>
 
+        <aspect class="test.priv.PrivateCtorTest$TestAspect"/>
+        <aspect class="test.FieldFromInterfaceTest$TestAspect"/>
+
     </system>
 </aspectwerkz>
