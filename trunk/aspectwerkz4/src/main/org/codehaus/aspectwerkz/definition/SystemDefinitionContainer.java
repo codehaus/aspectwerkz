@@ -93,6 +93,7 @@ public class SystemDefinitionContainer {
             if (loader == null) {
                 // by defaults, there is always the virtual definition, that has lowest precedence
                 Set defaults = new HashSet();
+                //TODO AVOPT
                 defaults.add(SystemDefinition.createVirtualDefinitionAt(loader));
                 s_classLoaderSystemDefinitions.put(loader, defaults);
                 s_classLoaderDefinitionLocations.put(loader, new ArrayList());
@@ -142,6 +143,7 @@ public class SystemDefinitionContainer {
                 }
 
                 // there is always the virtual definition, that has lowest precedence
+                //TODO AVOPT
                 definitions.add(SystemDefinition.createVirtualDefinitionAt(loader));
 
                 dump(loader);

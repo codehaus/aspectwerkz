@@ -67,7 +67,7 @@ public final class TransformationUtil {
         // [ Alex: looks like it will change between each RW since tied to ctx match ]
         buf.append(TransformationConstants.WRAPPER_METHOD_PREFIX);
         buf.append(prefix);
-        buf.append(methodName);
+        buf.append(methodName.replace('<', '$').replace('>', '$'));// can be <init> for ctor wrapping
         buf.append(methodDesc.hashCode());//??
         buf.append(className.replace('.', '_').replace('/', '_'));
         return buf.toString().replace('-', '_');

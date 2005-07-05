@@ -294,6 +294,23 @@ public class AsmClassInfo implements ClassInfo {
     /**
      * Returns the class info for a specific class.
      *
+     * @param className
+     * @param bytecode
+     * @param loader
+     * @return the class info
+     */
+    public static ClassInfo getClassInfo(final String className, final byte[] bytecode, final ClassLoader loader) {
+        AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
+        ClassInfo classInfo = repository.getClassInfo(className.replace('.', '/'));
+        if (classInfo == null) {
+            classInfo = new AsmClassInfo(bytecode, loader, true);
+        }
+        return classInfo;
+    }
+
+    /**
+     * Returns the class info for a specific class.
+     *
      * @param stream
      * @param loader
      * @return the class info

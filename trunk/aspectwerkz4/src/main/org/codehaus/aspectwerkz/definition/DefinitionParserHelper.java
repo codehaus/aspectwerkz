@@ -82,7 +82,7 @@ public class DefinitionParserHelper {
      * @param expression
      * @param systemDef
      */
-    public static void createAndAddDeploymentScopeDef(final String name,
+    public static void createAndAddDeploymentScopeDef(final String name,//FIXME Depl scpope(prasen)field name not unique - need FQN
                                                       final String expression,
                                                       final SystemDefinition systemDef) {
         AspectDefinition aspectDef = systemDef.getAspectDefinition(Virtual.class.getName());

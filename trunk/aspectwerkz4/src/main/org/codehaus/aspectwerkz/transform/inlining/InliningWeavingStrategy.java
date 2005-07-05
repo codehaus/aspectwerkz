@@ -62,7 +62,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             final byte[] bytecode = context.getInitialBytecode();
             final ClassLoader loader = context.getLoader();
 
-            ClassInfo classInfo = AsmClassInfo.getClassInfo(bytecode, loader);
+            ClassInfo classInfo = AsmClassInfo.getClassInfo(className, bytecode, loader);
 
             // skip Java reflect proxies for which we cannot get the resource as a stream
             // which leads to warnings when using annotation matching
