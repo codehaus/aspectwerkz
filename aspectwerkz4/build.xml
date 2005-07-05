@@ -467,7 +467,7 @@
                 <pathelement path="${main.classes}"/>
                 <path refid="project.class.path"/>
             </classpath>
-            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.jar -Daspectwerkz.transform.verbose=false  -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/jdk15/test/aop.xml"/>
+            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.jar -Daspectwerkz.transform.verbose=false -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/jdk15/test/aop.xml"/>
         </java>
     </target>
 

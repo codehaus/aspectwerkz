@@ -32,6 +32,7 @@ import org.codehaus.aspectwerkz.transform.inlining.compiler.MatchingJoinPointInf
 import org.codehaus.aspectwerkz.transform.inlining.compiler.JoinPointFactory;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.objectweb.asm.ClassReader;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -481,17 +482,20 @@ public class Deployer {
         final ClassLoader aspectLoader = aspectClass.getClassLoader();
         final String aspectName = aspectClass.getName();
 
+        // keep XML settings so that they don't get changed when we read the annotations
+        String keptContainerClassName = newAspectDef.getContainerClassName();
+        DeploymentModel keptModel = newAspectDef.getDeploymentModel();
+
         final ClassInfo classInfo = AsmClassInfo.getClassInfo(aspectName, aspectLoader);
-
         AspectModelManager.defineAspect(classInfo, newAspectDef, aspectLoader);
-
         AspectAnnotationParser.parse(classInfo, newAspectDef, aspectLoader);
 
         AspectDefinition aspectDef = systemDef.getAspectDefinition(aspectName);
         if (aspectDef != null) {
             // if in def already reuse some of the settings that can have been overridded by XML def
-            newAspectDef.setContainerClassName(aspectDef.getContainerClassName());
-            newAspectDef.setDeploymentModel(aspectDef.getDeploymentModel());
+            //AW-461
+            newAspectDef.setContainerClassName(keptContainerClassName);//aspectDef.getContainerClassName());
+            newAspectDef.setDeploymentModel(keptModel);//aspectDef.getDeploymentModel());
         }
 
         systemDef.addAspectOverwriteIfExists(newAspectDef);

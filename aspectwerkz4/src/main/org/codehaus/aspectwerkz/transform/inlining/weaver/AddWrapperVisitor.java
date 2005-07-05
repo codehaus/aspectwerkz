@@ -27,7 +27,7 @@ import java.util.Set;
 import java.lang.reflect.Modifier;
 
 /**
- * Adds field and method wrappers when there has been at least one joinpoint emitted.
+ * Adds field and method and ctor wrappers when there has been at least one joinpoint emitted.
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -65,7 +65,6 @@ public class AddWrapperVisitor extends ClassAdapter implements Constants, Transf
         for (Iterator iterator = jps.iterator(); iterator.hasNext();) {
             EmittedJoinPoint emittedJoinPoint = (EmittedJoinPoint) iterator.next();
             int jpType = emittedJoinPoint.getJoinPointType();
-            String calleeName = emittedJoinPoint.getCalleeMemberName();
             if (Modifier.isPublic(emittedJoinPoint.getCalleeMemberModifiers())
                 || !name.equals(emittedJoinPoint.getCalleeClassName())) {//TODO ?
                 continue;
@@ -90,6 +89,17 @@ public class AddWrapperVisitor extends ClassAdapter implements Constants, Transf
                 case (JoinPointType.METHOD_EXECUTION_INT) :
                 case (JoinPointType.METHOD_CALL_INT) :
                     createMethodWrapperMethod(
+                            emittedJoinPoint.getCalleeMemberModifiers(),
+                            name,
+                            emittedJoinPoint.getCalleeMemberName(),
+                            emittedJoinPoint.getCalleeMemberDesc(),
+                            new String[0],//TODO should throw Throwable ??
+                            null//TODO do we need the attr ??
+                    );
+                    break;
+                case (JoinPointType.CONSTRUCTOR_CALL_INT) :
+                case (JoinPointType.CONSTRUCTOR_EXECUTION_INT) :
+                    createConstructorWrapperMethod(
                             emittedJoinPoint.getCalleeMemberModifiers(),
                             name,
                             emittedJoinPoint.getCalleeMemberName(),
@@ -260,6 +270,55 @@ public class AddWrapperVisitor extends ClassAdapter implements Constants, Transf
         }
 
         AsmHelper.addReturnStatement(mv, Type.getReturnType(desc));
+
+        mv.visitMaxs(0, 0);
+    }
+
+    /**
+     * Creates a public wrapper static method that delegates to the non-public target ctor.
+     *
+     * @param access
+     * @param declaringTypeName
+     * @param name
+     * @param desc
+     * @param exceptions
+     * @param attrs
+     */
+    private void createConstructorWrapperMethod(final int access,
+                                           final String declaringTypeName,
+                                           final String name,
+                                           final String desc,
+                                           final String[] exceptions,
+                                           final Attribute attrs) {
+        final String wrapperName = TransformationUtil.getWrapperMethodName(
+                name, desc, declaringTypeName, INVOKE_WRAPPER_METHOD_PREFIX
+        );
+
+        final String wrapperKey = AlreadyAddedMethodAdapter.getMethodKey(wrapperName, desc);
+        if (m_addedMethods.contains(wrapperKey)) {
+            return;
+        }
+        m_addedMethods.add(wrapperKey);
+
+        int modifiers = ACC_SYNTHETIC;
+        modifiers |= ACC_STATIC;
+
+        Type declaringType = Type.getType('L'+declaringTypeName+';');
+        String ctorDesc = Type.getMethodDescriptor(declaringType, Type.getArgumentTypes(desc));
+
+        CodeVisitor mv = super.visitMethod(
+                modifiers,
+                wrapperName,
+                ctorDesc,
+                exceptions,
+                attrs
+        );
+
+        mv.visitTypeInsn(NEW, declaringTypeName);
+        mv.visitInsn(DUP);
+        AsmHelper.loadArgumentTypes(mv, Type.getArgumentTypes(desc), true);
+        mv.visitMethodInsn(INVOKESPECIAL, declaringTypeName, name, desc);
+        AsmHelper.addReturnStatement(mv, declaringType);
 
         mv.visitMaxs(0, 0);
     }

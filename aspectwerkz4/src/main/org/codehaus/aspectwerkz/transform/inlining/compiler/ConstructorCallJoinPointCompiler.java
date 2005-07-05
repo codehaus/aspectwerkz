@@ -9,6 +9,9 @@ package org.codehaus.aspectwerkz.transform.inlining.compiler;
 
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Type;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
+
+import java.lang.reflect.Modifier;
 
 /**
  * A compiler that compiles/generates a class that represents a specific join point, a class which invokes the advices
@@ -84,13 +87,28 @@ public class ConstructorCallJoinPointCompiler extends AbstractJoinPointCompiler 
      * @param input
      */
     protected void createInlinedJoinPointInvocation(final CodeVisitor cv, final CompilerInput input) {
-        cv.visitTypeInsn(NEW, m_calleeClassName);
-        cv.visitInsn(DUP);
-        loadArgumentMemberFields(cv, input.argStartIndex);
-        cv.visitMethodInsn(
-                INVOKESPECIAL, m_calleeClassName, INIT_METHOD_NAME/*FIXME caller wrapper factory*/,
-                m_calleeMemberDesc
-        );
+        if (!Modifier.isPublic(m_calleeMemberModifiers)) {
+            loadArgumentMemberFields(cv, input.argStartIndex);
+            cv.visitMethodInsn(
+                    INVOKESTATIC,
+                    m_calleeClassName,
+                    TransformationUtil.getWrapperMethodName(
+                        m_calleeMemberName,
+                        m_calleeMemberDesc,
+                        m_calleeClassName,
+                        INVOKE_WRAPPER_METHOD_PREFIX
+                    ),
+                    Type.getMethodDescriptor(Type.getType(m_calleeClassSignature), m_argumentTypes)
+            );
+        } else {
+            cv.visitTypeInsn(NEW, m_calleeClassName);
+            cv.visitInsn(DUP);
+            loadArgumentMemberFields(cv, input.argStartIndex);
+            cv.visitMethodInsn(
+                    INVOKESPECIAL, m_calleeClassName, INIT_METHOD_NAME,
+                    m_calleeMemberDesc
+            );
+        }
         // assign to CALLEE
         //TODO - might not be needed / feasible for optimized jp - we should ensure that it is affected to target for
         // after advice that comes after (but should we support target on ctor call)
@@ -107,13 +125,28 @@ public class ConstructorCallJoinPointCompiler extends AbstractJoinPointCompiler 
      * @param cv
      */
     protected void createJoinPointInvocation(final CodeVisitor cv) {
-        cv.visitTypeInsn(NEW, m_calleeClassName);
-        cv.visitInsn(DUP);
-        loadArguments(cv);
-        cv.visitMethodInsn(
-                INVOKESPECIAL, m_calleeClassName, INIT_METHOD_NAME/*FIXME caller wrapper factory*/,
-                m_calleeMemberDesc
-        );
+        if (!Modifier.isPublic(m_calleeMemberModifiers)) {
+            loadArguments(cv);
+            cv.visitMethodInsn(
+                    INVOKESTATIC,
+                    m_calleeClassName,
+                    TransformationUtil.getWrapperMethodName(
+                        m_calleeMemberName,
+                        m_calleeMemberDesc,
+                        m_calleeClassName,
+                        INVOKE_WRAPPER_METHOD_PREFIX
+                    ),
+                    Type.getMethodDescriptor(Type.getType(m_calleeClassSignature), m_argumentTypes)
+            );
+        } else {
+            cv.visitTypeInsn(NEW, m_calleeClassName);
+            cv.visitInsn(DUP);
+            loadArguments(cv);
+            cv.visitMethodInsn(
+                    INVOKESPECIAL, m_calleeClassName, INIT_METHOD_NAME,
+                    m_calleeMemberDesc
+            );
+        }
 
         // put it in CALLEE field
         cv.visitInsn(DUP);
