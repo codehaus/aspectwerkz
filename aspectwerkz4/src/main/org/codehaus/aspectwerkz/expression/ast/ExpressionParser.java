@@ -216,6 +216,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     case ARGS:
     case TARGET:
     case THIS:
+    case IF:
     case HAS_METHOD:
     case HAS_FIELD:
     case POINTCUT_REFERENCE_WITH_ARGS:
@@ -311,6 +312,9 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
       break;
     case STATIC_INITIALIZATION:
       StaticInitialization();
+      break;
+    case IF:
+      If();
       break;
     case POINTCUT_REFERENCE_WITH_ARGS:
     case POINTCUT_REFERENCE:
@@ -1395,6 +1399,23 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     }
   }
 
+/**
+ * If() marker
+ */
+  static final public void If() throws ParseException {
+                /*@bgen(jjtree) If */
+  ASTIf jjtn000 = new ASTIf(JJTIF);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+    try {
+      jj_consume_token(IF);
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+  }
+
 //------------------ Patterns ------------------
 
 /**
@@ -2367,18 +2388,20 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     finally { jj_save(17, xla); }
   }
 
-  static final private boolean jj_3_18() {
-    if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_34()) return true;
+  static final private boolean jj_3R_47() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(82)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(83)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(7)) return true;
+    }
+    }
     return false;
   }
 
-  static final private boolean jj_3R_56() {
-    if (jj_scan_token(COMMA)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_76() {
+  static final private boolean jj_3R_77() {
     if (jj_scan_token(HAS_METHOD)) return true;
     return false;
   }
@@ -2393,24 +2416,6 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return false;
   }
 
-  static final private boolean jj_3R_74() {
-    if (jj_scan_token(EXECUTION)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_47() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(82)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(83)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(7)) return true;
-    }
-    }
-    return false;
-  }
-
   static final private boolean jj_3R_46() {
     if (jj_3R_55()) return true;
     Token xsp;
@@ -2421,8 +2426,8 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return false;
   }
 
-  static final private boolean jj_3R_89() {
-    if (jj_scan_token(ARGS)) return true;
+  static final private boolean jj_3R_75() {
+    if (jj_scan_token(EXECUTION)) return true;
     return false;
   }
 
@@ -2442,7 +2447,12 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return false;
   }
 
-  static final private boolean jj_3R_88() {
+  static final private boolean jj_3R_91() {
+    if (jj_scan_token(ARGS)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_90() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(27)) {
@@ -2452,12 +2462,12 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return false;
   }
 
-  static final private boolean jj_3R_82() {
+  static final private boolean jj_3R_83() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_14()) {
     jj_scanpos = xsp;
-    if (jj_3R_89()) return true;
+    if (jj_3R_91()) return true;
     }
     return false;
   }
@@ -2465,41 +2475,6 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   static final private boolean jj_3_14() {
     if (jj_scan_token(ARGS)) return true;
     if (jj_scan_token(ARGS_END)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_71() {
-    if (jj_3R_87()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_70() {
-    if (jj_3R_86()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_69() {
-    if (jj_3R_85()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_68() {
-    if (jj_3R_84()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_72() {
-    if (jj_3R_88()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_86() {
-    if (jj_scan_token(CFLOW_BELOW)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_67() {
-    if (jj_3R_83()) return true;
     return false;
   }
 
@@ -2516,43 +2491,48 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return false;
   }
 
+  static final private boolean jj_3R_71() {
+    if (jj_3R_88()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_70() {
+    if (jj_3R_87()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_72() {
+    if (jj_3R_89()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_69() {
+    if (jj_3R_86()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_73() {
+    if (jj_3R_90()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_87() {
+    if (jj_scan_token(CFLOW_BELOW)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_68() {
+    if (jj_3R_85()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_67() {
+    if (jj_3R_84()) return true;
+    return false;
+  }
+
   static final private boolean jj_3R_66() {
-    if (jj_3R_82()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_65() {
-    if (jj_3R_81()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_64() {
-    if (jj_3R_80()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_85() {
-    if (jj_scan_token(CFLOW)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_63() {
-    if (jj_3R_79()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_44() {
-    if (jj_3R_49()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_62() {
-    if (jj_3R_78()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_61() {
-    if (jj_3R_77()) return true;
+    if (jj_3R_83()) return true;
     return false;
   }
 
@@ -2565,18 +2545,48 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return false;
   }
 
+  static final private boolean jj_3R_65() {
+    if (jj_3R_82()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_86() {
+    if (jj_scan_token(CFLOW)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_64() {
+    if (jj_3R_81()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_63() {
+    if (jj_3R_80()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_44() {
+    if (jj_3R_49()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_62() {
+    if (jj_3R_79()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_61() {
+    if (jj_3R_78()) return true;
+    return false;
+  }
+
   static final private boolean jj_3R_60() {
-    if (jj_3R_76()) return true;
+    if (jj_3R_77()) return true;
     return false;
   }
 
   static final private boolean jj_3R_59() {
-    if (jj_3R_75()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_58() {
-    if (jj_3R_74()) return true;
+    if (jj_3R_76()) return true;
     return false;
   }
 
@@ -2585,8 +2595,13 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return false;
   }
 
-  static final private boolean jj_3R_87() {
+  static final private boolean jj_3R_88() {
     if (jj_scan_token(STATIC_INITIALIZATION)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_58() {
+    if (jj_3R_75()) return true;
     return false;
   }
 
@@ -2623,7 +2638,10 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     jj_scanpos = xsp;
     if (jj_3R_71()) {
     jj_scanpos = xsp;
-    if (jj_3R_72()) return true;
+    if (jj_3R_72()) {
+    jj_scanpos = xsp;
+    if (jj_3R_73()) return true;
+    }
     }
     }
     }
@@ -2643,7 +2661,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   }
 
   static final private boolean jj_3R_57() {
-    if (jj_3R_73()) return true;
+    if (jj_3R_74()) return true;
     return false;
   }
 
@@ -2668,6 +2686,22 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return false;
   }
 
+  static final private boolean jj_3R_37() {
+    if (jj_3R_45()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_31() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_37()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(METHOD_CLASS_PATTERN)) return true;
+    if (jj_3R_38()) return true;
+    return false;
+  }
+
   static final private boolean jj_3R_48() {
     if (jj_scan_token(NOT)) return true;
     return false;
@@ -2676,11 +2710,6 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   static final private boolean jj_3_1() {
     if (jj_scan_token(AND)) return true;
     if (jj_3R_28()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_37() {
-    if (jj_3R_45()) return true;
     return false;
   }
 
@@ -2702,17 +2731,6 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return false;
   }
 
-  static final private boolean jj_3R_31() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_37()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(METHOD_CLASS_PATTERN)) return true;
-    if (jj_3R_38()) return true;
-    return false;
-  }
-
   static final private boolean jj_3_10() {
     if (jj_3R_30()) return true;
     return false;
@@ -2728,7 +2746,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return false;
   }
 
-  static final private boolean jj_3R_75() {
+  static final private boolean jj_3R_76() {
     if (jj_scan_token(WITHIN_CODE)) return true;
     return false;
   }
@@ -2738,28 +2756,23 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return false;
   }
 
-  static final private boolean jj_3R_80() {
+  static final private boolean jj_3R_81() {
     if (jj_scan_token(WITHIN)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_81() {
+  static final private boolean jj_3R_82() {
     if (jj_scan_token(HANDLER)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_89() {
+    if (jj_scan_token(IF)) return true;
     return false;
   }
 
   static final private boolean jj_3_8() {
     if (jj_3R_32()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_78() {
-    if (jj_scan_token(GET)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_84() {
-    if (jj_scan_token(THIS)) return true;
     return false;
   }
 
@@ -2778,23 +2791,28 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return false;
   }
 
+  static final private boolean jj_3R_79() {
+    if (jj_scan_token(GET)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_85() {
+    if (jj_scan_token(THIS)) return true;
+    return false;
+  }
+
   static final private boolean jj_3_7() {
     if (jj_3R_32()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_77() {
+  static final private boolean jj_3R_78() {
     if (jj_scan_token(SET)) return true;
     return false;
   }
 
   static final private boolean jj_3_6() {
     if (jj_3R_31()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_83() {
-    if (jj_scan_token(TARGET)) return true;
     return false;
   }
 
@@ -2818,23 +2836,13 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return false;
   }
 
+  static final private boolean jj_3R_84() {
+    if (jj_scan_token(TARGET)) return true;
+    return false;
+  }
+
   static final private boolean jj_3R_53() {
     if (jj_scan_token(METHOD_PRIVATE)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_5() {
-    if (jj_3R_30()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_73() {
-    if (jj_scan_token(CALL)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_17() {
-    if (jj_3R_32()) return true;
     return false;
   }
 
@@ -2843,23 +2851,23 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return false;
   }
 
-  static final private boolean jj_3R_79() {
-    if (jj_scan_token(HAS_FIELD)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_4() {
-    if (jj_3R_31()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_16() {
-    if (jj_3R_31()) return true;
-    return false;
-  }
-
   static final private boolean jj_3R_51() {
     if (jj_scan_token(METHOD_PUBLIC)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3_5() {
+    if (jj_3R_30()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_74() {
+    if (jj_scan_token(CALL)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3_17() {
+    if (jj_3R_32()) return true;
     return false;
   }
 
@@ -2883,6 +2891,11 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return false;
   }
 
+  static final private boolean jj_3R_80() {
+    if (jj_scan_token(HAS_FIELD)) return true;
+    return false;
+  }
+
   static final private boolean jj_3R_45() {
     Token xsp;
     while (true) {
@@ -2900,6 +2913,27 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     }
     }
     }
+    return false;
+  }
+
+  static final private boolean jj_3_4() {
+    if (jj_3R_31()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3_16() {
+    if (jj_3R_31()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3_18() {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_3R_34()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_56() {
+    if (jj_scan_token(COMMA)) return true;
     return false;
   }
 
@@ -2923,7 +2957,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
       jj_la1_2();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x1efffc00,0x1efff800,0x18000000,0x88,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xe0000080,0x0,0x0,0x0,0x0,0x0,0x0,0xe0000080,0x200000,0x0,0x0,0x0,0x0,0xe0000000,0x80,0x0,0x0,0x0,0x0,0x0,0x8,0x80,0x80,0x80,0x80,0x0,0x0,0x0,0x0,0xe0000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_0 = new int[] {0x1ffffc00,0x1ffff800,0x18000000,0x88,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xe0000080,0x0,0x0,0x0,0x0,0x0,0x0,0xe0000080,0x200000,0x0,0x0,0x0,0x0,0xe0000000,0x80,0x0,0x0,0x0,0x0,0x0,0x8,0x80,0x80,0x80,0x80,0x0,0x0,0x0,0x0,0xe0000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
    private static void jj_la1_1() {
       jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0xcbfc00,0xcbfc00,0x4cbfc00,0xcbfc00,0xcbfc00,0x4cbfc00,0xf0000000,0xf0000000,0x2f,0xcbfc00,0xcbfc00,0x4cbfc00,0x4dffc00,0x48fc00,0x8fc00,0x2f,0x0,0xcbfc00,0xcbfc00,0x4cbfc00,0xf0000000,0xf,0x20,0xbfc00,0xc00000,0xa1c00,0xf0000000,0x0,0x0,0xc00000,0xc00000,0x0,0x0,0x8,0x80000,0x0,0x8,0x7,0x80000,0xfc00,0x80000,0x3fc00,0x80000,0x21c00,0x0,0xf0000000,};

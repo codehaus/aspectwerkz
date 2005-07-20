@@ -122,7 +122,7 @@ TOKEN : /* POINTCUTS */
 |
     < THIS : "this(" > : CLASS
 |
-    < IF : "if(" >
+    < IF : "if()" >
 |
     < HAS_METHOD : "hasmethod(" > : METHOD
 |
@@ -362,7 +362,9 @@ void Pointcut() : {}
 	|
 		CflowBelow()
 	|
-		StaticInitialization() 
+		StaticInitialization()
+	|
+	    If()
 	|
         PointcutReference()
 }
@@ -637,6 +639,14 @@ void This() #This:
         jjtThis.setIdentifier(identifier.image);
     }
     <CLASS_POINTCUT_END>
+}
+
+/**
+ * If() marker
+ */
+void If() #If: {}
+{
+    <IF>
 }
 
 //------------------ Patterns ------------------

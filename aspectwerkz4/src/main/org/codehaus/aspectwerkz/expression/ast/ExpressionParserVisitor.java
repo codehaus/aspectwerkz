@@ -27,6 +27,7 @@ public interface ExpressionParserVisitor
   public Object visit(ASTHasField node, Object data);
   public Object visit(ASTTarget node, Object data);
   public Object visit(ASTThis node, Object data);
+  public Object visit(ASTIf node, Object data);
   public Object visit(ASTMethodPattern node, Object data);
   public Object visit(ASTConstructorPattern node, Object data);
   public Object visit(ASTFieldPattern node, Object data);

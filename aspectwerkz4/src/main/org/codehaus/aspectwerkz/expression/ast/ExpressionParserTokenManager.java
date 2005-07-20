@@ -42,6 +42,12 @@ private static final int jjStopStringLiteralDfa_5(int pos, long active0, long ac
          }
          return -1;
       case 2:
+         if ((active0 & 0x1000000L) != 0L)
+         {
+            jjmatchedKind = 27;
+            jjmatchedPos = 2;
+            return -1;
+         }
          if ((active0 & 0x6fff800L) != 0L)
          {
             jjmatchedKind = 28;
@@ -50,6 +56,15 @@ private static final int jjStopStringLiteralDfa_5(int pos, long active0, long ac
          }
          return -1;
       case 3:
+         if ((active0 & 0x1000000L) != 0L)
+         {
+            if (jjmatchedPos < 2)
+            {
+               jjmatchedKind = 27;
+               jjmatchedPos = 2;
+            }
+            return -1;
+         }
          if ((active0 & 0x6ff9800L) != 0L)
          {
             jjmatchedKind = 28;
@@ -285,9 +300,7 @@ static private final int jjMoveStringLiteralDfa2_5(long old0, long active0)
    switch(curChar)
    {
       case 40:
-         if ((active0 & 0x1000000L) != 0L)
-            return jjStopAtPos(2, 24);
-         break;
+         return jjMoveStringLiteralDfa3_5(active0, 0x1000000L);
       case 97:
          return jjMoveStringLiteralDfa3_5(active0, 0x40000L);
       case 101:
@@ -327,6 +340,10 @@ static private final int jjMoveStringLiteralDfa3_5(long old0, long active0)
             return jjStopAtPos(3, 13);
          else if ((active0 & 0x4000L) != 0L)
             return jjStopAtPos(3, 14);
+         break;
+      case 41:
+         if ((active0 & 0x1000000L) != 0L)
+            return jjStopAtPos(3, 24);
          break;
       case 99:
          return jjMoveStringLiteralDfa4_5(active0, 0x800L);
@@ -3553,7 +3570,7 @@ public static final String[] jjstrLiteralImages = {
 "\145\170\145\143\165\164\151\157\156\50", "\143\141\154\154\50", "\163\145\164\50", "\147\145\164\50", 
 "\150\141\156\144\154\145\162\50", "\167\151\164\150\151\156\50", "\167\151\164\150\151\156\143\157\144\145\50", 
 "\163\164\141\164\151\143\151\156\151\164\151\141\154\151\172\141\164\151\157\156\50", "\143\146\154\157\167\50", "\143\146\154\157\167\142\145\154\157\167\50", 
-"\141\162\147\163\50", "\164\141\162\147\145\164\50", "\164\150\151\163\50", "\151\146\50", 
+"\141\162\147\163\50", "\164\141\162\147\145\164\50", "\164\150\151\163\50", "\151\146\50\51", 
 "\150\141\163\155\145\164\150\157\144\50", "\150\141\163\146\151\145\154\144\50", null, null, 
 "\160\162\151\166\141\164\145", "\160\162\157\164\145\143\164\145\144", "\160\165\142\154\151\143", 
 "\163\164\141\164\151\143", "\141\142\163\164\162\141\143\164", "\146\151\156\141\154", "\41", null, null, 

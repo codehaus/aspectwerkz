@@ -27,13 +27,14 @@ public interface ExpressionParserTreeConstants
   public int JJTHASFIELD = 20;
   public int JJTTARGET = 21;
   public int JJTTHIS = 22;
-  public int JJTMETHODPATTERN = 23;
-  public int JJTCONSTRUCTORPATTERN = 24;
-  public int JJTFIELDPATTERN = 25;
-  public int JJTPARAMETER = 26;
-  public int JJTARGPARAMETER = 27;
-  public int JJTATTRIBUTE = 28;
-  public int JJTMODIFIER = 29;
+  public int JJTIF = 23;
+  public int JJTMETHODPATTERN = 24;
+  public int JJTCONSTRUCTORPATTERN = 25;
+  public int JJTFIELDPATTERN = 26;
+  public int JJTPARAMETER = 27;
+  public int JJTARGPARAMETER = 28;
+  public int JJTATTRIBUTE = 29;
+  public int JJTMODIFIER = 30;
 
 
   public String[] jjtNodeName = {
@@ -60,6 +61,7 @@ public interface ExpressionParserTreeConstants
     "HasField",
     "Target",
     "This",
+    "If",
     "MethodPattern",
     "ConstructorPattern",
     "FieldPattern",

@@ -3,7 +3,7 @@
     <pomVersion>3</pomVersion>
     <name>AspectWerkz - Plain Java AOP</name>
     <id>aspectwerkz</id>
-    <currentVersion>2.0</currentVersion>
+    <currentVersion>2.1.RC1</currentVersion>
     <organization>
         <name>Jonas Bon&#233;r, Alexandre Vasseur</name>
     </organization>
@@ -31,9 +31,9 @@
     </repository>
     <versions>
         <version>
-            <id>2.0</id>
-            <name>2.0</name>
-            <tag>rel_2_0</tag>
+            <id>2.1.RC1</id>
+            <name>2.1.RC1</name>
+            <tag>rel_2_1_RC1</tag>
             <branch>HEAD</branch>
         </version>
     </versions>
@@ -117,10 +117,7 @@
             <id>dom4j</id>
             <version>1.4</version>
         </dependency>
-        <dependency>
-            <id>qdox</id>
-            <version>1.4</version>
-        </dependency>
+        <!-- FIXME BP dep -->
         <dependency>
             <id>jrexx</id>
             <version>1.1.1</version>

@@ -17,7 +17,7 @@ import org.codehaus.backport175.reader.Annotation;
 
 /**
  * Note: when using untyped annotation, then the first space character(s) in the value part will be
- * resumed to only one space (untyped     type -> untyped type), due to QDox doclet handling.
+ * resumed to only one space (untyped     type -> untyped type), due to BP doclet handling.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  *
@@ -102,7 +102,7 @@ public class AnnotationCTest extends TestCase {
         at = Annotations.getAnnotation(BeforeAction.class, A2.class);
         assertNotNull(at);
         assertTrue(at instanceof BeforeAction);
-        assertEquals("other untyped", ((BeforeAction)at).value());//See space munging here... QDox issue.
+        assertEquals("other untyped", ((BeforeAction)at).value());//See space munging here... BP issue.
         at = Annotations.getAnnotation(BeforeAction.class, A3.class);
         assertNotNull(at);
         assertTrue(at instanceof BeforeAction);

@@ -16,10 +16,6 @@ import org.codehaus.aspectwerkz.transform.inlining.InliningWeavingStrategy;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
 import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * AspectWerkzPreProcessor is the entry point of the AspectWerkz layer 2. <p/>It implements the ClassPreProcessor
  * interface defined in layer 1. <p/>Available options are:
