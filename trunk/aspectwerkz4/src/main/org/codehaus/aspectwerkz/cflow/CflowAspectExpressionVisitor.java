@@ -7,38 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.cflow;
 
-import org.codehaus.aspectwerkz.expression.ast.ExpressionParserVisitor;
-import org.codehaus.aspectwerkz.expression.ast.SimpleNode;
-import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
-import org.codehaus.aspectwerkz.expression.ast.ASTExpression;
-import org.codehaus.aspectwerkz.expression.ast.ASTAnd;
-import org.codehaus.aspectwerkz.expression.ast.ASTOr;
-import org.codehaus.aspectwerkz.expression.ast.ASTNot;
-import org.codehaus.aspectwerkz.expression.ast.ASTPointcutReference;
-import org.codehaus.aspectwerkz.expression.ast.ASTExecution;
-import org.codehaus.aspectwerkz.expression.ast.ASTCall;
-import org.codehaus.aspectwerkz.expression.ast.ASTSet;
-import org.codehaus.aspectwerkz.expression.ast.ASTGet;
-import org.codehaus.aspectwerkz.expression.ast.ASTHandler;
-import org.codehaus.aspectwerkz.expression.ast.ASTWithin;
-import org.codehaus.aspectwerkz.expression.ast.ASTWithinCode;
-import org.codehaus.aspectwerkz.expression.ast.ASTStaticInitialization;
-import org.codehaus.aspectwerkz.expression.ast.ASTCflow;
-import org.codehaus.aspectwerkz.expression.ast.ASTCflowBelow;
-import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
-import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
-import org.codehaus.aspectwerkz.expression.ast.ASTHasField;
-import org.codehaus.aspectwerkz.expression.ast.ASTTarget;
-import org.codehaus.aspectwerkz.expression.ast.ASTThis;
-import org.codehaus.aspectwerkz.expression.ast.ASTClassPattern;
-import org.codehaus.aspectwerkz.expression.ast.ASTMethodPattern;
-import org.codehaus.aspectwerkz.expression.ast.ASTConstructorPattern;
-import org.codehaus.aspectwerkz.expression.ast.ASTFieldPattern;
-import org.codehaus.aspectwerkz.expression.ast.ASTParameter;
-import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
-import org.codehaus.aspectwerkz.expression.ast.ASTAttribute;
-import org.codehaus.aspectwerkz.expression.ast.ASTModifier;
-import org.codehaus.aspectwerkz.expression.ast.Node;
+import org.codehaus.aspectwerkz.expression.ast.*;
 import org.codehaus.aspectwerkz.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 
@@ -154,6 +123,10 @@ public class CflowAspectExpressionVisitor implements ExpressionParserVisitor {
 
     public Object visit(ASTStaticInitialization node, Object data) {
         return data;
+    }
+
+    public Object visit(ASTIf node, Object data) {
+        return data;//FIXME ? is that ok ?
     }
 
     /**

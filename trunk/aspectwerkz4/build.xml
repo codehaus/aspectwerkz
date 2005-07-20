@@ -53,7 +53,7 @@
     <!-- =================================================== -->
     <target name="init">
         <property name="name" value="aspectwerkz"/>
-        <property name="version" value="2.0"/>
+        <property name="version" value="2.1.RC1"/>
         <property name="basedir" value="."/>
         <property name="src.dir" value="${basedir}/src"/>
         <property name="test.src.dir" value="${basedir}/src/test"/>
@@ -312,11 +312,8 @@
                 <exclude name="concurrent*"/>
                 <exclude name="junit*"/>
                 <exclude name="managementapi*"/>
-                <exclude name="qdox*"/>
                 <include name="*.jar"/>
             </zipgroupfileset>
-            <!-- add qdox manually to remove its META-INF/LICENSE.txt that is not the one of AW -->
-            <zipfileset src="${lib.dir}/qdox-1.4.jar" excludes="META-INF/*"/>
         </jar>
         <!-- nodeps -->
         <jar destfile="${build.dir}/aspectwerkz-nodeps-jdk14-${version}.jar">
@@ -350,12 +347,10 @@
     <target name="jjtree" depends="init">
         <jjtree target="${src.dir}/main/org/codehaus/aspectwerkz/expression/ast/grammar.jjt" outputdirectory="${src.dir}/main/org/codehaus/aspectwerkz/expression/ast" javacchome="${env.JAVACC_HOME}"/>
         <javacc target="${src.dir}/main/org/codehaus/aspectwerkz/expression/ast/grammar.jj" outputdirectory="${src.dir}/main/org/codehaus/aspectwerkz/expression/ast" javacchome="${env.JAVACC_HOME}"/>
-        <jjtree target="${src.dir}/main/org/codehaus/aspectwerkz/annotation/expression/ast/grammar.jjt" outputdirectory="${src.dir}/main/org/codehaus/aspectwerkz/annotation/expression/ast" javacchome="${env.JAVACC_HOME}"/>
-        <javacc target="${src.dir}/main/org/codehaus/aspectwerkz/annotation/expression/ast/grammar.jj" outputdirectory="${src.dir}/main/org/codehaus/aspectwerkz/annotation/expression/ast" javacchome="${env.JAVACC_HOME}"/>
     </target>
 
     <target name="test:weave" depends="init, dist, test:annotationc">
-        <property name="weave.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-jdk14-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/backport175-1.0.RC1.jar"/>
+        <property name="weave.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-jdk14-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/backport175-1.0.RC1.jar"/>
         <echo>${weave.classpath}</echo>
 
         <java classname="org.codehaus.aspectwerkz.compiler.AspectWerkzC" fork="true" classpath="${weave.classpath}">
@@ -378,7 +373,7 @@
     <!--  tests that have been weaved offline -->
     <!-- =================================================== -->
     <target name="test:offline" depends="init, dist, test:annotationc, test:weave">
-        <property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-jdk14-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/backport175-1.0.RC1.jar"/>
+        <property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-jdk14-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/backport175-1.0.RC1.jar"/>
         <java
             classname="test.AllTests"
             classpath="${offline.classpath}${pathseparator}${extensions.classes}${pathseparator}${test.classes}${pathseparator}${testdata.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar${pathseparator}${lib.dir}/backport175-1.0.RC1.jar"
@@ -396,7 +391,7 @@
         <antcall target="test:offline:jdk15"/>
     </target>
     <target name="test:offline:jdk15" depends="init, dist, test:annotationc, test:weave" if="jdk15">
-        <property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-jdk5-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/backport175-1.0.RC1.jar"/>
+        <property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-jdk5-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/backport175-1.0.RC1.jar"/>
         <java
             classname="test.AllJdk5Tests"
             classpath="${offline.classpath}${pathseparator}${extensions.classes}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar${pathseparator}${lib.dir}/backport175-1.0.RC1.jar"
@@ -467,7 +462,7 @@
                 <pathelement path="${main.classes}"/>
                 <path refid="project.class.path"/>
             </classpath>
-            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.jar -Daspectwerkz.transform.verbose=false -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/jdk15/test/aop.xml"/>
+            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.1.RC1.jar -Daspectwerkz.transform.verbose=false -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/jdk15/test/aop.xml"/>
         </java>
     </target>
 
@@ -734,7 +729,7 @@
                 <pathelement path="${main.classes}"/>
                 <path refid="project.class.path"/>
             </classpath>
-            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.jar  -Daspectwerkz.definition.file=src/jdk15/samples/examples/callback/aop.xml -Daspectwerkz.transform.verbose=false"/>
+            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.1.RC1.jar  -Daspectwerkz.definition.file=src/jdk15/samples/examples/callback/aop.xml -Daspectwerkz.transform.verbose=false"/>
         </java>
     </target>
 
@@ -764,7 +759,7 @@
                 <pathelement path="${main.classes}"/>
                 <path refid="project.class.path"/>
             </classpath>
-            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.jar -Daspectwerkz.definition.file=src/jdk15/samples/examples/proxy/aop.xml -Daspectwerkz.transform.verbose=false"/>
+            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.1.RC1.jar -Daspectwerkz.definition.file=src/jdk15/samples/examples/proxy/aop.xml -Daspectwerkz.transform.verbose=false"/>
         </java>
     </target>
 

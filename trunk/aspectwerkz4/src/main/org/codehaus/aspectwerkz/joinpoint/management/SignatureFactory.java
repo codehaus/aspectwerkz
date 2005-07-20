@@ -19,6 +19,7 @@ import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.StaticInitializerSignatureImpl;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
+import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfoRepository;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 
@@ -41,6 +42,7 @@ public final class SignatureFactory {
      * @return
      */
     public static final MethodSignatureImpl newMethodSignature(final Class declaringClass, final int joinPointHash) {
+        AsmClassInfoRepository.getRepository(declaringClass.getClassLoader()).removeClassInfo(declaringClass.getName().replace('.', '/'));
         Method[] methods = declaringClass.getDeclaredMethods();
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];

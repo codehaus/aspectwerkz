@@ -7,8 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect;
 
-import com.thoughtworks.qdox.model.Type;
-
 /**
  * Methods to convert Class to Java type names. Handles array types and the constructor "return" type.
  *
@@ -58,21 +56,5 @@ public class TypeConverter {
             rv = "void";
         }
         return rv;
-    }
-
-    /**
-     * Converts a QDox type to a Java language declaration equivalent.
-     *
-     * @param type
-     * @return
-     */
-    public static String convertTypeToJava(final Type type) {
-        StringBuffer dim = new StringBuffer();
-        if (type.isArray()) {
-            for (int i = type.getDimensions(); i > 0; --i) {
-                dim.append("[]");
-            }
-        }
-        return type.getValue() + dim;
     }
 }

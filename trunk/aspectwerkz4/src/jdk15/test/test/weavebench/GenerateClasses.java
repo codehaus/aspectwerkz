@@ -99,8 +99,11 @@ public class GenerateClasses implements Constants {
     }
 
     public static void main(String args[]) throws Throwable {
-        int CLASS_COUNT = 100;
-        int METHOD_COUNT = 100;
+
+        Thread.sleep(3000);
+
+        int CLASS_COUNT = 400;
+        int METHOD_COUNT = 200;
         int JP_COUNT = (METHOD_COUNT*2 -1/*last method has no call jp*/ + 1/*init exec*/)*CLASS_COUNT;
         GenerateClasses me = new GenerateClasses(CLASS_COUNT, METHOD_COUNT);
 
@@ -112,17 +115,17 @@ public class GenerateClasses implements Constants {
 
         me.generate();
 
-        ClassLoader custom_1 = new URLClassLoader(
-                new URL[]{(new File(DUMP_DIR)).toURL()},
-                GenerateClasses.class.getClassLoader()
-        );
-        bench("No weaver hooked in", custom_1, CLASS_COUNT, 0);
-
-        ClassLoader custom_2 = new WeavingClassLoader(
-                new URL[]{(new File(DUMP_DIR)).toURL()},
-                GenerateClasses.class.getClassLoader()
-        );
-        bench("Weaver hooked in and match none", custom_2, CLASS_COUNT, 0);
+//        ClassLoader custom_1 = new URLClassLoader(
+//                new URL[]{(new File(DUMP_DIR)).toURL()},
+//                GenerateClasses.class.getClassLoader()
+//        );
+//        bench("No weaver hooked in", custom_1, CLASS_COUNT, 0);
+//
+//        ClassLoader custom_2 = new WeavingClassLoader(
+//                new URL[]{(new File(DUMP_DIR)).toURL()},
+//                GenerateClasses.class.getClassLoader()
+//        );
+//        bench("Weaver hooked in and match none", custom_2, CLASS_COUNT, 0);
 
         ClassLoader custom_3 = new WeavingClassLoader(
                 new URL[]{(new File(DUMP_DIR)).toURL()},
@@ -155,7 +158,7 @@ public class GenerateClasses implements Constants {
             Class gen = classes[i];
             Method m0 = gen.getMethod("method_0", new Class[]{});
             Object res = m0.invoke(gen.newInstance(), new Object[]{});
-            System.out.print(i);
+            //System.out.print(i);
         }
         System.out.println("");
         long execTimeNotWarmedUp = System.currentTimeMillis() - t2;

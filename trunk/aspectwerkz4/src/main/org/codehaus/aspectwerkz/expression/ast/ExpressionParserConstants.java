@@ -127,7 +127,7 @@ public interface ExpressionParserConstants {
     "\"args(\"",
     "\"target(\"",
     "\"this(\"",
-    "\"if(\"",
+    "\"if()\"",
     "\"hasmethod(\"",
     "\"hasfield(\"",
     "<POINTCUT_REFERENCE_WITH_ARGS>",
