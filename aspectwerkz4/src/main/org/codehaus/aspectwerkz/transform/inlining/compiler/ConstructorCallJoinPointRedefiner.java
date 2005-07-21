@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining.compiler;
 
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 
@@ -38,14 +38,14 @@ public class ConstructorCallJoinPointRedefiner extends ConstructorCallJoinPointC
      */
     protected void createInvokeMethod() {
         String invokeDesc = buildInvokeMethodSignature();
-        CodeVisitor cv = m_cw.visitMethod(
+        MethodVisitor cv = m_cw.visitMethod(
                 ACC_PUBLIC + ACC_FINAL + ACC_STATIC,
                 INVOKE_METHOD_NAME,
                 invokeDesc,
+                null,
                 new String[]{
                     THROWABLE_CLASS_NAME
-                },
-                null
+                }
         );
         AsmHelper.loadArgumentTypes(cv, Type.getArgumentTypes(invokeDesc), true);
         cv.visitMethodInsn(INVOKESTATIC, m_redefinedModel.getJoinPointClassName(), INVOKE_METHOD_NAME, invokeDesc);

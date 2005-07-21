@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
 
 /**
@@ -55,7 +55,7 @@ public interface JoinPointCompiler {
      * @param cv
      * @param stackFreeIndex
      */
-    void createArgumentArrayAt(final CodeVisitor cv, final int stackFreeIndex);
+    void createArgumentArrayAt(final MethodVisitor cv, final int stackFreeIndex);
 
     /**
      * @return all the aspect model interacting with this compiler

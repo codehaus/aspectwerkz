@@ -10,16 +10,14 @@ package org.codehaus.aspectwerkz.hook.impl;
 import org.codehaus.aspectwerkz.hook.ClassLoaderPatcher;
 import org.codehaus.aspectwerkz.hook.ClassLoaderPreProcessor;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Attribute;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassAdapter;
-import org.objectweb.asm.CodeAdapter;
+import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.Constants;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.attrs.Attributes;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -68,7 +66,7 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
             ClassWriter cw = new ClassWriter(true);
             ClassLoaderVisitor cv = new ClassLoaderVisitor(cw);
             ClassReader cr = new ClassReader(classLoaderBytecode);
-            cr.accept(cv, Attributes.getDefaultAttributes(), false);
+            cr.accept(cv, false);
             return cw.toByteArray();
         } catch (Exception e) {
             System.err.println("failed to patch ClassLoader:");
@@ -82,8 +80,8 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
             super(cv);
         }
 
-        public CodeVisitor visitMethod(int access, String name, String desc, String[] exceptions, Attribute attrs) {
-            CodeVisitor cv = super.visitMethod(access, name, desc, exceptions, attrs);
+        public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+            MethodVisitor cv = super.visitMethod(access, name, desc, signature, exceptions);
             Type[] args = Type.getArgumentTypes(desc);
             return new PreProcessingVisitor(cv, access, args);
         }
@@ -92,9 +90,9 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
     /**
      * @author Chris Nokleberg
      */
-    private static class PreProcessingVisitor extends RemappingCodeVisitor {
-        public PreProcessingVisitor(CodeVisitor cv, int access, Type[] args) {
-            super(cv, access, args);
+    private static class PreProcessingVisitor extends RemappingMethodVisitor {
+        public PreProcessingVisitor(MethodVisitor mv, int access, Type[] args) {
+            super(mv, access, args);
         }
 
         public void visitMethodInsn(int opcode, String owner, String name, String desc) {
@@ -107,30 +105,30 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
                 // store all args in local variables
                 int[] locals = new int[args.length];
                 for (int i = args.length - 1; i >= 0; i--) {
-                    cv.visitVarInsn(
-                            args[i].getOpcode(Constants.ISTORE),
+                    mv.visitVarInsn(
+                            args[i].getOpcode(Opcodes.ISTORE),
                             locals[i] = nextLocal(args[i].getSize())
                     );
                 }
                 for (int i = 0; i < 5; i++) {
-                    cv.visitVarInsn(args[i].getOpcode(Constants.ILOAD), locals[i]);
+                    mv.visitVarInsn(args[i].getOpcode(Opcodes.ILOAD), locals[i]);
                 }
                 super.visitMethodInsn(
-                        Constants.INVOKESTATIC,
+                        Opcodes.INVOKESTATIC,
                         "org/codehaus/aspectwerkz/hook/impl/ClassPreProcessorHelper",
                         "defineClass0Pre",
                         DESC_HELPER
                 );
-                cv.visitVarInsn(Constants.ASTORE, locals[1]);
-                cv.visitVarInsn(Constants.ALOAD, 0);
-                cv.visitVarInsn(Constants.ALOAD, locals[0]); // name
-                cv.visitVarInsn(Constants.ALOAD, locals[1]); // bytes
-                cv.visitInsn(Constants.ICONST_0); // offset
-                cv.visitVarInsn(Constants.ALOAD, locals[1]);
-                cv.visitInsn(Constants.ARRAYLENGTH); // length
-                cv.visitVarInsn(Constants.ALOAD, locals[4]); // protection domain
+                mv.visitVarInsn(Opcodes.ASTORE, locals[1]);
+                mv.visitVarInsn(Opcodes.ALOAD, 0);
+                mv.visitVarInsn(Opcodes.ALOAD, locals[0]); // name
+                mv.visitVarInsn(Opcodes.ALOAD, locals[1]); // bytes
+                mv.visitInsn(Opcodes.ICONST_0); // offset
+                mv.visitVarInsn(Opcodes.ALOAD, locals[1]);
+                mv.visitInsn(Opcodes.ARRAYLENGTH); // length
+                mv.visitVarInsn(Opcodes.ALOAD, locals[4]); // protection domain
                 for (int i = 5; i < args.length; i++) {
-                    cv.visitVarInsn(args[i].getOpcode(Constants.ILOAD), locals[i]);
+                    mv.visitVarInsn(args[i].getOpcode(Opcodes.ILOAD), locals[i]);
                 }
             } else if (DEFINECLASS2_METHOD_NAME.equals(name) && CLASSLOADER_CLASS_NAME.equals(owner)) {
                 Type[] args = Type.getArgumentTypes(desc);
@@ -140,30 +138,30 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
                 // store all args in local variables
                 int[] locals = new int[args.length];
                 for (int i = args.length - 1; i >= 0; i--) {
-                    cv.visitVarInsn(
-                            args[i].getOpcode(Constants.ISTORE),
+                    mv.visitVarInsn(
+                            args[i].getOpcode(Opcodes.ISTORE),
                             locals[i] = nextLocal(args[i].getSize())
                     );
                 }
                 for (int i = 0; i < 5; i++) {
-                    cv.visitVarInsn(args[i].getOpcode(Constants.ILOAD), locals[i]);
+                    mv.visitVarInsn(args[i].getOpcode(Opcodes.ILOAD), locals[i]);
                 }
                 super.visitMethodInsn(
-                        Constants.INVOKESTATIC,
+                        Opcodes.INVOKESTATIC,
                         "org/codehaus/aspectwerkz/hook/impl/ClassPreProcessorHelper",
                         "defineClass0Pre",
                         DESC_BYTEBUFFER_HELPER
                 );
-                cv.visitVarInsn(Constants.ASTORE, locals[1]);
-                cv.visitVarInsn(Constants.ALOAD, 0);
-                cv.visitVarInsn(Constants.ALOAD, locals[0]); // name
-                cv.visitVarInsn(Constants.ALOAD, locals[1]); // bytes
-                cv.visitInsn(Constants.ICONST_0); // offset
-                cv.visitVarInsn(Constants.ALOAD, locals[1]);
-                cv.visitMethodInsn(Constants.INVOKEVIRTUAL, "Ljava/nio/Buffer;", "remaining", "()I");
-                cv.visitVarInsn(Constants.ALOAD, locals[4]); // protection domain
+                mv.visitVarInsn(Opcodes.ASTORE, locals[1]);
+                mv.visitVarInsn(Opcodes.ALOAD, 0);
+                mv.visitVarInsn(Opcodes.ALOAD, locals[0]); // name
+                mv.visitVarInsn(Opcodes.ALOAD, locals[1]); // bytes
+                mv.visitInsn(Opcodes.ICONST_0); // offset
+                mv.visitVarInsn(Opcodes.ALOAD, locals[1]);
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "Ljava/nio/Buffer;", "remaining", "()I");
+                mv.visitVarInsn(Opcodes.ALOAD, locals[4]); // protection domain
                 for (int i = 5; i < args.length; i++) {
-                    cv.visitVarInsn(args[i].getOpcode(Constants.ILOAD), locals[i]);
+                    mv.visitVarInsn(args[i].getOpcode(Opcodes.ILOAD), locals[i]);
                 }
                 // we should rebuild a new ByteBuffer...
 
@@ -181,7 +179,7 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
         int nextLocal;
 
         State(int access, Type[] args) {
-            nextLocal = ((Constants.ACC_STATIC & access) != 0) ? 0 : 1;
+            nextLocal = ((Opcodes.ACC_STATIC & access) != 0) ? 0 : 1;
             for (int i = 0; i < args.length; i++) {
                 nextLocal += args[i].getSize();
             }
@@ -207,18 +205,18 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
     /**
      * @author Chris Nokleberg
      */
-    private static class RemappingCodeVisitor extends CodeAdapter {
+    private static class RemappingMethodVisitor extends MethodAdapter {
         private State state;
         private IntRef check = new IntRef();
 
 
-        public RemappingCodeVisitor(CodeVisitor v, int access, Type[] args) {
+        public RemappingMethodVisitor(MethodVisitor v, int access, Type[] args) {
             super(v);
             state = new State(access, args);
         }
 
-        public RemappingCodeVisitor(RemappingCodeVisitor wrap) {
-            super(wrap.cv);
+        public RemappingMethodVisitor(RemappingMethodVisitor wrap) {
+            super(wrap.mv);
             this.state = wrap.state;
         }
 
@@ -243,30 +241,30 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
         }
 
         public void visitIincInsn(int var, int increment) {
-            cv.visitIincInsn(remap(var, 1), increment);
+            mv.visitIincInsn(remap(var, 1), increment);
         }
 
-        public void visitLocalVariable(String name, String desc, Label start, Label end, int index) {
-            cv.visitLocalVariable(name, desc, start, end, remap(index, 0));
+        public void visitLocalVariable(String name, String desc, String sig, Label start, Label end, int index) {
+            mv.visitLocalVariable(name, desc, sig, start, end, remap(index, 0));
         }
 
         public void visitVarInsn(int opcode, int var) {
             int size;
             switch (opcode) {
-                case Constants.LLOAD:
-                case Constants.LSTORE:
-                case Constants.DLOAD:
-                case Constants.DSTORE:
+                case Opcodes.LLOAD:
+                case Opcodes.LSTORE:
+                case Opcodes.DLOAD:
+                case Opcodes.DSTORE:
                     size = 2;
                     break;
                 default:
                     size = 1;
             }
-            cv.visitVarInsn(opcode, remap(var, size));
+            mv.visitVarInsn(opcode, remap(var, size));
         }
 
         public void visitMaxs(int maxStack, int maxLocals) {
-            cv.visitMaxs(0, 0);
+            mv.visitMaxs(0, 0);
         }
     }
 

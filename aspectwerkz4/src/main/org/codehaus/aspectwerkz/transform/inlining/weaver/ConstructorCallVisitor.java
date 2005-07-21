@@ -31,11 +31,10 @@ import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
 import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.AbstractJoinPointCompiler;
-import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.CodeAdapter;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodAdapter;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Label;
 
 /**
@@ -97,23 +96,23 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
      * @param access
      * @param name
      * @param desc
+     * @param signature
      * @param exceptions
-     * @param attrs
      * @return
      */
-    public CodeVisitor visitMethod(final int access,
+    public MethodVisitor visitMethod(final int access,
                                    final String name,
                                    final String desc,
-                                   final String[] exceptions,
-                                   final Attribute attrs) {
+                                   final String signature,
+                                   final String[] exceptions) {
 
         if (name.startsWith(WRAPPER_METHOD_PREFIX) ||
             Modifier.isNative(access) ||
             Modifier.isAbstract(access)) {
-            return super.visitMethod(access, name, desc, exceptions, attrs);
+            return super.visitMethod(access, name, desc, signature, exceptions);
         }
 
-        CodeVisitor mv = cv.visitMethod(access, name, desc, exceptions, attrs);
+        MethodVisitor mv = cv.visitMethod(access, name, desc, signature, exceptions);
         return mv == null ? null : new ReplaceNewInstructionCodeAdapter(
                 mv,
                 m_loader,
@@ -136,7 +135,7 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
      *
      * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */
-    public class ReplaceNewInstructionCodeAdapter extends CodeAdapter {
+    public class ReplaceNewInstructionCodeAdapter extends MethodAdapter {
 
         private final ClassLoader m_loader;
         private final ClassInfo m_callerClassInfo;
@@ -178,7 +177,7 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
          * @param callerMethodName
          * @param callerMethodDesc
          */
-        public ReplaceNewInstructionCodeAdapter(final CodeVisitor ca,
+        public ReplaceNewInstructionCodeAdapter(final MethodVisitor ca,
                                                 final ClassLoader loader,
                                                 final ClassInfo callerClassInfo,
                                                 final String callerClassName,
@@ -438,11 +437,11 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
             m_newInvocationsByCallerMemberHash = newInvocations;
         }
 
-        public CodeVisitor visitMethod(final int access,
+        public MethodVisitor visitMethod(final int access,
                                        final String name,
                                        final String desc,
-                                       final String[] exceptions,
-                                       final Attribute attrs) {
+                                       final String signature,
+                                       final String[] exceptions) {
             if (name.startsWith(WRAPPER_METHOD_PREFIX) ||
                 Modifier.isNative(access) ||
                 Modifier.isAbstract(access)) {
@@ -454,7 +453,7 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
             TIntObjectHashMap newInvocations = new TIntObjectHashMap(5);
             m_newInvocationsByCallerMemberHash.put(getMemberHash(name, desc), newInvocations);
             return new LookaheadNewDupInvokeSpecialInstructionCodeAdapter(
-                    super.visitMethod(access, name, desc, exceptions, attrs),
+                    super.visitMethod(access, name, desc, signature, exceptions),
                     newInvocations,
                     m_callerMemberName
             );
@@ -472,7 +471,7 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
         /**
          * Creates a new instance.
          */
-        public LookaheadNewDupInvokeSpecialInstructionCodeAdapter(CodeVisitor cv, TIntObjectHashMap newInvocations,
+        public LookaheadNewDupInvokeSpecialInstructionCodeAdapter(MethodVisitor cv, TIntObjectHashMap newInvocations,
                                                                   final String callerMemberName) {
             super(cv, callerMemberName);
             m_newInvocations = newInvocations;

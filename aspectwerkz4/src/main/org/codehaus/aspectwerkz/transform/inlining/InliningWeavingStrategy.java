@@ -41,7 +41,6 @@ import org.codehaus.aspectwerkz.transform.inlining.weaver.AddWrapperVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.attrs.Attributes;
 
 /**
  * A weaving strategy implementing a weaving scheme based on statical compilation, and no reflection.
@@ -154,7 +153,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                                 cw2, loader, classInfo, context, catchLabels
                         );
                 // we must visit exactly as we will do further on with debug info (that produces extra labels)
-                crLookahead2.accept(lookForCatches, Attributes.getDefaultAttributes(), false);
+                crLookahead2.accept(lookForCatches, null, false);
             }
 
             // gather wrapper methods to support multi-weaving
@@ -168,7 +167,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             ClassVisitor reversedChainPhase1 = writerPhase1;
             reversedChainPhase1 = new AddMixinMethodsVisitor(reversedChainPhase1, classInfo, context, addedMethods);
             reversedChainPhase1 = new AddInterfaceVisitor(reversedChainPhase1, classInfo, context);
-            readerPhase1.accept(reversedChainPhase1, Attributes.getDefaultAttributes(), false);
+            readerPhase1.accept(reversedChainPhase1, null, false);
             final byte[] bytesPhase1 = writerPhase1.toByteArray();
 
             // update the class info
@@ -195,7 +194,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                 reversedChainPhase2 = new FieldSetFieldGetVisitor(reversedChainPhase2, loader, classInfo, context);
             }
             reversedChainPhase2 = new LabelToLineNumberVisitor(reversedChainPhase2, context);
-            readerPhase2.accept(reversedChainPhase2, Attributes.getDefaultAttributes(), false);
+            readerPhase2.accept(reversedChainPhase2, null, false);
             final byte[] bytesPhase2 = writerPhase2.toByteArray();
 
             context.setCurrentBytecode(bytesPhase2);
@@ -208,7 +207,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                 reversedChainPhase3 = new SerialVersionUidVisitor.Add(reversedChainPhase3, context, classInfo);
                 reversedChainPhase3 = new AddWrapperVisitor(reversedChainPhase3, context, addedMethods);
                 reversedChainPhase3 = new JoinPointInitVisitor(reversedChainPhase3, context);
-                readerPhase3.accept(reversedChainPhase3, Attributes.getDefaultAttributes(), false);
+                readerPhase3.accept(reversedChainPhase3, null, false);
                 final byte[] bytesPhase3 = writerPhase3.toByteArray();
 
                 context.setCurrentBytecode(bytesPhase3);

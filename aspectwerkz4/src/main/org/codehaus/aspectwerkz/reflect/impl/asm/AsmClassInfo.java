@@ -23,12 +23,7 @@ import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
 import org.codehaus.aspectwerkz.util.ContextClassLoader;
 import org.codehaus.backport175.reader.bytecode.AnnotationElement;
 import org.codehaus.backport175.reader.bytecode.AnnotationReader;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.attrs.Attributes;
+import org.objectweb.asm.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,8 +49,6 @@ public class AsmClassInfo implements ClassInfo {
     protected final static String[] EMPTY_STRING_ARRAY = new String[0];
 
     protected final static List EMPTY_LIST = new ArrayList();
-
-    private final static Attribute[] NO_ATTRIBUTES = new Attribute[0];
 
     /**
      * The class loader wrapped in a weak ref.
@@ -177,7 +170,7 @@ public class AsmClassInfo implements ClassInfo {
      * @param bytecode
      * @param loader
      */
-    AsmClassInfo(final byte[] bytecode, final ClassLoader loader, boolean lazyAttributes) {
+    AsmClassInfo(final byte[] bytecode, final ClassLoader loader) {
         if (bytecode == null) {
             throw new IllegalArgumentException("bytecode can not be null");
         }
@@ -185,8 +178,8 @@ public class AsmClassInfo implements ClassInfo {
         m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
         try {
             ClassReader cr = new ClassReader(bytecode);
-            ClassInfoClassAdapter visitor = new ClassInfoClassAdapter(lazyAttributes);
-            cr.accept(visitor, lazyAttributes ? NO_ATTRIBUTES : Attributes.getDefaultAttributes(), false);
+            ClassInfoClassAdapter visitor = new ClassInfoClassAdapter();
+            cr.accept(visitor, false);
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -207,8 +200,8 @@ public class AsmClassInfo implements ClassInfo {
         m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
         try {
             ClassReader cr = new ClassReader(resourceStream);
-            ClassInfoClassAdapter visitor = new ClassInfoClassAdapter(true);
-            cr.accept(visitor, NO_ATTRIBUTES, false);
+            ClassInfoClassAdapter visitor = new ClassInfoClassAdapter();
+            cr.accept(visitor, false);
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -254,7 +247,7 @@ public class AsmClassInfo implements ClassInfo {
         final String className = AsmClassInfo.retrieveClassNameFromBytecode(bytecode);
         AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
         repository.removeClassInfo(className);
-        return new AsmClassInfo(bytecode, loader, true);
+        return new AsmClassInfo(bytecode, loader);
     }
 
     /**
@@ -269,7 +262,7 @@ public class AsmClassInfo implements ClassInfo {
         AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
         ClassInfo classInfo = repository.getClassInfo(javaClassName);
         if (classInfo == null) {
-            classInfo = createClassInfoFromStream(javaClassName, loader, true);
+            classInfo = createClassInfoFromStream(javaClassName, loader);
         }
         return classInfo;
     }
@@ -286,7 +279,7 @@ public class AsmClassInfo implements ClassInfo {
         AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
         ClassInfo classInfo = repository.getClassInfo(className);
         if (classInfo == null) {
-            classInfo = new AsmClassInfo(bytecode, loader, true);
+            classInfo = new AsmClassInfo(bytecode, loader);
         }
         return classInfo;
     }
@@ -303,7 +296,7 @@ public class AsmClassInfo implements ClassInfo {
         AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
         ClassInfo classInfo = repository.getClassInfo(className.replace('.', '/'));
         if (classInfo == null) {
-            classInfo = new AsmClassInfo(bytecode, loader, true);
+            classInfo = new AsmClassInfo(bytecode, loader);
         }
         return classInfo;
     }
@@ -321,42 +314,12 @@ public class AsmClassInfo implements ClassInfo {
             // keep a copy of the bytecode, since me way want to "reuse the stream"
             byte[] bytes = cr.b;
             ClassNameRetrievalClassAdapter visitor = new ClassNameRetrievalClassAdapter();
-            cr.accept(visitor, NO_ATTRIBUTES, true);
+            cr.accept(visitor, true);
             final String className = visitor.getClassName();
             AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
             ClassInfo classInfo = repository.getClassInfo(className);
             if (classInfo == null) {
-                classInfo = new AsmClassInfo(bytes, loader, true);
-            }
-            return classInfo;
-        } catch (IOException e) {
-            throw new WrappedRuntimeException(e);
-        }
-    }
-
-    /**
-     * Returns the class info for a specific class.
-     *
-     * @param stream
-     * @param loader
-     * @param lazyAttributes
-     * @return the class info
-     */
-    public static ClassInfo getClassInfo(final InputStream stream, final ClassLoader loader, boolean lazyAttributes) {
-        if (lazyAttributes) {
-            return getClassInfo(stream, loader);
-        }
-        try {
-            ClassReader cr = new ClassReader(stream);
-            // keep a copy of the bytecode, since me way want to "reuse the stream"
-            byte[] bytes = cr.b;
-            ClassNameRetrievalClassAdapter visitor = new ClassNameRetrievalClassAdapter();
-            cr.accept(visitor, NO_ATTRIBUTES, true);
-            String className = visitor.getClassName();
-            AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
-            ClassInfo classInfo = repository.getClassInfo(className);
-            if (classInfo == null) {
-                classInfo = new AsmClassInfo(bytes, loader, lazyAttributes);
+                classInfo = new AsmClassInfo(bytes, loader);
             }
             return classInfo;
         } catch (IOException e) {
@@ -382,7 +345,7 @@ public class AsmClassInfo implements ClassInfo {
     public static String retrieveClassNameFromBytecode(final byte[] bytecode) {
         ClassReader cr = new ClassReader(bytecode);
         ClassNameRetrievalClassAdapter visitor = new ClassNameRetrievalClassAdapter();
-        cr.accept(visitor, NO_ATTRIBUTES, true);
+        cr.accept(visitor, true);
         return visitor.getClassName();
     }
 
@@ -701,11 +664,9 @@ public class AsmClassInfo implements ClassInfo {
      *
      * @param name           java name as in source code
      * @param loader
-     * @param lazyAttributes
      */
     private static ClassInfo createClassInfoFromStream(final String name,
-                                                       final ClassLoader loader,
-                                                       boolean lazyAttributes) {
+                                                       final ClassLoader loader) {
         final String className = name.replace('.', '/');
 
         // to handle primitive type we need to know the array dimension
@@ -772,7 +733,7 @@ public class AsmClassInfo implements ClassInfo {
                 componentInfo = new ClassInfo.NullClassInfo();
             }
             try {
-                componentInfo = AsmClassInfo.getClassInfo(componentClassAsStream, loader, lazyAttributes);
+                componentInfo = AsmClassInfo.getClassInfo(componentClassAsStream, loader);
             } finally {
                 try {
                     componentClassAsStream.close();
@@ -825,9 +786,9 @@ public class AsmClassInfo implements ClassInfo {
         public void visit(final int version,
                           final int access,
                           final String name,
+                          final String desc,
                           final String superName,
-                          final String[] interfaces,
-                          final String sourceFile) {
+                          final String[] interfaces) {
             m_className = name.replace('/', '.');
         }
 
@@ -843,18 +804,12 @@ public class AsmClassInfo implements ClassInfo {
      */
     private class ClassInfoClassAdapter extends AsmNullAdapter.NullClassAdapter {
 
-        public boolean m_lazyAttributes = true;
-
-        public ClassInfoClassAdapter(boolean lazyAttributes) {
-            m_lazyAttributes = lazyAttributes;
-        }
-
         public void visit(final int version,
                           final int access,
                           final String name,
+                          final String desc,
                           final String superName,
-                          final String[] interfaces,
-                          final String sourceFile) {
+                          final String[] interfaces) {
 
             m_name = name.replace('/', '.');
             m_modifiers = access;
@@ -884,38 +839,28 @@ public class AsmClassInfo implements ClassInfo {
             }
         }
 
-        public void visitAttribute(final Attribute attribute) {
-            // attributes
-            if (!m_lazyAttributes) {
-                m_annotationReader = getAnnotationReader();
-            }
-        }
-
-        public void visitField(final int access,
+        public FieldVisitor visitField(final int access,
                                final String name,
                                final String desc,
-                               final Object value,
-                               final Attribute attrs) {
+                               final String signature,
+                               final Object value) {
             final FieldStruct struct = new FieldStruct();
             struct.modifiers = access;
             struct.name = name;
             struct.desc = desc;
             struct.value = value;
             AsmFieldInfo fieldInfo = new AsmFieldInfo(struct, m_name, (ClassLoader) m_loaderRef.get());
-            // attributes
-            if (!m_lazyAttributes) {
-                ;//BP reader is already initialized for the field declaring type
-            }
             int hash = AsmHelper.calculateFieldHash(name, desc);
             m_fields.put(hash, fieldInfo);
             m_sortedFieldHashes.add(hash);
+            return AsmNullAdapter.NullFieldAdapter.NULL_FIELD_ADAPTER;
         }
 
-        public CodeVisitor visitMethod(final int access,
+        public MethodVisitor visitMethod(final int access,
                                        final String name,
                                        final String desc,
-                                       final String[] exceptions,
-                                       final Attribute attrs) {
+                                       final String signature,
+                                       final String[] exceptions) {
             final MethodStruct struct = new MethodStruct();
             struct.modifiers = access;
             struct.name = name;
@@ -938,17 +883,13 @@ public class AsmClassInfo implements ClassInfo {
                     m_sortedMethodHashes.add(hash);
                     methodInfo = (AsmMethodInfo) memberInfo;
                 }
-                // attributes
-                if (!m_lazyAttributes) {
-                    ;//BP reader is already initialized for the field declaring type
-                }
             }
             if (methodInfo != null) {
                 // visit the method to access the parameter names as required to support Aspect with bindings
                 // TODO: should we make this optional - similar to m_lazyAttributes ?
                 Type[] parameterTypes = Type.getArgumentTypes(desc);
                 if (parameterTypes.length > 0) {
-                    CodeVisitor methodParameterNamesVisitor = new MethodParameterNamesCodeAdapter(
+                    MethodVisitor methodParameterNamesVisitor = new MethodParameterNamesCodeAdapter(
                             Modifier.isStatic(access),
                             parameterTypes.length, methodInfo
                     );
@@ -957,7 +898,7 @@ public class AsmClassInfo implements ClassInfo {
                     methodInfo.m_parameterNames = EMPTY_STRING_ARRAY;
                 }
             }
-            return AsmNullAdapter.NullCodeAdapter.NULL_CODE_ADAPTER;
+            return AsmNullAdapter.NullMethodAdapter.NULL_METHOD_ADAPTER;
         }
 
         public void visitEnd() {
@@ -970,7 +911,7 @@ public class AsmClassInfo implements ClassInfo {
      *
      * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */
-    static class MethodParameterNamesCodeAdapter extends AsmNullAdapter.NullCodeAdapter {
+    static class MethodParameterNamesCodeAdapter extends AsmNullAdapter.NullMethodAdapter {
         private final boolean m_isStatic;
         private final int m_parameterCount;
         private AsmMethodInfo m_methodInfo;
@@ -999,11 +940,12 @@ public class AsmClassInfo implements ClassInfo {
          *
          * @param name
          * @param desc
+         * @param sig
          * @param start
          * @param end
          * @param index the index of the argument on the stack
          */
-        public void visitLocalVariable(String name, String desc, Label start, Label end, int index) {
+        public void visitLocalVariable(String name, String desc, String sig, Label start, Label end, int index) {
             if (index < m_signatureParameterRegisterDepth) {
                 // this is not a local variable
                 if (index == 0) {

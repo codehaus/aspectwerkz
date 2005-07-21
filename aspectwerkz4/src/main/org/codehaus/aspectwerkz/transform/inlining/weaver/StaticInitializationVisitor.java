@@ -16,10 +16,9 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
-import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
 import java.util.Set;
@@ -58,18 +57,18 @@ public class StaticInitializationVisitor extends ClassAdapter implements Transfo
 	 * 
 	 * @param access
 	 * @param name
+     * @param signature
 	 * @param superName
 	 * @param interfaces
-	 * @param sourceFile
 	 */
 	public void visit(	final int version,
 						final int access,
 						final String name,
+                        final String signature,
 						final String superName,
-						final String[] interfaces,
-						final String sourceFile) {
+						final String[] interfaces) {
 		m_declaringTypeName = name;
-		super.visit(version, access, name, superName, interfaces, sourceFile);
+		super.visit(version, access, name, signature, superName, interfaces);
 	}
 
 	/**
@@ -78,31 +77,31 @@ public class StaticInitializationVisitor extends ClassAdapter implements Transfo
 	 * @param access
 	 * @param name
 	 * @param desc
+     * @param signature
 	 * @param exceptions
-	 * @param attrs
 	 * @return
 	 */
-	public CodeVisitor visitMethod(	final int access,
-									final String name,
-									final String desc,
-									final String[] exceptions,
-									final Attribute attrs) {
+	public MethodVisitor visitMethod(final int access,
+                                     final String name,
+									 final String desc,
+                                     final String signature,
+									 final String[] exceptions) {
 		if(!CLINIT_METHOD_NAME.equals(name)) {
-			return super.visitMethod(access, name, desc, exceptions, attrs);
+			return super.visitMethod(access, name, desc, signature, exceptions);
 		}
 
 		String prefixedOriginalName = TransformationUtil.getPrefixedOriginalClinitName(m_declaringTypeName);
         if (m_addedMethods.contains(AlreadyAddedMethodAdapter.getMethodKey(prefixedOriginalName, CLINIT_METHOD_SIGNATURE))) {
-            return super.visitMethod(access, name, desc, exceptions, attrs);
+            return super.visitMethod(access, name, desc, signature, exceptions);
         }
 
 		m_ctx.markAsAdvised();
 
 		// create the proxy for the original method
-		createProxyMethod(access, name, desc, exceptions, attrs);
+		createProxyMethod(access, name, desc, signature, exceptions);
 
 		// prefix the original method
-		return cv.visitMethod(access + ACC_PUBLIC, prefixedOriginalName, desc, exceptions, attrs);
+		return cv.visitMethod(access + ACC_PUBLIC, prefixedOriginalName, desc, signature, exceptions);
 	}
 
 	/**
@@ -112,15 +111,15 @@ public class StaticInitializationVisitor extends ClassAdapter implements Transfo
 	 * @param access
 	 * @param name
 	 * @param desc
+     * @param signature
 	 * @param exceptions
-	 * @param attrs
 	 */
-	private void createProxyMethod(	final int access,
-									final String name,
-									final String desc,
-									final String[] exceptions,
-									final Attribute attrs) {
-		CodeVisitor mv = cv.visitMethod(access, name, desc, exceptions, attrs);
+	private void createProxyMethod(final int access,
+								   final String name,
+                                   final String desc,
+                                   final String signature,
+								   final String[] exceptions) {
+		MethodVisitor mv = cv.visitMethod(access, name, desc, signature, exceptions);
 
         //caller instance is null
 		mv.visitInsn(ACONST_NULL);

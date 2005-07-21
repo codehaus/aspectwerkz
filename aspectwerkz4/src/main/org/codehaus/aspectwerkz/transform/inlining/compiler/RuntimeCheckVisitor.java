@@ -38,8 +38,8 @@ import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.cflow.CflowCompiler;
 import org.codehaus.aspectwerkz.aspect.AdviceInfo;
 import org.codehaus.aspectwerkz.aspect.container.AspectFactoryManager;
-import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Constants;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 /**
  * Visit an expression and push on the bytecode stack the boolean expression that corresponds to the residual
@@ -52,12 +52,12 @@ import org.objectweb.asm.Constants;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants {
+public class RuntimeCheckVisitor extends ExpressionVisitor implements Opcodes {
     public static final int NULL_PER_OBJECT_TYPE = -1;
     public static final int PER_THIS_TYPE        = 1;
     public static final int PER_TARGET_TYPE      = 2;
 
-    private CodeVisitor cv;
+    private MethodVisitor cv;
 
     private ExpressionInfo m_expressionInfo;
 
@@ -76,7 +76,7 @@ public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants 
      * @param perObjectType
      * @param aspectQName
      */
-    public RuntimeCheckVisitor(final CodeVisitor cv,
+    public RuntimeCheckVisitor(final MethodVisitor cv,
                                final ExpressionInfo info,
                                final CompilerInput input,
                                final int perObjectType,

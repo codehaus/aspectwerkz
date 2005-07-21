@@ -71,18 +71,18 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
      *
      * @param access
      * @param name
+     * @param signature
      * @param superName
      * @param interfaces
-     * @param sourceFile
      */
     public void visit(final int version,
                       final int access,
                       final String name,
+                      final String signature,
                       final String superName,
-                      final String[] interfaces,
-                      final String sourceFile) {
+                      final String[] interfaces) {
         m_declaringTypeName = name;
-        super.visit(version, access, name, superName, interfaces, sourceFile);
+        super.visit(version, access, name, signature, superName, interfaces);
     }
 
     /**
@@ -91,15 +91,15 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
      * @param access
      * @param name
      * @param desc
+     * @param signature
      * @param exceptions
-     * @param attrs
      * @return
      */
-    public CodeVisitor visitMethod(final int access,
+    public MethodVisitor visitMethod(final int access,
                                    final String name,
                                    final String desc,
-                                   final String[] exceptions,
-                                   final Attribute attrs) {
+                                   final String signature,
+                                   final String[] exceptions) {
 
         if (INIT_METHOD_NAME.equals(name) ||
             CLINIT_METHOD_NAME.equals(name) ||
@@ -108,7 +108,7 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
             name.startsWith(WRAPPER_METHOD_PREFIX) ||
             (AdvisableImpl.ADD_ADVICE_METHOD_NAME.equals(name) && AdvisableImpl.ADD_ADVICE_METHOD_DESC.equals(desc)) ||
             (AdvisableImpl.REMOVE_ADVICE_METHOD_NAME.equals(name) && AdvisableImpl.REMOVE_ADVICE_METHOD_DESC.equals(desc))) {
-            return cv.visitMethod(access, name, desc, exceptions, attrs);
+            return cv.visitMethod(access, name, desc, signature, exceptions);
         }
 
         int hash = AsmHelper.calculateMethodHash(name, desc);
@@ -121,23 +121,23 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
                     + '.' + name + ':' + desc + ']'
             );
             // bail out
-            return cv.visitMethod(access, name, desc, exceptions, attrs);
+            return cv.visitMethod(access, name, desc, signature, exceptions);
         }
 
         ExpressionContext ctx = new ExpressionContext(PointcutType.EXECUTION, methodInfo, methodInfo);
 
         if (methodFilter(m_ctx.getDefinitions(), ctx, methodInfo)) {
-            return cv.visitMethod(access, name, desc, exceptions, attrs);
+            return cv.visitMethod(access, name, desc, signature, exceptions);
         } else {
             String prefixedOriginalName = TransformationUtil.getPrefixedOriginalMethodName(name, m_declaringTypeName);
             if (m_addedMethods.contains(AlreadyAddedMethodAdapter.getMethodKey(prefixedOriginalName, desc))) {
-                return cv.visitMethod(access, name, desc, exceptions, attrs);
+                return cv.visitMethod(access, name, desc, signature, exceptions);
             }
 
             m_ctx.markAsAdvised();
 
             // create the proxy for the original method
-            createProxyMethod(access, name, desc, exceptions, attrs, methodInfo);
+            createProxyMethod(access, name, desc, signature, exceptions, methodInfo);
 
             int modifiers = ACC_SYNTHETIC;
             if (Modifier.isStatic(access)) {
@@ -147,7 +147,7 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
             return cv.visitMethod(
                     modifiers,
                     prefixedOriginalName,
-                    desc, exceptions, attrs
+                    desc, signature, exceptions
             );
         }
     }
@@ -159,16 +159,17 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
      * @param access
      * @param name
      * @param desc
+     * @param signature
      * @param exceptions
-     * @param attrs
+     * @param methodInfo
      */
     private void createProxyMethod(final int access,
                                    final String name,
                                    final String desc,
+                                   final String signature,
                                    final String[] exceptions,
-                                   final Attribute attrs,
                                    final MethodInfo methodInfo) {
-        CodeVisitor mv = cv.visitMethod(access, name, desc, exceptions, attrs);
+        MethodVisitor mv = cv.visitMethod(access, name, desc, signature, exceptions);
 
         // load "this" ie callee if target method is not static
         if (!Modifier.isStatic(access)) {

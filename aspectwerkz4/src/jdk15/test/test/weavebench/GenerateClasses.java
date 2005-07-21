@@ -15,9 +15,9 @@ import org.codehaus.aspectwerkz.definition.DeploymentScope;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Constants;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.ClassWriter;
 
 import java.net.URL;
@@ -30,7 +30,7 @@ import java.lang.reflect.Method;
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class GenerateClasses implements Constants {
+public class GenerateClasses implements Opcodes {
 
     private final static String DUMP_DIR = "_dump2";
 
@@ -54,17 +54,17 @@ public class GenerateClasses implements Constants {
                     AsmHelper.JAVA_VERSION,
                     ACC_PUBLIC + ACC_SUPER + ACC_SYNTHETIC,
                     className,
+                    null,
                     Object.class.getName().replace('.', '/'),
-                    new String[]{IGenerated.class.getName().replace('.', '/')},
-                    null
+                    new String[]{IGenerated.class.getName().replace('.', '/')}
             );
 
-            CodeVisitor mv = cv.visitMethod(
+            MethodVisitor mv = cv.visitMethod(
                     ACC_PUBLIC,
                     "<init>",
                     "()V",
-                    new String[0],
-                    null
+                    null,
+                    new String[0]
             );
             mv.visitVarInsn(ALOAD, 0);
             mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
@@ -78,8 +78,8 @@ public class GenerateClasses implements Constants {
                         ACC_PRIVATE,//TODO change to private to have wrapper, public for no wrappers
                         "method_" + m,
                         "()I",
-                        new String[0],
-                        null
+                        null,
+                        new String[0]
                 );
 
                 // call next method

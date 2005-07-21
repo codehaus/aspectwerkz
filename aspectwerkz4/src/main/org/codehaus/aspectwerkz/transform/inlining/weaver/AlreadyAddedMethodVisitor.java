@@ -11,8 +11,7 @@ import java.util.Set;
 
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 
 /**
  * A read only visitor to gather wrapper methods and proxy methods
@@ -43,21 +42,21 @@ public class AlreadyAddedMethodVisitor extends AsmNullAdapter.NullClassAdapter i
      * @param access
      * @param name
      * @param desc
+     * @param signature
      * @param exceptions
-     * @param attrs
      * @return
      */
-    public CodeVisitor visitMethod(final int access,
+    public MethodVisitor visitMethod(final int access,
                                    final String name,
                                    final String desc,
-                                   final String[] exceptions,
-                                   final Attribute attrs) {
+                                   final String signature,
+                                   final String[] exceptions) {
         if (name.startsWith(WRAPPER_METHOD_PREFIX) ||
             name.startsWith(ORIGINAL_METHOD_PREFIX)) {
             //FIXME do it for ctor exe wrapper
             m_addedMethods.add(getMethodKey(name, desc));
         }
-        return super.visitMethod(access, name, desc, exceptions, attrs);
+        return super.visitMethod(access, name, desc, signature, exceptions);
     }
 
     /**

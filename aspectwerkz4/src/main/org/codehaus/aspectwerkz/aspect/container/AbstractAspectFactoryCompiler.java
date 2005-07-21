@@ -15,8 +15,8 @@ import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Constants;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -42,7 +42,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public abstract class AbstractAspectFactoryCompiler implements Constants, TransformationConstants {
+public abstract class AbstractAspectFactoryCompiler implements Opcodes, TransformationConstants {
 
     private static final boolean DUMP_JIT_FACTORIES = AspectWerkzPreProcessor.DUMP_AFTER;
 
@@ -63,7 +63,7 @@ public abstract class AbstractAspectFactoryCompiler implements Constants, Transf
     private Map m_parametersLazy;
 
     protected ClassWriter m_cw;
-    protected CodeVisitor m_clinit;
+    protected MethodVisitor m_clinit;
 
     public AbstractAspectFactoryCompiler(String uuid,
                                          String aspectClassName,
@@ -121,8 +121,8 @@ public abstract class AbstractAspectFactoryCompiler implements Constants, Transf
                 AsmHelper.JAVA_VERSION,
                 ACC_PUBLIC,
                 m_aspectFactoryClassName,
-                OBJECT_CLASS_NAME,
                 null,
+                OBJECT_CLASS_NAME,
                 null
         );
 

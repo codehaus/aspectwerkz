@@ -22,13 +22,11 @@ import org.codehaus.aspectwerkz.util.ContextClassLoader;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.attrs.Attributes;
 
 /**
  * Compiler for the AspectWerkz proxies.
@@ -44,7 +42,6 @@ import org.objectweb.asm.attrs.Attributes;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class ProxyCompiler implements TransformationConstants {
-    private final static String[] EMPTY_STRING_ARRAY = new String[0];
 
     /**
      * Returns an InputStream that would be the one of the AWproxy for the given proxy class name
@@ -108,7 +105,7 @@ public class ProxyCompiler implements TransformationConstants {
         }
 
         ClassVisitor createProxy = new ProxyCompilerClassVisitor(proxyWriter, proxyClassName.replace('.', '/'));
-        classReader.accept(createProxy, Attributes.getDefaultAttributes(), true);// no need for debug info
+        classReader.accept(createProxy, true);// no need for debug info
         return proxyWriter.toByteArray();
     }
 
@@ -133,16 +130,16 @@ public class ProxyCompiler implements TransformationConstants {
          *
          * @param access
          * @param name
+         * @param signature
          * @param superName
          * @param interfaces
-         * @param sourceFile
          */
         public void visit(final int version,
                           final int access,
                           final String name,
+                          final String signature,
                           final String superName,
-                          final String[] interfaces,
-                          final String sourceFile) {
+                          final String[] interfaces) {
             if (Modifier.isFinal(access)) {
                 throw new RuntimeException("Cannot create a proxy from final class "  + name);
             }
@@ -151,9 +148,9 @@ public class ProxyCompiler implements TransformationConstants {
                     version,
                     ACC_PUBLIC + ACC_SUPER + ACC_SYNTHETIC,
                     m_proxyClassName.replace('.', '/'),
+                    signature,
                     name,
-                    interfaces,
-                    null
+                    interfaces
             );
         }
 
@@ -162,16 +159,16 @@ public class ProxyCompiler implements TransformationConstants {
          *
          * @param access
          * @param name
+         * @param signature
          * @param desc
          * @param exceptions
-         * @param attrs
          * @return
          */
-        public CodeVisitor visitMethod(final int access,
+        public MethodVisitor visitMethod(final int access,
                                        final String name,
                                        final String desc,
-                                       final String[] exceptions,
-                                       final Attribute attrs) {
+                                       final String signature,
+                                       final String[] exceptions) {
             if (Modifier.isFinal(access) || Modifier.isPrivate(access) || Modifier.isNative(access)) {
                 // skip final or private or native methods
                 // TODO we could proxy native methods but that would lead to difference with regular weaving
@@ -181,12 +178,12 @@ public class ProxyCompiler implements TransformationConstants {
                 ;
             } else if (INIT_METHOD_NAME.equals(name)) {
                 // constructors
-                CodeVisitor proxyCode = m_proxyCv.visitMethod(
+                MethodVisitor proxyCode = m_proxyCv.visitMethod(
                         access + ACC_SYNTHETIC,
                         INIT_METHOD_NAME,
                         desc,
-                        exceptions,
-                        attrs
+                        signature,
+                        exceptions
                 );
 
                 proxyCode.visitVarInsn(ALOAD, 0);
@@ -196,12 +193,12 @@ public class ProxyCompiler implements TransformationConstants {
                 proxyCode.visitMaxs(0, 0);
             } else {
                 // method that can be proxied
-                CodeVisitor proxyCode = m_proxyCv.visitMethod(
+                MethodVisitor proxyCode = m_proxyCv.visitMethod(
                         access + ACC_SYNTHETIC,
                         name,
                         desc,
-                        exceptions,
-                        attrs
+                        signature,
+                        exceptions
                 );
 
                 if (Modifier.isStatic(access)) {
@@ -218,98 +215,8 @@ public class ProxyCompiler implements TransformationConstants {
                 }
             }
 
-            return AsmNullAdapter.NullCodeAdapter.NULL_CODE_ADAPTER;
+            return AsmNullAdapter.NullMethodAdapter.NULL_METHOD_ADAPTER;
         }
     }
 
-//    /**
-//     * Creates constructors that delgates to the matching base class constructors.
-//     * Skips all private constructors.
-//     *
-//     * @param writer
-//     * @param clazz
-//     * @param targetClassName
-//     */
-//    private static void createConstructorDelegators(final ClassWriter writer,
-//                                                    final Class clazz,
-//                                                    final String targetClassName) {
-//        CodeVisitor cv;
-//        Constructor[] constructors = clazz.getDeclaredConstructors();
-//        for (int i = 0; i < constructors.length; i++) {
-//            Constructor constructor = constructors[i];
-//            int mods = constructor.getModifiers();
-//            if (!Modifier.isPrivate(mods) && !Modifier.isFinal(mods)) {
-//                Class[] exceptionClasses = constructor.getExceptionTypes();
-//                String[] exceptionTypeNames = new String[constructor.getExceptionTypes().length];
-//                for (int j = 0; j < exceptionTypeNames.length; j++) {
-//                    exceptionTypeNames[j] = exceptionClasses[j].getName().replace('.', '/');
-//                }
-//                final String desc = ReflectHelper.getConstructorSignature(constructor);
-//                cv = writer.visitMethod(
-//                        mods + ACC_SYNTHETIC,
-//                        INIT_METHOD_NAME,
-//                        desc,
-//                        exceptionTypeNames,
-//                        null
-//                );
-//
-//                cv.visitVarInsn(ALOAD, 0);
-//                AsmHelper.loadArgumentTypes(cv, Type.getArgumentTypes(desc), false);
-//
-//                cv.visitMethodInsn(INVOKESPECIAL, targetClassName, INIT_METHOD_NAME, desc);
-//
-//                cv.visitInsn(RETURN);
-//                cv.visitMaxs(0, 0);
-//            }
-//        }
-//    }
-//
-//    /**
-//     * Creates method methods that delgates to the base class method.
-//     * Skips all private and final methods.
-//     *
-//     * @param writer
-//     * @param clazz
-//     * @param targetClassName
-//     */
-//    private static void createMethodDelegators(final ClassWriter writer,
-//                                               final Class clazz,
-//                                               final String targetClassName) {
-//        CodeVisitor cv;
-//        Method[] methods = clazz.getDeclaredMethods();
-//        for (int i = 0; i < methods.length; i++) {
-//            Method method = methods[i];
-//            int mods = method.getModifiers();
-//            if (!Modifier.isPrivate(mods) && !Modifier.isFinal(mods)) {
-//
-//                Class[] exceptionClasses = method.getExceptionTypes();
-//                String[] exceptionTypeNames = new String[method.getExceptionTypes().length];
-//                for (int j = 0; j < exceptionTypeNames.length; j++) {
-//                    exceptionTypeNames[j] = exceptionClasses[j].getName().replace('.', '/');
-//                }
-//                final String methodName = method.getName();
-//                final String desc = Type.getMethodDescriptor(method);
-//
-//                cv = writer.visitMethod(
-//                        mods + ACC_SYNTHETIC,
-//                        methodName,
-//                        desc,
-//                        exceptionTypeNames,
-//                        null
-//                );
-//
-//                if (Modifier.isStatic(mods)) {
-//                    AsmHelper.loadArgumentTypes(cv, Type.getArgumentTypes(desc), true);
-//                    cv.visitMethodInsn(INVOKESTATIC, targetClassName, methodName, desc);
-//                } else {
-//                    cv.visitVarInsn(ALOAD, 0);
-//                    AsmHelper.loadArgumentTypes(cv, Type.getArgumentTypes(desc), false);
-//                    cv.visitMethodInsn(INVOKESPECIAL, targetClassName, methodName, desc);
-//                }
-//
-//                AsmHelper.addReturnStatement(cv, Type.getReturnType(method));
-//                cv.visitMaxs(0, 0);
-//            }
-//        }
-//    }
 }

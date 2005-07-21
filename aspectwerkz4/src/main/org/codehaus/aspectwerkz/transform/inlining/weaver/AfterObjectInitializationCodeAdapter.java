@@ -7,8 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining.weaver;
 
-import org.objectweb.asm.CodeAdapter;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodAdapter;
+import org.objectweb.asm.MethodVisitor;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
 
@@ -20,14 +20,14 @@ import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class AfterObjectInitializationCodeAdapter extends CodeAdapter implements TransformationConstants {
+public class AfterObjectInitializationCodeAdapter extends MethodAdapter implements TransformationConstants {
 
     private String m_callerMemberName;
     private int m_newCount = 0;
     private int m_invokeSpecialCount = 0;
     protected boolean m_isObjectInitialized = false;
 
-    public AfterObjectInitializationCodeAdapter(CodeVisitor cv, String callerMemberName) {
+    public AfterObjectInitializationCodeAdapter(MethodVisitor cv, String callerMemberName) {
         super(cv);
         m_callerMemberName = callerMemberName;
         // object initialization matters within constructors only

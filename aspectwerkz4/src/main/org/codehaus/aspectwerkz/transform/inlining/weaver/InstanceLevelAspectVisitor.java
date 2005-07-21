@@ -57,26 +57,26 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
      *
      * @param access
      * @param name
+     * @param signature
      * @param superName
      * @param interfaces
-     * @param sourceFile
      */
     public void visit(final int version,
                       final int access,
                       final String name,
+                      final String signature,
                       final String superName,
-                      final String[] interfaces,
-                      final String sourceFile) {
+                      final String[] interfaces) {
 
         if (classFilter(m_classInfo, m_ctx.getDefinitions())) {
-            super.visit(version, access, name, superName, interfaces, sourceFile);
+            super.visit(version, access, name, signature, superName, interfaces);
             return;
         }
 
         for (int i = 0; i < interfaces.length; i++) {
             String anInterface = interfaces[i];
             if (anInterface.equals(HAS_INSTANCE_LEVEL_ASPECT_INTERFACE_NAME)) {
-                super.visit(version, access, name, superName, interfaces, sourceFile);
+                super.visit(version, access, name, signature, superName, interfaces);
                 return;
             }
         }
@@ -87,7 +87,7 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
         newInterfaceArray[interfaces.length] = HAS_INSTANCE_LEVEL_ASPECT_INTERFACE_NAME;
 
         // add the interface
-        super.visit(version, access, name, superName, newInterfaceArray, sourceFile);
+        super.visit(version, access, name, signature, superName, newInterfaceArray);
 
         // add the field with the aspect instance map
         addAspectMapField();
@@ -107,26 +107,26 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
      * @param access
      * @param name
      * @param desc
+     * @param signature
      * @param exceptions
-     * @param attrs
      * @return
      */
-    public CodeVisitor visitMethod(final int access,
+    public MethodVisitor visitMethod(final int access,
                                    final String name,
                                    final String desc,
-                                   final String[] exceptions,
-                                   final Attribute attrs) {
+                                   final String signature,
+                                   final String[] exceptions) {
         if (m_isAdvised) {
             if (name.equals(INIT_METHOD_NAME)) {
-                CodeVisitor mv = new AppendToInitMethodCodeAdapter(
-                        cv.visitMethod(access, name, desc, exceptions, attrs),
+                MethodVisitor mv = new AppendToInitMethodCodeAdapter(
+                        cv.visitMethod(access, name, desc, signature, exceptions),
                         name
                 );
                 mv.visitMaxs(0, 0);
                 return mv;
             }
         }
-        return cv.visitMethod(access, name, desc, exceptions, attrs);
+        return cv.visitMethod(access, name, desc, signature, exceptions);
     }
 
     /**
@@ -147,7 +147,7 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
      * @param name the class name of the target class
      */
     private void addGetAspectMethod(final String name) {
-        CodeVisitor cv = super.visitMethod(
+        MethodVisitor cv = super.visitMethod(
                 ACC_PUBLIC + ACC_SYNTHETIC,
                 INSTANCE_LEVEL_GETASPECT_METHOD_NAME,
                 INSTANCE_LEVEL_GETASPECT_METHOD_SIGNATURE,
@@ -239,7 +239,7 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
     }
 
     private void addHasAspectMethod(String mapFieldName) {
-        CodeVisitor cv = super.visitMethod(ACC_PUBLIC + ACC_SYNTHETIC,
+        MethodVisitor cv = super.visitMethod(ACC_PUBLIC + ACC_SYNTHETIC,
                                            INSTANCE_LEVEL_HASASPECT_METHOD_NAME,
                                            INSTANCE_LEVEL_HASASPECT_METHOD_SIGNATURE,
                                            null, 
@@ -276,7 +276,7 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
     }
 
     private void addBindAspectMethod(final String name) {
-        CodeVisitor cv = super.visitMethod(
+        MethodVisitor cv = super.visitMethod(
                 ACC_PUBLIC + ACC_SYNTHETIC,
                 INSTANCE_LEVEL_BINDASPECT_METHOD_NAME,
                 INSTANCE_LEVEL_BINDASPECT_METHOD_SIGNATURE,
@@ -399,7 +399,7 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
 
         private boolean m_done = false;
 
-        public AppendToInitMethodCodeAdapter(final CodeVisitor ca, String callerMemberName) {
+        public AppendToInitMethodCodeAdapter(final MethodVisitor ca, String callerMemberName) {
             super(ca, callerMemberName);
         }
 
@@ -420,16 +420,16 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                 m_done = true;
 
                 // initialize aspect map field
-                cv.visitVarInsn(ALOAD, 0);
-                cv.visitTypeInsn(NEW, HASH_MAP_CLASS_NAME);
-                cv.visitInsn(DUP);
-                cv.visitMethodInsn(
+                mv.visitVarInsn(ALOAD, 0);
+                mv.visitTypeInsn(NEW, HASH_MAP_CLASS_NAME);
+                mv.visitInsn(DUP);
+                mv.visitMethodInsn(
                         INVOKESPECIAL,
                         HASH_MAP_CLASS_NAME,
                         INIT_METHOD_NAME,
                         NO_PARAM_RETURN_VOID_SIGNATURE
                 );
-                cv.visitFieldInsn(
+                mv.visitFieldInsn(
                         PUTFIELD,
                         m_classInfo.getName().replace('.', '/'),
                         INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,

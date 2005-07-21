@@ -16,7 +16,7 @@ import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.AbstractJoinPointCompiler;
 import org.codehaus.aspectwerkz.transform.JoinPointCompiler;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.ClassVisitor;
 
@@ -85,7 +85,7 @@ public interface AspectModel {
      *
      * @param cv
      */
-    void createInvocationOfAroundClosureSuperClass(CodeVisitor cv);
+    void createInvocationOfAroundClosureSuperClass(MethodVisitor cv);
 
     /**
      * Creates aspect reference field (field in the jit jointpoint class f.e.) for an aspect instance.
@@ -96,7 +96,7 @@ public interface AspectModel {
      * @param aspectInfo
      * @param joinPointClassName
      */
-    void createAndStoreStaticAspectInstantiation(ClassVisitor cw, CodeVisitor cv, AspectInfo aspectInfo, String joinPointClassName);
+    void createAndStoreStaticAspectInstantiation(ClassVisitor cw, MethodVisitor cv, AspectInfo aspectInfo, String joinPointClassName);
 
     /**
      * Initializes instance level aspects, retrieves them from the target instance through the
@@ -108,7 +108,7 @@ public interface AspectModel {
      * @param input
      * @param aspectInfo
      */
-    void createAndStoreRuntimeAspectInstantiation(final CodeVisitor cv,
+    void createAndStoreRuntimeAspectInstantiation(final MethodVisitor cv,
                                                   final CompilerInput input,
                                                   final AspectInfo aspectInfo);
 
@@ -119,7 +119,7 @@ public interface AspectModel {
      * @param cv
      * @param aspectInfo
      */
-    void loadAspect(final CodeVisitor cv,
+    void loadAspect(final MethodVisitor cv,
                     final CompilerInput input,
                     final AspectInfo aspectInfo);
 
@@ -129,7 +129,7 @@ public interface AspectModel {
      * @param cv
      * @param adviceMethodInfo
      */
-    void createAroundAdviceArgumentHandling(CodeVisitor cv,
+    void createAroundAdviceArgumentHandling(MethodVisitor cv,
                                             CompilerInput input,
                                             Type[] joinPointArgumentTypes,
                                             AdviceMethodInfo adviceMethodInfo);
@@ -144,7 +144,7 @@ public interface AspectModel {
      * @param specialArgIndex        index on the stack of the throwned exception / returned value (makes sense for after advice,
      *                               else set to INDEX_NOTAVAILABLE)
      */
-    public void createBeforeOrAfterAdviceArgumentHandling(CodeVisitor cv,
+    public void createBeforeOrAfterAdviceArgumentHandling(MethodVisitor cv,
                                                           CompilerInput input,
                                                           Type[] joinPointArgumentTypes,
                                                           AdviceMethodInfo adviceMethodInfo,

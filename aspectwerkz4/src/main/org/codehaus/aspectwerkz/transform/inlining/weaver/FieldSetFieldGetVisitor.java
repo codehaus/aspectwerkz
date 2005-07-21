@@ -9,9 +9,8 @@ package org.codehaus.aspectwerkz.transform.inlining.weaver;
 
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.CodeAdapter;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.Label;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
@@ -72,21 +71,21 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
      * @param access
      * @param name
      * @param desc
+     * @param signature
      * @param exceptions
-     * @param attrs
      * @return
      */
-    public CodeVisitor visitMethod(final int access,
+    public MethodVisitor visitMethod(final int access,
                                    final String name,
                                    final String desc,
-                                   final String[] exceptions,
-                                   final Attribute attrs) {
+                                   final String signature,
+                                   final String[] exceptions) {
 
         if (name.startsWith(WRAPPER_METHOD_PREFIX)) {
-            return super.visitMethod(access, name, desc, exceptions, attrs);
+            return super.visitMethod(access, name, desc, signature,exceptions);
         }
 
-        CodeVisitor mv = cv.visitMethod(access, name, desc, exceptions, attrs);
+        MethodVisitor mv = cv.visitMethod(access, name, desc, signature, exceptions);
         return mv == null ? null : new ReplacePutFieldAndGetFieldInstructionCodeAdapter(
                 mv,
                 m_loader,
@@ -122,7 +121,7 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
          * @param callerMethodName
          * @param callerMethodDesc
          */
-        public ReplacePutFieldAndGetFieldInstructionCodeAdapter(final CodeVisitor ca,
+        public ReplacePutFieldAndGetFieldInstructionCodeAdapter(final MethodVisitor ca,
                                                                 final ClassLoader loader,
                                                                 final ClassInfo callerClassInfo,
                                                                 final String callerClassName,

@@ -7,9 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.cflow;
 
-import org.objectweb.asm.Constants;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Label;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
@@ -20,12 +20,11 @@ import org.codehaus.aspectwerkz.transform.inlining.compiler.AbstractJoinPointCom
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class CflowCompiler implements Constants, TransformationConstants {
+public class CflowCompiler implements Opcodes, TransformationConstants {
 
     public final static String JIT_CFLOW_CLASS = "org/codehaus/aspectwerkz/cflow/Cflow_";
     private final static String ABSTRACT_CFLOW_CLASS = "org/codehaus/aspectwerkz/cflow/AbstractCflowSystemAspect";
     private final static String INSTANCE_CFLOW_FIELD_NAME = "INSTANCE";
-    private final static String[] EMPTY_STRING_ARRAY = new String[0];
     public static final String IN_CFLOW_METOD_NAME = "inCflow";
     public static final String IN_CFLOW_METOD_SIGNATURE = "()Z";
     public static final String CFLOW_ASPECTOF_METHOD_NAME = "aspectOf";
@@ -73,9 +72,9 @@ public class CflowCompiler implements Constants, TransformationConstants {
                 AsmHelper.JAVA_VERSION,
                 ACC_PUBLIC + ACC_SUPER + ACC_SYNTHETIC,
                 m_className,
+                null,
                 ABSTRACT_CFLOW_CLASS,
-                EMPTY_STRING_ARRAY,
-                null
+                EMPTY_STRING_ARRAY
         );
 
         // static INSTANCE field
@@ -88,12 +87,12 @@ public class CflowCompiler implements Constants, TransformationConstants {
         );
 
         // private ctor
-        CodeVisitor ctor = m_cw.visitMethod(
+        MethodVisitor ctor = m_cw.visitMethod(
                 ACC_PRIVATE,
                 INIT_METHOD_NAME,
                 NO_PARAM_RETURN_VOID_SIGNATURE,
-                EMPTY_STRING_ARRAY,
-                null
+                null,
+                EMPTY_STRING_ARRAY
         );
         // invoke the constructor of abstract
         ctor.visitVarInsn(ALOAD, 0);
@@ -102,12 +101,12 @@ public class CflowCompiler implements Constants, TransformationConstants {
         ctor.visitMaxs(0, 0);
 
         // static isInCflow() delegators
-        CodeVisitor isInCflow = m_cw.visitMethod(
+        MethodVisitor isInCflow = m_cw.visitMethod(
                 ACC_PUBLIC + ACC_STATIC,
                 IS_IN_CFLOW_METOD_NAME,
                 IS_IN_CFLOW_METOD_SIGNATURE,
-                EMPTY_STRING_ARRAY,
-                null
+                null,
+                EMPTY_STRING_ARRAY
         );
         isInCflow.visitFieldInsn(GETSTATIC, m_className, INSTANCE_CFLOW_FIELD_NAME, m_classSignature);
         Label isNull = new Label();
@@ -121,12 +120,12 @@ public class CflowCompiler implements Constants, TransformationConstants {
         isInCflow.visitMaxs(0, 0);
 
         // static aspectOf()
-        CodeVisitor aspectOf = m_cw.visitMethod(
+        MethodVisitor aspectOf = m_cw.visitMethod(
                 ACC_PUBLIC + ACC_STATIC,
                 CFLOW_ASPECTOF_METHOD_NAME,
                 "()"+m_classSignature,
-                EMPTY_STRING_ARRAY,
-                null
+                null,
+                EMPTY_STRING_ARRAY
         );
         aspectOf.visitFieldInsn(GETSTATIC, m_className, INSTANCE_CFLOW_FIELD_NAME, m_classSignature);
         Label isNotNull = new Label();

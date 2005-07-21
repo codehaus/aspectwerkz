@@ -19,18 +19,11 @@ import is.Async;
 
 public class AsyncAspect {
 
-//    @Before("staticinitialization(@is.Service)")
-//    public void before(JoinPoint jp) {
-//        System.out.println(jp.toString());
-//        System.out.println(jp.getSignature().toString());
-//    }
-
     private Executor m_threadPool = Executors.newCachedThreadPool();
 
-    @Around("execution(@is.Async) && within(@is.Service)")
+    @Around("execution(void examples.async.Math.add(..))")
+    //@Around("execution(@is.Async) && within(@is.Service)")
     public Object async(final JoinPoint jp) throws Throwable {
-        // throwing a checked exception does not cause any problem
-        //if (true) throw new NoSuchMethodException("no way");
         m_threadPool.execute(
                 new Runnable() {
                     public void run() {
@@ -53,6 +46,15 @@ public class AsyncAspect {
         );
         return null;
     }
+
+
+
+
+//    @Before("staticinitialization(@is.Service)")
+//    public void before(JoinPoint jp) {
+//        System.out.println(jp.toString());
+//        System.out.println(jp.getSignature().toString());
+//    }
 
 
 }

@@ -7,11 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining.weaver;
 
-import org.objectweb.asm.ClassAdapter;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.CodeAdapter;
+import org.objectweb.asm.*;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
@@ -57,34 +53,33 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
      * scheme. Patch the 'clinit' method if already present.
      *
      * TODO: multi-weaving will lead to several invocation of AW initJoinPoints and several assigment of __AW_Clazz in the patched clinit which slows down a bit the load time
-     * @see org.objectweb.asm.ClassVisitor#visitMethod(int, java.lang.String, java.lang.String, java.lang.String[],
-            *      org.objectweb.asm.Attribute)
+     * @see org.objectweb.asm.ClassVisitor#visitMethod(int, String, String, String, String[])
      */
-    public CodeVisitor visitMethod(final int access,
+    public MethodVisitor visitMethod(final int access,
                                    final String name,
                                    final String desc,
-                                   final String[] exceptions,
-                                   final Attribute attrs) {
+                                   final String signature,
+                                   final String[] exceptions) {
 
         if (CLINIT_METHOD_NAME.equals(name)) {
             m_hasClinitMethod = true;
             // at the beginning of the existing <clinit> method
             //      ___AWClazz = Class.forName("TargetClassName");
             //      ___AW_$_AW_$initJoinPoints();
-            CodeVisitor ca = new InsertBeforeClinitCodeAdapter(cv.visitMethod(access, name, desc, exceptions, attrs));
+            MethodVisitor ca = new InsertBeforeClinitCodeAdapter(cv.visitMethod(access, name, desc, signature, exceptions));
             ca.visitMaxs(0, 0);
             return ca;
 
         } else if (INIT_JOIN_POINTS_METHOD_NAME.equals(name)) {
             m_hasInitJoinPointsMethod = true;
             // add the gathered JIT dependencies for multi-weaving support
-            CodeVisitor ca = new InsertBeforeInitJoinPointsCodeAdapter(
-                    cv.visitMethod(access, name, desc, exceptions, attrs)
+            MethodVisitor ca = new InsertBeforeInitJoinPointsCodeAdapter(
+                    cv.visitMethod(access, name, desc, signature, exceptions)
             );
             ca.visitMaxs(0, 0);
             return ca;
         } else {
-            return super.visitMethod(access, name, desc, exceptions, attrs);
+            return super.visitMethod(access, name, desc, signature, exceptions);
         }
     }
 
@@ -94,16 +89,16 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
      * @param access
      * @param name
      * @param desc
+     * @param signature
      * @param value
-     * @param attrs
      */
-    public void visitField(int access, String name, String desc, Object value, Attribute attrs) {
+    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         if (TARGET_CLASS_FIELD_NAME.equals(name)) {
             m_hasClassField = true;
         } else if (EMITTED_JOINPOINTS_FIELD_NAME.equals(name)) {
             m_hasEmittedJoinPointsField = true;
         }
-        super.visitField(access, name, desc, value, attrs);
+        return super.visitField(access, name, desc, signature, value);
     }
 
     /**
@@ -141,7 +136,7 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
         }
 
         if (!m_hasClinitMethod) {
-            CodeVisitor ca = new InsertBeforeClinitCodeAdapter(
+            MethodVisitor ca = new InsertBeforeClinitCodeAdapter(
                     cv.visitMethod(
                             ACC_STATIC,
                             CLINIT_METHOD_NAME,
@@ -155,7 +150,7 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
         }
 
         if (!m_hasInitJoinPointsMethod) {
-            CodeVisitor mv = new InsertBeforeInitJoinPointsCodeAdapter(
+            MethodVisitor mv = new InsertBeforeInitJoinPointsCodeAdapter(
                     cv.visitMethod(
                             ACC_PRIVATE + ACC_FINAL + ACC_STATIC + ACC_SYNTHETIC,
                             INIT_JOIN_POINTS_METHOD_NAME,
@@ -176,24 +171,24 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
      *
      * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
      */
-    public class InsertBeforeClinitCodeAdapter extends CodeAdapter {
+    public class InsertBeforeClinitCodeAdapter extends MethodAdapter {
 
-        public InsertBeforeClinitCodeAdapter(CodeVisitor ca) {
+        public InsertBeforeClinitCodeAdapter(MethodVisitor ca) {
             super(ca);
             if (!m_hasClassField) {
-                cv.visitLdcInsn(m_ctx.getClassName().replace('/', '.'));
-                cv.visitMethodInsn(INVOKESTATIC, CLASS_CLASS, FOR_NAME_METHOD_NAME, FOR_NAME_METHOD_SIGNATURE);
-                cv.visitFieldInsn(PUTSTATIC, m_ctx.getClassName(), TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+                mv.visitLdcInsn(m_ctx.getClassName().replace('/', '.'));
+                mv.visitMethodInsn(INVOKESTATIC, CLASS_CLASS, FOR_NAME_METHOD_NAME, FOR_NAME_METHOD_SIGNATURE);
+                mv.visitFieldInsn(PUTSTATIC, m_ctx.getClassName(), TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
             }
             if (!m_hasEmittedJoinPointsField && m_ctx.isMadeAdvisable()) {
                 // aw$emittedJoinPoints = new TIntObjectHashMap()
-                cv.visitTypeInsn(NEW, "gnu/trove/TIntObjectHashMap");
-                cv.visitInsn(DUP);
-                cv.visitMethodInsn(INVOKESPECIAL, "gnu/trove/TIntObjectHashMap", "<init>", "()V");
-                cv.visitFieldInsn(PUTSTATIC, m_ctx.getClassName(), EMITTED_JOINPOINTS_FIELD_NAME, "Lgnu/trove/TIntObjectHashMap;");
+                mv.visitTypeInsn(NEW, "gnu/trove/TIntObjectHashMap");
+                mv.visitInsn(DUP);
+                mv.visitMethodInsn(INVOKESPECIAL, "gnu/trove/TIntObjectHashMap", "<init>", "()V");
+                mv.visitFieldInsn(PUTSTATIC, m_ctx.getClassName(), EMITTED_JOINPOINTS_FIELD_NAME, "Lgnu/trove/TIntObjectHashMap;");
             }
             if (!m_hasClassField) {
-                cv.visitMethodInsn(
+                mv.visitMethodInsn(
                         INVOKESTATIC,
                         m_ctx.getClassName(),
                         INIT_JOIN_POINTS_METHOD_NAME,
@@ -209,9 +204,9 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
      * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
-    public class InsertBeforeInitJoinPointsCodeAdapter extends CodeAdapter {
+    public class InsertBeforeInitJoinPointsCodeAdapter extends MethodAdapter {
 
-        public InsertBeforeInitJoinPointsCodeAdapter(CodeVisitor ca) {
+        public InsertBeforeInitJoinPointsCodeAdapter(MethodVisitor ca) {
             super(ca);
 
             // loop over emitted jp and insert call to "JoinPointManager.loadJoinPoint(...)"
@@ -219,21 +214,21 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
             for (Iterator iterator = m_ctx.getEmittedJoinPoints().iterator(); iterator.hasNext();) {
 
                 EmittedJoinPoint jp = (EmittedJoinPoint) iterator.next();
-                cv.visitLdcInsn(new Integer(jp.getJoinPointType()));
+                mv.visitLdcInsn(new Integer(jp.getJoinPointType()));
 
-                cv.visitFieldInsn(GETSTATIC, m_ctx.getClassName(), TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
-                cv.visitLdcInsn(jp.getCallerMethodName());
-                cv.visitLdcInsn(jp.getCallerMethodDesc());
-                cv.visitLdcInsn(new Integer(jp.getCallerMethodModifiers()));
+                mv.visitFieldInsn(GETSTATIC, m_ctx.getClassName(), TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+                mv.visitLdcInsn(jp.getCallerMethodName());
+                mv.visitLdcInsn(jp.getCallerMethodDesc());
+                mv.visitLdcInsn(new Integer(jp.getCallerMethodModifiers()));
 
-                cv.visitLdcInsn(jp.getCalleeClassName());
-                cv.visitLdcInsn(jp.getCalleeMemberName());
-                cv.visitLdcInsn(jp.getCalleeMemberDesc());
-                cv.visitLdcInsn(new Integer(jp.getCalleeMemberModifiers()));
+                mv.visitLdcInsn(jp.getCalleeClassName());
+                mv.visitLdcInsn(jp.getCalleeMemberName());
+                mv.visitLdcInsn(jp.getCalleeMemberDesc());
+                mv.visitLdcInsn(new Integer(jp.getCalleeMemberModifiers()));
 
-                cv.visitLdcInsn(new Integer(jp.getJoinPointHash()));
-                cv.visitLdcInsn(jp.getJoinPointClassName());
-                cv.visitMethodInsn(
+                mv.visitLdcInsn(new Integer(jp.getJoinPointHash()));
+                mv.visitLdcInsn(jp.getJoinPointClassName());
+                mv.visitMethodInsn(
                         INVOKESTATIC,
                         JOIN_POINT_MANAGER_CLASS_NAME,
                         LOAD_JOIN_POINT_METHOD_NAME,
@@ -242,33 +237,33 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
 
                 if (m_ctx.isMadeAdvisable()) {
                     // trove map
-                    cv.visitFieldInsn(GETSTATIC, m_ctx.getClassName(), EMITTED_JOINPOINTS_FIELD_NAME, "Lgnu/trove/TIntObjectHashMap;");
+                    mv.visitFieldInsn(GETSTATIC, m_ctx.getClassName(), EMITTED_JOINPOINTS_FIELD_NAME, "Lgnu/trove/TIntObjectHashMap;");
                     // trove map key
-                    cv.visitLdcInsn(new Integer(jp.getJoinPointClassName().hashCode()));
+                    mv.visitLdcInsn(new Integer(jp.getJoinPointClassName().hashCode()));
 
 
-                    cv.visitTypeInsn(NEW, "org/codehaus/aspectwerkz/transform/inlining/EmittedJoinPoint");
-                    cv.visitInsn(DUP);
+                    mv.visitTypeInsn(NEW, "org/codehaus/aspectwerkz/transform/inlining/EmittedJoinPoint");
+                    mv.visitInsn(DUP);
 
-                    cv.visitLdcInsn(new Integer(jp.getJoinPointType()));
+                    mv.visitLdcInsn(new Integer(jp.getJoinPointType()));
 
-                    cv.visitLdcInsn(m_ctx.getClassName());
-                    cv.visitLdcInsn(jp.getCallerMethodName());
-                    cv.visitLdcInsn(jp.getCallerMethodDesc());
-                    cv.visitLdcInsn(new Integer(jp.getCallerMethodModifiers()));
+                    mv.visitLdcInsn(m_ctx.getClassName());
+                    mv.visitLdcInsn(jp.getCallerMethodName());
+                    mv.visitLdcInsn(jp.getCallerMethodDesc());
+                    mv.visitLdcInsn(new Integer(jp.getCallerMethodModifiers()));
 
-                    cv.visitLdcInsn(jp.getCalleeClassName());
-                    cv.visitLdcInsn(jp.getCalleeMemberName());
-                    cv.visitLdcInsn(jp.getCalleeMemberDesc());
-                    cv.visitLdcInsn(new Integer(jp.getCalleeMemberModifiers()));
+                    mv.visitLdcInsn(jp.getCalleeClassName());
+                    mv.visitLdcInsn(jp.getCalleeMemberName());
+                    mv.visitLdcInsn(jp.getCalleeMemberDesc());
+                    mv.visitLdcInsn(new Integer(jp.getCalleeMemberModifiers()));
 
-                    cv.visitLdcInsn(new Integer(jp.getJoinPointHash()));
-                    cv.visitLdcInsn(jp.getJoinPointClassName());
+                    mv.visitLdcInsn(new Integer(jp.getJoinPointHash()));
+                    mv.visitLdcInsn(jp.getJoinPointClassName());
 
-                    cv.visitMethodInsn(INVOKESPECIAL, "org/codehaus/aspectwerkz/transform/inlining/EmittedJoinPoint", "<init>",
+                    mv.visitMethodInsn(INVOKESPECIAL, "org/codehaus/aspectwerkz/transform/inlining/EmittedJoinPoint", "<init>",
                             "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;IILjava/lang/String;)V"
                             );
-                    cv.visitMethodInsn(
+                    mv.visitMethodInsn(
                             INVOKEVIRTUAL,
                             "gnu/trove/TIntObjectHashMap",
                             "put",

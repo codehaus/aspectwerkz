@@ -11,15 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.codehaus.aspectwerkz.joinpoint.impl.StaticInitializerSignatureImpl;
-import org.objectweb.asm.Constants;
+import org.objectweb.asm.Opcodes;
 
 /**
  * Interface with common constants used in the transformation process.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public interface TransformationConstants extends Constants {
+public interface TransformationConstants extends Opcodes {
     public static final List EMTPTY_ARRAY_LIST = new ArrayList();
+    public static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     // prefixes
     public static final String DELIMITER = "$_AW_$";

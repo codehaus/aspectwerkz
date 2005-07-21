@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining.compiler;
 
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
 /**
@@ -56,7 +56,7 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      *
      * @param cv
      */
-    protected void createSignature(final CodeVisitor cv) {
+    protected void createSignature(final MethodVisitor cv) {
         cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME_IN_JP, CLASS_CLASS_SIGNATURE);
 
         cv.visitMethodInsn(
@@ -79,7 +79,7 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      * @param cv
      * @param input
      */
-    protected void createInlinedJoinPointInvocation(final CodeVisitor cv,
+    protected void createInlinedJoinPointInvocation(final MethodVisitor cv,
                                                     final CompilerInput input) {
         // load the exception
         cv.visitVarInsn(ALOAD, 0);//TODO if changed perhaps load CALLEE instead that host the exception ?
@@ -91,7 +91,7 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      *
      * @param cv
      */
-    protected void createJoinPointInvocation(final CodeVisitor cv) {
+    protected void createJoinPointInvocation(final MethodVisitor cv) {
         cv.visitInsn(ACONST_NULL);
     }
 
@@ -117,7 +117,7 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      * Creates the getRtti method
      */
     protected void createGetRttiMethod() {
-        CodeVisitor cv = m_cw.visitMethod(ACC_PUBLIC, GET_RTTI_METHOD_NAME, GET_RTTI_METHOD_SIGNATURE, null, null);
+        MethodVisitor cv = m_cw.visitMethod(ACC_PUBLIC, GET_RTTI_METHOD_NAME, GET_RTTI_METHOD_SIGNATURE, null, null);
 
         // new CtorRttiImpl( .. )
         cv.visitTypeInsn(NEW, HANDLER_RTTI_IMPL_CLASS_NAME);
@@ -141,7 +141,7 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      * Creates the getSignature method.
      */
     protected void createGetSignatureMethod() {
-        CodeVisitor cv = m_cw.visitMethod(
+        MethodVisitor cv = m_cw.visitMethod(
                 ACC_PUBLIC,
                 GET_SIGNATURE_METHOD_NAME,
                 GET_SIGNATURE_METHOD_SIGNATURE,

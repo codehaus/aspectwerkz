@@ -10,7 +10,7 @@ package org.codehaus.aspectwerkz.aspect.container;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.aspect.management.NoAspectBoundException;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 
@@ -45,7 +45,7 @@ public class PerCflowXAspectFactoryCompiler extends LazyPerXFactoryCompiler {
         m_clinit.visitMethodInsn(INVOKESPECIAL, "java/util/WeakHashMap", INIT_METHOD_NAME, "()V");
         m_clinit.visitFieldInsn(PUTSTATIC, m_aspectFactoryClassName, "ASPECTS", MAP_CLASS_SIGNATURE);
 
-        CodeVisitor cv = m_cw.visitMethod(
+        MethodVisitor cv = m_cw.visitMethod(
                 ACC_PUBLIC + ACC_STATIC + ACC_FINAL,
                 "aspectOf",
                 "(" + getXSignature() + ")" + m_aspectClassSignature,
@@ -102,7 +102,7 @@ public class PerCflowXAspectFactoryCompiler extends LazyPerXFactoryCompiler {
 
     private void createBindMethod() {
         //FIXME AVF do not bind if already present
-        CodeVisitor cv = m_cw.visitMethod(
+        MethodVisitor cv = m_cw.visitMethod(
                 ACC_PUBLIC + ACC_STATIC + ACC_FINAL,
                 "bind",
                 "(" + getXSignature() + ")V",
@@ -140,7 +140,7 @@ public class PerCflowXAspectFactoryCompiler extends LazyPerXFactoryCompiler {
     }
 
     private void createUnbindMethod() {
-        CodeVisitor cv = m_cw.visitMethod(
+        MethodVisitor cv = m_cw.visitMethod(
                 ACC_PUBLIC + ACC_STATIC + ACC_FINAL,
                 "unbind",
                 "(" + getXSignature() + ")V",

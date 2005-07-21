@@ -10,13 +10,7 @@ package test.annotation;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
 import org.codehaus.backport175.reader.bytecode.AnnotationReader;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassAdapter;
-import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.CodeAdapter;
-import org.objectweb.asm.attrs.Attributes;
-import org.objectweb.asm.attrs.RuntimeVisibleAnnotations;
+import org.objectweb.asm.*;
 import junit.framework.TestCase;
 
 import java.util.List;
@@ -54,21 +48,32 @@ public class AnnotationCopyTest extends TestCase {
         byte[] weaved = awpp.preProcess("test.annotation.AnnotationTest", bytes, classLoader);
 
         // check that we have 2 RV
+        final Counter i = new Counter();
         ClassReader asmReader = new ClassReader(weaved);
         asmReader.accept(
                 new ClassAdapter(AsmNullAdapter.NullClassAdapter.NULL_CLASS_ADAPTER) {
-                    public CodeVisitor visitMethod(int i, String s, String s1, String[] strings, Attribute attribute) {
-                        if ("publicMethod".equals(s) && "()V".equals(s1)) {
-                            assertTrue(attribute instanceof RuntimeVisibleAnnotations);
-                            RuntimeVisibleAnnotations rvs = (RuntimeVisibleAnnotations) attribute;
-                            assertEquals(2, rvs.annotations.size());
+                    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+                        if ("publicMethod".equals(name) && "()V".equals(desc)) {
+                            return new MethodAdapter(super.visitMethod(access, name, desc, signature, exceptions)) {
+                                public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+                                    assertTrue(visible);
+                                    i.inc();
+                                    return super.visitAnnotation(desc, visible);
+                                }
+                            };
+                        } else {
+                            return super.visitMethod(access, name, desc, signature, exceptions);
                         }
-                        return super.visitMethod(i, s, s1, strings, attribute);
                     }
                 },
-                Attributes.getDefaultAttributes(),
                 true
         );
+        assertEquals(2, i.value);
+    }
+
+    static class Counter {
+        int value = 0;
+        void inc() {value++;}
     }
 
     public static void main(String[] args) {

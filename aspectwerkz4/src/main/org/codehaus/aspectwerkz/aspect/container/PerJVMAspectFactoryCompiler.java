@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect.container;
 
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
@@ -33,7 +33,7 @@ public class PerJVMAspectFactoryCompiler extends AbstractAspectFactoryCompiler {
                 null
         );
 
-        CodeVisitor cv = m_cw.visitMethod(
+        MethodVisitor cv = m_cw.visitMethod(
                 ACC_PUBLIC + ACC_STATIC + ACC_FINAL,
                 FACTORY_ASPECTOF_METHOD_NAME,
                 "()" + m_aspectClassSignature,
@@ -61,7 +61,7 @@ public class PerJVMAspectFactoryCompiler extends AbstractAspectFactoryCompiler {
     }
 
     protected void createHasAspect() {
-        CodeVisitor cv = m_cw.visitMethod(
+        MethodVisitor cv = m_cw.visitMethod(
                 ACC_STATIC + ACC_PUBLIC + ACC_FINAL,
                 FACTORY_HASASPECT_METHOD_NAME,
                 NO_PARAM_RETURN_BOOLEAN_SIGNATURE,

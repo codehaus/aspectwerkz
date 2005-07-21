@@ -44,7 +44,7 @@ import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.JoinPointCompiler;
 
 import org.codehaus.aspectwerkz.org.objectweb.asm.ClassWriter;
-import org.codehaus.aspectwerkz.org.objectweb.asm.CodeVisitor;
+import org.codehaus.aspectwerkz.org.objectweb.asm.MethodVisitor;
 import org.codehaus.aspectwerkz.org.objectweb.asm.ClassVisitor;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.cflow.CflowCompiler;
@@ -196,11 +196,11 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
      * @param joinPointCompiler
      */
     public void createMandatoryMethods(ClassWriter classWriter, JoinPointCompiler joinPointCompiler) {
-        CodeVisitor cv = classWriter.visitMethod(
+        MethodVisitor cv = classWriter.visitMethod(
                 ACC_PUBLIC, ASPECTJ_AROUND_CLOSURE_RUN_METHOD_NAME,
                 ASPECTJ_AROUND_CLOSURE_RUN_METHOD_SIGNATURE,
-                new String[]{THROWABLE_CLASS_NAME},
-                null
+                null,
+                new String[]{THROWABLE_CLASS_NAME}
         );
         cv.visitVarInsn(ALOAD, 0);
         cv.visitMethodInsn(INVOKEVIRTUAL, joinPointCompiler.getJoinPointClassName(), PROCEED_METHOD_NAME, PROCEED_METHOD_SIGNATURE);
@@ -211,11 +211,11 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
     /**
      * Creates an invocation of the around closure class' constructor.
      *
-     * @param cv
+     * @param mv
      */
-    public void createInvocationOfAroundClosureSuperClass(final CodeVisitor cv) {
-        cv.visitInsn(ACONST_NULL);
-        cv.visitMethodInsn(
+    public void createInvocationOfAroundClosureSuperClass(final MethodVisitor mv) {
+        mv.visitInsn(ACONST_NULL);
+        mv.visitMethodInsn(
                 INVOKESPECIAL,
                 ASPECTJ_AROUND_CLOSURE_CLASS_NAME,
                 INIT_METHOD_NAME,
@@ -228,24 +228,24 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
     * <p/>
     *
     * @param cw
-    * @param cv
+    * @param mv
     * @param aspectInfo
      * @param joinPointClassName
     */
-    public void createAndStoreStaticAspectInstantiation(ClassVisitor cw, CodeVisitor cv, AspectInfo aspectInfo, String joinPointClassName) {
+    public void createAndStoreStaticAspectInstantiation(ClassVisitor cw, MethodVisitor mv, AspectInfo aspectInfo, String joinPointClassName) {
         String aspectClassSignature = aspectInfo.getAspectClassSignature();
         String aspectClassName = aspectInfo.getAspectClassName();
         DeploymentModel deploymentModel = aspectInfo.getDeploymentModel();
 
         if (deploymentModel.equals(DeploymentModel.PER_JVM)) {
             cw.visitField(ACC_PRIVATE + ACC_STATIC, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null);
-            cv.visitMethodInsn(
+            mv.visitMethodInsn(
                     INVOKESTATIC,
                     aspectClassName,
                     "aspectOf",
                     "()" + aspectClassSignature
             );
-            cv.visitFieldInsn(PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature);
+            mv.visitFieldInsn(PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature);
         } else {
             throw new UnsupportedOperationException(
                     "unsupported deployment model for the AspectJAspectModel - " +
@@ -255,14 +255,14 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
         }
     }
 
-    public void createAndStoreRuntimeAspectInstantiation(CodeVisitor codeVisitor, CompilerInput compilerInput, AspectInfo aspectInfo) {
+    public void createAndStoreRuntimeAspectInstantiation(MethodVisitor methodVisitor, CompilerInput compilerInput, AspectInfo aspectInfo) {
         //TODO support for non perJVM aspects
         ;
     }
 
-    public void loadAspect(CodeVisitor codeVisitor, CompilerInput compilerInput, AspectInfo aspectInfo) {
+    public void loadAspect(MethodVisitor methodVisitor, CompilerInput compilerInput, AspectInfo aspectInfo) {
         s_modelHelper.loadAspect(
-                codeVisitor,
+                methodVisitor,
                 compilerInput,
                 aspectInfo
         );
@@ -271,10 +271,10 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
     /**
      * Handles the arguments to an around advice. Same as in AW.
      */
-    public void createAroundAdviceArgumentHandling(CodeVisitor codeVisitor, CompilerInput compilerInput, org.codehaus.aspectwerkz.org.objectweb.asm.Type[] types, AdviceMethodInfo adviceMethodInfo) {
+    public void createAroundAdviceArgumentHandling(MethodVisitor methodVisitor, CompilerInput compilerInput, org.codehaus.aspectwerkz.org.objectweb.asm.Type[] types, AdviceMethodInfo adviceMethodInfo) {
         //TODO - likely to fail if we don't cast the "this" to the closure ?
         s_modelHelper.createAroundAdviceArgumentHandling(
-                codeVisitor,
+                methodVisitor,
                 compilerInput,
                 types,
                 adviceMethodInfo
@@ -284,7 +284,7 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
     /**
      * Handles the arguments to a before/after advice. Same as in AW.
      */
-    public void createBeforeOrAfterAdviceArgumentHandling(CodeVisitor codeVisitor, CompilerInput compilerInput, org.codehaus.aspectwerkz.org.objectweb.asm.Type[] types, AdviceMethodInfo adviceMethodInfo, int specialArgIndex) {
+    public void createBeforeOrAfterAdviceArgumentHandling(MethodVisitor codeVisitor, CompilerInput compilerInput, org.codehaus.aspectwerkz.org.objectweb.asm.Type[] types, AdviceMethodInfo adviceMethodInfo, int specialArgIndex) {
         s_modelHelper.createBeforeOrAfterAdviceArgumentHandling(
                 codeVisitor,
                 compilerInput,
