@@ -9,9 +9,8 @@ package org.codehaus.aspectwerkz.transform.inlining.weaver;
 
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.CodeAdapter;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.Label;
 import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
 import org.codehaus.aspectwerkz.transform.Context;
@@ -28,8 +27,8 @@ public class LabelToLineNumberVisitor extends ClassAdapter {
         m_ctx = (ContextImpl)ctx;
     }
 
-    public CodeVisitor visitMethod(int i, String s, String s1, String[] strings, Attribute attribute) {
-        return new CodeAdapter(super.visitMethod(i, s, s1, strings, attribute)) {
+    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+        return new MethodAdapter(super.visitMethod(access, name,  desc, signature,  exceptions)) {
             public void visitLineNumber(int i, Label label) {
                 super.visitLineNumber(i, label);
                 m_ctx.addLineNumberInfo(label, i);

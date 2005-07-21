@@ -7,10 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining;
 
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Label;
+import org.objectweb.asm.*;
 
 /**
  * Visitors that are not writing any bytecode and using a Null ClassVisitor / Code Visitor as a target instead.
@@ -28,17 +25,28 @@ public class AsmNullAdapter {
 
         public final static ClassVisitor NULL_CLASS_ADAPTER = new NullClassAdapter();
 
-        public void visit(int i, int i1, String s, String s1, String[] strings, String s2) {
+        public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         }
 
-        public void visitInnerClass(String s, String s1, String s2, int i) {
+        public void visitInnerClass(String name, String outerName, String innerName, int access) {
         }
 
-        public void visitField(int i, String s, String s1, Object o, Attribute attribute) {
+        public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+            return NullFieldAdapter.NULL_FIELD_ADAPTER;
         }
 
-        public CodeVisitor visitMethod(int i, String s, String s1, String[] strings, Attribute attribute) {
-            return NullCodeAdapter.NULL_CODE_ADAPTER;
+        public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+            return NullMethodAdapter.NULL_METHOD_ADAPTER;
+        }
+
+        public void visitSource(String source, String debug) {
+        }
+
+        public void visitOuterClass(String owner, String name, String desc) {
+        }
+
+        public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+            return NullAnnotationVisitor.NULL_ANNOTATION_ADAPTER;
         }
 
         public void visitAttribute(Attribute attribute) {
@@ -49,13 +57,13 @@ public class AsmNullAdapter {
     }
 
     /**
-     * A NullCodeAdapter that does nothing.
+     * A NullMethodAdapter that does nothing.
      * Can be used to speed up ASM and avoid unecessary bytecode writing thru a regular CodeWriter when this is not
      * needed (read only purpose)
      */
-    public static class NullCodeAdapter implements CodeVisitor {
+    public static class NullMethodAdapter implements MethodVisitor {
 
-        public final static CodeVisitor NULL_CODE_ADAPTER = new NullCodeAdapter();
+        public final static MethodVisitor NULL_METHOD_ADAPTER = new NullMethodAdapter();
 
         public void visitInsn(int opcode) {
         }
@@ -102,13 +110,74 @@ public class AsmNullAdapter {
         public void visitMaxs(int maxStack, int maxLocals) {
         }
 
-        public void visitLocalVariable(String name, String desc, Label start, Label end, int index) {
+        public void visitLocalVariable(String name, String desc, String sig, Label start, Label end, int index) {
         }
 
         public void visitLineNumber(int line, Label start) {
         }
 
         public void visitAttribute(Attribute attr) {
+        }
+
+        public AnnotationVisitor visitAnnotationDefault() {
+            return NullAnnotationVisitor.NULL_ANNOTATION_ADAPTER;
+        }
+
+        public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+            return NullAnnotationVisitor.NULL_ANNOTATION_ADAPTER;
+        }
+
+        public AnnotationVisitor visitParameterAnnotation(int parameter, String desc, boolean visible) {
+            return NullAnnotationVisitor.NULL_ANNOTATION_ADAPTER;
+        }
+
+        public void visitCode() {
+        }
+
+        public void visitEnd() {
+        }
+    }
+
+    /**
+     * A NullFieldAdapter
+     */
+    public static class NullFieldAdapter implements FieldVisitor {
+
+        public final static FieldVisitor NULL_FIELD_ADAPTER = new NullFieldAdapter();
+
+        public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+            return NullAnnotationVisitor.NULL_ANNOTATION_ADAPTER;
+        }
+
+        public void visitAttribute(Attribute attr) {
+        }
+
+        public void visitEnd() {
+        }
+    }
+
+    /**
+     * A NullAnnotationVisitor
+     */
+    public static class NullAnnotationVisitor implements AnnotationVisitor {
+
+        public final static AnnotationVisitor NULL_ANNOTATION_ADAPTER = new NullAnnotationVisitor();
+
+        public void visit(String name, Object value) {
+        }
+
+        public void visitEnum(String name, String desc, String value) {
+        }
+
+        public AnnotationVisitor visitAnnotation(String name, String desc) {
+            return NULL_ANNOTATION_ADAPTER;
+        }
+
+        public AnnotationVisitor visitArray(String name) {
+            return NULL_ANNOTATION_ADAPTER;
+        }
+
+        public void visitEnd() {
         }
     }
 }

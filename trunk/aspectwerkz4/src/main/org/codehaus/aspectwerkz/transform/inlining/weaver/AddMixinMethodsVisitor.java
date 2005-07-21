@@ -28,11 +28,10 @@ import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
-import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.CodeAdapter;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodAdapter;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
 /**
@@ -75,16 +74,16 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
      *
      * @param access
      * @param name
+     * @param signature
      * @param superName
      * @param interfaces
-     * @param sourceFile
      */
     public void visit(final int version,
                       final int access,
                       final String name,
+                      final String signature,
                       final String superName,
-                      final String[] interfaces,
-                      final String sourceFile) {
+                      final String[] interfaces) {
         ExpressionContext ctx = new ExpressionContext(PointcutType.WITHIN, m_classInfo, m_classInfo);
         if (!classFilter(m_classInfo, ctx, m_ctx.getDefinitions())) {
             m_declaringTypeName = name;
@@ -101,7 +100,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
             // add fields and method for (not already there) mixins
             addMixinMembers();
         }
-        super.visit(version, access, name, superName, interfaces, sourceFile);
+        super.visit(version, access, name, signature, superName, interfaces);
     }
 
     /**
@@ -149,32 +148,32 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
      * @param access
      * @param name
      * @param desc
+     * @param signature
      * @param exceptions
-     * @param attrs
      * @return
      */
-    public CodeVisitor visitMethod(final int access,
+    public MethodVisitor visitMethod(final int access,
                                    final String name,
                                    final String desc,
-                                   final String[] exceptions,
-                                   final Attribute attrs) {
+                                   final String signature,
+                                   final String[] exceptions) {
         if (m_isAdvised) {
             if (name.equals(CLINIT_METHOD_NAME)) {
                 m_hasClinit = true;
-                CodeVisitor mv = new PrependToClinitMethodCodeAdapter(
-                        cv.visitMethod(access, name, desc, exceptions, attrs)
+                MethodVisitor mv = new PrependToClinitMethodCodeAdapter(
+                        cv.visitMethod(access, name, desc, signature, exceptions)
                 );
                 mv.visitMaxs(0, 0);
                 return mv;
             } else if (name.equals(INIT_METHOD_NAME)) {
-                CodeVisitor mv = new AppendToInitMethodCodeAdapter(
-                        cv.visitMethod(access, name, desc, exceptions, attrs)
+                MethodVisitor mv = new AppendToInitMethodCodeAdapter(
+                        cv.visitMethod(access, name, desc, signature, exceptions)
                 );
                 mv.visitMaxs(0, 0);
                 return mv;
             }
         }
-        return super.visitMethod(access, name, desc, exceptions, attrs);
+        return super.visitMethod(access, name, desc, signature, exceptions);
     }
 
     /**
@@ -183,7 +182,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
     public void visitEnd() {
         if (m_isAdvised && !m_hasClinit) {
             // add the <clinit> method
-            CodeVisitor mv = cv.visitMethod(
+            MethodVisitor mv = cv.visitMethod(
                     ACC_STATIC, CLINIT_METHOD_NAME, NO_PARAM_RETURN_VOID_SIGNATURE, null, null
             );
             for (Iterator i4 = m_mixinFields.values().iterator(); i4.hasNext();) {
@@ -205,7 +204,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
      * @param mv
      * @param fieldInfo
      */
-    private void initializeStaticMixinField(final CodeVisitor mv, final MixinFieldInfo fieldInfo) {
+    private void initializeStaticMixinField(final MethodVisitor mv, final MixinFieldInfo fieldInfo) {
         mv.visitLdcInsn(fieldInfo.mixinClassInfo.getName().replace('/', '.'));
         if (fieldInfo.isPerJVM) {
             mv.visitFieldInsn(
@@ -255,7 +254,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
      * @param mv
      * @param fieldInfo
      */
-    private void initializeMemberMixinField(final CodeVisitor mv, final MixinFieldInfo fieldInfo) {
+    private void initializeMemberMixinField(final MethodVisitor mv, final MixinFieldInfo fieldInfo) {
         mv.visitVarInsn(ALOAD, 0);
         mv.visitLdcInsn(fieldInfo.mixinClassInfo.getName().replace('/', '.'));
         mv.visitVarInsn(ALOAD, 0);
@@ -324,7 +323,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
                 continue;
             }
 
-            CodeVisitor mv = cv.visitMethod(
+            MethodVisitor mv = cv.visitMethod(
                     ACC_PUBLIC + ACC_SYNTHETIC,
                     methodName,
                     methodSignature,
@@ -394,9 +393,9 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
      *
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
-    public class PrependToClinitMethodCodeAdapter extends CodeAdapter {
+    public class PrependToClinitMethodCodeAdapter extends MethodAdapter {
 
-        public PrependToClinitMethodCodeAdapter(final CodeVisitor ca) {
+        public PrependToClinitMethodCodeAdapter(final MethodVisitor ca) {
             super(ca);
             for (Iterator i4 = m_mixinFields.values().iterator(); i4.hasNext();) {
                 MixinFieldInfo fieldInfo = (MixinFieldInfo) i4.next();
@@ -412,9 +411,9 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
      *
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
-    public class AppendToInitMethodCodeAdapter extends CodeAdapter {
+    public class AppendToInitMethodCodeAdapter extends MethodAdapter {
 
-        public AppendToInitMethodCodeAdapter(final CodeVisitor ca) {
+        public AppendToInitMethodCodeAdapter(final MethodVisitor ca) {
             super(ca);
         }
 
@@ -423,7 +422,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
                 for (Iterator i4 = m_mixinFields.values().iterator(); i4.hasNext();) {
                     MixinFieldInfo fieldInfo = (MixinFieldInfo) i4.next();
                     if (!fieldInfo.isStatic) {
-                        initializeMemberMixinField(cv, fieldInfo);
+                        initializeMemberMixinField(mv, fieldInfo);
                     }
                 }
             }

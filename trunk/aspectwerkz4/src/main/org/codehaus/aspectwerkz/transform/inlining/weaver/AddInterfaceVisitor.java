@@ -58,19 +58,19 @@ public class AddInterfaceVisitor extends ClassAdapter implements TransformationC
      *
      * @param access
      * @param name
+     * @param signature
      * @param superName
      * @param interfaces
-     * @param sourceFile
      */
     public void visit(final int version,
                       final int access,
                       final String name,
+                      final String signature,
                       final String superName,
-                      final String[] interfaces,
-                      final String sourceFile) {
+                      final String[] interfaces) {
         ExpressionContext ctx = new ExpressionContext(PointcutType.WITHIN, m_classInfo, m_classInfo);
         if (classFilter(m_classInfo, ctx, m_ctx.getDefinitions())) {
-            super.visit(version, access, name, superName, interfaces, sourceFile);
+            super.visit(version, access, name, signature, superName, interfaces);
             return;
         }
 
@@ -122,7 +122,7 @@ public class AddInterfaceVisitor extends ClassAdapter implements TransformationC
             newInterfaceArray[j] = newInterfaceArray[j].replace('.', '/');
 
         }
-        super.visit(version, access, name, superName, newInterfaceArray, sourceFile);
+        super.visit(version, access, name, signature, superName, newInterfaceArray);
         m_ctx.markAsAdvised();
     }
 

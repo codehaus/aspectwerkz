@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining.compiler;
 
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
@@ -64,7 +64,7 @@ public class ConstructorExecutionJoinPointCompiler extends AbstractJoinPointComp
      *
      * @param cv
      */
-    protected void createSignature(final CodeVisitor cv) {
+    protected void createSignature(final MethodVisitor cv) {
         cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME_IN_JP, CLASS_CLASS_SIGNATURE);
         cv.visitLdcInsn(new Integer(m_joinPointHash));
 
@@ -88,7 +88,7 @@ public class ConstructorExecutionJoinPointCompiler extends AbstractJoinPointComp
      * @param cv
      * @param input
      */
-    protected void createInlinedJoinPointInvocation(final CodeVisitor cv, final CompilerInput input) {
+    protected void createInlinedJoinPointInvocation(final MethodVisitor cv, final CompilerInput input) {
 
         // load the target instance (arg0 else not available for static target)
         if (!Modifier.isStatic(m_calleeMemberModifiers)) {
@@ -107,7 +107,7 @@ public class ConstructorExecutionJoinPointCompiler extends AbstractJoinPointComp
      *
      * @param cv
      */
-    protected void createJoinPointInvocation(final CodeVisitor cv) {
+    protected void createJoinPointInvocation(final MethodVisitor cv) {
 
         // load the target instance member field unless calleeMember is static
         if (!Modifier.isStatic(m_calleeMemberModifiers)) {
@@ -143,7 +143,7 @@ public class ConstructorExecutionJoinPointCompiler extends AbstractJoinPointComp
      * Creates the getRtti method
      */
     protected void createGetRttiMethod() {
-        CodeVisitor cv = m_cw.visitMethod(ACC_PUBLIC, GET_RTTI_METHOD_NAME, GET_RTTI_METHOD_SIGNATURE, null, null);
+        MethodVisitor cv = m_cw.visitMethod(ACC_PUBLIC, GET_RTTI_METHOD_NAME, GET_RTTI_METHOD_SIGNATURE, null, null);
 
         // new CtorRttiImpl( .. )
         cv.visitTypeInsn(NEW, CONSTRUCTOR_RTTI_IMPL_CLASS_NAME);
@@ -177,7 +177,7 @@ public class ConstructorExecutionJoinPointCompiler extends AbstractJoinPointComp
      * Creates the getSignature method.
      */
     protected void createGetSignatureMethod() {
-        CodeVisitor cv = m_cw.visitMethod(
+        MethodVisitor cv = m_cw.visitMethod(
                 ACC_PUBLIC,
                 GET_SIGNATURE_METHOD_NAME,
                 GET_SIGNATURE_METHOD_SIGNATURE,

@@ -13,7 +13,7 @@ import java.util.List;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.backport175.reader.Annotation;
 import org.codehaus.backport175.reader.bytecode.AnnotationElement;
-import org.objectweb.asm.Constants;
+import org.objectweb.asm.Opcodes;
 
 
 /**
@@ -53,7 +53,7 @@ public class StaticInitializationInfoImpl implements StaticInitializationInfo {
 	 * @see org.codehaus.aspectwerkz.reflect.ReflectionInfo#getModifiers()
 	 */
 	public int getModifiers() {
-		return Constants.ACC_STATIC;
+		return Opcodes.ACC_STATIC;
 	}
 
 	/**

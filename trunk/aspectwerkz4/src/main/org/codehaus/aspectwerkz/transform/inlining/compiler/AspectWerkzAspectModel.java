@@ -27,8 +27,8 @@ import org.codehaus.aspectwerkz.transform.inlining.AspectInfo;
 import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Constants;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 
@@ -43,7 +43,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class AspectWerkzAspectModel implements AspectModel, Constants, TransformationConstants {
+public class AspectWerkzAspectModel implements AspectModel, Opcodes, TransformationConstants {
 
     protected final List m_customProceedMethodStructs;
 
@@ -96,7 +96,7 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
         createCustomProceedMethods(cw, (AbstractJoinPointCompiler)compiler);
     }
 
-    public void createInvocationOfAroundClosureSuperClass(CodeVisitor cv) {
+    public void createInvocationOfAroundClosureSuperClass(MethodVisitor cv) {
         ;// AW model has no super class apart Object, which is handled by the compiler
     }
 
@@ -113,7 +113,7 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
      * @param aspectInfo
      * @param joinPointClassName
      */
-    public void createAndStoreStaticAspectInstantiation(ClassVisitor cw, CodeVisitor cv, AspectInfo aspectInfo, String joinPointClassName) {
+    public void createAndStoreStaticAspectInstantiation(ClassVisitor cw, MethodVisitor cv, AspectInfo aspectInfo, String joinPointClassName) {
         String aspectClassSignature = aspectInfo.getAspectClassSignature();
         String aspectClassName = aspectInfo.getAspectClassName();
         // retrieve the aspect set it to the field
@@ -170,7 +170,7 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
      * @param aspectInfo
      * @param input
      */
-    public void createAndStoreRuntimeAspectInstantiation(final CodeVisitor cv,
+    public void createAndStoreRuntimeAspectInstantiation(final MethodVisitor cv,
                                                          final CompilerInput input,
                                                          final AspectInfo aspectInfo) {
         // gen code: if (Aspects.hasAspect(...) { aspectField = (<TYPE>)((HasInstanceLocalAspect)CALLER).aw$getAspect(className, qualifiedName, containerClassName) }
@@ -230,7 +230,7 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
      * @param input
      * @param aspectInfo
      */
-    public void loadAspect(final CodeVisitor cv,
+    public void loadAspect(final MethodVisitor cv,
                            final CompilerInput input,
                            final AspectInfo aspectInfo) {
         DeploymentModel deploymentModel = aspectInfo.getDeploymentModel();
@@ -295,7 +295,7 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
         }
     }
 
-    public void createAroundAdviceArgumentHandling(CodeVisitor cv,
+    public void createAroundAdviceArgumentHandling(MethodVisitor cv,
                                                    CompilerInput input,
                                                    Type[] joinPointArgumentTypes,
                                                    AdviceMethodInfo adviceMethodInfo) {
@@ -307,7 +307,7 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
         );
     }
 
-    public void createBeforeOrAfterAdviceArgumentHandling(CodeVisitor cv,
+    public void createBeforeOrAfterAdviceArgumentHandling(MethodVisitor cv,
                                                           CompilerInput input,
                                                           Type[] joinPointArgumentTypes,
                                                           AdviceMethodInfo adviceMethodInfo,
@@ -336,7 +336,7 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
      * @param aspectInfo
      * @return
      */
-    private Label pushPerXCondition(final CodeVisitor cv,
+    private Label pushPerXCondition(final MethodVisitor cv,
                                     final int perInstanceIndex,
                                     final AspectInfo aspectInfo) {
         Label hasAspectCheck = new Label();
@@ -358,7 +358,7 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
      * "HasInstanceLevelAspect.aw$getAspect(String, String)" on perInstanceIndex variable
      * and stores the aspect instance in the joinpoint instance field
      */
-    private void storeAspectInstance(final CodeVisitor cv,
+    private void storeAspectInstance(final MethodVisitor cv,
                                      final CompilerInput input,
                                      final AspectInfo aspectInfo,
                                      final int perInstanceIndex) {
@@ -410,14 +410,14 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
             }
             addedMethodSignatures.add(desc);
 
-            CodeVisitor cv = cw.visitMethod(
+            MethodVisitor cv = cw.visitMethod(
                     ACC_PUBLIC | ACC_FINAL,
                     PROCEED_METHOD_NAME,
                     desc,
+                    null,
                     new String[]{
                         THROWABLE_CLASS_NAME
-                    },
-                    null
+                    }
             );
 
             // update the joinpoint instance with the given values
@@ -573,7 +573,7 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
         }
     }
 
-    public static void defaultCreateBeforeOrAfterAdviceArgumentHandling(CodeVisitor cv,
+    public static void defaultCreateBeforeOrAfterAdviceArgumentHandling(MethodVisitor cv,
                                                                         CompilerInput input,
                                                                         Type[] joinPointArgumentTypes,
                                                                         AdviceMethodInfo adviceMethodInfo,
@@ -612,7 +612,7 @@ public class AspectWerkzAspectModel implements AspectModel, Constants, Transform
         }
     }
 
-    public static void defaultCreateAroundAdviceArgumentHandling(CodeVisitor cv,
+    public static void defaultCreateAroundAdviceArgumentHandling(MethodVisitor cv,
                                                                  CompilerInput input,
                                                                  Type[] joinPointArgumentTypes,
                                                                  AdviceMethodInfo adviceMethodInfo) {

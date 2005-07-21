@@ -11,13 +11,11 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
-import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.attrs.Attributes;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -98,7 +96,7 @@ public class ProxySubclassingCompiler implements TransformationConstants {
         }
 
         ClassVisitor createProxy = new ProxyCompilerClassVisitor(proxyWriter, proxyClassName.replace('.', '/'));
-        classReader.accept(createProxy, Attributes.getDefaultAttributes(), true);// no need for debug info
+        classReader.accept(createProxy, true);// no need for debug info
         return proxyWriter.toByteArray();
     }
 
@@ -123,16 +121,16 @@ public class ProxySubclassingCompiler implements TransformationConstants {
          *
          * @param access
          * @param name
+         * @param signature
          * @param superName
          * @param interfaces
-         * @param sourceFile
          */
         public void visit(final int version,
                           final int access,
                           final String name,
+                          final String signature,
                           final String superName,
-                          final String[] interfaces,
-                          final String sourceFile) {
+                          final String[] interfaces) {
             if (Modifier.isFinal(access)) {
                 throw new RuntimeException("Cannot create a proxy from final class " + name);
             }
@@ -141,9 +139,9 @@ public class ProxySubclassingCompiler implements TransformationConstants {
                     version,
                     ACC_PUBLIC + ACC_SUPER + ACC_SYNTHETIC,
                     m_proxyClassName.replace('.', '/'),
+                    signature,
                     name,
-                    interfaces,
-                    null
+                    interfaces
             );
         }
 
@@ -153,15 +151,15 @@ public class ProxySubclassingCompiler implements TransformationConstants {
          * @param access
          * @param name
          * @param desc
+         * @param signature
          * @param exceptions
-         * @param attrs
          * @return
          */
-        public CodeVisitor visitMethod(final int access,
+        public MethodVisitor visitMethod(final int access,
                                        final String name,
                                        final String desc,
-                                       final String[] exceptions,
-                                       final Attribute attrs) {
+                                       final String signature,
+                                       final String[] exceptions) {
             if (Modifier.isFinal(access) || Modifier.isPrivate(access) || Modifier.isNative(access)) {
                 // skip final or private or native methods
                 // TODO we could proxy native methods but that would lead to difference with regular weaving
@@ -171,12 +169,12 @@ public class ProxySubclassingCompiler implements TransformationConstants {
                 ;
             } else if (INIT_METHOD_NAME.equals(name)) {
                 // constructors
-                CodeVisitor proxyCode = m_proxyCv.visitMethod(
+                MethodVisitor proxyCode = m_proxyCv.visitMethod(
                         access + ACC_SYNTHETIC,
                         INIT_METHOD_NAME,
                         desc,
-                        exceptions,
-                        attrs
+                        signature,
+                        exceptions
                 );
 
                 proxyCode.visitVarInsn(ALOAD, 0);
@@ -186,12 +184,12 @@ public class ProxySubclassingCompiler implements TransformationConstants {
                 proxyCode.visitMaxs(0, 0);
             } else {
                 // method that can be proxied
-                CodeVisitor proxyCode = m_proxyCv.visitMethod(
+                MethodVisitor proxyCode = m_proxyCv.visitMethod(
                         access + ACC_SYNTHETIC,
                         name,
                         desc,
-                        exceptions,
-                        attrs
+                        signature,
+                        exceptions
                 );
 
                 if (Modifier.isStatic(access)) {
@@ -208,7 +206,7 @@ public class ProxySubclassingCompiler implements TransformationConstants {
                 }
             }
 
-            return AsmNullAdapter.NullCodeAdapter.NULL_CODE_ADAPTER;
+            return AsmNullAdapter.NullMethodAdapter.NULL_METHOD_ADAPTER;
         }
     }
 
@@ -223,7 +221,7 @@ public class ProxySubclassingCompiler implements TransformationConstants {
 //    private static void createConstructorDelegators(final ClassWriter writer,
 //                                                    final Class clazz,
 //                                                    final String targetClassName) {
-//        CodeVisitor cv;
+//        MethodVisitor cv;
 //        Constructor[] constructors = clazz.getDeclaredConstructors();
 //        for (int i = 0; i < constructors.length; i++) {
 //            Constructor constructor = constructors[i];
@@ -265,7 +263,7 @@ public class ProxySubclassingCompiler implements TransformationConstants {
 //    private static void createMethodDelegators(final ClassWriter writer,
 //                                               final Class clazz,
 //                                               final String targetClassName) {
-//        CodeVisitor cv;
+//        MethodVisitor cv;
 //        Method[] methods = clazz.getDeclaredMethods();
 //        for (int i = 0; i < methods.length; i++) {
 //            Method method = methods[i];

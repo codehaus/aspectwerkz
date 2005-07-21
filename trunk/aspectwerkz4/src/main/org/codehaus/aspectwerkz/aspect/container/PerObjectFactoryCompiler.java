@@ -11,7 +11,7 @@ import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.aspect.management.NoAspectBoundException;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 
@@ -28,7 +28,7 @@ public class PerObjectFactoryCompiler extends AbstractAspectFactoryCompiler {
     }
 
     protected void createAspectOf() {
-        CodeVisitor cv = m_cw.visitMethod(
+        MethodVisitor cv = m_cw.visitMethod(
                 ACC_PUBLIC + ACC_STATIC + ACC_FINAL,
                 FACTORY_ASPECTOF_METHOD_NAME,
                 "(Ljava/lang/Object;)" + m_aspectClassSignature,
@@ -87,7 +87,7 @@ public class PerObjectFactoryCompiler extends AbstractAspectFactoryCompiler {
     }
 
     protected void createHasAspect() {
-        CodeVisitor cv = m_cw.visitMethod(
+        MethodVisitor cv = m_cw.visitMethod(
                 ACC_PUBLIC + ACC_STATIC,
                 FACTORY_HASASPECT_METHOD_NAME,
                 "(Ljava/lang/Object;)Z",
@@ -122,7 +122,7 @@ public class PerObjectFactoryCompiler extends AbstractAspectFactoryCompiler {
     }
 
     private void createBindMethod() {
-        CodeVisitor cv = m_cw.visitMethod(
+        MethodVisitor cv = m_cw.visitMethod(
                 ACC_PUBLIC + ACC_STATIC + ACC_FINAL,
                 "bind",
                 "(Ljava/lang/Object;)Ljava/lang/Object;",
@@ -203,7 +203,7 @@ public class PerObjectFactoryCompiler extends AbstractAspectFactoryCompiler {
         }
 
         protected void createAspectOf() {
-            CodeVisitor cv = m_cw.visitMethod(
+            MethodVisitor cv = m_cw.visitMethod(
                     ACC_PUBLIC + ACC_STATIC + ACC_FINAL,
                     FACTORY_ASPECTOF_METHOD_NAME,
                     "(Ljava/lang/Object;)" + m_aspectClassSignature,

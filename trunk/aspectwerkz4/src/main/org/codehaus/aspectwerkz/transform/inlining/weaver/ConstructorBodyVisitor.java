@@ -8,12 +8,11 @@
 package org.codehaus.aspectwerkz.transform.inlining.weaver;
 
 import org.objectweb.asm.ClassAdapter;
-import org.objectweb.asm.Constants;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Attribute;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.CodeAdapter;
+import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.Label;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
@@ -71,35 +70,35 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
      *
      * @param access
      * @param name
+     * @param signature
      * @param superName
      * @param interfaces
-     * @param sourceFile
      */
     public void visit(final int version,
                       final int access,
                       final String name,
+                      final String signature,
                       final String superName,
-                      final String[] interfaces,
-                      final String sourceFile) {
+                      final String[] interfaces) {
         m_declaringTypeName = name;
-        super.visit(version, access, name, superName, interfaces, sourceFile);
+        super.visit(version, access, name, signature, superName, interfaces);
     }
 
     /**
      * @param access
      * @param name
      * @param desc
+     * @param signature
      * @param exceptions
-     * @param attrs
      * @return
      */
-    public CodeVisitor visitMethod(int access,
+    public MethodVisitor visitMethod(int access,
                                    String name,
                                    String desc,
-                                   String[] exceptions,
-                                   Attribute attrs) {
+                                   String signature,
+                                   String[] exceptions) {
         if (!INIT_METHOD_NAME.equals(name)) {
-            return super.visitMethod(access, name, desc, exceptions, attrs);
+            return super.visitMethod(access, name, desc, signature, exceptions);
         }
 
         int hash = AsmHelper.calculateConstructorHash(desc);
@@ -111,32 +110,32 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
                     + m_calleeClassInfo.getName().replace('/', '.')
                     + ".<init>: " + desc + ']'
             );
-            return cv.visitMethod(access, name, desc, exceptions, attrs);
+            return cv.visitMethod(access, name, desc, signature, exceptions);
         }
 
         ExpressionContext ctx = new ExpressionContext(PointcutType.EXECUTION, constructorInfo, constructorInfo);
 
         if (constructorFilter(m_ctx.getDefinitions(), ctx)) {
-            return cv.visitMethod(access, name, desc, exceptions, attrs);
+            return cv.visitMethod(access, name, desc, signature, exceptions);
         } else {
             String wrapperName = TransformationUtil.getConstructorBodyMethodName(m_declaringTypeName);
             String wrapperDesc = TransformationUtil.getConstructorBodyMethodSignature(desc, m_declaringTypeName);
             if (m_addedMethods.contains(AlreadyAddedMethodAdapter.getMethodKey(wrapperName, wrapperDesc))) {
-                return cv.visitMethod(access, name, desc, exceptions, attrs);
+                return cv.visitMethod(access, name, desc, signature, exceptions);
             }
 
             m_ctx.markAsAdvised();
 
             // create the proxy constructor for the original constructor
-            CodeVisitor proxyCtorCodeVisitor = cv.visitMethod(access, name, desc, exceptions, attrs);
+            MethodVisitor proxyCtorMethodVisitor = cv.visitMethod(access, name, desc, signature, exceptions);
             // create the ctorBodyMethod for the original constructor body
             int modifiers = ACC_SYNTHETIC | ACC_STATIC;
-            CodeVisitor ctorBodyMethodCodeVisitor = cv.visitMethod(
-                    modifiers, wrapperName, wrapperDesc, exceptions, attrs
+            MethodVisitor ctorBodyMethodMethodVisitor = cv.visitMethod(
+                    modifiers, wrapperName, wrapperDesc, signature, exceptions
             );
 
             // return a dispatch Code Adapter in between the orginal one and both of them
-            return new DispatchCtorBodyCodeAdapter(proxyCtorCodeVisitor, ctorBodyMethodCodeVisitor, access, desc);
+            return new DispatchCtorBodyCodeAdapter(proxyCtorMethodVisitor, ctorBodyMethodMethodVisitor, access, desc);
         }
     }
 
@@ -148,7 +147,7 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
      * @param access
      * @param desc
      */
-    private void insertJoinPointInvoke(final CodeVisitor ctorProxy,
+    private void insertJoinPointInvoke(final MethodVisitor ctorProxy,
                                        final int access,
                                        final String desc) {
         // load "this"
@@ -230,9 +229,9 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
      * f.e. CGlib proxy ctor are like that..
      * Don't know if some other info can be left on the stack (f.e. ILOAD 1, DUP ...)
      */
-    private class DispatchCtorBodyCodeAdapter extends CodeAdapter {
-        private CodeVisitor m_ctorBodyMethodCodeVisitor;
-        private CodeVisitor m_proxyCtorCodeVisitor;
+    private class DispatchCtorBodyCodeAdapter extends MethodAdapter {
+        private MethodVisitor m_ctorBodyMethodMethodVisitor;
+        private MethodVisitor m_proxyCtorMethodVisitor;
         private final int m_constructorAccess;
         private final String m_constructorDesc;
 
@@ -242,11 +241,11 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
         private boolean m_isALOADDUPHeuristic = false;
         private int m_index = -1;
 
-        public DispatchCtorBodyCodeAdapter(CodeVisitor proxyCtor, CodeVisitor ctorBodyMethod, final int access,
+        public DispatchCtorBodyCodeAdapter(MethodVisitor proxyCtor, MethodVisitor ctorBodyMethod, final int access,
                                            final String desc) {
             super(proxyCtor);
-            m_proxyCtorCodeVisitor = proxyCtor;
-            m_ctorBodyMethodCodeVisitor = ctorBodyMethod;
+            m_proxyCtorMethodVisitor = proxyCtor;
+            m_ctorBodyMethodMethodVisitor = ctorBodyMethod;
             m_constructorAccess = access;
             m_constructorDesc = desc;
         }
@@ -310,27 +309,27 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
                 if (opcode == INVOKESPECIAL) {
                     if (m_newCount == 0) {
                         // first INVOKESPECIAL encountered to <init> for a NON new XXX()
-                        m_proxyCtorCodeVisitor.visitMethodInsn(opcode, owner, name, desc);
+                        m_proxyCtorMethodVisitor.visitMethodInsn(opcode, owner, name, desc);
                         // insert the JoinPoint invocation
-                        insertJoinPointInvoke(m_proxyCtorCodeVisitor, m_constructorAccess, m_constructorDesc);
-                        m_proxyCtorCodeVisitor.visitInsn(RETURN);
-                        m_proxyCtorCodeVisitor.visitMaxs(0, 0);
-                        m_proxyCtorCodeVisitor = null;
+                        insertJoinPointInvoke(m_proxyCtorMethodVisitor, m_constructorAccess, m_constructorDesc);
+                        m_proxyCtorMethodVisitor.visitInsn(RETURN);
+                        m_proxyCtorMethodVisitor.visitMaxs(0, 0);
+                        m_proxyCtorMethodVisitor = null;
                         m_proxyCtorCodeDone = true;
-                        cv = m_ctorBodyMethodCodeVisitor;
+                        mv = m_ctorBodyMethodMethodVisitor;
                         // load ALOAD 0 if under heuristic
                         if (m_isALOADDUPHeuristic) {
-                            m_ctorBodyMethodCodeVisitor.visitVarInsn(ALOAD, 0);
+                            m_ctorBodyMethodMethodVisitor.visitVarInsn(ALOAD, 0);
                         }
                     } else {
                         m_newCount--;
-                        cv.visitMethodInsn(opcode, owner, name, desc);
+                        mv.visitMethodInsn(opcode, owner, name, desc);
                     }
                 } else {
-                    cv.visitMethodInsn(opcode, owner, name, desc);
+                    mv.visitMethodInsn(opcode, owner, name, desc);
                 }
             } else {
-                cv.visitMethodInsn(opcode, owner, name, desc);
+                mv.visitMethodInsn(opcode, owner, name, desc);
             }
         }
 

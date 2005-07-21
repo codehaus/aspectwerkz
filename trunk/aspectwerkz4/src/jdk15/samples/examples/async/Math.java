@@ -10,14 +10,10 @@ package examples.async;
 import is.Async;
 import is.Service;
 
-@Service
+//@Service
 public class Math {
 
-    static {
-        System.out.println("Math.'static initializer'");
-    }
-
-    @Async(timeout = 10)
+    //@Async(timeout = 10)
     public void add(int a, int b) {
         System.out.printf(
                 "[ %s ] %d + %d = %d\n",
@@ -26,7 +22,7 @@ public class Math {
         );
     }
 
-    @Async(timeout = 2)
+    //@Async(timeout = 2)
     public void subtract(int a, int b) {
         System.out.printf(
                 "[ %s ] %d - %d = %d\n",

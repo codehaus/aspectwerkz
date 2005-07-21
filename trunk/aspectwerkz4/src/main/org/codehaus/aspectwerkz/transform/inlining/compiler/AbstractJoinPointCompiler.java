@@ -24,7 +24,7 @@ import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
 import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 
@@ -370,7 +370,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      *
      * @param cv
      */
-    protected abstract void createSignature(final CodeVisitor cv);
+    protected abstract void createSignature(final MethodVisitor cv);
 
     /**
      * Optimized implementation that does not retrieve the parameters from the join point instance but is passed
@@ -380,7 +380,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param cv
      * @param input
      */
-    protected abstract void createInlinedJoinPointInvocation(final CodeVisitor cv,
+    protected abstract void createInlinedJoinPointInvocation(final MethodVisitor cv,
                                                              final CompilerInput input);
 
     /**
@@ -389,7 +389,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      *
      * @param cv
      */
-    protected abstract void createJoinPointInvocation(final CodeVisitor cv);
+    protected abstract void createJoinPointInvocation(final MethodVisitor cv);
 
     /**
      * Returns the join points return type.
@@ -547,7 +547,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * Creates the clinit method for the join point.
      */
     private void createClinit() {
-        CodeVisitor cv = m_cw.visitMethod(ACC_STATIC, CLINIT_METHOD_NAME, NO_PARAM_RETURN_VOID_SIGNATURE, null, null);
+        MethodVisitor cv = m_cw.visitMethod(ACC_STATIC, CLINIT_METHOD_NAME, NO_PARAM_RETURN_VOID_SIGNATURE, null, null);
         cv.visitMethodInsn(
                 INVOKESTATIC, m_joinPointClassName,
                 STATIC_INITIALIZATION_METHOD_NAME, NO_PARAM_RETURN_VOID_SIGNATURE
@@ -560,7 +560,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * Creates the init method for the join point.
      */
     private void createInit() {
-        CodeVisitor cv = m_cw.visitMethod(ACC_PRIVATE, INIT_METHOD_NAME, NO_PARAM_RETURN_VOID_SIGNATURE, null, null);
+        MethodVisitor cv = m_cw.visitMethod(ACC_PRIVATE, INIT_METHOD_NAME, NO_PARAM_RETURN_VOID_SIGNATURE, null, null);
         cv.visitVarInsn(ALOAD, 0);
 
         boolean hasAroundClosureBaseClass = false;
@@ -629,9 +629,9 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
                 AsmHelper.JAVA_VERSION,
                 ACC_PUBLIC + ACC_SUPER,
                 m_joinPointClassName,
+                null,
                 baseClass,
-                interfaceArr,
-                null
+                interfaceArr
         );
     }
 
@@ -648,7 +648,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * Creates the static initialization method (not clinit) for the join point.
      */
     private void createStaticInitializer() {
-        CodeVisitor cv = m_cw.visitMethod(
+        MethodVisitor cv = m_cw.visitMethod(
                 ACC_STATIC | ACC_PUBLIC,
                 STATIC_INITIALIZATION_METHOD_NAME,
                 NO_PARAM_RETURN_VOID_SIGNATURE,
@@ -776,7 +776,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      *
      * @param cv
      */
-    private void createEnclosingStaticJoinPoint(CodeVisitor cv) {
+    private void createEnclosingStaticJoinPoint(MethodVisitor cv) {
         cv.visitFieldInsn(
                 GETSTATIC,
                 m_joinPointClassName,
@@ -811,14 +811,14 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
         final String invokeDesc = buildInvokeMethodSignature();
 
         // create the method
-        CodeVisitor cv = m_cw.visitMethod(
+        MethodVisitor cv = m_cw.visitMethod(
                 ACC_PUBLIC + ACC_FINAL + ACC_STATIC,
                 INVOKE_METHOD_NAME,
                 invokeDesc,
+                null,
                 new String[]{
                     THROWABLE_CLASS_NAME
-                },
-                null
+                }
         );
 
         if (!m_input.isOptimizedJoinPoint) {
@@ -868,7 +868,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param cv
      * @param input
      */
-    private void initializeInstanceLevelAspects(final CodeVisitor cv, final CompilerInput input) {
+    private void initializeInstanceLevelAspects(final MethodVisitor cv, final CompilerInput input) {
         for (int i = 0; i < m_aspectInfos.length; i++) {
             m_aspectInfos[i].getAspectModel().createAndStoreRuntimeAspectInstantiation(cv, input, m_aspectInfos[i]);
         }
@@ -879,7 +879,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param cv
      * @param input
      */
-    private void createPartOfInvokeMethodWithAllAdviceTypes(final CodeVisitor cv,
+    private void createPartOfInvokeMethodWithAllAdviceTypes(final MethodVisitor cv,
                                                             final CompilerInput input) {
         final int returnValueIndex = (input.joinPointInstanceIndex != INDEX_NOTAVAILABLE) ?
                 (input.joinPointInstanceIndex + 1) : input.callerIndex + 1;
@@ -999,7 +999,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param cv
      * @param input
      */
-    private void createPartOfInvokeMethodWithoutAfterThrowingAdviceTypes(final CodeVisitor cv,
+    private void createPartOfInvokeMethodWithoutAfterThrowingAdviceTypes(final MethodVisitor cv,
                                                                          final CompilerInput input) {
         final int returnValueIndex = (input.joinPointInstanceIndex != INDEX_NOTAVAILABLE) ?
                 (input.joinPointInstanceIndex + 1) : input.callerIndex + 1;
@@ -1064,7 +1064,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param cv
      * @param input
      */
-    private void createPartOfInvokeMethodWithoutAfterFinallyAndAfterThrowingAdviceTypes(final CodeVisitor cv,
+    private void createPartOfInvokeMethodWithoutAfterFinallyAndAfterThrowingAdviceTypes(final MethodVisitor cv,
                                                                                         final CompilerInput input) {
 
         final int returnValueIndex = (input.joinPointInstanceIndex != INDEX_NOTAVAILABLE) ?
@@ -1103,7 +1103,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param joinPointInstanceIndex
      * @param returnValueIndex
      */
-    private void createInvocationToProceedMethod(final CodeVisitor cv,
+    private void createInvocationToProceedMethod(final MethodVisitor cv,
                                                  final int joinPointInstanceIndex,
                                                  final int returnValueIndex) {
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
@@ -1118,7 +1118,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param cv
      * @param input
      */
-    private void createInvocationLocalJoinPointInstance(final CodeVisitor cv, final CompilerInput input) {
+    private void createInvocationLocalJoinPointInstance(final MethodVisitor cv, final CompilerInput input) {
         // create the join point instance
         cv.visitTypeInsn(NEW, m_joinPointClassName);
         cv.visitInsn(DUP);
@@ -1164,14 +1164,14 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      */
     private void createProceedMethod(CompilerInput input) {
 
-        CodeVisitor cv = m_cw.visitMethod(
+        MethodVisitor cv = m_cw.visitMethod(
                 ACC_PUBLIC | ACC_FINAL,
                 PROCEED_METHOD_NAME,
                 PROCEED_METHOD_SIGNATURE,
+                null,
                 new String[]{
                     THROWABLE_CLASS_NAME
-                },
-                null
+                }
         );
 
         if (m_isThisAdvisable) {
@@ -1328,7 +1328,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      *
      * @param cv
      */
-    private void createBeforeAdviceInvocations(final CodeVisitor cv, CompilerInput input) {
+    private void createBeforeAdviceInvocations(final MethodVisitor cv, CompilerInput input) {
         for (int i = 0; i < m_beforeAdviceMethodInfos.length; i++) {
             AdviceMethodInfo adviceMethodInfo = m_beforeAdviceMethodInfos[i];
             AspectInfo aspectInfo = adviceMethodInfo.getAspectInfo();
@@ -1381,7 +1381,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param cv
      * @param input
      */
-    private void createAfterFinallyAdviceInvocations(final CodeVisitor cv,
+    private void createAfterFinallyAdviceInvocations(final MethodVisitor cv,
                                                      final CompilerInput input) {
         // add after advice in reverse order
         for (int i = m_afterFinallyAdviceMethodInfos.length - 1; i >= 0; i--) {
@@ -1396,7 +1396,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param cv
      * @param input
      */
-    private void createAfterReturningAdviceInvocations(final CodeVisitor cv,
+    private void createAfterReturningAdviceInvocations(final MethodVisitor cv,
                                                        final CompilerInput input) {
         final int returnValueIndex = (input.joinPointInstanceIndex != INDEX_NOTAVAILABLE) ?
                 (input.joinPointInstanceIndex + 1) : input.callerIndex + 1;
@@ -1451,7 +1451,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param adviceMethodInfo
      * @param specialArgIndex  for afterReturning / Throwing when binding is used
      */
-    private void createAfterAdviceInvocation(final CodeVisitor cv,
+    private void createAfterAdviceInvocation(final MethodVisitor cv,
                                              final CompilerInput input,
                                              final AdviceMethodInfo adviceMethodInfo,
                                              final int specialArgIndex) {
@@ -1495,7 +1495,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param returnValueIndex
      * @param unwrap           set to true if already wrapped on the stack (within proceed() code)
      */
-    private void addReturnedValueToJoinPoint(final CodeVisitor cv,
+    private void addReturnedValueToJoinPoint(final MethodVisitor cv,
                                              final CompilerInput input,
                                              final int returnValueIndex,
                                              final boolean unwrap) {
@@ -1525,7 +1525,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param cv
      * @param input
      */
-    static void loadJoinPointInstance(final CodeVisitor cv,
+    static void loadJoinPointInstance(final MethodVisitor cv,
                                       final CompilerInput input) {
         if (input.isOptimizedJoinPoint) {
             cv.visitFieldInsn(
@@ -1544,7 +1544,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param cv
      * @param argStartIndex
      */
-    protected final void loadArgumentMemberFields(final CodeVisitor cv, final int argStartIndex) {
+    protected final void loadArgumentMemberFields(final MethodVisitor cv, final int argStartIndex) {
         int argStackIndex = argStartIndex;
         for (int index = 0; index < m_argumentTypes.length; index++) {
             Type argumentType = m_argumentTypes[index];
@@ -1557,7 +1557,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      *
      * @param cv
      */
-    protected final void loadArguments(final CodeVisitor cv) {
+    protected final void loadArguments(final MethodVisitor cv) {
         for (int i = 0; i < m_fieldNames.length; i++) {
             String fieldName = m_fieldNames[i];
             Type argumentType = m_argumentTypes[i];
@@ -1571,7 +1571,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      *
      * @param cv
      */
-    private void resetStackFrameCounter(final CodeVisitor cv) {
+    private void resetStackFrameCounter(final MethodVisitor cv) {
         cv.visitVarInsn(ALOAD, 0);
         cv.visitInsn(ICONST_M1);
         cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, STACK_FRAME_COUNTER_FIELD_NAME, I);
@@ -1582,7 +1582,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      *
      * @param cv
      */
-    private void incrementStackFrameCounter(final CodeVisitor cv) {
+    private void incrementStackFrameCounter(final MethodVisitor cv) {
         cv.visitVarInsn(ALOAD, 0);
         cv.visitInsn(DUP);
         cv.visitFieldInsn(GETFIELD, m_joinPointClassName, STACK_FRAME_COUNTER_FIELD_NAME, I);
@@ -1600,7 +1600,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param cv
      * @param stackFreeIndex
      */
-    public final void createArgumentArrayAt(final CodeVisitor cv, final int stackFreeIndex) {
+    public final void createArgumentArrayAt(final MethodVisitor cv, final int stackFreeIndex) {
         AsmHelper.loadIntegerConstant(cv, m_fieldNames.length);
         cv.visitTypeInsn(ANEWARRAY, OBJECT_CLASS_NAME);
         cv.visitVarInsn(ASTORE, stackFreeIndex);
@@ -1620,7 +1620,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * Creates utility methods for the join point (getter, setters etc.).
      */
     private void createUtilityMethods() {
-        CodeVisitor cv;
+        MethodVisitor cv;
 
         // addMetaData
         {
@@ -1791,7 +1791,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
 //     */
 //    protected void createCopyMethod() {
 //
-//        CodeVisitor cv = m_cw.visitMethod(ACC_PUBLIC, COPY_METHOD_NAME, COPY_METHOD_SIGNATURE, null, null);
+//        MethodVisitor cv = m_cw.visitMethod(ACC_PUBLIC, COPY_METHOD_NAME, COPY_METHOD_SIGNATURE, null, null);
 //
 //        // create a new join point instance
 //        cv.visitTypeInsn(NEW, m_joinPointClassName);
@@ -2023,7 +2023,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param adviceInfo
      * @return the label for endIf or null if the adviceInfo did not required runtime check
      */
-    private Label beginRuntimeCheck(final CodeVisitor cv,
+    private Label beginRuntimeCheck(final MethodVisitor cv,
                                     final CompilerInput input,
                                     final AdviceInfo adviceInfo) {
         Label endRuntimeCheckLabel = null;
@@ -2063,7 +2063,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param adviceInfo
      * @param label      if null, then do nothing (means we did not had a runtime check)
      */
-    private void endRuntimeCheck(final CodeVisitor cv, final AdviceInfo adviceInfo, final Label label) {
+    private void endRuntimeCheck(final MethodVisitor cv, final AdviceInfo adviceInfo, final Label label) {
         DeploymentModel deployModel = adviceInfo.getAspectDeploymentModel();
 
         if (adviceInfo.hasTargetWithRuntimeCheck()
@@ -2081,7 +2081,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param cv
      * @param input
      */
-    public static void loadCallee(final CodeVisitor cv,
+    public static void loadCallee(final MethodVisitor cv,
                            final CompilerInput input) {
         if (input.isOptimizedJoinPoint) {
             // grab the callee from the invoke parameters directly
@@ -2100,7 +2100,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param cv
      * @param input
      */
-    public static void loadCaller(final CodeVisitor cv,
+    public static void loadCaller(final MethodVisitor cv,
                            final CompilerInput input) {
         if (input.isOptimizedJoinPoint) {
             // grab the callee from the invoke parameters directly
@@ -2123,7 +2123,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
 //     * @param calleeIndex
 //     * @param aspectInfo
 //     */
-//    public void createInvocationToAspectOf(final CodeVisitor cv,
+//    public void createInvocationToAspectOf(final MethodVisitor cv,
 //                                           final boolean isOptimizedJoinPoint,
 //                                           final int joinPointIndex,
 //                                           final int callerIndex,
@@ -2171,7 +2171,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param joinPointInstanceIndex
      * @param advisableIndex
      */
-    private void createInitializationForAdvisableManagement(final CodeVisitor cv,
+    private void createInitializationForAdvisableManagement(final MethodVisitor cv,
                                                             final int joinPointInstanceIndex,
                                                             final int advisableIndex) {
         // interceptor index
@@ -2193,7 +2193,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param joinPointInstanceIndex
      * @param advisableIndex
      */
-    private void initializeAroundInterceptors(final CodeVisitor cv,
+    private void initializeAroundInterceptors(final MethodVisitor cv,
                                               final int joinPointInstanceIndex,
                                               final int advisableIndex) {
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
@@ -2232,7 +2232,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param joinPointInstanceIndex
      * @param advisableIndex
      */
-    private void initializeBeforeInterceptors(final CodeVisitor cv,
+    private void initializeBeforeInterceptors(final MethodVisitor cv,
                                               final int joinPointInstanceIndex,
                                               final int advisableIndex) {
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
@@ -2271,7 +2271,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param joinPointInstanceIndex
      * @param advisableIndex
      */
-    private void initializeAfterInterceptors(final CodeVisitor cv,
+    private void initializeAfterInterceptors(final MethodVisitor cv,
                                              final int joinPointInstanceIndex,
                                              final int advisableIndex) {
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
@@ -2310,7 +2310,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param joinPointInstanceIndex
      * @param advisableIndex
      */
-    private void initializeAfterReturningInterceptors(final CodeVisitor cv,
+    private void initializeAfterReturningInterceptors(final MethodVisitor cv,
                                                       final int joinPointInstanceIndex,
                                                       final int advisableIndex) {
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
@@ -2349,7 +2349,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param joinPointInstanceIndex
      * @param advisableIndex
      */
-    private void initializeAfterThrowingInterceptors(final CodeVisitor cv,
+    private void initializeAfterThrowingInterceptors(final MethodVisitor cv,
                                                      final int joinPointInstanceIndex,
                                                      final int advisableIndex) {
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
@@ -2386,7 +2386,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      *
      * @param cv
      */
-    private void createAroundInterceptorInvocations(final CodeVisitor cv) {
+    private void createAroundInterceptorInvocations(final MethodVisitor cv) {
         cv.visitVarInsn(ALOAD, 0);
         cv.visitFieldInsn(GETFIELD, m_joinPointClassName, INTERCEPTOR_INDEX_FIELD_NAME, I);
         cv.visitInsn(ICONST_M1);
@@ -2430,7 +2430,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param joinPointInstanceIndex
      * @param registerDepth
      */
-    private void createBeforeInterceptorInvocations(final CodeVisitor cv,
+    private void createBeforeInterceptorInvocations(final MethodVisitor cv,
                                                     final int joinPointInstanceIndex,
                                                     final int registerDepth) {
         final int loopIndex = registerDepth + 1;
@@ -2476,7 +2476,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param joinPointInstanceIndex
      * @param registerDepth
      */
-    private void createAfterInterceptorInvocations(final CodeVisitor cv,
+    private void createAfterInterceptorInvocations(final MethodVisitor cv,
                                                    final int joinPointInstanceIndex,
                                                    final int registerDepth) {
         final int loopIndex = registerDepth + 1;
@@ -2523,7 +2523,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param joinPointInstanceIndex
      * @param returnValueInstanceIndex
      */
-    private void createAfterReturningInterceptorInvocations(final CodeVisitor cv,
+    private void createAfterReturningInterceptorInvocations(final MethodVisitor cv,
                                                             final int joinPointInstanceIndex,
                                                             final int returnValueInstanceIndex) {
         final int loopIndex = returnValueInstanceIndex + 1;
@@ -2571,7 +2571,7 @@ public abstract class AbstractJoinPointCompiler implements JoinPointCompiler, Tr
      * @param joinPointInstanceIndex
      * @param exceptionInstanceIndex
      */
-    private void createAfterThrowingInterceptorInvocations(final CodeVisitor cv,
+    private void createAfterThrowingInterceptorInvocations(final MethodVisitor cv,
                                                            final int joinPointInstanceIndex,
                                                            final int exceptionInstanceIndex) {
         final int loopIndex = exceptionInstanceIndex + 1;

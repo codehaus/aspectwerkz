@@ -17,7 +17,7 @@ import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.ClassReader;
@@ -440,7 +440,7 @@ public class AsmHelper implements TransformationConstants {
      * @param mv
      * @param type
      */
-    public static void addReturnStatement(final CodeVisitor mv, final Type type) {
+    public static void addReturnStatement(final MethodVisitor mv, final Type type) {
         switch (type.getSort()) {
             case Type.VOID:
                 mv.visitInsn(RETURN);
@@ -484,7 +484,7 @@ public class AsmHelper implements TransformationConstants {
      * @param mv
      * @param argumentTypes
      */
-    public static void loadArgumentTypes(final CodeVisitor mv, final Type[] argumentTypes, final boolean staticMethod) {
+    public static void loadArgumentTypes(final MethodVisitor mv, final Type[] argumentTypes, final boolean staticMethod) {
         int index;
         if (staticMethod) {
             index = 0;
@@ -504,7 +504,7 @@ public class AsmHelper implements TransformationConstants {
      * @param type
      * @return the incremented index
      */
-    public static int loadType(final CodeVisitor cv, int index, final Type type) {
+    public static int loadType(final MethodVisitor cv, int index, final Type type) {
         switch (type.getSort()) {
             case Type.LONG:
                 cv.visitVarInsn(LLOAD, index++);
@@ -550,7 +550,7 @@ public class AsmHelper implements TransformationConstants {
      * @param type
      * @return the incremented index
      */
-    public static int storeType(final CodeVisitor cv, int index, final Type type) {
+    public static int storeType(final MethodVisitor cv, int index, final Type type) {
         switch (type.getSort()) {
             case Type.VOID:
                 break;
@@ -596,7 +596,7 @@ public class AsmHelper implements TransformationConstants {
      * @param cv
      * @param s
      */
-    public static void loadStringConstant(final CodeVisitor cv, final String s) {
+    public static void loadStringConstant(final MethodVisitor cv, final String s) {
         if (s != null) {
             cv.visitLdcInsn(s);
         } else {
@@ -610,7 +610,7 @@ public class AsmHelper implements TransformationConstants {
      * @param cv
      * @param index
      */
-    public static void loadIntegerConstant(final CodeVisitor cv, final int index) {
+    public static void loadIntegerConstant(final MethodVisitor cv, final int index) {
         switch (index) {
             case 0:
                 cv.visitInsn(ICONST_0);
@@ -642,7 +642,7 @@ public class AsmHelper implements TransformationConstants {
      * @param cv
      * @param type
      */
-    public static void prepareWrappingOfPrimitiveType(final CodeVisitor cv, final Type type) {
+    public static void prepareWrappingOfPrimitiveType(final MethodVisitor cv, final Type type) {
         switch (type.getSort()) {
             case Type.SHORT:
                 cv.visitTypeInsn(NEW, SHORT_CLASS_NAME);
@@ -685,7 +685,7 @@ public class AsmHelper implements TransformationConstants {
      * @param cv
      * @param type
      */
-    public static void wrapPrimitiveType(final CodeVisitor cv, final Type type) {
+    public static void wrapPrimitiveType(final MethodVisitor cv, final Type type) {
         switch (type.getSort()) {
             case Type.VOID:
                 cv.visitInsn(ACONST_NULL);
@@ -755,7 +755,7 @@ public class AsmHelper implements TransformationConstants {
      * @param cv
      * @param type
      */
-    public static void unwrapType(final CodeVisitor cv, final Type type) {
+    public static void unwrapType(final MethodVisitor cv, final Type type) {
         // void, object and array type handling
         switch (type.getSort()) {
             case Type.OBJECT:
@@ -858,7 +858,7 @@ public class AsmHelper implements TransformationConstants {
      * @param cv
      * @param type
      */
-    public static void addDefaultValue(final CodeVisitor cv, final Type type) {
+    public static void addDefaultValue(final MethodVisitor cv, final Type type) {
         switch (type.getSort()) {
             case Type.OBJECT:
                 cv.visitInsn(ACONST_NULL);
@@ -899,7 +899,7 @@ public class AsmHelper implements TransformationConstants {
      * @param cv
      * @param value
      */
-    public static void addNullableString(final CodeVisitor cv, final String value) {
+    public static void addNullableString(final MethodVisitor cv, final String value) {
         if (value == null) {
             cv.visitInsn(ACONST_NULL);
         } else {

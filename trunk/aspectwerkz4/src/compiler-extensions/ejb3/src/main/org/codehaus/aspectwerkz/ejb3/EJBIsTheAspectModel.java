@@ -8,7 +8,7 @@
 package org.codehaus.aspectwerkz.ejb3;
 
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.ClassVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.AspectInfo;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
@@ -40,11 +40,11 @@ public class EJBIsTheAspectModel extends EJBInterceptorModel {
         //TODO if we want to reuse the ejb as interceptor in some aop.xml
     }
 
-    public void createAndStoreStaticAspectInstantiation(ClassVisitor cw, CodeVisitor cv, AspectInfo aspectInfo, String joinPointClassName) {
+    public void createAndStoreStaticAspectInstantiation(ClassVisitor cw, MethodVisitor cv, AspectInfo aspectInfo, String joinPointClassName) {
         ;// since the EJB is the interceptor, we don't need any static level bookeeping
     }
 
-    public void loadAspect(CodeVisitor cv, CompilerInput input, AspectInfo aspectInfo) {
+    public void loadAspect(MethodVisitor cv, CompilerInput input, AspectInfo aspectInfo) {
         // the bean is the aspect
         AbstractJoinPointCompiler.loadCaller(cv, input);
     }

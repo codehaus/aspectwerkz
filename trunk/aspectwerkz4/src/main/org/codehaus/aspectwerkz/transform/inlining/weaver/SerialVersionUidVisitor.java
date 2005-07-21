@@ -7,13 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining.weaver;
 
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassAdapter;
-import org.objectweb.asm.Constants;
-import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.*;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
@@ -38,7 +32,7 @@ import java.security.MessageDigest;
  * Initial implementation courtesy of Vishal Vishnoi <vvishnoi AT bea DOT com>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class SerialVersionUidVisitor extends ClassAdapter implements Constants {
+public class SerialVersionUidVisitor extends ClassAdapter implements Opcodes {
 
     public static final String CLINIT = "<clinit>";
     public static final String INIT = "<init>";
@@ -121,8 +115,8 @@ public class SerialVersionUidVisitor extends ClassAdapter implements Constants {
      * (step 1,2, and 3) for SVUID computation.
      */
     public void visit(int version, int access,
-                      String name, String superName,
-                      String[] interfaces, String sourceFile) {
+                      String name, String signature, String superName,
+                      String[] interfaces) {
         // get SVUID info. only if check passes
         if (mayNeedSerialVersionUid(access)) {
             m_className = name;
@@ -131,16 +125,16 @@ public class SerialVersionUidVisitor extends ClassAdapter implements Constants {
         }
 
         // delegate call to class visitor
-        super.visit(version, access, name, superName, interfaces, sourceFile);
+        super.visit(version, access, name, signature, superName, interfaces);
     }
 
     /**
      * Visit the methods and get constructor and method information (step
      * 5 and 7). Also determince if there is a class initializer (step 6).
      */
-    public CodeVisitor visitMethod(int access,
-                                   String name, String desc,
-                                   String[] exceptions, Attribute attrs) {
+    public MethodVisitor visitMethod(int access,
+                                   String name, String desc, String signature,
+                                   String[] exceptions) {
         // get SVUI info
         if (m_computeSVUID) {
 
@@ -161,15 +155,14 @@ public class SerialVersionUidVisitor extends ClassAdapter implements Constants {
         }
 
         // delegate call to class visitor
-        return cv.visitMethod(access, name, desc, exceptions, attrs);
+        return cv.visitMethod(access, name, desc, signature, exceptions);
     }
 
     /**
      * Gets class field information for step 4 of the alogrithm. Also determines
      * if the class already has a SVUID.
      */
-    public void visitField(int access, String name, String desc,
-                           Object value, Attribute attrs) {
+    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         // get SVUID info
         if (m_computeSVUID) {
 
@@ -193,7 +186,7 @@ public class SerialVersionUidVisitor extends ClassAdapter implements Constants {
         }
 
         // delegate call to class visitor
-        super.visitField(access, name, desc, value, attrs);
+        return super.visitField(access, name, desc, signature, value);
     }
 
     /**
@@ -452,7 +445,7 @@ public class SerialVersionUidVisitor extends ClassAdapter implements Constants {
                 SerialVersionUidVisitor sv = new SerialVersionUidVisitor(cw);
                 cr.accept(sv, true);
                 if (sv.m_computeSVUID && !sv.m_hadSVUID) {
-                    cv.visitField(ACC_FINAL + ACC_STATIC, SVUID_NAME, "J", new Long(sv.m_SVUID), null);
+                    cv.visitField(ACC_FINAL + ACC_STATIC, SVUID_NAME, "J", null, new Long(sv.m_SVUID));
                 }
             }
             super.visitEnd();

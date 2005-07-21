@@ -11,14 +11,12 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
-import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Constants;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.attrs.Attributes;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,7 +83,7 @@ public class ProxyDelegationCompiler {
                     ;
                 }
             }
-            classReader.accept(createProxy, Attributes.getDefaultAttributes(), true);// no need for debug info
+            classReader.accept(createProxy, true);// no need for debug info
         }
         return proxyWriter.toByteArray();
     }
@@ -94,7 +92,7 @@ public class ProxyDelegationCompiler {
      * Proxy compiler. Ones can call accept as many times as needed.
      * visitEnd allow to track the index of the visited interface
      */
-    public static class ProxyCompilerClassVisitor extends AsmNullAdapter.NullClassAdapter implements Constants, TransformationConstants {
+    public static class ProxyCompilerClassVisitor extends AsmNullAdapter.NullClassAdapter implements Opcodes, TransformationConstants {
         final ClassVisitor m_proxyCv;
         final String m_proxyClassName;
         final Set m_signatures;
@@ -122,9 +120,9 @@ public class ProxyDelegationCompiler {
                     AsmHelper.JAVA_VERSION,
                     ACC_PUBLIC + ACC_SYNTHETIC + ACC_SUPER,
                     m_proxyClassName,
+                    null,//FIXME generic is that correct ?
                     OBJECT_CLASS_NAME,
-                    interfaceClassNames,
-                    null
+                    interfaceClassNames
             );
 
             // create one field per implemented interface
@@ -145,7 +143,7 @@ public class ProxyDelegationCompiler {
                 ctorDesc.append(m_interfaceSignatures[i]);
             }
             ctorDesc.append(")V");
-            CodeVisitor init = m_proxyCv.visitMethod(
+            MethodVisitor init = m_proxyCv.visitMethod(
                     ACC_PUBLIC + ACC_SYNTHETIC,
                     INIT_METHOD_NAME,
                     ctorDesc.toString(),
@@ -169,22 +167,22 @@ public class ProxyDelegationCompiler {
          * @param access
          * @param name
          * @param desc
+         * @param signature
          * @param exceptions
-         * @param attribute
          * @return
          */
-        public CodeVisitor visitMethod(int access, String name, String desc, String[] exceptions, Attribute attribute) {
+        public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
             if (m_signatures.contains(name + desc)) {
-                return super.visitMethod(access, name, desc, exceptions, attribute);
+                return super.visitMethod(access, name, desc, signature, exceptions);
             }
             m_signatures.add(name + desc);
 
-            CodeVisitor cv = m_proxyCv.visitMethod(
+            MethodVisitor cv = m_proxyCv.visitMethod(
                     access & ~ACC_ABSTRACT,
                     name,
                     desc,
-                    exceptions,
-                    attribute
+                    signature,
+                    exceptions
             );
 
             cv.visitVarInsn(ALOAD, 0);

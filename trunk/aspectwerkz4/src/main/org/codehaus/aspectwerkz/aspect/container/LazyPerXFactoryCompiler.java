@@ -8,7 +8,7 @@
 package org.codehaus.aspectwerkz.aspect.container;
 
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 
@@ -40,7 +40,7 @@ public abstract class LazyPerXFactoryCompiler extends AbstractAspectFactoryCompi
         m_clinit.visitMethodInsn(INVOKESPECIAL, "java/util/WeakHashMap", INIT_METHOD_NAME, NO_PARAM_RETURN_VOID_SIGNATURE);
         m_clinit.visitFieldInsn(PUTSTATIC, m_aspectFactoryClassName, FACTORY_ASPECTS_FIELD_NAME, MAP_CLASS_SIGNATURE);
 
-        CodeVisitor cv = m_cw.visitMethod(
+        MethodVisitor cv = m_cw.visitMethod(
                 ACC_PUBLIC + ACC_STATIC + ACC_FINAL,
                 FACTORY_ASPECTOF_METHOD_NAME,
                 "(" + getXSignature() + ")" + m_aspectClassSignature,
@@ -89,7 +89,7 @@ public abstract class LazyPerXFactoryCompiler extends AbstractAspectFactoryCompi
     }
 
     protected void createHasAspect() {
-        CodeVisitor cv = m_cw.visitMethod(
+        MethodVisitor cv = m_cw.visitMethod(
                 ACC_STATIC + ACC_PUBLIC + ACC_FINAL,
                 FACTORY_HASASPECT_METHOD_NAME,
                 "(" + getXSignature() + ")Z",

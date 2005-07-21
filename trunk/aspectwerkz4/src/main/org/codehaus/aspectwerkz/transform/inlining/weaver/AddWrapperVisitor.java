@@ -7,12 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining.weaver;
 
-import org.objectweb.asm.Constants;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.Attribute;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
@@ -32,7 +31,7 @@ import java.lang.reflect.Modifier;
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class AddWrapperVisitor extends ClassAdapter implements Constants, TransformationConstants {
+public class AddWrapperVisitor extends ClassAdapter implements Opcodes, TransformationConstants {
 
     private ContextImpl m_context;
 
@@ -50,15 +49,15 @@ public class AddWrapperVisitor extends ClassAdapter implements Constants, Transf
      *
      * @param access
      * @param name
+     * @param signature
      * @param superName
      * @param interfaces
-     * @param sourceFile
      */
     public void visit(final int version, final int access,
                       final String name,
+                      final String signature,
                       final String superName,
-                      final String[] interfaces,
-                      final String sourceFile) {
+                      final String[] interfaces) {
         // iterate on the emitted joinpoints
         // we don't need to filter more since the joinpoint type and the weaving phase did that for us
         List jps = m_context.getEmittedJoinPoints();
@@ -75,7 +74,8 @@ public class AddWrapperVisitor extends ClassAdapter implements Constants, Transf
                             Modifier.isStatic(emittedJoinPoint.getCalleeMemberModifiers()),
                             name,
                             emittedJoinPoint.getCalleeMemberName(),
-                            emittedJoinPoint.getCalleeMemberDesc()
+                            emittedJoinPoint.getCalleeMemberDesc(),
+                            null//FIXME generic is that ok ?
                     );
                     break;
                 case (JoinPointType.FIELD_SET_INT) :
@@ -83,7 +83,8 @@ public class AddWrapperVisitor extends ClassAdapter implements Constants, Transf
                                 Modifier.isStatic(emittedJoinPoint.getCalleeMemberModifiers()),
                                 name,
                                 emittedJoinPoint.getCalleeMemberName(),
-                                emittedJoinPoint.getCalleeMemberDesc()
+                                emittedJoinPoint.getCalleeMemberDesc(),
+                                null//FIXME generic is that ok ?
                         );
                     break;
                 case (JoinPointType.METHOD_EXECUTION_INT) :
@@ -93,8 +94,8 @@ public class AddWrapperVisitor extends ClassAdapter implements Constants, Transf
                             name,
                             emittedJoinPoint.getCalleeMemberName(),
                             emittedJoinPoint.getCalleeMemberDesc(),
-                            new String[0],//TODO should throw Throwable ??
-                            null//TODO do we need the attr ??
+                            null,//FIXME generic is that ok ?
+                            EMPTY_STRING_ARRAY//TODO should throw Throwable ??
                     );
                     break;
                 case (JoinPointType.CONSTRUCTOR_CALL_INT) :
@@ -104,14 +105,14 @@ public class AddWrapperVisitor extends ClassAdapter implements Constants, Transf
                             name,
                             emittedJoinPoint.getCalleeMemberName(),
                             emittedJoinPoint.getCalleeMemberDesc(),
-                            new String[0],//TODO should throw Throwable ??
-                            null//TODO do we need the attr ??
+                            null,//FIXME generic is that ok ?
+                            EMPTY_STRING_ARRAY//TODO should throw Throwable ??
                     );
                     break;
             }
         }
 
-        super.visit(version, access, name, superName, interfaces, sourceFile);
+        super.visit(version, access, name, signature, superName, interfaces);
     }
 
     /**
@@ -121,21 +122,23 @@ public class AddWrapperVisitor extends ClassAdapter implements Constants, Transf
      * @param declaringTypeName
      * @param name
      * @param desc
+     * @param signature
      */
     private void createGetFieldWrapperMethod(final boolean isStaticField,
                                              final String declaringTypeName,
                                              final String name,
-                                             final String desc) {
+                                             final String desc,
+                                             final String signature) {
         String wrapperName = TransformationUtil.getWrapperMethodName(
                 name, desc, declaringTypeName, GETFIELD_WRAPPER_METHOD_PREFIX
         );
 
-        StringBuffer signature = new StringBuffer();
-        signature.append('(');
-        signature.append(')');
-        signature.append(desc);
+        StringBuffer wsignature = new StringBuffer();
+        wsignature.append('(');
+        wsignature.append(')');
+        wsignature.append(desc);
 
-        final String wrapperKey = AlreadyAddedMethodAdapter.getMethodKey(wrapperName, signature.toString());
+        final String wrapperKey = AlreadyAddedMethodAdapter.getMethodKey(wrapperName, wsignature.toString());
         if (m_addedMethods.contains(wrapperKey)) {
             return;
         }
@@ -146,12 +149,12 @@ public class AddWrapperVisitor extends ClassAdapter implements Constants, Transf
             modifiers |= ACC_STATIC;
         }
 
-        CodeVisitor mv = cv.visitMethod(
+        MethodVisitor mv = cv.visitMethod(
                 modifiers,
                 wrapperName,
-                signature.toString(),
-                new String[]{},
-                null
+                wsignature.toString(),
+                signature,
+                EMPTY_STRING_ARRAY
         );
 
         if (isStaticField) {
@@ -173,22 +176,24 @@ public class AddWrapperVisitor extends ClassAdapter implements Constants, Transf
      * @param declaringTypeName
      * @param name
      * @param desc
+     * @param signature
      */
     private void createPutFieldWrapperMethod(boolean isStaticField,
                                              final String declaringTypeName,
                                              final String name,
-                                             final String desc) {
+                                             final String desc,
+                                             final String signature) {
         String wrapperName = TransformationUtil.getWrapperMethodName(
                 name, desc, declaringTypeName, PUTFIELD_WRAPPER_METHOD_PREFIX
         );
 
-        StringBuffer signature = new StringBuffer();
-        signature.append('(');
-        signature.append(desc);
-        signature.append(')');
-        signature.append('V');
+        StringBuffer wsignature = new StringBuffer();
+        wsignature.append('(');
+        wsignature.append(desc);
+        wsignature.append(')');
+        wsignature.append('V');
 
-        final String wrapperKey = AlreadyAddedMethodAdapter.getMethodKey(wrapperName, signature.toString());
+        final String wrapperKey = AlreadyAddedMethodAdapter.getMethodKey(wrapperName, wsignature.toString());
         if (m_addedMethods.contains(wrapperKey)) {
             return;
         }
@@ -199,12 +204,12 @@ public class AddWrapperVisitor extends ClassAdapter implements Constants, Transf
             modifiers |= ACC_STATIC;
         }
 
-        CodeVisitor mv = cv.visitMethod(
+        MethodVisitor mv = cv.visitMethod(
                 modifiers,
                 wrapperName,
-                signature.toString(),
-                new String[]{},
-                null
+                wsignature.toString(),
+                signature,
+                EMPTY_STRING_ARRAY
         );
 
         Type fieldType = Type.getType(desc);
@@ -228,15 +233,15 @@ public class AddWrapperVisitor extends ClassAdapter implements Constants, Transf
      * @param declaringTypeName
      * @param name
      * @param desc
+     * @param signature
      * @param exceptions
-     * @param attrs
      */
     private void createMethodWrapperMethod(final int access,
                                            final String declaringTypeName,
                                            final String name,
                                            final String desc,
-                                           final String[] exceptions,
-                                           final Attribute attrs) {
+                                           final String signature,
+                                           final String[] exceptions) {
         final String wrapperName = TransformationUtil.getWrapperMethodName(
                 name, desc, declaringTypeName, INVOKE_WRAPPER_METHOD_PREFIX
         );
@@ -252,12 +257,12 @@ public class AddWrapperVisitor extends ClassAdapter implements Constants, Transf
             modifiers |= ACC_STATIC;
         }
 
-        CodeVisitor mv = super.visitMethod(
+        MethodVisitor mv = super.visitMethod(
                 modifiers,
                 wrapperName,
                 desc,
-                exceptions,
-                attrs
+                signature,
+                exceptions
         );
 
         if (Modifier.isStatic(access)) {
@@ -281,15 +286,15 @@ public class AddWrapperVisitor extends ClassAdapter implements Constants, Transf
      * @param declaringTypeName
      * @param name
      * @param desc
+     * @param signature
      * @param exceptions
-     * @param attrs
      */
     private void createConstructorWrapperMethod(final int access,
                                            final String declaringTypeName,
                                            final String name,
                                            final String desc,
-                                           final String[] exceptions,
-                                           final Attribute attrs) {
+                                           final String signature,
+                                           final String[] exceptions) {
         final String wrapperName = TransformationUtil.getWrapperMethodName(
                 name, desc, declaringTypeName, INVOKE_WRAPPER_METHOD_PREFIX
         );
@@ -306,12 +311,12 @@ public class AddWrapperVisitor extends ClassAdapter implements Constants, Transf
         Type declaringType = Type.getType('L'+declaringTypeName+';');
         String ctorDesc = Type.getMethodDescriptor(declaringType, Type.getArgumentTypes(desc));
 
-        CodeVisitor mv = super.visitMethod(
+        MethodVisitor mv = super.visitMethod(
                 modifiers,
                 wrapperName,
                 ctorDesc,
-                exceptions,
-                attrs
+                signature,
+                exceptions
         );
 
         mv.visitTypeInsn(NEW, declaringTypeName);

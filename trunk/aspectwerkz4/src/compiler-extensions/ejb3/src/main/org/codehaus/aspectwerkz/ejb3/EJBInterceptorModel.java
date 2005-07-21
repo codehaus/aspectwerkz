@@ -19,17 +19,15 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Constants;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class EJBInterceptorModel implements AspectModel, Constants, TransformationConstants {
-
-    private final static String[] EMPTY_STRING_ARRAY = new String[0];
+public class EJBInterceptorModel implements AspectModel, Opcodes, TransformationConstants {
 
     public final static String TYPE = EJBInterceptorModel.class.getName();
     
@@ -71,11 +69,11 @@ public class EJBInterceptorModel implements AspectModel, Constants, Transformati
         return EJB3_CLOSURE;
     }
 
-    public void createInvocationOfAroundClosureSuperClass(CodeVisitor cv) {
+    public void createInvocationOfAroundClosureSuperClass(MethodVisitor cv) {
         ;//not needed, InvocationContext is an interface
     }
 
-    public void createAndStoreStaticAspectInstantiation(ClassVisitor cw, CodeVisitor cv, AspectInfo aspectInfo, String joinPointClassName) {
+    public void createAndStoreStaticAspectInstantiation(ClassVisitor cw, MethodVisitor cv, AspectInfo aspectInfo, String joinPointClassName) {
         // the spec does not define the interceptor life cycle
         // this impl makes em one per EJB CLASS
         cw.visitField(
@@ -93,28 +91,28 @@ public class EJBInterceptorModel implements AspectModel, Constants, Transformati
         cv.visitFieldInsn(PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectInfo.getAspectClassSignature());
     }
 
-    public void loadAspect(CodeVisitor cv, CompilerInput input, AspectInfo aspectInfo) {
+    public void loadAspect(MethodVisitor cv, CompilerInput input, AspectInfo aspectInfo) {
         // interceptor was stored as a static field
         cv.visitFieldInsn(GETSTATIC, input.joinPointClassName, aspectInfo.getAspectFieldName(), aspectInfo.getAspectClassSignature());
     }
 
-    public void createBeforeOrAfterAdviceArgumentHandling(CodeVisitor cv, CompilerInput input, Type[] joinPointArgumentTypes, AdviceMethodInfo adviceMethodInfo, int specialArgIndex) {
+    public void createBeforeOrAfterAdviceArgumentHandling(MethodVisitor cv, CompilerInput input, Type[] joinPointArgumentTypes, AdviceMethodInfo adviceMethodInfo, int specialArgIndex) {
         ;// cannot happen so lets skip it
     }
 
-    public void createAroundAdviceArgumentHandling(CodeVisitor cv, CompilerInput input, Type[] joinPointArgumentTypes, AdviceMethodInfo adviceMethodInfo) {
+    public void createAroundAdviceArgumentHandling(MethodVisitor cv, CompilerInput input, Type[] joinPointArgumentTypes, AdviceMethodInfo adviceMethodInfo) {
         // interceptor only accept the closure as sole argument ie "this" within proceed()
         cv.visitVarInsn(ALOAD, 0);
     }
 
     public void createMandatoryMethods(ClassWriter cw, JoinPointCompiler compiler) {
         //getBean
-        CodeVisitor getBean = cw.visitMethod(
+        MethodVisitor getBean = cw.visitMethod(
                 ACC_PUBLIC,
                 "getBean",
                 "()Ljava/lang/Object;",
-                EMPTY_STRING_ARRAY,
-                null
+                null,
+                EMPTY_STRING_ARRAY
         );
         getBean.visitVarInsn(ALOAD, 0);
         getBean.visitFieldInsn(
@@ -127,12 +125,12 @@ public class EJBInterceptorModel implements AspectModel, Constants, Transformati
         getBean.visitMaxs(0, 0);
 
         // getParameters
-        CodeVisitor getParameters = cw.visitMethod(
+        MethodVisitor getParameters = cw.visitMethod(
                 ACC_PUBLIC,
                 "getParameters",
                 "()[Ljava/lang/Object;",
-                EMPTY_STRING_ARRAY,
-                null
+                null,
+                EMPTY_STRING_ARRAY
         );
         compiler.createArgumentArrayAt(getParameters, 1);
         getParameters.visitVarInsn(ALOAD, 1);
@@ -140,12 +138,12 @@ public class EJBInterceptorModel implements AspectModel, Constants, Transformati
         getParameters.visitMaxs(0, 0);
 
         // getMethod
-        CodeVisitor getMethod = cw.visitMethod(
+        MethodVisitor getMethod = cw.visitMethod(
                 ACC_PUBLIC,
                 "getMethod",
                 "()Ljava/lang/reflect/Method;",
-                EMPTY_STRING_ARRAY,
-                null
+                null,
+                EMPTY_STRING_ARRAY
         );
         getMethod.visitFieldInsn(
                 GETSTATIC,
@@ -165,7 +163,7 @@ public class EJBInterceptorModel implements AspectModel, Constants, Transformati
         // TODO supposely setParameters, getEJBContext etc
     }
 
-    public void createAndStoreRuntimeAspectInstantiation(CodeVisitor cv, CompilerInput input, AspectInfo aspectInfo) {
+    public void createAndStoreRuntimeAspectInstantiation(MethodVisitor cv, CompilerInput input, AspectInfo aspectInfo) {
         ;// nothing needed
     }
 

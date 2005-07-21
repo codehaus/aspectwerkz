@@ -9,9 +9,8 @@ package org.codehaus.aspectwerkz.transform.inlining.weaver;
 
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.CodeAdapter;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
@@ -94,19 +93,18 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
          * @param callerMethodName
          * @param callerMethodDesc
          * @param exceptions
-         * @param attrs
          * @return
          */
-        public CodeVisitor visitMethod(final int access,
+        public MethodVisitor visitMethod(final int access,
                                        final String callerMethodName,
                                        final String callerMethodDesc,
-                                       final String[] exceptions,
-                                       final Attribute attrs) {
+                                       final String callerMethodsignature,
+                                       final String[] exceptions) {
             if (callerMethodName.startsWith(WRAPPER_METHOD_PREFIX)) {
-                return super.visitMethod(access, callerMethodName, callerMethodDesc, exceptions, attrs);
+                return super.visitMethod(access, callerMethodName, callerMethodDesc, callerMethodsignature, exceptions);
             }
 
-            CodeVisitor mv = cv.visitMethod(access, callerMethodName, callerMethodDesc, exceptions, attrs);
+            MethodVisitor mv = cv.visitMethod(access, callerMethodName, callerMethodDesc, callerMethodsignature, exceptions);
             if (mv == null) {
                 return mv;
             }
@@ -137,7 +135,7 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
              *
              * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
              */
-            return new CodeAdapter(mv) {
+            return new MethodAdapter(mv) {
                 public void visitLabel(Label label) {
                     m_labelIndexes.put(label, new Integer(++m_labelIndex));
                     super.visitLabel(label);
@@ -211,20 +209,20 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
      * @param access
      * @param name
      * @param desc
+     * @param signature
      * @param exceptions
-     * @param attrs
      * @return
      */
-    public CodeVisitor visitMethod(final int access,
+    public MethodVisitor visitMethod(final int access,
                                    final String name,
                                    final String desc,
-                                   final String[] exceptions,
-                                   final Attribute attrs) {
+                                   final String signature,
+                                   final String[] exceptions) {
         if (name.startsWith(WRAPPER_METHOD_PREFIX)) {
-            return super.visitMethod(access, name, desc, exceptions, attrs);
+            return super.visitMethod(access, name, desc, signature, exceptions);
         }
 
-        CodeVisitor mv = cv.visitMethod(access, name, desc, exceptions, attrs);
+        MethodVisitor mv = cv.visitMethod(access, name, desc, signature, exceptions);
         return mv == null ? null : new CatchClauseCodeAdapter(mv);
     }
 
@@ -233,14 +231,14 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
      *
      * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */
-    public class CatchClauseCodeAdapter extends CodeAdapter {
+    public class CatchClauseCodeAdapter extends MethodAdapter {
 
         /**
          * Creates a new instance.
          *
          * @param ca
          */
-        public CatchClauseCodeAdapter(final CodeVisitor ca) {
+        public CatchClauseCodeAdapter(final MethodVisitor ca) {
             super(ca);
         }
 
@@ -279,17 +277,17 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
             // add the call to the join point
             // exception instance is on the stack
             // dup it for ARG0
-            cv.visitInsn(DUP);
+            mv.visitInsn(DUP);
 
             // load caller instance if any
             if (Modifier.isStatic(catchLabel.callerMember.getModifiers())) {
-                cv.visitInsn(ACONST_NULL);
+                mv.visitInsn(ACONST_NULL);
             } else {
-                cv.visitVarInsn(ALOAD, 0);
+                mv.visitVarInsn(ALOAD, 0);
             }
             //TODO for now we pass the exception as both CALLEE and ARG0 - may be callee must be NULL
             //? check in AJ RTTI
-            cv.visitMethodInsn(
+            mv.visitMethodInsn(
                     INVOKESTATIC, joinPointClassName, INVOKE_METHOD_NAME,
                     TransformationUtil.getInvokeSignatureForHandlerJoinPoints(callerTypeName, exceptionTypeName)
             );
