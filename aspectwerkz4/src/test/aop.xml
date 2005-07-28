@@ -65,7 +65,6 @@
         <aspect class="test.pointcutexpression.TestAspect"/>
         <aspect class="test.annotation.TestAspect"/>
         <aspect class="test.modifier.TestAspect"/>
-        <aspect class="test.interfacesubtypebug.TestAspect"/>
         <aspect class="test.adviseonintroducedinterface.Aspect"/>
         <mixin class="test.adviseonintroducedinterface.Aspect$Mixin" deployment-model="perInstance"
             bind-to="within(test.adviseonintroducedinterface.Target)"/>

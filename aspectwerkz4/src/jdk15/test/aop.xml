@@ -44,5 +44,7 @@
         <aspect class="test.priv.PrivateCtorTest$TestAspect"/>
         <aspect class="test.FieldFromInterfaceTest$TestAspect"/>
 
+        <aspect class="test.bugs.interfacesubtypebug.TestAspect"/>
+
     </system>
 </aspectwerkz>
