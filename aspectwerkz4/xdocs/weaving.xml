@@ -1305,7 +1305,7 @@ set ASPECTWERKZ_HOME=C:\aop\aspectwerkz\
                             <code>-details</code> to follow the pointcut matching (optional).
                         </li>
                         <li>Turns on
-                            <code>-genjp</code> to keep generated joinpoint strcutures (optional).
+                            <code>-genjp</code> to keep generated joinpoint structures (optional).
                         </li>
                         <li>Turns on
                             <code>-verify</code> to verify all weaved class according to the Java Class Format specification (optional, mainly usefull for AspectWerkz development team).
