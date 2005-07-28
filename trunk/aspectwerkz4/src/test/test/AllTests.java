@@ -76,7 +76,6 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.advisetostringbug.Test.class);//mixin
         suite.addTestSuite(test.implementsbug.ImplementsTest.class);
         suite.addTestSuite(test.inheritedmixinbug.Target.class);
-        suite.addTestSuite(test.interfacesubtypebug.InterfaceSubtypeBug.class);
         suite.addTestSuite(test.intercept.execution.InterceptTest.class);
         suite.addTestSuite(test.intercept.call.InterceptTest.class);
         suite.addTestSuite(test.intercept.set.InterceptTest.class);

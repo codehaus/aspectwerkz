@@ -14,6 +14,7 @@ import test.deployment.HotDeployedTest;
 import test.proxy.DelegationProxyTest;
 import test.proxy.SubclassingProxyTest;
 import test.priv.PrivateCtorTest;
+import test.bugs.interfacesubtypebug.InterfaceSubtypeBug;
 
 /**
  * JDK 5 specific tests.
@@ -43,6 +44,10 @@ public class AllJdk5Tests extends TestCase {
 
         suite.addTestSuite(PrivateCtorTest.class);
         suite.addTestSuite(FieldFromInterfaceTest.class);
+
+        // jdk14 migrated test for simplicity
+        suite.addTestSuite(InterfaceSubtypeBug.class);
+
         return suite;
     }
 
