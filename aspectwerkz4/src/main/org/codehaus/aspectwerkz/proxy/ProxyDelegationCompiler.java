@@ -52,6 +52,7 @@ public class ProxyDelegationCompiler {
             interfaceSignatures[i] = 'L' + interfaceClassNames[i] + ';';
         }
 
+        //FIXME copy interfaces class level annotations, and make sure we ignore doublons if any
         ProxyCompilerClassVisitor createProxy = new ProxyDelegationCompiler.ProxyCompilerClassVisitor(
                 proxyWriter,
                 proxyClassName.replace('.', '/'),
@@ -202,6 +203,8 @@ public class ProxyDelegationCompiler {
             AsmHelper.addReturnStatement(cv, Type.getReturnType(desc));
             cv.visitMaxs(0, 0);
 
+            // as we return cv we will copy the interface[currentInterfaceIndex] current method annotations
+            // which is what we want
             return cv;
         }
 

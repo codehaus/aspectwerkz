@@ -11,11 +11,8 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Type;
+import org.codehaus.aspectwerkz.transform.inlining.AsmCopyAdapter;
+import org.objectweb.asm.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -160,16 +157,20 @@ public class ProxySubclassingCompiler implements TransformationConstants {
                                        final String desc,
                                        final String signature,
                                        final String[] exceptions) {
+            final MethodVisitor proxyCode;
+            final boolean copyAnnotation;
             if (Modifier.isFinal(access) || Modifier.isPrivate(access) || Modifier.isNative(access)) {
                 // skip final or private or native methods
                 // TODO we could proxy native methods but that would lead to difference with regular weaving
-                ;
+                proxyCode = AsmNullAdapter.NullMethodAdapter.NULL_METHOD_ADAPTER;
+                copyAnnotation = false;
             } else if (CLINIT_METHOD_NAME.equals(name)) {
                 // skip clinit
-                ;
+                proxyCode = AsmNullAdapter.NullMethodAdapter.NULL_METHOD_ADAPTER;
+                copyAnnotation = false;
             } else if (INIT_METHOD_NAME.equals(name)) {
                 // constructors
-                MethodVisitor proxyCode = m_proxyCv.visitMethod(
+                proxyCode = m_proxyCv.visitMethod(
                         access + ACC_SYNTHETIC,
                         INIT_METHOD_NAME,
                         desc,
@@ -182,9 +183,10 @@ public class ProxySubclassingCompiler implements TransformationConstants {
                 proxyCode.visitMethodInsn(INVOKESPECIAL, m_className, INIT_METHOD_NAME, desc);
                 proxyCode.visitInsn(RETURN);
                 proxyCode.visitMaxs(0, 0);
+                copyAnnotation = true;
             } else {
                 // method that can be proxied
-                MethodVisitor proxyCode = m_proxyCv.visitMethod(
+                proxyCode = m_proxyCv.visitMethod(
                         access + ACC_SYNTHETIC,
                         name,
                         desc,
@@ -204,11 +206,40 @@ public class ProxySubclassingCompiler implements TransformationConstants {
                     AsmHelper.addReturnStatement(proxyCode, Type.getReturnType(desc));
                     proxyCode.visitMaxs(0, 0);
                 }
+                copyAnnotation = true;
             }
 
-            return AsmNullAdapter.NullMethodAdapter.NULL_METHOD_ADAPTER;
+            // copy the annotation if necessary
+            if (copyAnnotation) {
+                return new AsmCopyAdapter.CopyMethodAnnotationElseNullAdapter(proxyCode);
+            } else {
+                return AsmNullAdapter.NullMethodAdapter.NULL_METHOD_ADAPTER;
+            }
+        }
+
+        /**
+         * Visit the class annotation (copy)
+         * @param desc
+         * @param visible
+         * @return
+         */
+        public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+            return new AsmCopyAdapter.CopyAnnotationAdapter(
+                    super.visitAnnotation(desc, visible),
+                    m_proxyCv.visitAnnotation(desc, visible)
+            );
+        }
+
+        /**
+         * Visit the custom attribute (copy)
+         * @param attribute
+         */
+        public void visitAttribute(Attribute attribute) {
+            m_proxyCv.visitAttribute(attribute);
         }
     }
+
+
 
 //    /**
 //     * Creates constructors that delgates to the matching base class constructors.
