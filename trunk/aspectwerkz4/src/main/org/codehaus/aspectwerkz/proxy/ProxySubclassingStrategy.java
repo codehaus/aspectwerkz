@@ -10,6 +10,8 @@ package org.codehaus.aspectwerkz.proxy;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.backport175.reader.bytecode.spi.BytecodeProvider;
+import org.codehaus.backport175.reader.bytecode.AnnotationReader;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -161,7 +163,16 @@ public class ProxySubclassingStrategy {
             Proxy.makeProxyAdvisable(proxyClassName, loader);
         }
 
-        byte[] bytes = ProxySubclassingCompiler.compileProxyFor(clazz, proxyClassName);
+        final byte[] bytes = ProxySubclassingCompiler.compileProxyFor(clazz, proxyClassName);
+        // register the bytecode provider
+        // TODO AV - could be optimized ?(f.e. recompile everytime instead of creating many provider)
+        AnnotationReader.setBytecodeProviderFor(
+                proxyClassName, loader, new BytecodeProvider() {
+                    public byte[] getBytecode(String className, ClassLoader loader) throws Exception {
+                        return bytes;
+                    }
+                }
+        );
         byte[] transformedBytes = ClassPreProcessorHelper.defineClass0Pre(
                 loader, proxyClassName, bytes, 0, bytes.length, null
         );

@@ -18,6 +18,7 @@ import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
+import org.codehaus.aspectwerkz.transform.inlining.AsmCopyAdapter;
 import org.codehaus.aspectwerkz.joinpoint.management.JoinPointType;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
@@ -137,18 +138,34 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
             m_ctx.markAsAdvised();
 
             // create the proxy for the original method
-            createProxyMethod(access, name, desc, signature, exceptions, methodInfo);
+            final MethodVisitor proxyMethod = createProxyMethod(access, name, desc, signature, exceptions, methodInfo);
 
             int modifiers = ACC_SYNTHETIC;
             if (Modifier.isStatic(access)) {
                 modifiers |= ACC_STATIC;
             }
-            // prefix the original method
-            return cv.visitMethod(
-                    modifiers,
-                    prefixedOriginalName,
-                    desc, signature, exceptions
-            );
+            // prefix the original method and make sure we copy method annotations to the proxyMethod
+            // while keeping the body for the prefixed method
+            return new MethodAdapter(cv.visitMethod(modifiers, prefixedOriginalName, desc, signature, exceptions)) {
+                public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+                    return new AsmCopyAdapter.CopyAnnotationAdapter(
+                            super.visitAnnotation(desc, visible),
+                            proxyMethod.visitAnnotation(desc, visible)
+                    );
+                }
+
+                public AnnotationVisitor visitParameterAnnotation(int parameter, String desc, boolean visible) {
+                    return new AsmCopyAdapter.CopyAnnotationAdapter(
+                            super.visitParameterAnnotation(parameter, desc, visible),
+                            proxyMethod.visitParameterAnnotation(parameter, desc, visible)
+                    );
+                }
+
+                public void visitAttribute(Attribute attr) {
+                    super.visitAttribute(attr);
+                    proxyMethod.visitAttribute(attr);
+                }
+            };
         }
     }
 
@@ -162,8 +179,9 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
      * @param signature
      * @param exceptions
      * @param methodInfo
+     * @return the method visitor
      */
-    private void createProxyMethod(final int access,
+    private MethodVisitor createProxyMethod(final int access,
                                    final String name,
                                    final String desc,
                                    final String signature,
@@ -226,6 +244,8 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
                         EmittedJoinPoint.NO_LINE_NUMBER
                 )
         );
+
+        return mv;
     }
 
     /**
