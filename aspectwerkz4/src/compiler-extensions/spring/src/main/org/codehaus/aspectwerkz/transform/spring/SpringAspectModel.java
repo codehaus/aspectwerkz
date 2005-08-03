@@ -12,7 +12,6 @@ import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
 import org.codehaus.aspectwerkz.transform.inlining.AdviceMethodInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilerInput;
-import org.codehaus.aspectwerkz.transform.JoinPointCompiler;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 
@@ -22,11 +21,7 @@ import org.springframework.aop.AfterReturningAdvice;
 import org.springframework.aop.MethodBeforeAdvice;
 import org.springframework.aop.ThrowsAdvice;
 
-//import org.objectweb.asm.CodeVisitor;
-//import org.objectweb.asm.ClassWriter;
-//import org.objectweb.asm.Type;
-import org.codehaus.aspectwerkz.org.objectweb.asm.CodeVisitor;
-import org.codehaus.aspectwerkz.org.objectweb.asm.ClassWriter;
+import org.codehaus.aspectwerkz.org.objectweb.asm.MethodVisitor;
 import org.codehaus.aspectwerkz.org.objectweb.asm.Type;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 
@@ -92,17 +87,17 @@ public class SpringAspectModel extends AopAllianceAspectModel {
         );
     }
 
-    public void createBeforeOrAfterAdviceArgumentHandling(CodeVisitor codeVisitor, CompilerInput compilerInput, Type[] types, AdviceMethodInfo adviceMethodInfo, int i) {
+    public void createBeforeOrAfterAdviceArgumentHandling(MethodVisitor methodVisitor, CompilerInput compilerInput, Type[] types, AdviceMethodInfo adviceMethodInfo, int i) {
         if (AdviceType.BEFORE.equals(adviceMethodInfo.getAdviceInfo().getType())) {
             createBeforeAdviceArgumentHandling(
-                    codeVisitor,
+                    methodVisitor,
                     adviceMethodInfo,
                     compilerInput.joinPointInstanceIndex
             );
         } else {
             // after advice no matter what
             createAfterAdviceArgumentHandling(
-                    codeVisitor,
+                    methodVisitor,
                     adviceMethodInfo,
                     compilerInput.joinPointInstanceIndex
             );
@@ -116,7 +111,7 @@ public class SpringAspectModel extends AopAllianceAspectModel {
      * @param adviceMethodInfo
      * @param joinPointInstanceIndex
      */
-    public void createBeforeAdviceArgumentHandling(final CodeVisitor cv, final AdviceMethodInfo adviceMethodInfo, final int joinPointInstanceIndex) {
+    public void createBeforeAdviceArgumentHandling(final MethodVisitor cv, final AdviceMethodInfo adviceMethodInfo, final int joinPointInstanceIndex) {
         final String joinPointClassName = adviceMethodInfo.getJoinPointClassName();
         final int joinPointIndex = joinPointInstanceIndex;
         cv.visitFieldInsn(
@@ -166,7 +161,7 @@ public class SpringAspectModel extends AopAllianceAspectModel {
      * @param adviceMethodInfo
      * @param joinPointInstanceIndex
      */
-    public void createAfterAdviceArgumentHandling(final CodeVisitor cv, final AdviceMethodInfo adviceMethodInfo, final int joinPointInstanceIndex) {
+    public void createAfterAdviceArgumentHandling(final MethodVisitor cv, final AdviceMethodInfo adviceMethodInfo, final int joinPointInstanceIndex) {
         final String joinPointClassName = adviceMethodInfo.getJoinPointClassName();
         final int joinPointIndex = joinPointInstanceIndex;
         final String specArgDesc = adviceMethodInfo.getSpecialArgumentTypeDesc();

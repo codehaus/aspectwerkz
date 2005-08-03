@@ -7,47 +7,44 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.aspectj;
 
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.ClassParser;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Unknown;
 import org.apache.bcel.generic.Type;
-
-import java.util.*;
-import java.io.InputStream;
-import java.io.IOException;
-import java.lang.reflect.Field;
-
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.KindedPointcut;
+import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.SignaturePattern;
-
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
+import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
-import org.codehaus.aspectwerkz.definition.AdviceDefinition;
-import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
-import org.codehaus.aspectwerkz.transform.inlining.AdviceMethodInfo;
-import org.codehaus.aspectwerkz.transform.inlining.AspectInfo;
-import org.codehaus.aspectwerkz.transform.inlining.compiler.AbstractJoinPointCompiler;
-import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
-import org.codehaus.aspectwerkz.transform.inlining.compiler.AspectWerkzAspectModel;
-import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilerInput;
-import org.codehaus.aspectwerkz.transform.TransformationConstants;
-import org.codehaus.aspectwerkz.transform.JoinPointCompiler;
-
+import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.org.objectweb.asm.ClassVisitor;
 import org.codehaus.aspectwerkz.org.objectweb.asm.ClassWriter;
 import org.codehaus.aspectwerkz.org.objectweb.asm.MethodVisitor;
-import org.codehaus.aspectwerkz.org.objectweb.asm.ClassVisitor;
-import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.cflow.CflowCompiler;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.transform.JoinPointCompiler;
+import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.inlining.AdviceMethodInfo;
+import org.codehaus.aspectwerkz.transform.inlining.AspectInfo;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.AspectWerkzAspectModel;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilerInput;
+import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Implementation of the AspectModel interface for the AspectJ framework.
@@ -123,9 +120,7 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
                         Field sigField = KindedPointcut.class.getDeclaredField("signature");
                         sigField.setAccessible(true);
                         SignaturePattern signature = (SignaturePattern) sigField.get(pointcut);
-                        DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-                                signature.getName().toString(), pointcut.toString(), aspectDef
-                        );
+                        DefinitionParserHelper.createAndAddPointcutDefToAspectDef(signature.getName().toString(), pointcut.toString(), aspectDef);
                     } catch (Exception e) {
                         throw new WrappedRuntimeException(e);
                     }
@@ -186,7 +181,7 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
      * @return the closure class info
      */
     public AroundClosureClassInfo getAroundClosureClassInfo() {
-        return new AspectModel.AroundClosureClassInfo( ASPECTJ_AROUND_CLOSURE_CLASS_NAME, new String[]{});
+        return new AspectModel.AroundClosureClassInfo(ASPECTJ_AROUND_CLOSURE_CLASS_NAME, new String[]{});
     }
 
     /**
@@ -196,12 +191,10 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
      * @param joinPointCompiler
      */
     public void createMandatoryMethods(ClassWriter classWriter, JoinPointCompiler joinPointCompiler) {
-        MethodVisitor cv = classWriter.visitMethod(
-                ACC_PUBLIC, ASPECTJ_AROUND_CLOSURE_RUN_METHOD_NAME,
+        MethodVisitor cv = classWriter.visitMethod(ACC_PUBLIC, ASPECTJ_AROUND_CLOSURE_RUN_METHOD_NAME,
                 ASPECTJ_AROUND_CLOSURE_RUN_METHOD_SIGNATURE,
                 null,
-                new String[]{THROWABLE_CLASS_NAME}
-        );
+                new String[]{THROWABLE_CLASS_NAME});
         cv.visitVarInsn(ALOAD, 0);
         cv.visitMethodInsn(INVOKEVIRTUAL, joinPointCompiler.getJoinPointClassName(), PROCEED_METHOD_NAME, PROCEED_METHOD_SIGNATURE);
         cv.visitInsn(ARETURN);
@@ -215,23 +208,21 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
      */
     public void createInvocationOfAroundClosureSuperClass(final MethodVisitor mv) {
         mv.visitInsn(ACONST_NULL);
-        mv.visitMethodInsn(
-                INVOKESPECIAL,
+        mv.visitMethodInsn(INVOKESPECIAL,
                 ASPECTJ_AROUND_CLOSURE_CLASS_NAME,
                 INIT_METHOD_NAME,
-                "([Ljava/lang/Object;)V"
-        );
+                "([Ljava/lang/Object;)V");
     }
 
     /**
-    * Creates a field to host the aspectj aspect instance and instantiate them if possible
-    * <p/>
-    *
-    * @param cw
-    * @param mv
-    * @param aspectInfo
+     * Creates a field to host the aspectj aspect instance and instantiate them if possible
+     * <p/>
+     *
+     * @param cw
+     * @param mv
+     * @param aspectInfo
      * @param joinPointClassName
-    */
+     */
     public void createAndStoreStaticAspectInstantiation(ClassVisitor cw, MethodVisitor mv, AspectInfo aspectInfo, String joinPointClassName) {
         String aspectClassSignature = aspectInfo.getAspectClassSignature();
         String aspectClassName = aspectInfo.getAspectClassName();
@@ -239,19 +230,15 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
 
         if (deploymentModel.equals(DeploymentModel.PER_JVM)) {
             cw.visitField(ACC_PRIVATE + ACC_STATIC, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null);
-            mv.visitMethodInsn(
-                    INVOKESTATIC,
+            mv.visitMethodInsn(INVOKESTATIC,
                     aspectClassName,
                     "aspectOf",
-                    "()" + aspectClassSignature
-            );
+                    "()" + aspectClassSignature);
             mv.visitFieldInsn(PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature);
         } else {
-            throw new UnsupportedOperationException(
-                    "unsupported deployment model for the AspectJAspectModel - " +
+            throw new UnsupportedOperationException("unsupported deployment model for the AspectJAspectModel - " +
                     aspectClassName + " " +
-                    deploymentModel
-            );
+                    deploymentModel);
         }
     }
 
@@ -261,11 +248,9 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
     }
 
     public void loadAspect(MethodVisitor methodVisitor, CompilerInput compilerInput, AspectInfo aspectInfo) {
-        s_modelHelper.loadAspect(
-                methodVisitor,
+        s_modelHelper.loadAspect(methodVisitor,
                 compilerInput,
-                aspectInfo
-        );
+                aspectInfo);
     }
 
     /**
@@ -273,25 +258,21 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
      */
     public void createAroundAdviceArgumentHandling(MethodVisitor methodVisitor, CompilerInput compilerInput, org.codehaus.aspectwerkz.org.objectweb.asm.Type[] types, AdviceMethodInfo adviceMethodInfo) {
         //TODO - likely to fail if we don't cast the "this" to the closure ?
-        s_modelHelper.createAroundAdviceArgumentHandling(
-                methodVisitor,
+        s_modelHelper.createAroundAdviceArgumentHandling(methodVisitor,
                 compilerInput,
                 types,
-                adviceMethodInfo
-        );
+                adviceMethodInfo);
     }
 
     /**
      * Handles the arguments to a before/after advice. Same as in AW.
      */
     public void createBeforeOrAfterAdviceArgumentHandling(MethodVisitor codeVisitor, CompilerInput compilerInput, org.codehaus.aspectwerkz.org.objectweb.asm.Type[] types, AdviceMethodInfo adviceMethodInfo, int specialArgIndex) {
-        s_modelHelper.createBeforeOrAfterAdviceArgumentHandling(
-                codeVisitor,
+        s_modelHelper.createBeforeOrAfterAdviceArgumentHandling(codeVisitor,
                 compilerInput,
                 types,
                 adviceMethodInfo,
-                specialArgIndex
-        );
+                specialArgIndex);
     }
 
     /**
@@ -316,25 +297,21 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
             }
         }
         if (adviceMethod == null) {
-            throw new Error(
-                    "advice method [" + ajAdviceInfo.adviceMethodName +
-                    "] could not be found in class [" + classInfo.getName() + "]"
-            );
+            throw new Error("advice method [" + ajAdviceInfo.adviceMethodName +
+                    "] could not be found in class [" + classInfo.getName() + "]");
         }
         String specialArgType = null;
         if (ajAdviceInfo.extraParameterFlags != 0) {
             specialArgType = ajAdviceInfo.parameterTypes[0];
         }
-        return AdviceDefinition.newInstance(
-                createFullAspectJAdviceMethodName(ajAdviceInfo),
+        return AdviceDefinition.newInstance(createFullAspectJAdviceMethodName(ajAdviceInfo),
                 ajAdviceInfo.type,
                 ajAdviceInfo.pointcut,
                 specialArgType,
                 classInfo.getName(),
                 classInfo.getName(),
                 adviceMethod,
-                aspectDef
-        );
+                aspectDef);
     }
 
     /**
