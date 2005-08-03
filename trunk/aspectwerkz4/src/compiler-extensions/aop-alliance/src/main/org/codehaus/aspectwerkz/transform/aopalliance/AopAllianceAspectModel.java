@@ -12,7 +12,6 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
 import org.codehaus.aspectwerkz.transform.inlining.AdviceMethodInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AspectInfo;
-import org.codehaus.aspectwerkz.transform.inlining.compiler.AbstractJoinPointCompiler;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilerInput;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.AspectWerkzAspectModel;
@@ -22,9 +21,7 @@ import org.codehaus.aspectwerkz.transform.JoinPointCompiler;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.ConstructorInterceptor;
 
-//import org.objectweb.asm.CodeVisitor;
-//import org.objectweb.asm.ClassWriter;
-import org.codehaus.aspectwerkz.org.objectweb.asm.CodeVisitor;
+import org.codehaus.aspectwerkz.org.objectweb.asm.MethodVisitor;
 import org.codehaus.aspectwerkz.org.objectweb.asm.ClassWriter;
 import org.codehaus.aspectwerkz.org.objectweb.asm.ClassVisitor;
 import org.codehaus.aspectwerkz.org.objectweb.asm.Type;
@@ -127,7 +124,7 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
      */
     public void createMandatoryMethods(final ClassWriter cw, final JoinPointCompiler compiler) {
         final String className = compiler.getJoinPointClassName();
-        CodeVisitor cv;
+        MethodVisitor cv;
 
         // invoke
         {
@@ -135,8 +132,8 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
                     ACC_PUBLIC,
                     AOP_ALLIANCE_CLOSURE_PROCEED_METHOD_NAME,
                     AOP_ALLIANCE_CLOSURE_PROCEED_METHOD_SIGNATURE,
-                    new String[]{THROWABLE_CLASS_NAME},
-                    null
+                    null,
+                    new String[]{THROWABLE_CLASS_NAME}
             );
             cv.visitVarInsn(ALOAD, 0);
             cv.visitMethodInsn(INVOKEVIRTUAL, className, PROCEED_METHOD_NAME, PROCEED_METHOD_SIGNATURE);
@@ -209,7 +206,7 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
      *
      * @param cv
      */
-    public void createInvocationOfAroundClosureSuperClass(final CodeVisitor cv) {
+    public void createInvocationOfAroundClosureSuperClass(final MethodVisitor cv) {
         ;// just an interface
     }
 
@@ -217,28 +214,28 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
      * Creates host of the aop alliance aspect instance by invoking aspectOf().
      *
      */
-    public void createAndStoreStaticAspectInstantiation(ClassVisitor classVisitor, CodeVisitor codeVisitor, AspectInfo aspectInfo, String joinPointClassName) {
+    public void createAndStoreStaticAspectInstantiation(ClassVisitor classVisitor, MethodVisitor methodVisitor, AspectInfo aspectInfo, String joinPointClassName) {
         // we use static field and handle instantiation thru perJVM factory
         s_modelHelper.createAndStoreStaticAspectInstantiation(
-                classVisitor, codeVisitor, aspectInfo, joinPointClassName
+                classVisitor, methodVisitor, aspectInfo, joinPointClassName
         );
     }
 
-    public void createAndStoreRuntimeAspectInstantiation(CodeVisitor codeVisitor, CompilerInput compilerInput, AspectInfo aspectInfo) {
+    public void createAndStoreRuntimeAspectInstantiation(MethodVisitor methodVisitor, CompilerInput compilerInput, AspectInfo aspectInfo) {
         ;// does not happen
     }
 
-    public void loadAspect(CodeVisitor codeVisitor, CompilerInput compilerInput, AspectInfo aspectInfo) {
-        s_modelHelper.loadAspect(codeVisitor, compilerInput, aspectInfo);
+    public void loadAspect(MethodVisitor methodVisitor, CompilerInput compilerInput, AspectInfo aspectInfo) {
+        s_modelHelper.loadAspect(methodVisitor, compilerInput, aspectInfo);
     }
 
-    public void createAroundAdviceArgumentHandling(CodeVisitor codeVisitor, CompilerInput compilerInput, Type[] types, AdviceMethodInfo adviceMethodInfo) {
+    public void createAroundAdviceArgumentHandling(MethodVisitor methodVisitor, CompilerInput compilerInput, Type[] types, AdviceMethodInfo adviceMethodInfo) {
         // push jp ie AOP Alliance MethodInvocation
-        codeVisitor.visitVarInsn(ALOAD, 0);
+        methodVisitor.visitVarInsn(ALOAD, 0);
 
     }
 
-    public void createBeforeOrAfterAdviceArgumentHandling(CodeVisitor codeVisitor, CompilerInput compilerInput, Type[] types, AdviceMethodInfo adviceMethodInfo, int i) {
+    public void createBeforeOrAfterAdviceArgumentHandling(MethodVisitor methodVisitor, CompilerInput compilerInput, Type[] types, AdviceMethodInfo adviceMethodInfo, int i) {
         ;//does not happen
     }
 }
